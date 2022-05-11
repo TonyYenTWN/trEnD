@@ -3,7 +3,6 @@
 #include <chrono>
 #include <omp.h>
 #include <boost/math/distributions/normal.hpp>
-#include "Basic_Definitions.h"
 #include "Geostat.cpp"
 #include "rw_csv.cpp"
 
@@ -18,7 +17,7 @@ int main(){
 	// Read population density data; can change to other types of spatial point data in the future
 	fin_name = "input/population_density_10km.csv";
 	int num_row = 4041; 
-	int num_col = 4;
+	int num_col = 6;
 	MatrixXd sample_inform = read_file(num_row, num_col, fin_name);
 
 	// Read population density data; can change to other types of spatial point data in the future
@@ -51,7 +50,6 @@ int main(){
 	
 	// Read Demand File of Each Demand Pool
 	// Inititalization of Constraint Matrix
-	// int num_category = sample_inform.col(0).maxCoeff() + 1;
 	MatrixXd Constraint = MatrixXd::Zero(num_row, num_category);
 
 	#pragma omp parallel
