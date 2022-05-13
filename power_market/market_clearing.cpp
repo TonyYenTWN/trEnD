@@ -52,7 +52,7 @@ market_inform International_Market;
 int main(){
 	
 	// Parameters of international market
-	International_Market.num_zone = 14;
+	International_Market.num_zone = 13;
 	International_Market.time_intervals = Time;
 	International_Market.price_intervals = 600;
 	International_Market.zone_names = {"NO1","NO2","NO3","NO4","NO5","DE-LU","DK1","FI","GB","NL","SE1","SE2","SE3"};
@@ -71,9 +71,21 @@ int main(){
 	International_Market.bidded_price(0) = International_Market.price_range(0);
 	International_Market.bidded_price.array().tail(1) = International_Market.price_range(1);
 	International_Market.bidded_price.array().segment(1, International_Market.price_intervals) = Eigen::VectorXd::LinSpaced(International_Market.price_intervals, -99.5, 499.5);
-	std::cout << International_Market.bidded_price << std::endl;
 	
 	// Quantity density at each price
 	// Read infered merit order curve data
+	std::string fin_name;
+	int num_row = 101; 
+	int num_col = International_Market.num_zone;
+	
+	// Read equiprobability price intervals
+	fin_name = "input/merit_order_curve_p.csv";
+	Eigen::MatrixXd merit_order_curve_p = read_file(num_row, num_col, fin_name);
+	
+	// Read quantity within each price interval
+	fin_name = "input/merit_order_curve_q.csv";
+	Eigen::MatrixXd merit_order_curve_q = read_file(num_row, num_col, fin_name);
+	
+	std::cout << merit_order_curve_q.topRows(5) << std::endl;
 
 }
