@@ -79,58 +79,14 @@ int main(){
 	// Quantity density at each price
 	// Read infered merit order curve data
 	std::string fin_name;
-	int num_row = prob_intervals + 1; 
+	int num_row = International_Market.price_intervals + 2; 
 	int num_col = International_Market.num_zone;
-	
-	// Read equiprobability price intervals
-	fin_name = "input/merit_order_curve_p.csv";
-	Eigen::MatrixXd merit_order_curve_p = read_file(num_row, num_col, fin_name);
-	Eigen::MatrixXd diff_merit_order_curve_p = merit_order_curve_p.bottomRows(num_row - 1) - merit_order_curve_p.topRows(num_row - 1);
-	
-	// Read quantity within each equiprobability price interval
-	fin_name = "input/merit_order_curve_q.csv";
+	fin_name = "input/merit_order_curve_q_unified.csv";
 	Eigen::MatrixXd merit_order_curve_q = read_file(num_row, num_col, fin_name);
 	Eigen::MatrixXd diff_merit_order_curve_q = merit_order_curve_q.bottomRows(num_row - 1) - merit_order_curve_q.topRows(num_row - 1);
-	Eigen::MatrixXd slope_merit_order_curve_q = diff_merit_order_curve_q.array() * pow(diff_merit_order_curve_p.array(), -1);
-	
-	// Find quantity of supply at each equidistance price interval;
-	bool price_lower;
-	int start_interval;
-	int end_interval;
-	double slope_q_inflex;
-	International_Market.merit_order_curve = Eigen::MatrixXd::Zero(International_Market.price_intervals + 2, International_Market.num_zone);
-	
-	for(int zone_ID = 0; zone_ID < International_Market.num_zone; ++ zone_ID){ 
-		if(merit_order_curve_p(0, zone_ID) < International_Market.price_range_flex(0)){
-			price_lower = 1;
-		}
-		else{
-			price_lower = 0;
-			
-			slope_q_inflex = slope_merit_order_curve_q.col(zone_ID).minCoeff();
-			International_Market.merit_order_curve(0, zone_ID) = merit_order_curve_q(0, zone_ID) - (merit_order_curve_p(0, zone_ID) - International_Market.price_range_flex(0)) * slope_q_inflex;
-			
-			start_interval = 1;
-			end_interval = int (merit_order_curve_p(0, zone_ID) - International_Market.price_range_flex(0));
-			if(end_interval != 1){
-				International_Market.merit_order_curve.col(zone_ID).segment(start_interval, end_interval - start_interval + 1) = slope_q_inflex * Eigen::VectorXd::Ones(end_interval - start_interval + 1);
-			}
-		}
-		 
-		for(int prob_ID = 1; prob_ID < prob_intervals + 1; ++ prob_ID){
-			if(price_lower){
-				if(merit_order_curve_p(prob_ID, zone_ID) >= International_Market.price_range_flex(0)){
-					International_Market.merit_order_curve(0, zone_ID) += merit_order_curve_q(prob_ID - 1, zone_ID);
-					International_Market.merit_order_curve(0, zone_ID) += slope_merit_order_curve_q(prob_ID - 1, zone_ID) * (International_Market.price_range_flex(0) - merit_order_curve_p(prob_ID - 1, zone_ID));
-					price_lower = 0;
-					start_interval = 1;
-				}
-			}else{
-				
-			}
-		}
-	}
+	International_Market.merit_order_curve = merit_order_curve_q;
+	International_Market.merit_order_curve.bottomRows(num_row - 1) = diff_merit_order_curve_q;
+	International_Market.merit_order_curve = International_Market.merit_order_curve.array() * International_Market.merit_order_curve.array().max(0);
 	
 	std::cout << International_Market.merit_order_curve.topRows(200) << std::endl;
-	
 }
