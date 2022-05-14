@@ -134,8 +134,8 @@ market_inform International_Market_Set(int Time, std::string fin_name_q, std::st
 	
 	// Main loop for optimization
 	int count = 0;
-	//while(available_capacity_exchange.sum() > 0){
-	while(count < 3){
+	while(available_capacity_exchange.sum() > 0){
+	//while(count < 1000){
 		count += 1;
 		// Update price of demand and supply at each bidding zone
 		for(int zone_ID = 0; zone_ID < International_Market.num_zone; ++ zone_ID){
@@ -209,11 +209,13 @@ market_inform International_Market_Set(int Time, std::string fin_name_q, std::st
 			}
 		}
 		
+		// Results Output
 		std::cout << "     Sell Price: " << price_supply_ID.transpose() << std::endl;
 		std::cout << "      Buy Price: " << price_demand_ID.transpose() << std::endl;
 		std::cout << "  Sell Quantity: " << International_Market.confirmed_supply << std::endl;
 		std::cout << "   Buy Quantity: " << International_Market.confirmed_demand << std::endl;
 		std::cout << "    Trade Zones: " << maximum_price_diff_ID.transpose() << "\n" << std::endl;
+		std::cout << "        Surplus: " << maximum_price_diff << "\n" << std::endl;
 		std::cout << "Available Trade: " << std::endl; 
 		std::cout << available_capacity_exchange << "\n" << std::endl;
 	}
