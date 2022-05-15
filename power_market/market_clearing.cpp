@@ -32,7 +32,7 @@ struct market_inform{
 	Eigen::Vector2d price_range_flex;
 	Eigen::VectorXd bidded_price;
 	Eigen::MatrixXd merit_order_curve;
-	Eigen::MatrixXd cross_border_price;		// Default price of cross border zones without cross-border flow with bidding zones inside the boundary
+	//Eigen::MatrixXd cross_border_price;		// Default price of cross border zones without cross-border flow with bidding zones inside the boundary
 	
 	// Output variables
 	Eigen::MatrixXd confirmed_supply;		// Confirmed supply quantity from MO or TSO 
@@ -81,10 +81,10 @@ market_inform International_Market_Set(int Time, std::string fin_name_q, std::st
 	
 	// Default price at each cross-border bidding zone
 	// Read default price data
-	num_row = Time;
-	num_col = International_Market.num_zone - International_Market.cross_border_zone_start;
+	//num_row = Time;
+	//num_col = International_Market.num_zone - International_Market.cross_border_zone_start;
 	//International_Market.cross_border_price = read_file(num_row, num_col, fin_name_p);
-	International_Market.cross_border_price = 50 * Eigen::MatrixXd::Ones(num_row, num_col);
+	//International_Market.cross_border_price = 50 * Eigen::MatrixXd::Ones(num_row, num_col);
 	
 	// Content below should be split to another execution function later
 	// Initialization of output variables
@@ -97,6 +97,7 @@ market_inform International_Market_Set(int Time, std::string fin_name_q, std::st
 	double exchange_quantity;
 	double maximum_price_diff;
 	Eigen::Vector2i maximum_price_diff_ID;
+	Eigen::VectorXi default_price_ID;
 	Eigen::VectorXi price_demand_ID;
 	Eigen::VectorXi price_supply_ID;
 	Eigen::MatrixXd bidded_supply = Eigen::MatrixXd::Zero(International_Market.price_intervals + 2, International_Market.num_zone);
@@ -110,55 +111,81 @@ market_inform International_Market_Set(int Time, std::string fin_name_q, std::st
 	Eigen::MatrixXd surplus_exchange;
 	Eigen::MatrixXi available_capacity_exchange;
 	
-	// Test execution of optimization process
+	// Execution of optimization process
 	int tick = 0;
-	bidded_supply.leftCols(International_Market.cross_border_zone_start) = International_Market.merit_order_curve.leftCols(International_Market.cross_border_zone_start);
-	bidded_demand.leftCols(International_Market.cross_border_zone_start).bottomRows(1) << 4782, 4732, 3356, 2136, 2202;
-	int default_price_ID;
-	for(int zone_ID = International_Market.cross_border_zone_start; zone_ID < International_Market.num_zone; ++ zone_ID){
-		default_price_ID = int (International_Market.cross_border_price.col(zone_ID - International_Market.cross_border_zone_start)(tick) - International_Market.price_range_flex(0) + 1);
-		if(default_price_ID < 0){
-			default_price_ID = 0;
+	bidded_supply = International_Market.merit_order_curve;
+	bidded_demand.bottomRows(1) << 4500, 4000, 3500, 2500, 2500, 45000, 1000, 7000, 22000, 9000, 3000, 7000, 10000;
+	
+	// Initial optimization within each bidding zones
+	default_price_ID = Eigen::VectorXi(International_Market.num_zone);
+	double q_sum;
+	for(int zone_ID = 0; zone_ID < International_Market.num_zone; ++ zone_ID){
+		q_sum = 0;
+		for(int item = 0; item < International_Market.bidded_price.rows(); ++ item){
+			q_sum += International_Market.merit_order_curve(item, zone_ID);
+			if(bidded_demand(bidded_demand.rows() - 1, zone_ID) <= q_sum){
+				default_price_ID(zone_ID) = item;
+				International_Market.confirmed_supply(tick, zone_ID) = bidded_demand(bidded_demand.rows() - 1, zone_ID);
+				International_Market.confirmed_demand(tick, zone_ID) = bidded_demand(bidded_demand.rows() - 1, zone_ID);
+				bidded_demand(bidded_demand.rows() - 1, zone_ID) = 0;
+				break;
+			}
+			else if(item == International_Market.bidded_price.rows() - 1){
+				default_price_ID(zone_ID) = item;
+				International_Market.confirmed_supply(tick, zone_ID) = q_sum;
+				International_Market.confirmed_demand(tick, zone_ID) = q_sum;
+				bidded_demand(bidded_demand.rows() - 1, zone_ID) -= q_sum;				
+			}
 		}
-		bidded_demand.col(zone_ID).array().head(default_price_ID + 1) = International_Market.merit_order_curve.col(zone_ID).array().head(default_price_ID + 1);
-		bidded_supply.col(zone_ID).array().tail(International_Market.price_intervals + 2 - default_price_ID) = International_Market.merit_order_curve.col(zone_ID).array().tail(International_Market.price_intervals + 2 - default_price_ID);
 	}
 	
-	// Test execution of optimization process
-	price_demand_ID = (International_Market.bidded_price.size() - 1) * Eigen::VectorXi::Ones(International_Market.num_zone);
-	price_supply_ID = Eigen::VectorXi::Zero(International_Market.num_zone);
+	std::cout << "     Sell Price: " << default_price_ID.transpose() << std::endl;
+	std::cout << "  Sell Quantity: " << International_Market.confirmed_supply << std::endl;
+	std::cout << "   Buy Quantity: " << International_Market.confirmed_demand << std::endl;
+	std::cout << "Residual Demand: " << bidded_demand.bottomRows(1) << "\n" << std::endl;
+	
+	// Optimization of cross border exchange
+	//bidded_demand = Eigen::MatrixXd::Zero(International_Market.price_intervals + 2, International_Market.num_zone);
+	bidded_supply = Eigen::MatrixXd::Zero(International_Market.price_intervals + 2, International_Market.num_zone);
+	for(int zone_ID = 0; zone_ID < International_Market.num_zone; ++ zone_ID){
+		bidded_demand.col(zone_ID).array().head(default_price_ID(zone_ID)) = International_Market.merit_order_curve.col(zone_ID).array().head(default_price_ID(zone_ID));
+		bidded_supply.col(zone_ID).array().tail(International_Market.price_intervals + 1 - default_price_ID(zone_ID)) = International_Market.merit_order_curve.col(zone_ID).array().tail(International_Market.price_intervals + 1 - default_price_ID(zone_ID));
+	}
+	
+	price_demand_ID = default_price_ID;
+	price_supply_ID = default_price_ID;
 	remaining_capacity_exchange = maximum_capacity_exchange;
 	surplus_exchange = (International_Market.bidded_price(International_Market.bidded_price.size() - 1) - International_Market.bidded_price(0)) * Eigen::MatrixXd::Ones(International_Market.num_zone, International_Market.num_zone);
 	available_capacity_exchange = Eigen::MatrixXi::Ones(International_Market.num_zone, International_Market.num_zone);
-	available_capacity_exchange.bottomRightCorner(International_Market.num_zone - International_Market.cross_border_zone_start, International_Market.num_zone - International_Market.cross_border_zone_start) = Eigen::MatrixXi::Zero(International_Market.num_zone - International_Market.cross_border_zone_start, International_Market.num_zone - International_Market.cross_border_zone_start);
+	available_capacity_exchange.bottomRightCorner(International_Market.num_zone - International_Market.cross_border_zone_start, International_Market.num_zone - International_Market.cross_border_zone_start) = Eigen::MatrixXi::Identity(International_Market.num_zone - International_Market.cross_border_zone_start, International_Market.num_zone - International_Market.cross_border_zone_start);
 	
 	// Main loop for optimization
 	int count = 0;
+	//while(count < 10){
 	while(available_capacity_exchange.sum() > 0){
-	//while(count < 1000){
 		count += 1;
 		// Update price of demand and supply at each bidding zone
 		for(int zone_ID = 0; zone_ID < International_Market.num_zone; ++ zone_ID){
 			// Check if there are demand bids at current price interval
 			while(bidded_demand(price_demand_ID(zone_ID), zone_ID) == 0){
-				if(price_demand_ID(zone_ID) != 0){
+				if(price_demand_ID(zone_ID) > 0){
 					price_demand_ID(zone_ID) -= 1;
 				}
 				else{
 					// No available buyer left to buy electricity
-					available_capacity_exchange.row(zone_ID) = Eigen::VectorXi::Zero(International_Market.num_zone);
+					available_capacity_exchange.col(zone_ID) = Eigen::VectorXi::Zero(International_Market.num_zone);
 					break;
 				}
 			}
 			
 			// Check if there are supply bids at current price interval
 			while(bidded_supply(price_supply_ID(zone_ID), zone_ID) == 0){
-				if(price_supply_ID(zone_ID) != International_Market.bidded_price.size() - 1){
+				if(price_supply_ID(zone_ID) < International_Market.bidded_price.size() - 1){
 					price_supply_ID(zone_ID) += 1;
 				}
 				else{
 					// No available seller left to sell electricity
-					available_capacity_exchange.col(zone_ID) = Eigen::VectorXi::Zero(International_Market.num_zone);
+					available_capacity_exchange.row(zone_ID) = Eigen::VectorXi::Zero(International_Market.num_zone);
 					break;				
 				}			
 			}
@@ -170,7 +197,7 @@ market_inform International_Market_Set(int Time, std::string fin_name_q, std::st
 			for(int col_ID = 0; col_ID < International_Market.num_zone; ++ col_ID){
 				if(available_capacity_exchange(row_ID, col_ID)){
 					// Check if surplus according to updated price is still positive
-					if(price_demand_ID(col_ID) >= price_supply_ID(row_ID)){
+					if(price_demand_ID(col_ID) > price_supply_ID(row_ID)){
 						// Update surplus for each possible exchange configuration
 						surplus_exchange(row_ID, col_ID) = International_Market.bidded_price(price_demand_ID(col_ID)) - International_Market.bidded_price(price_supply_ID(row_ID));
 						
@@ -180,7 +207,12 @@ market_inform International_Market_Set(int Time, std::string fin_name_q, std::st
 							maximum_price_diff_ID << row_ID, col_ID;
 						}					
 					}
-					else{
+					else{	
+						available_capacity_exchange(row_ID, col_ID) = 0;
+					}
+					
+					// Check if limit of edge capacity is reached
+					if(remaining_capacity_exchange(row_ID, col_ID) == 0){
 						available_capacity_exchange(row_ID, col_ID) = 0;
 					}
 				}
@@ -189,36 +221,56 @@ market_inform International_Market_Set(int Time, std::string fin_name_q, std::st
 		
 		// Exchange within a bidding zone
 		exchange_quantity = std::min(bidded_demand(price_demand_ID(maximum_price_diff_ID(1)), maximum_price_diff_ID(1)), bidded_supply(price_supply_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0)));
-		if(maximum_price_diff_ID(0) != maximum_price_diff_ID(1)){
+		if(maximum_price_diff_ID(0) == maximum_price_diff_ID(1)){
 			International_Market.confirmed_supply(tick, maximum_price_diff_ID(0)) += exchange_quantity;
-			International_Market.confirmed_demand(tick, maximum_price_diff_ID(1)) += exchange_quantity;
+			// Check whether the exchange increases confirmed demand at a bidding zone
+			if(price_demand_ID(maximum_price_diff_ID(1)) > default_price_ID(maximum_price_diff_ID(1)) || price_demand_ID(maximum_price_diff_ID(1)) == International_Market.bidded_price.size() - 1){
+				International_Market.confirmed_demand(tick, maximum_price_diff_ID(1)) += exchange_quantity;
+			}
+			else{
+				International_Market.confirmed_supply(tick, maximum_price_diff_ID(1)) -= exchange_quantity;
+			}
 			bidded_demand(price_demand_ID(maximum_price_diff_ID(1)), maximum_price_diff_ID(1)) -= exchange_quantity;
 			bidded_supply(price_supply_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0)) -= exchange_quantity;
 		}
 		// Exchange between bidding zones
 		else{
+			exchange_quantity = std::min(exchange_quantity, remaining_capacity_exchange(maximum_price_diff_ID(0), maximum_price_diff_ID(1)));
 			International_Market.confirmed_supply(tick, maximum_price_diff_ID(0)) += exchange_quantity;
-			International_Market.confirmed_demand(tick, maximum_price_diff_ID(1)) += exchange_quantity;
+			// Check whether the exchange increases confirmed demand at a bidding zone
+			if(price_demand_ID(maximum_price_diff_ID(1)) > default_price_ID(maximum_price_diff_ID(1)) || price_demand_ID(maximum_price_diff_ID(1)) == International_Market.bidded_price.size() - 1){
+				International_Market.confirmed_demand(tick, maximum_price_diff_ID(1)) += exchange_quantity;
+			}
+			else{
+				International_Market.confirmed_supply(tick, maximum_price_diff_ID(1)) -= exchange_quantity;
+			}
 			bidded_demand(price_demand_ID(maximum_price_diff_ID(1)), maximum_price_diff_ID(1)) -= exchange_quantity;
 			bidded_supply(price_supply_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0)) -= exchange_quantity;
 			remaining_capacity_exchange(maximum_price_diff_ID(0), maximum_price_diff_ID(1)) -= exchange_quantity;
-			
-			// Check if limit of edge capacity is reached
-			if(remaining_capacity_exchange(maximum_price_diff_ID(0), maximum_price_diff_ID(1)) == 0){
-				available_capacity_exchange(maximum_price_diff_ID(0), maximum_price_diff_ID(1)) = 0;
-			}
 		}
 		
 		// Results Output
-		std::cout << "     Sell Price: " << price_supply_ID.transpose() << std::endl;
-		std::cout << "      Buy Price: " << price_demand_ID.transpose() << std::endl;
-		std::cout << "  Sell Quantity: " << International_Market.confirmed_supply << std::endl;
-		std::cout << "   Buy Quantity: " << International_Market.confirmed_demand << std::endl;
-		std::cout << "    Trade Zones: " << maximum_price_diff_ID.transpose() << "\n" << std::endl;
-		std::cout << "        Surplus: " << maximum_price_diff << "\n" << std::endl;
-		std::cout << "Available Trade: " << std::endl; 
-		std::cout << available_capacity_exchange << "\n" << std::endl;
+//		std::cout << "     Sell Price: " << price_supply_ID.transpose() << std::endl;
+//		std::cout << "      Buy Price: " << price_demand_ID.transpose() << std::endl;
+//		std::cout << "  Sell Quantity: " << International_Market.confirmed_supply << std::endl;
+//		std::cout << "   Buy Quantity: " << International_Market.confirmed_demand << std::endl;
+//		std::cout << "Residual Demand: " << bidded_demand.bottomRows(1) << "\n" << std::endl;
+//		std::cout << "    Trade Zones: " << maximum_price_diff_ID.transpose() << "\n" << std::endl;
+//		std::cout << "        Surplus: " << maximum_price_diff << "\n" << std::endl;
+//		std::cout << "Available Trade: " << std::endl; 
+//		std::cout << available_capacity_exchange << "\n" << std::endl;
 	}
+
+	// Results Output
+	std::cout << "     Sell Price: " << price_supply_ID.transpose() << std::endl;
+	std::cout << "      Buy Price: " << price_demand_ID.transpose() << std::endl;
+	std::cout << "  Sell Quantity: " << International_Market.confirmed_supply << std::endl;
+	std::cout << "   Buy Quantity: " << International_Market.confirmed_demand << std::endl;
+	std::cout << "Residual Demand: " << bidded_demand.bottomRows(1) << "\n" << std::endl;
+	std::cout << "    Trade Zones: " << maximum_price_diff_ID.transpose() << "\n" << std::endl;
+	std::cout << "        Surplus: " << maximum_price_diff << "\n" << std::endl;
+	std::cout << "Available Trade: " << std::endl; 
+	std::cout << available_capacity_exchange << "\n" << std::endl;
 
 	return(International_Market);
 }
