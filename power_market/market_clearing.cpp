@@ -213,7 +213,7 @@ market_inform International_Market_Set(int Time, std::string fin_name_q, std::st
 	
 	// Main loop for optimization
 	int count = 0;
-	while(count < 200){
+	while(count < 2000){
 	//while(available_capacity_exchange.sum() > 0){
 		count += 1;
 		// Update price of demand and supply at each bidding zone
@@ -367,56 +367,24 @@ market_inform International_Market_Set(int Time, std::string fin_name_q, std::st
 			}
 			remaining_capacity_exchange(maximum_price_diff_ID(0), maximum_price_diff_ID(1)) -= exchange_quantity;			
 		}
-
-//		bidded_demand(price_demand_ID(maximum_price_diff_ID(1)), maximum_price_diff_ID(1)) -= exchange_quantity;
-//		bidded_supply(price_supply_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0)) -= exchange_quantity;
-//		remaining_capacity_exchange(maximum_price_diff_ID(0), maximum_price_diff_ID(1)) -= exchange_quantity;
-		
-//		if(maximum_price_diff_ID(0) == maximum_price_diff_ID(1)){
-//			International_Market.confirmed_supply(tick, maximum_price_diff_ID(0)) += exchange_quantity;
-//			// Check whether the exchange increases confirmed demand at a bidding zone
-//			if(price_demand_ID(maximum_price_diff_ID(1)) > default_price_ID(maximum_price_diff_ID(1)) || price_demand_ID(maximum_price_diff_ID(1)) == International_Market.bidded_price.size() - 1){
-//				International_Market.confirmed_demand(tick, maximum_price_diff_ID(1)) += exchange_quantity;
-//			}
-//			else{
-//				International_Market.confirmed_supply(tick, maximum_price_diff_ID(1)) -= exchange_quantity;
-//			}
-//			bidded_demand(price_demand_ID(maximum_price_diff_ID(1)), maximum_price_diff_ID(1)) -= exchange_quantity;
-//			bidded_supply(price_supply_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0)) -= exchange_quantity;
-//		}
-//		// Exchange between bidding zones
-//		else{
-//			exchange_quantity = std::min(exchange_quantity, remaining_capacity_exchange(maximum_price_diff_ID(0), maximum_price_diff_ID(1)));
-//			International_Market.confirmed_supply(tick, maximum_price_diff_ID(0)) += exchange_quantity;
-//			// Check whether the exchange increases confirmed demand at a bidding zone
-//			if(price_demand_ID(maximum_price_diff_ID(1)) > default_price_ID(maximum_price_diff_ID(1)) || price_demand_ID(maximum_price_diff_ID(1)) == International_Market.bidded_price.size() - 1){
-//				International_Market.confirmed_demand(tick, maximum_price_diff_ID(1)) += exchange_quantity;
-//			}
-//			else{
-//				International_Market.confirmed_supply(tick, maximum_price_diff_ID(1)) -= exchange_quantity;
-//			}
-//			bidded_demand(price_demand_ID(maximum_price_diff_ID(1)), maximum_price_diff_ID(1)) -= exchange_quantity;
-//			bidded_supply(price_supply_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0)) -= exchange_quantity;
-//			remaining_capacity_exchange(maximum_price_diff_ID(0), maximum_price_diff_ID(1)) -= exchange_quantity;
-//		}
 		
 		// Results Output
-		if(available_capacity_exchange(1, 0) == 0){
-			std::cout << "Export Price ID: " << price_supply_ID.transpose() << std::endl;
-			std::cout << "Import Price ID: " << price_demand_ID.transpose() << std::endl;
-			std::cout << "   Market Price: " << International_Market.confirmed_price.row(0) << std::endl;
-			std::cout << "  Sell Quantity: " << International_Market.confirmed_supply << std::endl;
-			std::cout << "   Buy Quantity: " << International_Market.confirmed_demand << std::endl;
-			std::cout << "Residual Demand: " << bidded_demand_default.bottomRows(1) - International_Market.confirmed_demand << "\n" << std::endl;
-			std::cout << "    Trade Zones: " << maximum_price_diff_ID.transpose() << "\n" << std::endl;
-			std::cout << "        Surplus: " << maximum_price_diff << "\n" << std::endl;
-			std::cout << "Available Trade: " << std::endl; 
-			std::cout << available_capacity_exchange << "\n" << std::endl;
-			std::cout << "Used Capacity: " << std::endl; 
-			std::cout << maximum_capacity_exchange - remaining_capacity_exchange << "\n" << std::endl;
-			std::cout << "Remaining Capacity: " << std::endl; 
-			std::cout << remaining_capacity_exchange << "\n" << std::endl;
-		}
+//		if(available_capacity_exchange(1, 0) == 0){
+//			std::cout << "Export Price ID: " << price_supply_ID.transpose() << std::endl;
+//			std::cout << "Import Price ID: " << price_demand_ID.transpose() << std::endl;
+//			std::cout << "   Market Price: " << International_Market.confirmed_price.row(0) << std::endl;
+//			std::cout << "  Sell Quantity: " << International_Market.confirmed_supply << std::endl;
+//			std::cout << "   Buy Quantity: " << International_Market.confirmed_demand << std::endl;
+//			std::cout << "Residual Demand: " << bidded_demand_default.bottomRows(1) - International_Market.confirmed_demand << "\n" << std::endl;
+//			std::cout << "    Trade Zones: " << maximum_price_diff_ID.transpose() << "\n" << std::endl;
+//			std::cout << "        Surplus: " << maximum_price_diff << "\n" << std::endl;
+//			std::cout << "Available Trade: " << std::endl; 
+//			std::cout << available_capacity_exchange << "\n" << std::endl;
+//			std::cout << "Used Capacity: " << std::endl; 
+//			std::cout << maximum_capacity_exchange - remaining_capacity_exchange << "\n" << std::endl;
+//			std::cout << "Remaining Capacity: " << std::endl; 
+//			std::cout << remaining_capacity_exchange << "\n" << std::endl;
+//		}
 	}
 
 	// Calculate exchange flow and market clearing prices of the bidding zones
