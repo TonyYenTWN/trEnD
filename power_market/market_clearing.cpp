@@ -213,7 +213,7 @@ market_inform International_Market_Set(int Time, std::string fin_name_q, std::st
 	
 	// Main loop for optimization
 	int count = 0;
-	while(count < 10000){
+	while(count < 200){
 	//while(available_capacity_exchange.sum() > 0){
 		count += 1;
 		// Update price of demand and supply at each bidding zone
@@ -301,8 +301,8 @@ market_inform International_Market_Set(int Time, std::string fin_name_q, std::st
 					
 					// Update market clearing price
 					if(exchange_quantity == remaining_capacity_exchange(maximum_price_diff_ID(0), maximum_price_diff_ID(1))){
-						International_Market.confirmed_price(tick, maximum_price_diff_ID(0)) == International_Market.bidded_price(price_demand_ID(maximum_price_diff_ID(0)));
-						International_Market.confirmed_price(tick, maximum_price_diff_ID(1)) == International_Market.bidded_price(price_supply_ID(maximum_price_diff_ID(1)));
+						International_Market.confirmed_price(tick, maximum_price_diff_ID(0)) == International_Market.bidded_price(price_supply_ID(maximum_price_diff_ID(0)));
+						International_Market.confirmed_price(tick, maximum_price_diff_ID(1)) == International_Market.bidded_price(price_demand_ID(maximum_price_diff_ID(1)));
 					}
 					else{
 						if(bidded_demand_import(price_demand_ID(maximum_price_diff_ID(1)), maximum_price_diff_ID(1)) <= bidded_supply_export(price_supply_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0))){
@@ -316,40 +316,53 @@ market_inform International_Market_Set(int Time, std::string fin_name_q, std::st
 					}
 					break;
 				case 1:
-//					if(bidded_supply_import(price_demand_ID(maximum_price_diff_ID(1)), maximum_price_diff_ID(1)) <= bidded_supply_export(price_supply_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0))){
-//						exchange_quantity = bidded_supply_import(price_demand_ID(maximum_price_diff_ID(1)), maximum_price_diff_ID(1));
-//						//International_Market.confirmed_price(tick, maximum_price_diff_ID(0)) = International_Market.bidded_price(price_supply_ID(maximum_price_diff_ID(0)));
-//						//International_Market.confirmed_price(tick, maximum_price_diff_ID(1)) = International_Market.bidded_price(price_supply_ID(maximum_price_diff_ID(0)));	
-//					}
-//					else{
-//						exchange_quantity = bidded_supply_export(price_supply_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0));
-//						//International_Market.confirmed_price(tick, maximum_price_diff_ID(0)) = International_Market.bidded_price(price_supply_ID(maximum_price_diff_ID(1)));
-//						//International_Market.confirmed_price(tick, maximum_price_diff_ID(1)) = International_Market.bidded_price(price_supply_ID(maximum_price_diff_ID(1)));						
-//					}
+					// Update traded quantity
 					exchange_quantity = std::min(bidded_supply_import(price_demand_ID(maximum_price_diff_ID(1)), maximum_price_diff_ID(1)), bidded_supply_export(price_supply_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0)));
 					exchange_quantity = std::min(exchange_quantity, remaining_capacity_exchange(maximum_price_diff_ID(0), maximum_price_diff_ID(1)));
 					International_Market.confirmed_supply(tick, maximum_price_diff_ID(0)) += exchange_quantity;
 					International_Market.confirmed_supply(tick, maximum_price_diff_ID(1)) -= exchange_quantity;
 					bidded_supply_import(price_demand_ID(maximum_price_diff_ID(1)), maximum_price_diff_ID(1)) -= exchange_quantity;
 					bidded_supply_export(price_supply_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0)) -= exchange_quantity;		
+					
+					// Update market clearing price
+					if(exchange_quantity == remaining_capacity_exchange(maximum_price_diff_ID(0), maximum_price_diff_ID(1))){
+						International_Market.confirmed_price(tick, maximum_price_diff_ID(0)) == International_Market.bidded_price(price_supply_ID(maximum_price_diff_ID(0)));
+						International_Market.confirmed_price(tick, maximum_price_diff_ID(1)) == International_Market.bidded_price(price_demand_ID(maximum_price_diff_ID(1)));
+					}
+					else{
+						if(bidded_supply_import(price_demand_ID(maximum_price_diff_ID(1)), maximum_price_diff_ID(1)) <= bidded_supply_export(price_supply_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0))){
+							International_Market.confirmed_price(tick, maximum_price_diff_ID(0)) = International_Market.bidded_price(price_supply_ID(maximum_price_diff_ID(0)));
+							International_Market.confirmed_price(tick, maximum_price_diff_ID(1)) = International_Market.bidded_price(price_supply_ID(maximum_price_diff_ID(0)));	
+						}
+						else{
+							International_Market.confirmed_price(tick, maximum_price_diff_ID(0)) = International_Market.bidded_price(price_demand_ID(maximum_price_diff_ID(1)));
+							International_Market.confirmed_price(tick, maximum_price_diff_ID(1)) = International_Market.bidded_price(price_demand_ID(maximum_price_diff_ID(1)));						
+						}						
+					}					
 					break;
 				case 2:
-//					if(bidded_demand_import(price_demand_ID(maximum_price_diff_ID(1)), maximum_price_diff_ID(1)) <= bidded_demand_export(price_demand_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0))){
-//						exchange_quantity = bidded_demand_import(price_demand_ID(maximum_price_diff_ID(1)), maximum_price_diff_ID(1));
-//						//International_Market.confirmed_price(tick, maximum_price_diff_ID(0)) = International_Market.bidded_price(price_demand_ID(maximum_price_diff_ID(0)));
-//						//International_Market.confirmed_price(tick, maximum_price_diff_ID(1)) = International_Market.bidded_price(price_demand_ID(maximum_price_diff_ID(0)));	
-//					}
-//					else{
-//						exchange_quantity = bidded_demand_export(price_demand_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0));
-//						//International_Market.confirmed_price(tick, maximum_price_diff_ID(0)) = International_Market.bidded_price(price_demand_ID(maximum_price_diff_ID(1)));
-//						//International_Market.confirmed_price(tick, maximum_price_diff_ID(1)) = International_Market.bidded_price(price_demand_ID(maximum_price_diff_ID(1)));						
-//					}
 					exchange_quantity = std::min(bidded_demand_import(price_demand_ID(maximum_price_diff_ID(1)), maximum_price_diff_ID(1)), bidded_demand_export(price_supply_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0)));
 					exchange_quantity = std::min(exchange_quantity, remaining_capacity_exchange(maximum_price_diff_ID(0), maximum_price_diff_ID(1)));
 					International_Market.confirmed_demand(tick, maximum_price_diff_ID(0)) -= exchange_quantity;
 					International_Market.confirmed_demand(tick, maximum_price_diff_ID(1)) += exchange_quantity;
 					bidded_demand_import(price_demand_ID(maximum_price_diff_ID(1)), maximum_price_diff_ID(1)) -= exchange_quantity;
 					bidded_demand_export(price_supply_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0)) -= exchange_quantity;					
+					
+					// Update market clearing price
+					if(exchange_quantity == remaining_capacity_exchange(maximum_price_diff_ID(0), maximum_price_diff_ID(1))){
+						International_Market.confirmed_price(tick, maximum_price_diff_ID(0)) == International_Market.bidded_price(price_supply_ID(maximum_price_diff_ID(0)));
+						International_Market.confirmed_price(tick, maximum_price_diff_ID(1)) == International_Market.bidded_price(price_demand_ID(maximum_price_diff_ID(1)));
+					}
+					else{
+						if(bidded_demand_import(price_demand_ID(maximum_price_diff_ID(1)), maximum_price_diff_ID(1)) <= bidded_demand_export(price_supply_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0))){
+							International_Market.confirmed_price(tick, maximum_price_diff_ID(0)) = International_Market.bidded_price(price_supply_ID(maximum_price_diff_ID(0)));
+							International_Market.confirmed_price(tick, maximum_price_diff_ID(1)) = International_Market.bidded_price(price_supply_ID(maximum_price_diff_ID(0)));	
+						}
+						else{
+							International_Market.confirmed_price(tick, maximum_price_diff_ID(0)) = International_Market.bidded_price(price_demand_ID(maximum_price_diff_ID(1)));
+							International_Market.confirmed_price(tick, maximum_price_diff_ID(1)) = International_Market.bidded_price(price_demand_ID(maximum_price_diff_ID(1)));						
+						}
+					}					
 					break;	
 			}
 			remaining_capacity_exchange(maximum_price_diff_ID(0), maximum_price_diff_ID(1)) -= exchange_quantity;			
@@ -388,15 +401,22 @@ market_inform International_Market_Set(int Time, std::string fin_name_q, std::st
 //		}
 		
 		// Results Output
-//		std::cout << "     Sell Price: " << price_supply_ID.transpose() << std::endl;
-//		std::cout << "      Buy Price: " << price_demand_ID.transpose() << std::endl;
-//		std::cout << "  Sell Quantity: " << International_Market.confirmed_supply << std::endl;
-//		std::cout << "   Buy Quantity: " << International_Market.confirmed_demand << std::endl;
-//		std::cout << "Residual Demand: " << bidded_demand_import.bottomRows(1) << "\n" << std::endl;
-//		std::cout << "    Trade Zones: " << maximum_price_diff_ID.transpose() << "\n" << std::endl;
-//		std::cout << "        Surplus: " << maximum_price_diff << "\n" << std::endl;
-//		std::cout << "Available Trade: " << std::endl; 
-//		std::cout << available_capacity_exchange << "\n" << std::endl;
+		if(available_capacity_exchange(1, 0) == 0){
+			std::cout << "Export Price ID: " << price_supply_ID.transpose() << std::endl;
+			std::cout << "Import Price ID: " << price_demand_ID.transpose() << std::endl;
+			std::cout << "   Market Price: " << International_Market.confirmed_price.row(0) << std::endl;
+			std::cout << "  Sell Quantity: " << International_Market.confirmed_supply << std::endl;
+			std::cout << "   Buy Quantity: " << International_Market.confirmed_demand << std::endl;
+			std::cout << "Residual Demand: " << bidded_demand_default.bottomRows(1) - International_Market.confirmed_demand << "\n" << std::endl;
+			std::cout << "    Trade Zones: " << maximum_price_diff_ID.transpose() << "\n" << std::endl;
+			std::cout << "        Surplus: " << maximum_price_diff << "\n" << std::endl;
+			std::cout << "Available Trade: " << std::endl; 
+			std::cout << available_capacity_exchange << "\n" << std::endl;
+			std::cout << "Used Capacity: " << std::endl; 
+			std::cout << maximum_capacity_exchange - remaining_capacity_exchange << "\n" << std::endl;
+			std::cout << "Remaining Capacity: " << std::endl; 
+			std::cout << remaining_capacity_exchange << "\n" << std::endl;
+		}
 	}
 
 	// Calculate exchange flow and market clearing prices of the bidding zones
