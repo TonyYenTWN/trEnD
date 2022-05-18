@@ -5,6 +5,11 @@
 #include <vector>
 #endif
 
+#ifndef NUMERIC
+#define NUMERIC
+#include <numeric>
+#endif
+
 #ifndef EIGEN
 #define EIGEN
 #include <Eigen/Dense>
