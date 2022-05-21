@@ -110,5 +110,21 @@ int main(){
 	}
 	std::cout << test_user.normalized_scheduled_BESS_energy_profile.transpose() << std::endl;
 	
-	// EV
+	// EV test
+	int EV_activity_duration = 0;
+	test_user.EV_usage_default_period = Eigen::VectorXi::Zero(subscept_tariff.size());
+	test_user.EV_usage_default_period(3) = 1;
+	test_user.EV_usage_default_period(6) = 1;
+	test_user.EV_house_default_period = Eigen::VectorXi::Zero(subscept_tariff.size());
+	test_user.EV_house_default_period.head(3) << 1, 1, 1;
+	test_user.EV_house_default_period.tail(3) << 1, 1, 1;
+	if(test_user.EV_house_default_period(0) == 1){
+		int tock = 0;
+		while(test_user.EV_house_default_period(tock) == 1){
+			tock += 1;
+		}
+		
+		// Then use the BESS charge / discharge function
+		// In fact, all flexibility resources mentioned above should be able to capture in the same function
+	}
 }
