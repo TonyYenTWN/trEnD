@@ -95,10 +95,20 @@ int main(){
 	test_user.BESS_capacity_scale = 1;
 	test_user.BESS_efficiency = .95;
 	test_user.normalized_scheduled_BESS_energy_profile = Eigen::VectorXd::Zero(subscept_tariff.size());
+	// Need to determine best end storage level (given start storage level) in the future
 	test_user.normalized_scheduled_BESS_energy_profile(0) = test_user.BESS_energy_scale;
 	test_user.normalized_scheduled_BESS_energy_profile(subscept_tariff.size() - 1) = test_user.BESS_energy_scale;
 	int BESS_ch_duration = int ((test_user.BESS_energy_scale - (std::max(test_user.normalized_scheduled_BESS_energy_profile(0) - test_user.normalized_scheduled_BESS_energy_profile(subscept_tariff.size() - 1), 0.))) / test_user.BESS_capacity_scale);
 	int BESS_dc_duration = int ((test_user.BESS_energy_scale - (std::max(test_user.normalized_scheduled_BESS_energy_profile(subscept_tariff.size() - 1) - test_user.normalized_scheduled_BESS_energy_profile(0), 0.))) / test_user.BESS_capacity_scale);
-	std::cout << BESS_ch_duration << " " << BESS_dc_duration << std::endl;
+	//std::cout << BESS_ch_duration << " " << BESS_dc_duration << std::endl;
 	
+	for(int tock = 0; tock < BESS_ch_duration; ++ tock){
+		test_user.normalized_scheduled_BESS_energy_profile(sorted_tariff.id(tock)) = -test_user.BESS_capacity_scale / test_user.BESS_efficiency;
+	}
+	for(int tock = 0; tock < BESS_dc_duration; ++ tock){
+		test_user.normalized_scheduled_BESS_energy_profile(sorted_tariff.id(sorted_tariff.id.size() - tock)) = test_user.BESS_capacity_scale * test_user.BESS_efficiency;
+	}
+	std::cout << test_user.normalized_scheduled_BESS_energy_profile.transpose() << std::endl;
+	
+	// EV
 }
