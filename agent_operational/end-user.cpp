@@ -5,6 +5,15 @@
 //#include <boost/math/distributions/normal.hpp>
 #include "../basic/Basic_Definitions.h"
 
+struct end_user_decision{
+	bool dynamic_tariff;
+	bool PV_BESS;
+	bool EV_self_charging;
+	bool smart_appliance;
+	bool reverse_flow;										// Whether the end-user can inject power flow back to grid; false when active_flow is false
+	bool active_flex;										// Whether the end-user can provide flexibility to the aggregator; false when dynamic_tariff is false, or when end-user does not have PV + BESS, EV, or smart appliance
+};
+
 struct storage_inform{
 	// Input parameters
 	double energy_scale;									// kWh per person
@@ -18,36 +27,46 @@ struct storage_inform{
 	Eigen::VectorXd normalized_scheduled_soc_profile;
 };
 
+struct EV_inform{
+	// Input parameters
+	double energy_scale;									// kWh per person
+	double capacity_scale;									// kW per person
+	double efficiency;
+	Eigen::VectorXi usage_default_period;					// The time intervals when EV is actually used
+	Eigen::VectorXi house_default_period;					// The time intervals when EV is parked in the house
+	
+	// Output variables
+	Eigen::VectorXd normalized_scheduled_capcity_profile;
+	Eigen::VectorXd normalized_scheduled_soc_profile;
+};
+
+struct smart_appliance_inform{
+	// Input parameters
+	double scale;											// Indicates how much ratio of the total demand in the time interval can be shifted around flexibly; assuming the default is constant profile before shifting
+	double flexibility_factor;								// Indicates how flexible the smart appliances are; e.g. 1 / 2 = can concentrate the demand within half of the time interval
+
+	// Output variables
+	Eigen::VectorXd normalized_scheduled_profile;
+};
+
 struct end_user_operation{
 	// Input parameters
 	int point_ID;
-	bool dynamic_tariff;
-	bool PV_BESS;
-	bool EV_self_charging;
-	bool smart_appliance;
-	bool reverse_flow;										// Whether the end-user can inject power flow back to grid; false when active_flow is false
-	bool active_flex;										// Whether the end-user can provide flexibility to the aggregator; false when dynamic_tariff is false, or when end-user does not have PV + BESS, EV, or smart appliance
+	end_user_decision decision;
 	double PV_scale;										// Unless mentioned otherwise, all the scaling factor = capacity / normalized default base value
-	double EV_energy_scale;
-	double EV_capacity_scale;
-	double EV_efficiency;
-	double smart_appliance_scale;							// Indicates how much ratio of the total demand in the time interval can be shifted around flexibly; assuming the default is constant profile before shifting
-	double smart_appliance_flexibility_factor;				// Indicates how flexible the smart appliances are; e.g. 1 / 2 = can concentrate the demand within half of the time interval
 	Eigen::VectorXd normalized_default_demand_profile;		// Normalized to nominal value (kWh per hour per person)
 	Eigen::VectorXd normalized_default_PV_profile;			// Normalized with the same base as demand
-	Eigen::VectorXi EV_usage_default_period;				// The time intervals when EV is actually used
-	Eigen::VectorXi EV_house_default_period;				// The time intervals when EV is parked in the house
 	
 	// Output variables
 	Eigen::VectorXd normalized_scheduled_residual_demand_inflex_profile;
-	Eigen::VectorXd normalized_scheduled_EV_capcity_profile;
-	Eigen::VectorXd normalized_scheduled_EV_energy_profile;
-	Eigen::VectorXd normalized_scheduled_smart_appliance_profile;
+	Eigen::VectorXd normalized_scheduled_residual_demand_flex_profile;
 	Eigen::VectorXd normalized_scheduled_pos_cr_profile;
 	Eigen::VectorXd normalized_scheduled_neg_cr_profile;
 	
 	// Mixed Substructure
 	storage_inform BESS;
+	EV_inform EV;
+	smart_appliance_inform smart_appliance;
 };
 
 struct sorted_vector{
@@ -70,6 +89,26 @@ sorted_vector sort(Eigen::VectorXd original){
  		result.value(item_ID) = original(item_seq[item_ID]);
 	}
 	
+	return(result);
+}
+
+smart_appliance_inform smart_appliance_schedule(sorted_vector sorted_tariff, Eigen::VectorXd normalized_default_demand_profile, double residual_unfulfilled_demand, smart_appliance_inform input_inform){
+	// Initialization
+	smart_appliance_inform result = input_inform;
+	double total_flex_demand_energy = result.scale * normalized_default_demand_profile.sum() + residual_unfulfilled_demand;
+	double flex_demand_capacity_max = total_flex_demand_energy / normalized_default_demand_profile.size() / result.flexibility_factor;
+	int flex_demand_duration = int(result.flexibility_factor * normalized_default_demand_profile.size());
+	if(double(result.flexibility_factor * normalized_default_demand_profile.size() - flex_demand_duration) != 0){
+		flex_demand_duration += 1;
+	}
+	
+	// Schedule the demand to low price periods
+	result.normalized_scheduled_profile = Eigen::VectorXd::Zero(normalized_default_demand_profile.size());
+	for(int tock = 0; tock < flex_demand_duration - 1; ++ tock){
+		result.normalized_scheduled_profile(sorted_tariff.id(tock)) = flex_demand_capacity_max;
+	}	
+	result.normalized_scheduled_profile(sorted_tariff.id(flex_demand_duration - 1)) = total_flex_demand_energy - (flex_demand_duration - 1) * flex_demand_capacity_max;
+		
 	return(result);
 }
 
@@ -190,32 +229,19 @@ storage_inform storage_schedule(sorted_vector sorted_tariff, storage_inform inpu
 }
 
 int main(){
-	// Test case
+	// Test case Initialization
 	Eigen::VectorXd subscept_tariff(10);
 	subscept_tariff << 5, 6, 9, 2, 3, 1, 6, 9, 10, 1;
 	sorted_vector sorted_tariff = sort(subscept_tariff);
-	
 	end_user_operation test_user;
 	test_user.normalized_default_demand_profile = Eigen::VectorXd(subscept_tariff.size());
 	test_user.normalized_default_demand_profile << 1, 1.2, 1.5, .8, .6, 2, 3, .1, .5, 1.2;
-	test_user.smart_appliance_scale = .2;
-	test_user.smart_appliance_flexibility_factor = .5;
 	
 	// Smart appliance test
-	double test_total_flex_demand_energy = test_user.smart_appliance_scale * test_user.normalized_default_demand_profile.sum();
-	double test_max_flex_demand_capacity = test_total_flex_demand_energy / test_user.normalized_default_demand_profile.size() / test_user.smart_appliance_flexibility_factor;
-	int flex_demand_duration = int (test_user.smart_appliance_flexibility_factor * test_user.normalized_default_demand_profile.size());
-	if(double (test_user.smart_appliance_flexibility_factor * test_user.normalized_default_demand_profile.size() - flex_demand_duration) != 0){
-		flex_demand_duration += 1;
-	}
-	test_user.normalized_scheduled_smart_appliance_profile = Eigen::VectorXd::Zero(test_user.normalized_default_demand_profile.size());
-	for(int tock = 0; tock < flex_demand_duration - 1; ++ tock){
-		test_user.normalized_scheduled_smart_appliance_profile(sorted_tariff.id(tock)) = test_max_flex_demand_capacity;
-	}
-	test_user.normalized_scheduled_smart_appliance_profile(sorted_tariff.id(flex_demand_duration - 1)) = test_total_flex_demand_energy - (flex_demand_duration - 1) * test_max_flex_demand_capacity;
-	
-//	std::cout << test_user.normalized_scheduled_smart_appliance_profile.transpose() << std::endl;
-//	std::cout << test_user.normalized_scheduled_smart_appliance_profile.transpose() + (1 - test_user.smart_appliance_scale) * test_user.normalized_default_demand_profile.transpose() << std::endl;
+	test_user.smart_appliance.scale = .2;
+	test_user.smart_appliance.flexibility_factor = .5;
+	test_user.smart_appliance = smart_appliance_schedule(sorted_tariff, test_user.normalized_default_demand_profile, 0, test_user.smart_appliance);
+	std::cout << test_user.smart_appliance.normalized_scheduled_profile.transpose() << std::endl;
 	
 	// BESS test, naive
 	test_user.BESS.energy_scale = 4;
@@ -227,20 +253,22 @@ int main(){
 	std::cout << test_user.BESS.normalized_scheduled_capacity_profile.transpose() << std::endl;
 	
 	// EV test
-	int EV_activity_duration = 0;
-	test_user.EV_usage_default_period = Eigen::VectorXi::Zero(subscept_tariff.size());
-	test_user.EV_usage_default_period(3) = 1;
-	test_user.EV_usage_default_period(6) = 1;
-	test_user.EV_house_default_period = Eigen::VectorXi::Zero(subscept_tariff.size());
-	test_user.EV_house_default_period.head(3) << 1, 1, 1;
-	test_user.EV_house_default_period.tail(3) << 1, 1, 1;
-	if(test_user.EV_house_default_period(0) == 1){
-		int tock = 0;
-		while(test_user.EV_house_default_period(tock) == 1){
-			tock += 1;
-		}
-		
-		// Then use the BESS charge / discharge function
-		// In fact, all flexibility resources mentioned above should be able to capture in the same function
-	}
+	test_user.EV.usage_default_period = Eigen::VectorXi::Zero(subscept_tariff.size());
+	
+//	int EV_activity_duration = 0;
+//	test_user.EV_usage_default_period = Eigen::VectorXi::Zero(subscept_tariff.size());
+//	test_user.EV_usage_default_period(3) = 1;
+//	test_user.EV_usage_default_period(6) = 1;
+//	test_user.EV_house_default_period = Eigen::VectorXi::Zero(subscept_tariff.size());
+//	test_user.EV_house_default_period.head(3) << 1, 1, 1;
+//	test_user.EV_house_default_period.tail(3) << 1, 1, 1;
+//	if(test_user.EV_house_default_period(0) == 1){
+//		int tock = 0;
+//		while(test_user.EV_house_default_period(tock) == 1){
+//			tock += 1;
+//		}
+//		
+//		// Then use the BESS charge / discharge function
+//		// In fact, all flexibility resources mentioned above should be able to capture in the same function
+//	}
 }
