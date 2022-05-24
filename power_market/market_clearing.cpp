@@ -212,10 +212,10 @@ market_inform International_Market_Set(int Time, std::string fin_name_q, std::st
 	available_capacity_exchange.bottomRightCorner(International_Market.num_zone - International_Market.cross_border_zone_start, International_Market.num_zone - International_Market.cross_border_zone_start) = Eigen::MatrixXi::Identity(International_Market.num_zone - International_Market.cross_border_zone_start, International_Market.num_zone - International_Market.cross_border_zone_start);
 	
 	// Main loop for optimization
-	int count = 0;
-	while(count < 2000){
-	//while(available_capacity_exchange.sum() > 0){
-		count += 1;
+	//int count = 0;
+	//while(count < 2000){
+	while(available_capacity_exchange.sum() > 0){
+		//count += 1;
 		// Update price of demand and supply at each bidding zone
 		for(int zone_ID = 0; zone_ID < International_Market.num_zone; ++ zone_ID){
 			// Check if there are demand bids at current price interval
