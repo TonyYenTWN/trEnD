@@ -1,17 +1,25 @@
 // Main Source File
 #include <iostream>
-#include <chrono>
+//#include <chrono>
 #include <omp.h>
-//#include <boost/math/distributions/normal.hpp>
 #include "../basic/Basic_Definitions.h"
 
 struct end_user_decision{
 	bool dynamic_tariff;
+	bool smart_appliance;
 	bool PV_BESS;
 	bool EV_self_charging;
-	bool smart_appliance;
-	bool reverse_flow;										// Whether the end-user can inject power flow back to grid; false when active_flow is false
+	bool reverse_flow;										// Whether the end-user can inject power flow back to grid; false when active_flex is false
 	bool active_flex;										// Whether the end-user can provide flexibility to the aggregator; false when dynamic_tariff is false, or when end-user does not have PV + BESS, EV, or smart appliance
+};
+
+struct smart_appliance_inform{
+	// Input parameters
+	double scale;											// Indicates how much ratio of the total demand in the time interval can be shifted around flexibly; assuming the default is constant profile before shifting
+	double flexibility_factor;								// Indicates how flexible the smart appliances are; e.g. 1 / 2 = can concentrate the demand within half of the time interval
+
+	// Output variables
+	Eigen::VectorXd normalized_scheduled_profile;
 };
 
 struct storage_inform{
@@ -29,24 +37,12 @@ struct storage_inform{
 
 struct EV_inform{
 	// Input parameters
-	double energy_scale;									// kWh per person
-	double capacity_scale;									// kW per person
-	double efficiency;
+	double energy_demand;									// kWh per person per hour of usage
 	Eigen::VectorXi usage_default_period;					// The time intervals when EV is actually used
 	Eigen::VectorXi house_default_period;					// The time intervals when EV is parked in the house
 	
-	// Output variables
-	Eigen::VectorXd normalized_scheduled_capcity_profile;
-	Eigen::VectorXd normalized_scheduled_soc_profile;
-};
-
-struct smart_appliance_inform{
-	// Input parameters
-	double scale;											// Indicates how much ratio of the total demand in the time interval can be shifted around flexibly; assuming the default is constant profile before shifting
-	double flexibility_factor;								// Indicates how flexible the smart appliances are; e.g. 1 / 2 = can concentrate the demand within half of the time interval
-
-	// Output variables
-	Eigen::VectorXd normalized_scheduled_profile;
+	// Mixed Substructure
+	storage_inform BESS;
 };
 
 struct end_user_operation{
@@ -64,9 +60,9 @@ struct end_user_operation{
 	Eigen::VectorXd normalized_scheduled_neg_cr_profile;
 	
 	// Mixed Substructure
+	smart_appliance_inform smart_appliance;
 	storage_inform BESS;
 	EV_inform EV;
-	smart_appliance_inform smart_appliance;
 };
 
 struct sorted_vector{
@@ -104,8 +100,8 @@ smart_appliance_inform smart_appliance_schedule(sorted_vector sorted_tariff, Eig
 	
 	// Schedule the demand to low price periods
 	result.normalized_scheduled_profile = Eigen::VectorXd::Zero(normalized_default_demand_profile.size());
-	for(int tock = 0; tock < flex_demand_duration - 1; ++ tock){
-		result.normalized_scheduled_profile(sorted_tariff.id(tock)) = flex_demand_capacity_max;
+	for(int tick = 0; tick < flex_demand_duration - 1; ++ tick){
+		result.normalized_scheduled_profile(sorted_tariff.id(tick)) = flex_demand_capacity_max;
 	}	
 	result.normalized_scheduled_profile(sorted_tariff.id(flex_demand_duration - 1)) = total_flex_demand_energy - (flex_demand_duration - 1) * flex_demand_capacity_max;
 		
@@ -228,6 +224,25 @@ storage_inform storage_schedule(sorted_vector sorted_tariff, storage_inform inpu
 	return(result);
 }
 
+EV_inform EV_schedule(Eigen::VectorXd subscept_tariff, EV_inform input_inform){
+	// Initialization
+	EV_inform result = input_inform;
+	
+	// Check if EV currently undergoes standby period at house
+	if(result.house_default_period(0) == 1){
+		int tick = 0;
+		while(result.house_default_period(tick) == 1){
+			tick += 1;
+		}
+		
+		result.BESS.soc_final = result.BESS.energy_scale;
+		sorted_vector sorted_tariff = sort(subscept_tariff.head(tick));
+		result.BESS = storage_schedule(sorted_tariff, result.BESS);
+	}
+	
+	return(result);
+}
+
 int main(){
 	// Test case Initialization
 	Eigen::VectorXd subscept_tariff(10);
@@ -241,34 +256,26 @@ int main(){
 	test_user.smart_appliance.scale = .2;
 	test_user.smart_appliance.flexibility_factor = .5;
 	test_user.smart_appliance = smart_appliance_schedule(sorted_tariff, test_user.normalized_default_demand_profile, 0, test_user.smart_appliance);
-	std::cout << test_user.smart_appliance.normalized_scheduled_profile.transpose() << std::endl;
+	std::cout << test_user.smart_appliance.normalized_scheduled_profile.transpose() << "\n" << std::endl;
 	
 	// BESS test, naive
 	test_user.BESS.energy_scale = 4;
 	test_user.BESS.capacity_scale = 1;
 	test_user.BESS.efficiency = .95;
-	test_user.BESS.soc_ini = 4;
-	test_user.BESS.soc_final = 0;
+	test_user.BESS.soc_ini = 2;
+	test_user.BESS.soc_final = 2;
 	test_user.BESS = storage_schedule(sorted_tariff, test_user.BESS);
-	std::cout << test_user.BESS.normalized_scheduled_capacity_profile.transpose() << std::endl;
+	std::cout << test_user.BESS.normalized_scheduled_capacity_profile.transpose() << "\n" << std::endl;
 	
 	// EV test
+	test_user.EV.energy_demand = 1;
+	test_user.EV.BESS = test_user.BESS;
 	test_user.EV.usage_default_period = Eigen::VectorXi::Zero(subscept_tariff.size());
-	
-//	int EV_activity_duration = 0;
-//	test_user.EV_usage_default_period = Eigen::VectorXi::Zero(subscept_tariff.size());
-//	test_user.EV_usage_default_period(3) = 1;
-//	test_user.EV_usage_default_period(6) = 1;
-//	test_user.EV_house_default_period = Eigen::VectorXi::Zero(subscept_tariff.size());
-//	test_user.EV_house_default_period.head(3) << 1, 1, 1;
-//	test_user.EV_house_default_period.tail(3) << 1, 1, 1;
-//	if(test_user.EV_house_default_period(0) == 1){
-//		int tock = 0;
-//		while(test_user.EV_house_default_period(tock) == 1){
-//			tock += 1;
-//		}
-//		
-//		// Then use the BESS charge / discharge function
-//		// In fact, all flexibility resources mentioned above should be able to capture in the same function
-//	}
+	test_user.EV.usage_default_period(3) = 1;
+	test_user.EV.usage_default_period(6) = 1;
+	test_user.EV.house_default_period = Eigen::VectorXi::Zero(subscept_tariff.size());
+	test_user.EV.house_default_period.head(3) << 1, 1, 1;
+	test_user.EV.house_default_period.tail(3) << 1, 1, 1;
+	test_user.EV = EV_schedule(subscept_tariff, test_user.EV);
+	std::cout << test_user.EV.BESS.normalized_scheduled_capacity_profile.transpose() << std::endl;
 }
