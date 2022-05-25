@@ -88,9 +88,8 @@ sorted_vector sort(Eigen::VectorXd original){
 	return(result);
 }
 
-smart_appliance_inform smart_appliance_schedule(sorted_vector sorted_tariff, Eigen::VectorXd normalized_default_demand_profile, double residual_unfulfilled_demand, smart_appliance_inform input_inform){
+void smart_appliance_schedule(sorted_vector sorted_tariff, Eigen::VectorXd normalized_default_demand_profile, double residual_unfulfilled_demand, smart_appliance_inform &result){
 	// Initialization
-	smart_appliance_inform result = input_inform;
 	double total_flex_demand_energy = result.scale * normalized_default_demand_profile.sum() + residual_unfulfilled_demand;
 	double flex_demand_capacity_max = total_flex_demand_energy / normalized_default_demand_profile.size() / result.flexibility_factor;
 	int flex_demand_duration = int(result.flexibility_factor * normalized_default_demand_profile.size());
@@ -104,16 +103,13 @@ smart_appliance_inform smart_appliance_schedule(sorted_vector sorted_tariff, Eig
 		result.normalized_scheduled_profile(sorted_tariff.id(tick)) = flex_demand_capacity_max;
 	}	
 	result.normalized_scheduled_profile(sorted_tariff.id(flex_demand_duration - 1)) = total_flex_demand_energy - (flex_demand_duration - 1) * flex_demand_capacity_max;
-		
-	return(result);
 }
 
-storage_inform storage_schedule(sorted_vector sorted_tariff, storage_inform input_inform){
+void storage_schedule(sorted_vector sorted_tariff, storage_inform &result){
 	// Initialization
-	storage_inform result = input_inform;
 	int total_duration = sorted_tariff.value.size();
-	int ch_surplus_duration = int(std::max(result.soc_final - result.soc_ini, 0.) / result.capacity_scale / result.efficiency);
-	int dc_surplus_duration = int(std::max(result.soc_ini - result.soc_final, 0.) / result.capacity_scale * result.efficiency);
+	int ch_surplus_duration = int(std::max(result.soc_final - result.soc_ini, 0.) / result.capacity_scale);
+	int dc_surplus_duration = int(std::max(result.soc_ini - result.soc_final, 0.) / result.capacity_scale);
 	result.normalized_scheduled_capacity_profile = Eigen::VectorXd::Zero(total_duration);
 	result.normalized_scheduled_soc_profile = result.soc_ini * Eigen::VectorXd::Ones(total_duration);
 	// Allowed exchange matrix: row = charge period; col = discharge period
@@ -122,9 +118,9 @@ storage_inform storage_schedule(sorted_vector sorted_tariff, storage_inform inpu
 	// Schedule of surplus dc / ch so that the soc change is close to as expected
 	if(ch_surplus_duration > 0){
 		for(int tick = 0; tick < ch_surplus_duration; ++ tick){
-			result.normalized_scheduled_capacity_profile(sorted_tariff.id(tick)) = -result.capacity_scale;
+			result.normalized_scheduled_capacity_profile(sorted_tariff.id(tick)) = -result.capacity_scale / result.efficiency;
 			for(int tock = sorted_tariff.id(tick); tock < total_duration; ++ tock){
-				result.normalized_scheduled_soc_profile(tock) += result.capacity_scale * result.efficiency;
+				result.normalized_scheduled_soc_profile(tock) += result.capacity_scale;
 			}
 			Allowed_Exchange.row(sorted_tariff.id(tick)) = Eigen::VectorXi::Zero(total_duration);
 			Allowed_Exchange.col(sorted_tariff.id(tick)) = Eigen::VectorXi::Zero(total_duration);
@@ -132,9 +128,9 @@ storage_inform storage_schedule(sorted_vector sorted_tariff, storage_inform inpu
 	}
 	else{
 		for(int tick = 0; tick < dc_surplus_duration; ++ tick){
-			result.normalized_scheduled_capacity_profile(sorted_tariff.id(total_duration - tick - 1)) = result.capacity_scale;
+			result.normalized_scheduled_capacity_profile(sorted_tariff.id(total_duration - tick - 1)) = result.capacity_scale * result.efficiency;
 			for(int tock = sorted_tariff.id(total_duration - tick - 1); tock < total_duration; ++ tock){
-				result.normalized_scheduled_soc_profile(tock) -= result.capacity_scale / result.efficiency;
+				result.normalized_scheduled_soc_profile(tock) -= result.capacity_scale;
 			}
 			Allowed_Exchange.row(sorted_tariff.id(total_duration - tick - 1)) = Eigen::VectorXi::Zero(total_duration);
 			Allowed_Exchange.col(sorted_tariff.id(total_duration - tick - 1)) = Eigen::VectorXi::Zero(total_duration);
@@ -171,7 +167,7 @@ storage_inform storage_schedule(sorted_vector sorted_tariff, storage_inform inpu
 					soc_profile_temp = result.normalized_scheduled_soc_profile;
 					if(sorted_tariff.id(tick) < sorted_tariff.id(tock)){
 						for(int tuck = sorted_tariff.id(tick); tuck < sorted_tariff.id(tock); ++ tuck){
-							soc_profile_temp(tuck) += result.capacity_scale * result.efficiency;
+							soc_profile_temp(tuck) += result.capacity_scale;
 							if(soc_profile_temp(tuck) > result.energy_scale){
 								Allowed_Exchange_temp(sorted_tariff.id(tick), sorted_tariff.id(tock)) = 0;
 								break;
@@ -180,7 +176,7 @@ storage_inform storage_schedule(sorted_vector sorted_tariff, storage_inform inpu
 					}
 					else{
 						for(int tuck = sorted_tariff.id(tock); tuck < sorted_tariff.id(tick); ++ tuck){
-							soc_profile_temp(tuck) -= result.capacity_scale / result.efficiency;
+							soc_profile_temp(tuck) -= result.capacity_scale;
 							if(soc_profile_temp(tuck) < 0){
 								Allowed_Exchange_temp(sorted_tariff.id(tick), sorted_tariff.id(tock)) = 0;
 								break;
@@ -200,17 +196,17 @@ storage_inform storage_schedule(sorted_vector sorted_tariff, storage_inform inpu
 		
 		// Update if feasible price arbitrage between pairs exists
 		if(Allowed_Exchange_temp.sum() > 0){
-			result.normalized_scheduled_capacity_profile(maximum_price_diff_ID(0)) = -result.capacity_scale;
-			result.normalized_scheduled_capacity_profile(maximum_price_diff_ID(1)) = result.capacity_scale;
+			result.normalized_scheduled_capacity_profile(maximum_price_diff_ID(0)) = -result.capacity_scale / result.efficiency;
+			result.normalized_scheduled_capacity_profile(maximum_price_diff_ID(1)) = result.capacity_scale * result.efficiency;
 			
 			if(maximum_price_diff_ID(0) < maximum_price_diff_ID(1)){
 				for(int tuck = maximum_price_diff_ID(0); tuck < maximum_price_diff_ID(1); ++ tuck){
-					result.normalized_scheduled_soc_profile(tuck) += result.capacity_scale * result.efficiency;
+					result.normalized_scheduled_soc_profile(tuck) += result.capacity_scale;
 				}			
 			}
 			else{
 				for(int tuck = maximum_price_diff_ID(1); tuck < maximum_price_diff_ID(0); ++ tuck){
-					result.normalized_scheduled_soc_profile(tuck) -= result.capacity_scale / result.efficiency;
+					result.normalized_scheduled_soc_profile(tuck) -= result.capacity_scale;
 				}				
 			}
 			
@@ -220,14 +216,9 @@ storage_inform storage_schedule(sorted_vector sorted_tariff, storage_inform inpu
 			Allowed_Exchange.col(maximum_price_diff_ID(1)) = Eigen::VectorXi::Zero(total_duration);
 		}
 	}
-	
-	return(result);
 }
 
-EV_inform EV_schedule(Eigen::VectorXd subscept_tariff, EV_inform input_inform){
-	// Initialization
-	EV_inform result = input_inform;
-	
+void EV_schedule(Eigen::VectorXd subscept_tariff, EV_inform &result){
 	// Check if EV currently undergoes standby period at house
 	if(result.house_default_period(0) == 1){
 		int tick = 0;
@@ -237,16 +228,14 @@ EV_inform EV_schedule(Eigen::VectorXd subscept_tariff, EV_inform input_inform){
 		
 		result.BESS.soc_final = result.BESS.energy_scale;
 		sorted_vector sorted_tariff = sort(subscept_tariff.head(tick));
-		result.BESS = storage_schedule(sorted_tariff, result.BESS);
+		storage_schedule(sorted_tariff, result.BESS);
 	}
-	
-	return(result);
 }
 
 int main(){
 	// Test case Initialization
 	Eigen::VectorXd subscept_tariff(10);
-	subscept_tariff << 5, 6, 9, 2, 3, 1, 6, 9, 10, 1;
+	subscept_tariff << 6, 6, 9, 2, 6, 1, 6, 9, 10, 2;
 	sorted_vector sorted_tariff = sort(subscept_tariff);
 	end_user_operation test_user;
 	test_user.normalized_default_demand_profile = Eigen::VectorXd(subscept_tariff.size());
@@ -255,7 +244,7 @@ int main(){
 	// Smart appliance test
 	test_user.smart_appliance.scale = .2;
 	test_user.smart_appliance.flexibility_factor = .5;
-	test_user.smart_appliance = smart_appliance_schedule(sorted_tariff, test_user.normalized_default_demand_profile, 0, test_user.smart_appliance);
+	smart_appliance_schedule(sorted_tariff, test_user.normalized_default_demand_profile, 0, test_user.smart_appliance);
 	std::cout << test_user.smart_appliance.normalized_scheduled_profile.transpose() << "\n" << std::endl;
 	
 	// BESS test, naive
@@ -264,7 +253,7 @@ int main(){
 	test_user.BESS.efficiency = .95;
 	test_user.BESS.soc_ini = 2;
 	test_user.BESS.soc_final = 2;
-	test_user.BESS = storage_schedule(sorted_tariff, test_user.BESS);
+	storage_schedule(sorted_tariff, test_user.BESS);
 	std::cout << test_user.BESS.normalized_scheduled_capacity_profile.transpose() << "\n" << std::endl;
 	
 	// EV test
@@ -276,6 +265,6 @@ int main(){
 	test_user.EV.house_default_period = Eigen::VectorXi::Zero(subscept_tariff.size());
 	test_user.EV.house_default_period.head(3) << 1, 1, 1;
 	test_user.EV.house_default_period.tail(3) << 1, 1, 1;
-	test_user.EV = EV_schedule(subscept_tariff, test_user.EV);
+	EV_schedule(subscept_tariff, test_user.EV);
 	std::cout << test_user.EV.BESS.normalized_scheduled_capacity_profile.transpose() << std::endl;
 }
