@@ -1,11 +1,8 @@
 // Main Source File
 #include <iostream>
-#include <chrono>
+//#include <chrono>
 #include <omp.h>
-#include <boost/math/distributions/normal.hpp>
 #include "../basic/rw_csv.cpp"
-
-boost::math::normal norm_dist(0.0, 1.0);
 
 struct network_graph{
 	// Input parameters
