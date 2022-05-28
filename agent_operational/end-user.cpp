@@ -1,4 +1,4 @@
-// Main Source File
+// Source file for end-user operational strategy
 #include <iostream>
 //#include <chrono>
 #include <omp.h>
