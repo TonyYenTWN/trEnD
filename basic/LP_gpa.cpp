@@ -40,12 +40,19 @@ struct LP_boundary{
 	Eigen::MatrixXd ie_reduced_matrix;		// Boundary of reduced inequality constraints
 };
 
+// Objective object
+struct LP_objective{
+	Eigen::VectorXd orig_vector;
+	Eigen::VectorXd reduced_vector;
+};
+
 // Solver object
 struct LP_matrix_solver{
 	bool Spd_flag = 0;
 	bool Normal_flag = 0;
-	Eigen::SimplicialLDLT <Eigen::SparseMatrix <double>> Spd; 							// Solver for a symmetric positive definite matrix
-	Eigen::SparseLU <Eigen::SparseMatrix <double>, Eigen::COLAMDOrdering <int>> Normal;	// Solver for an arbitrary matrix
+	Eigen::SimplicialLDLT <Eigen::SparseMatrix <double>> Spd; 									// Solver for a symmetric positive definite matrix
+	Eigen::SparseLU <Eigen::SparseMatrix <double>, Eigen::COLAMDOrdering <int>> Normal;			// Solver for an arbitrary matrix
+	Eigen::SparseLU <Eigen::SparseMatrix <double>, Eigen::COLAMDOrdering <int>> Normal_Trans;	// Solver for the transpose of an arbitrary matrix
 };
 
 struct LP_object{
@@ -53,7 +60,7 @@ struct LP_object{
 	int Constraints_eq_num;
 	int Constraints_ie_num;
 	int Variables_num;
-	Eigen::VectorXd Objective_vector;
+	LP_objective Objective;
 	LP_constraint Constraint;
 	LP_boundary Boundary;
 	LP_matrix_solver Solver;
@@ -67,6 +74,7 @@ void LP_constraint_ie_reduced_generation(LP_object &Problem){
 	// Warm up the solver if not yet done for the current matrix
 	if(!Problem.Solver.Normal_flag){
 		Problem.Solver.Normal.compute(Problem.Constraint.eq_orig_matrix.rightCols(Problem.Constraints_eq_num));
+		Problem.Solver.Normal_Trans.compute(Problem.Constraint.eq_orig_matrix.rightCols(Problem.Constraints_eq_num).transpose());
 		Problem.Solver.Normal_flag = 1;
 	}
 	
@@ -99,6 +107,7 @@ void LP_boundary_ie_reduced_generation(LP_object &Problem){
 	// Warm up the solver if not yet done for the current matrix
 	if(!Problem.Solver.Normal_flag){
 		Problem.Solver.Normal.compute(Problem.Constraint.eq_orig_matrix.rightCols(Problem.Constraints_eq_num));
+		Problem.Solver.Normal_Trans.compute(Problem.Constraint.eq_orig_matrix.rightCols(Problem.Constraints_eq_num).transpose());
 		Problem.Solver.Normal_flag = 1;
 	}
 	
@@ -119,6 +128,24 @@ void LP_boundary_ie_reduced_generation(LP_object &Problem){
 		if(Problem.Constraints_ie_num != 0){			
 		}	
 	}
+}
+
+void LP_objective_reduced_generation(LP_object &Problem){
+	// Warm up the solver if not yet done for the current matrix
+	if(!Problem.Solver.Normal_flag){
+		Problem.Solver.Normal.compute(Problem.Constraint.eq_orig_matrix.rightCols(Problem.Constraints_eq_num));
+		Problem.Solver.Normal_Trans.compute(Problem.Constraint.eq_orig_matrix.rightCols(Problem.Constraints_eq_num).transpose());
+		Problem.Solver.Normal_flag = 1;
+	}
+	
+	// Z = c_e^T * x_e + c_r^T * x_r 
+	//   = c_e^T * x_e - c_r^T * A_r^(-1) * (A_e * x_e - b)
+	//   = (c_e^T - c_r^T * A_r^(-1) * A_e) * x_e + c_r^T * A_r^(-1) * b
+	Problem.Objective.reduced_vector = Problem.Objective.orig_vector.head(Problem.Variables_num - Problem.Constraints_eq_num);
+	Eigen::VectorXd coeff_redundant = Problem.Objective.orig_vector.tail(Problem.Constraints_eq_num);
+	
+	Problem.Objective.reduced_vector -= (Problem.Constraint.eq_orig_matrix.leftCols(Problem.Variables_num - Problem.Constraints_eq_num)).transpose() * Problem.Solver.Normal_Trans.solve(coeff_redundant);
+	std::cout << Problem.Objective.reduced_vector.transpose() << "\n" << std::endl;
 }
 
 // Normalization of reduced inequality constraints
@@ -149,8 +176,8 @@ void test_problem(){
 	Problem.Variables_num = 4;
 	
 	// Set objective vector
-	Problem.Objective_vector = Eigen::VectorXd(Problem.Variables_num);
-	Problem.Objective_vector << 1, 2, 1, 1;
+	Problem.Objective.orig_vector = Eigen::VectorXd(Problem.Variables_num);
+	Problem.Objective.orig_vector << 1, 2, 1, 1;
 	
 	// Set boudary values for original equality and inequality constraints
 	Problem.Boundary.eq_vector = Eigen::VectorXd(Problem.Constraints_eq_num);
@@ -185,9 +212,11 @@ void test_problem(){
 	
 	// Generate sparse matrix for reduced inequality constraints
 	Problem.Solver.Normal.compute(Problem.Constraint.eq_orig_matrix.rightCols(Problem.Constraints_eq_num));
+	Problem.Solver.Normal_Trans.compute(Problem.Constraint.eq_orig_matrix.rightCols(Problem.Constraints_eq_num).transpose());
 	Problem.Solver.Normal_flag = 1;
 	LP_constraint_ie_reduced_generation(Problem);
 	LP_boundary_ie_reduced_generation(Problem);
+	LP_objective_reduced_generation(Problem);
 	LP_constraint_ie_reduced_normalization(Problem);
 }
 
