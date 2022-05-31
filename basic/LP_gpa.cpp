@@ -30,8 +30,7 @@ struct LP_constraint{
 	Eigen::MatrixXi status_ie_reduced_matrix;			// 1 = currently active; 0 = not yet called; -1 = previously called and currently inactive
 	Eigen::SparseMatrix <double> eq_orig_matrix;		// Coefficients for original equality constraints
 	Eigen::SparseMatrix <double> ie_orig_matrix;		// Coefficients for original inequality constraints
-	Eigen::SparseMatrix <double> ie_reduced_matrix;		// Coefficients for reduced inequality constraints
-	//Eigen::MatrixXd cov_ie_reduced_matrix;			
+	Eigen::SparseMatrix <double> ie_reduced_matrix;		// Coefficients for reduced inequality constraints			
 	Eigen::SparseMatrix <double> cov_ie_reduced_matrix; // Dot product between the reduced inequality constraints
 };
 
@@ -195,6 +194,7 @@ void LP_optimized(LP_object &Problem){
 	std::vector<Trip> Constraint_cov_sub_trip;
 	Eigen::VectorXd Constraint_cov_D;
 	Eigen::VectorXd Cov_ie_obj_reduced_sub;
+	Eigen::SparseMatrix <double> Constraint_ie_reduced_sub;
 	Eigen::SparseMatrix <double> Constraint_ie_reduced_covariance_sub;
 	Eigen::SparseMatrix <double> Span_reduction;
 	Eigen::MatrixXd Boundary_gap(Problem.Variables_num + Problem.Constraints_ie_num, 2); 
@@ -243,9 +243,9 @@ void LP_optimized(LP_object &Problem){
 			
 			// Check if some of the active constraints are redundant
 			if(abs(Problem.Solver.Spd.determinant()) < tol){
-				active_const_reduced_seq.reserve(active_const_rank);
-				Constraint_cov_D = Problem.Solver.Spd.vectorD();
 				active_const_rank = active_const_seq.size();
+				active_const_reduced_seq.reserve(active_const_rank);	
+				Constraint_cov_D = Problem.Solver.Spd.vectorD();
 				for(int row_id = 0; row_id < active_const_seq.size(); ++ row_id){
 					if(abs(Constraint_cov_D(row_id)) < tol){
 						active_const_rank -= 1;
@@ -284,17 +284,14 @@ void LP_optimized(LP_object &Problem){
 					}
 					Span_reduction.setFromTriplets(Constraint_cov_sub_trip.begin(), Constraint_cov_sub_trip.end());
 					Constraint_ie_reduced_covariance_sub = Span_reduction * Problem.Constraint.cov_ie_reduced_matrix * Span_reduction.transpose();					
-					Constraint_cov_sub_trip.clear();			
+					Constraint_cov_sub_trip.clear();
+					Problem.Solver.Spd.compute(Constraint_ie_reduced_covariance_sub);			
 				}				
 			}
-			else{
-//				Cov_ie_obj_reduced_sub = Eigen::VectorXd(active_const_seq.size());
-//				for(int row_id = 0; row_id < active_const_seq.size(); ++ row_id){
-//					
-//				}
-			}
-			
-			Problem.Proj_grad_vector = Problem.Objective.reduced_vector;	// Need to change in the future		
+			Cov_ie_obj_reduced_sub = Span_reduction * Problem.Objective.cov_ie_obj_reduced_vector;
+			Constraint_ie_reduced_sub = Span_reduction * Problem.Constraint.ie_reduced_matrix;
+			Problem.Proj_grad_vector = Problem.Objective.reduced_vector;
+			Problem.Proj_grad_vector -= Constraint_ie_reduced_sub.transpose() * Problem.Solver.Spd.solve(Cov_ie_obj_reduced_sub);					
 		}
 		// If there are no active constraints, projected gradient is the objective vector
 		else{
