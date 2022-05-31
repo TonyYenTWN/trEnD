@@ -18,19 +18,20 @@
 #include "../basic/Basic_Definitions.h"
 #include <Eigen/Sparse>
 #include <Eigen/SparseLU>
+#include <Eigen/SparseQR>
 #include <Eigen/SparseCholesky>							// Use only when the matric is symmetric positive definite (ex. covariance or laplacian matrix)
 
 typedef Eigen::Triplet <double> Trip;    				// Define a triplet object
-typedef Eigen::Matrix<bool, Eigen::Dynamic, Eigen::Dynamic> MatrixXb;
 
 // Constraint object
 struct LP_constraint{
 	bool normalized = 0;
 	Eigen::VectorXd norm;
-	MatrixXb Status_ie_matrix;							// 1 = currently active; 0 = not yet called; -1 = previously called and currently inactive
+	Eigen::MatrixXi status_ie_reduced_matrix;			// 1 = currently active; 0 = not yet called; -1 = previously called and currently inactive
 	Eigen::SparseMatrix <double> eq_orig_matrix;		// Coefficients for original equality constraints
 	Eigen::SparseMatrix <double> ie_orig_matrix;		// Coefficients for original inequality constraints
 	Eigen::SparseMatrix <double> ie_reduced_matrix;		// Coefficients for reduced inequality constraints
+	Eigen::SparseMatrix <double> cov_ie_reduced_matrix;	// Dot product of the reduced inequality constraints
 };
 
 // Boundary object
@@ -48,11 +49,16 @@ struct LP_objective{
 
 // Solver object
 struct LP_matrix_solver{
-	bool Spd_flag = 0;
 	bool Normal_flag = 0;
 	Eigen::SimplicialLDLT <Eigen::SparseMatrix <double>> Spd; 									// Solver for a symmetric positive definite matrix
 	Eigen::SparseLU <Eigen::SparseMatrix <double>, Eigen::COLAMDOrdering <int>> Normal;			// Solver for an arbitrary matrix
 	Eigen::SparseLU <Eigen::SparseMatrix <double>, Eigen::COLAMDOrdering <int>> Normal_Trans;	// Solver for the transpose of an arbitrary matrix
+};
+
+// Solution object
+struct LP_solution{
+	Eigen::VectorXd orig_vector;
+	Eigen::VectorXd reduced_vector;
 };
 
 struct LP_object{
@@ -67,15 +73,20 @@ struct LP_object{
 	
 	// Process and output variables
 	Eigen::VectorXd Proj_grad_vector;
-	Eigen::VectorXd Solution_vector;
+	LP_solution Solution;
 };
+
+// Linear system for reducing the redundant variables
+void LP_constraint_redundant_matrix_solved(LP_object &Problem){
+	Problem.Solver.Normal.compute(Problem.Constraint.eq_orig_matrix.rightCols(Problem.Constraints_eq_num));
+	Problem.Solver.Normal_Trans.compute(Problem.Constraint.eq_orig_matrix.rightCols(Problem.Constraints_eq_num).transpose());
+	Problem.Solver.Normal_flag = 1;
+}
 
 void LP_constraint_ie_reduced_generation(LP_object &Problem){
 	// Warm up the solver if not yet done for the current matrix
 	if(!Problem.Solver.Normal_flag){
-		Problem.Solver.Normal.compute(Problem.Constraint.eq_orig_matrix.rightCols(Problem.Constraints_eq_num));
-		Problem.Solver.Normal_Trans.compute(Problem.Constraint.eq_orig_matrix.rightCols(Problem.Constraints_eq_num).transpose());
-		Problem.Solver.Normal_flag = 1;
+		LP_constraint_redundant_matrix_solved(Problem);
 	}
 	
 	// Set default value of reduced constraint matrix
@@ -106,9 +117,7 @@ void LP_constraint_ie_reduced_generation(LP_object &Problem){
 void LP_boundary_ie_reduced_generation(LP_object &Problem){
 	// Warm up the solver if not yet done for the current matrix
 	if(!Problem.Solver.Normal_flag){
-		Problem.Solver.Normal.compute(Problem.Constraint.eq_orig_matrix.rightCols(Problem.Constraints_eq_num));
-		Problem.Solver.Normal_Trans.compute(Problem.Constraint.eq_orig_matrix.rightCols(Problem.Constraints_eq_num).transpose());
-		Problem.Solver.Normal_flag = 1;
+		LP_constraint_redundant_matrix_solved(Problem);
 	}
 	
 	// Set default value of reduced boundary vector
@@ -133,9 +142,7 @@ void LP_boundary_ie_reduced_generation(LP_object &Problem){
 void LP_objective_reduced_generation(LP_object &Problem){
 	// Warm up the solver if not yet done for the current matrix
 	if(!Problem.Solver.Normal_flag){
-		Problem.Solver.Normal.compute(Problem.Constraint.eq_orig_matrix.rightCols(Problem.Constraints_eq_num));
-		Problem.Solver.Normal_Trans.compute(Problem.Constraint.eq_orig_matrix.rightCols(Problem.Constraints_eq_num).transpose());
-		Problem.Solver.Normal_flag = 1;
+		LP_constraint_redundant_matrix_solved(Problem);
 	}
 	
 	// Z = c_e^T * x_e + c_r^T * x_r 
@@ -145,7 +152,6 @@ void LP_objective_reduced_generation(LP_object &Problem){
 	Eigen::VectorXd coeff_redundant = Problem.Objective.orig_vector.tail(Problem.Constraints_eq_num);
 	
 	Problem.Objective.reduced_vector -= (Problem.Constraint.eq_orig_matrix.leftCols(Problem.Variables_num - Problem.Constraints_eq_num)).transpose() * Problem.Solver.Normal_Trans.solve(coeff_redundant);
-	std::cout << Problem.Objective.reduced_vector.transpose() << "\n" << std::endl;
 }
 
 // Normalization of reduced inequality constraints
@@ -163,9 +169,126 @@ void LP_constraint_ie_reduced_normalization(LP_object &Problem, bool constraint_
 	}
 	Problem.Constraint.normalized = 1;
 	
-	std::cout << Problem.Constraint.ie_reduced_matrix << "\n" << std::endl;
-	std::cout << Problem.Boundary.ie_reduced_matrix << "\n" << std::endl;
-	std::cout << Problem.Constraint.norm.transpose() << "\n" << std::endl;
+	//std::cout << Problem.Constraint.ie_reduced_matrix << "\n" << std::endl;
+	//std::cout << Problem.Boundary.ie_reduced_matrix << "\n" << std::endl;
+	//std::cout << Problem.Constraint.norm.transpose() << "\n" << std::endl;
+}
+
+// Covariance (dot product) of reduced inequality constraints
+void LP_constraint_ie_reduced_covariance(LP_object &Problem){
+	Problem.Constraint.cov_ie_reduced_matrix = Problem.Constraint.ie_reduced_matrix * Problem.Constraint.ie_reduced_matrix.transpose();
+}
+
+// Function for the optimization algorithm
+void LP_optimized(LP_object &Problem){
+	// Variable declaration
+	double tol = pow(10, -8);
+	Eigen::MatrixXd Boundary_gap(Problem.Variables_num + Problem.Constraints_ie_num, 2); 
+	Eigen::VectorXd Boundary_increment(Problem.Variables_num + Problem.Constraints_ie_num);
+	Problem.Constraint.status_ie_reduced_matrix = Eigen::MatrixXi::Zero(Problem.Variables_num + Problem.Constraints_ie_num, 2); 
+	
+	// Variable declaration before loop
+	int active_const_rank;
+	double cov_value_temp;
+	std::vector<Eigen::Vector2i> active_const_seq;
+	std::vector<Eigen::Vector2i> active_const_reduced_seq;
+	active_const_seq.reserve(Problem.Variables_num - Problem.Constraints_eq_num);
+	std::vector<Trip> Constraint_cov_sub_trip;
+	Eigen::VectorXd Constraint_cov_D;
+	Eigen::SparseMatrix <double> Constraint_ie_reduced_covariance_sub;
+	
+	// Initialize the starting point and status of activeness of each constraints
+	// Assume degeneracy extreme point does not occur other than at the origin
+	Problem.Solution.reduced_vector = Eigen::VectorXd::Zero(Problem.Variables_num - Problem.Constraints_eq_num);
+	Boundary_gap.col(0) = Problem.Constraint.ie_reduced_matrix * Problem.Solution.reduced_vector - Problem.Boundary.ie_reduced_matrix.col(0);
+	Boundary_gap.col(1) = Problem.Boundary.ie_reduced_matrix.col(1) - Problem.Constraint.ie_reduced_matrix * Problem.Solution.reduced_vector;
+	Boundary_increment = Problem.Constraint.ie_reduced_matrix * Problem.Objective.reduced_vector;
+	for(int row_id = 0; row_id < Boundary_gap.rows(); ++ row_id){
+		if(Boundary_gap(row_id, 0) < tol){
+//			if(Boundary_increment(row_id) > tol){
+//				Problem.Constraint.status_ie_reduced_matrix(row_id, 0) = -1;
+//			}
+//			else{
+//				if(row_id >= Problem.Variables_num - Problem.Constraints_eq_num && abs(Problem.Boundary.ie_reduced_matrix(row_id, 0)) < tol){
+//					Problem.Constraint.status_ie_reduced_matrix(row_id, 0) = -1;
+//				}
+//				else{
+//					Problem.Constraint.status_ie_reduced_matrix(row_id, 0) = 1;
+//				}
+//			}
+			Problem.Constraint.status_ie_reduced_matrix(row_id, 0) = 1;
+			active_const_seq.push_back(Eigen::Vector2i(row_id, 0));
+		}
+		else if(Boundary_gap(row_id, 1) < tol){
+//			if(Boundary_increment(row_id) < -tol){
+//				Problem.Constraint.status_ie_reduced_matrix(row_id, 1) = -1;
+//			}
+//			else{
+//				if(row_id >= Problem.Variables_num - Problem.Constraints_eq_num && abs(Problem.Boundary.ie_reduced_matrix(row_id, 1)) < tol){
+//					Problem.Constraint.status_ie_reduced_matrix(row_id, 1) = -1;
+//				}
+//				else{
+//					Problem.Constraint.status_ie_reduced_matrix(row_id, 1) = 1;
+//				}
+//			}
+			Problem.Constraint.status_ie_reduced_matrix(row_id, 1) = 1;
+			active_const_seq.push_back(Eigen::Vector2i(row_id, 1));
+		}
+	}
+	// Construct sub_covariance_matrix of all the active sets
+	Constraint_cov_sub_trip.reserve(pow(active_const_seq.size(), 2));
+	Constraint_ie_reduced_covariance_sub = Eigen::SparseMatrix <double>(active_const_seq.size(), active_const_seq.size());
+	for(int row_id = 0; row_id < active_const_seq.size(); ++ row_id){
+		for(int col_id = row_id; col_id < active_const_seq.size(); ++ col_id){
+			cov_value_temp = Eigen::VectorXd(Problem.Constraint.cov_ie_reduced_matrix.col(active_const_seq[col_id](0)))(active_const_seq[row_id](0));
+			if(abs(cov_value_temp) > tol){
+				Constraint_cov_sub_trip.push_back(Trip(row_id, col_id, cov_value_temp));
+				if(row_id != col_id){
+					Constraint_cov_sub_trip.push_back(Trip(col_id, row_id, cov_value_temp));
+				}
+			}
+		}
+	}
+	Constraint_ie_reduced_covariance_sub.setFromTriplets(Constraint_cov_sub_trip.begin(), Constraint_cov_sub_trip.end());
+	Constraint_cov_sub_trip.clear();
+	Problem.Solver.Spd.compute(Constraint_ie_reduced_covariance_sub);
+	
+	if(abs(Problem.Solver.Spd.determinant()) < tol){
+		active_const_reduced_seq.reserve(active_const_rank);
+		Constraint_cov_D = Problem.Solver.Spd.vectorD();
+		active_const_rank = active_const_seq.size();
+		for(int row_id = 0; row_id < active_const_seq.size(); ++ row_id){
+			if(abs(Constraint_cov_D(row_id)) < tol){
+				active_const_rank -= 1;
+			}
+			else{
+				active_const_reduced_seq.push_back(active_const_seq[row_id]);
+			}
+		}
+		
+		Constraint_cov_sub_trip.reserve(pow(active_const_rank, 2));
+		Constraint_ie_reduced_covariance_sub = Eigen::SparseMatrix <double>(active_const_rank, active_const_rank);
+		for(int row_id = 0; row_id < active_const_rank; ++ row_id){
+			for(int col_id = row_id; col_id < active_const_rank; ++ col_id){
+				cov_value_temp = Eigen::VectorXd(Problem.Constraint.cov_ie_reduced_matrix.col(active_const_reduced_seq[col_id](0)))(active_const_reduced_seq[row_id](0));
+				if(abs(cov_value_temp) > tol){
+					Constraint_cov_sub_trip.push_back(Trip(row_id, col_id, cov_value_temp));
+					if(row_id != col_id){
+						Constraint_cov_sub_trip.push_back(Trip(col_id, row_id, cov_value_temp));
+					}
+				}
+			}
+		}
+		Constraint_ie_reduced_covariance_sub.setFromTriplets(Constraint_cov_sub_trip.begin(), Constraint_cov_sub_trip.end());
+		Constraint_cov_sub_trip.clear();						
+	}
+	//Constraint_ie_reduced_covariance_sub = Problem.Solver.Spd.matrixL().topLeftCorner(active_const_rank, active_const_rank) * Constraint_cov_D.head(active_const_rank).asDiagonal() * Problem.Solver.Spd.matrixU().topLeftCorner(active_const_rank, active_const_rank);
+	
+	//std::cout << Boundary_increment.transpose() << "\n" << std::endl;
+	//std::cout << Problem.Constraint.status_ie_reduced_matrix << "\n" << std::endl;
+	std::cout << Constraint_ie_reduced_covariance_sub << "\n" << std::endl;
+	std::cout << Problem.Constraint.cov_ie_reduced_matrix << "\n" << std::endl;
+	//std::cout << Problem.Solver.Spd.vectorD() << "\n" << std::endl;
 }
 
 void test_problem(){
@@ -211,15 +334,20 @@ void test_problem(){
 	// Put additional inequality constraints here
 	
 	// Generate sparse matrix for reduced inequality constraints
-	Problem.Solver.Normal.compute(Problem.Constraint.eq_orig_matrix.rightCols(Problem.Constraints_eq_num));
-	Problem.Solver.Normal_Trans.compute(Problem.Constraint.eq_orig_matrix.rightCols(Problem.Constraints_eq_num).transpose());
-	Problem.Solver.Normal_flag = 1;
+	LP_constraint_redundant_matrix_solved(Problem);
 	LP_constraint_ie_reduced_generation(Problem);
 	LP_boundary_ie_reduced_generation(Problem);
 	LP_objective_reduced_generation(Problem);
 	LP_constraint_ie_reduced_normalization(Problem);
+	LP_constraint_ie_reduced_covariance(Problem);
+	
+	// Solve the LP
+	LP_optimized(Problem);
 }
 
 int main(){
 	test_problem();
 }
+// D:
+// cd D:\Programs\C++\tools\or-tools_VisualStudio2019-64bit_v9.2.9972
+// tools\make run SOURCE="D:\Works\PhD\Research\Processed_Data\basic\LP_gpa.cpp"
