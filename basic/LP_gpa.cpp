@@ -31,7 +31,8 @@ struct LP_constraint{
 	Eigen::SparseMatrix <double> eq_orig_matrix;		// Coefficients for original equality constraints
 	Eigen::SparseMatrix <double> ie_orig_matrix;		// Coefficients for original inequality constraints
 	Eigen::SparseMatrix <double> ie_reduced_matrix;		// Coefficients for reduced inequality constraints
-	Eigen::SparseMatrix <double> cov_ie_reduced_matrix;	// Dot product of the reduced inequality constraints
+	//Eigen::MatrixXd cov_ie_reduced_matrix;			
+	Eigen::SparseMatrix <double> cov_ie_reduced_matrix; // Dot product between the reduced inequality constraints
 };
 
 // Boundary object
@@ -39,12 +40,14 @@ struct LP_boundary{
 	Eigen::VectorXd eq_vector;				// Value of original equality constraints
 	Eigen::MatrixXd ie_orig_matrix;			// Boundary of original inequality constraints; 0th column: lower bound value; 1st column: upper bound value
 	Eigen::MatrixXd ie_reduced_matrix;		// Boundary of reduced inequality constraints
+	
 };
 
 // Objective object
 struct LP_objective{
 	Eigen::VectorXd orig_vector;
 	Eigen::VectorXd reduced_vector;
+	Eigen::VectorXd cov_ie_obj_reduced_vector;	// Dot product between the reduced objective and inequality constraints
 };
 
 // Solver object
@@ -168,127 +171,162 @@ void LP_constraint_ie_reduced_normalization(LP_object &Problem, bool constraint_
 		Problem.Boundary.ie_reduced_matrix.row(row_id) /= Problem.Constraint.norm(row_id);
 	}
 	Problem.Constraint.normalized = 1;
-	
-	//std::cout << Problem.Constraint.ie_reduced_matrix << "\n" << std::endl;
-	//std::cout << Problem.Boundary.ie_reduced_matrix << "\n" << std::endl;
-	//std::cout << Problem.Constraint.norm.transpose() << "\n" << std::endl;
 }
 
 // Covariance (dot product) of reduced inequality constraints
 void LP_constraint_ie_reduced_covariance(LP_object &Problem){
 	Problem.Constraint.cov_ie_reduced_matrix = Problem.Constraint.ie_reduced_matrix * Problem.Constraint.ie_reduced_matrix.transpose();
+	Problem.Objective.cov_ie_obj_reduced_vector = Problem.Constraint.ie_reduced_matrix * Problem.Objective.reduced_vector;
 }
 
 // Function for the optimization algorithm
 void LP_optimized(LP_object &Problem){
-	// Variable declaration
+	// Parameters declaration
 	double tol = pow(10, -8);
-	Eigen::MatrixXd Boundary_gap(Problem.Variables_num + Problem.Constraints_ie_num, 2); 
-	Eigen::VectorXd Boundary_increment(Problem.Variables_num + Problem.Constraints_ie_num);
-	Problem.Constraint.status_ie_reduced_matrix = Eigen::MatrixXi::Zero(Problem.Variables_num + Problem.Constraints_ie_num, 2); 
+	double eps = pow(10, -6); 
 	
-	// Variable declaration before loop
+	// Variables declaration before loop
+	bool relax_flag = 0;
 	int active_const_rank;
 	double cov_value_temp;
 	std::vector<Eigen::Vector2i> active_const_seq;
+	std::vector<Eigen::Vector2i> active_const_seq_prev;
 	std::vector<Eigen::Vector2i> active_const_reduced_seq;
-	active_const_seq.reserve(Problem.Variables_num - Problem.Constraints_eq_num);
 	std::vector<Trip> Constraint_cov_sub_trip;
 	Eigen::VectorXd Constraint_cov_D;
+	Eigen::VectorXd Cov_ie_obj_reduced_sub;
 	Eigen::SparseMatrix <double> Constraint_ie_reduced_covariance_sub;
+	Eigen::SparseMatrix <double> Span_reduction;
+	Eigen::MatrixXd Boundary_gap(Problem.Variables_num + Problem.Constraints_ie_num, 2); 
+	Eigen::VectorXd Boundary_increment(Problem.Variables_num + Problem.Constraints_ie_num);
 	
 	// Initialize the starting point and status of activeness of each constraints
-	// Assume degeneracy extreme point does not occur other than at the origin
+	Problem.Constraint.status_ie_reduced_matrix = Eigen::MatrixXi::Zero(Problem.Variables_num + Problem.Constraints_ie_num, 2);
 	Problem.Solution.reduced_vector = Eigen::VectorXd::Zero(Problem.Variables_num - Problem.Constraints_eq_num);
-	Boundary_gap.col(0) = Problem.Constraint.ie_reduced_matrix * Problem.Solution.reduced_vector - Problem.Boundary.ie_reduced_matrix.col(0);
-	Boundary_gap.col(1) = Problem.Boundary.ie_reduced_matrix.col(1) - Problem.Constraint.ie_reduced_matrix * Problem.Solution.reduced_vector;
-	Boundary_increment = Problem.Constraint.ie_reduced_matrix * Problem.Objective.reduced_vector;
-	for(int row_id = 0; row_id < Boundary_gap.rows(); ++ row_id){
-		if(Boundary_gap(row_id, 0) < tol){
-//			if(Boundary_increment(row_id) > tol){
-//				Problem.Constraint.status_ie_reduced_matrix(row_id, 0) = -1;
-//			}
-//			else{
-//				if(row_id >= Problem.Variables_num - Problem.Constraints_eq_num && abs(Problem.Boundary.ie_reduced_matrix(row_id, 0)) < tol){
-//					Problem.Constraint.status_ie_reduced_matrix(row_id, 0) = -1;
-//				}
-//				else{
-//					Problem.Constraint.status_ie_reduced_matrix(row_id, 0) = 1;
-//				}
-//			}
-			Problem.Constraint.status_ie_reduced_matrix(row_id, 0) = 1;
-			active_const_seq.push_back(Eigen::Vector2i(row_id, 0));
-		}
-		else if(Boundary_gap(row_id, 1) < tol){
-//			if(Boundary_increment(row_id) < -tol){
-//				Problem.Constraint.status_ie_reduced_matrix(row_id, 1) = -1;
-//			}
-//			else{
-//				if(row_id >= Problem.Variables_num - Problem.Constraints_eq_num && abs(Problem.Boundary.ie_reduced_matrix(row_id, 1)) < tol){
-//					Problem.Constraint.status_ie_reduced_matrix(row_id, 1) = -1;
-//				}
-//				else{
-//					Problem.Constraint.status_ie_reduced_matrix(row_id, 1) = 1;
-//				}
-//			}
-			Problem.Constraint.status_ie_reduced_matrix(row_id, 1) = 1;
-			active_const_seq.push_back(Eigen::Vector2i(row_id, 1));
-		}
-	}
-	// Construct sub_covariance_matrix of all the active sets
-	Constraint_cov_sub_trip.reserve(pow(active_const_seq.size(), 2));
-	Constraint_ie_reduced_covariance_sub = Eigen::SparseMatrix <double>(active_const_seq.size(), active_const_seq.size());
-	for(int row_id = 0; row_id < active_const_seq.size(); ++ row_id){
-		for(int col_id = row_id; col_id < active_const_seq.size(); ++ col_id){
-			cov_value_temp = Eigen::VectorXd(Problem.Constraint.cov_ie_reduced_matrix.col(active_const_seq[col_id](0)))(active_const_seq[row_id](0));
-			if(abs(cov_value_temp) > tol){
-				Constraint_cov_sub_trip.push_back(Trip(row_id, col_id, cov_value_temp));
-				if(row_id != col_id){
-					Constraint_cov_sub_trip.push_back(Trip(col_id, row_id, cov_value_temp));
-				}
-			}
-		}
-	}
-	Constraint_ie_reduced_covariance_sub.setFromTriplets(Constraint_cov_sub_trip.begin(), Constraint_cov_sub_trip.end());
-	Constraint_cov_sub_trip.clear();
-	Problem.Solver.Spd.compute(Constraint_ie_reduced_covariance_sub);
 	
-	if(abs(Problem.Solver.Spd.determinant()) < tol){
-		active_const_reduced_seq.reserve(active_const_rank);
-		Constraint_cov_D = Problem.Solver.Spd.vectorD();
-		active_const_rank = active_const_seq.size();
-		for(int row_id = 0; row_id < active_const_seq.size(); ++ row_id){
-			if(abs(Constraint_cov_D(row_id)) < tol){
-				active_const_rank -= 1;
-			}
-			else{
-				active_const_reduced_seq.push_back(active_const_seq[row_id]);
-			}
-		}
+	int count = 0;
+	while(count < 2){
+		active_const_reduced_seq.clear();
+		active_const_seq.clear();
+		count += 1;
 		
-		Constraint_cov_sub_trip.reserve(pow(active_const_rank, 2));
-		Constraint_ie_reduced_covariance_sub = Eigen::SparseMatrix <double>(active_const_rank, active_const_rank);
-		for(int row_id = 0; row_id < active_const_rank; ++ row_id){
-			for(int col_id = row_id; col_id < active_const_rank; ++ col_id){
-				cov_value_temp = Eigen::VectorXd(Problem.Constraint.cov_ie_reduced_matrix.col(active_const_reduced_seq[col_id](0)))(active_const_reduced_seq[row_id](0));
-				if(abs(cov_value_temp) > tol){
-					Constraint_cov_sub_trip.push_back(Trip(row_id, col_id, cov_value_temp));
-					if(row_id != col_id){
-						Constraint_cov_sub_trip.push_back(Trip(col_id, row_id, cov_value_temp));
+		if(!relax_flag){
+			// Check whether any of the constraints are active at current position
+			Boundary_gap.col(0) = Problem.Constraint.ie_reduced_matrix * Problem.Solution.reduced_vector - Problem.Boundary.ie_reduced_matrix.col(0);
+			Boundary_gap.col(1) = Problem.Boundary.ie_reduced_matrix.col(1) - Problem.Constraint.ie_reduced_matrix * Problem.Solution.reduced_vector;
+			active_const_seq.reserve(Problem.Variables_num + Problem.Constraints_ie_num);
+			for(int row_id = 0; row_id < Boundary_gap.rows(); ++ row_id){
+				if(Boundary_gap(row_id, 0) < tol){
+					Problem.Constraint.status_ie_reduced_matrix(row_id, 0) = 1;
+					active_const_seq.push_back(Eigen::Vector2i(row_id, 0));
+				}
+				else if(Boundary_gap(row_id, 1) < tol){
+					Problem.Constraint.status_ie_reduced_matrix(row_id, 1) = 1;
+					active_const_seq.push_back(Eigen::Vector2i(row_id, 1));
+				}
+			}			
+		}	
+		
+		// Check if there are active constraints
+		if(active_const_seq.size() > 0){
+			// Construct sub_covariance_matrix of all the active constraints, should the set be not empty
+			Constraint_cov_sub_trip.reserve(pow(active_const_seq.size(), 2));
+			Constraint_ie_reduced_covariance_sub = Eigen::SparseMatrix <double>(active_const_seq.size(), active_const_seq.size());
+			Span_reduction = Eigen::SparseMatrix <double>(active_const_seq.size(), Problem.Variables_num + Problem.Constraints_ie_num);
+			for(int row_id = 0; row_id < active_const_seq.size(); ++ row_id){
+				Constraint_cov_sub_trip.push_back(Trip(active_const_seq[row_id](0), active_const_seq[row_id](0), 1));
+			}
+			Span_reduction.setFromTriplets(Constraint_cov_sub_trip.begin(), Constraint_cov_sub_trip.end());
+			Constraint_ie_reduced_covariance_sub = Span_reduction * Problem.Constraint.cov_ie_reduced_matrix * Span_reduction.transpose();
+			Constraint_cov_sub_trip.clear();
+			Problem.Solver.Spd.compute(Constraint_ie_reduced_covariance_sub);
+			
+			// Check if some of the active constraints are redundant
+			if(abs(Problem.Solver.Spd.determinant()) < tol){
+				active_const_reduced_seq.reserve(active_const_rank);
+				Constraint_cov_D = Problem.Solver.Spd.vectorD();
+				active_const_rank = active_const_seq.size();
+				for(int row_id = 0; row_id < active_const_seq.size(); ++ row_id){
+					if(abs(Constraint_cov_D(row_id)) < tol){
+						active_const_rank -= 1;
+					}
+					else{
+						active_const_reduced_seq.push_back(active_const_seq[row_id]);
 					}
 				}
+				
+				// Check if the active constraints form a degenerate extreme point
+				if(active_const_rank == Problem.Variables_num - Problem.Constraints_eq_num){
+					// Relaxation of the constraints; all active constraints thus become inactive
+					for(int row_id = 0; row_id < active_const_seq.size(); ++ row_id){
+						if(active_const_seq[row_id](1) == 0){
+							Problem.Boundary.ie_reduced_matrix(active_const_seq[row_id](0), 0) -= eps;
+							Problem.Constraint.status_ie_reduced_matrix(active_const_seq[row_id](0), 0) = 0;
+						}
+						else{
+							Problem.Boundary.ie_reduced_matrix(active_const_seq[row_id](0), 1) += eps;
+							Problem.Constraint.status_ie_reduced_matrix(active_const_seq[row_id](0), 1) = 0;
+						}
+					}
+					
+					// Exit the current loop; now lies in the interior and update variables accordingly
+					relax_flag = 1;
+					active_const_seq_prev.clear();
+					continue;
+				}
+				// If not, find the span of the normal vectors of the active constraints
+				else{
+					Constraint_cov_sub_trip.reserve(pow(active_const_rank, 2));
+					Constraint_ie_reduced_covariance_sub = Eigen::SparseMatrix <double>(active_const_rank, active_const_rank);
+					Span_reduction = Eigen::SparseMatrix <double>(active_const_rank, Problem.Variables_num + Problem.Constraints_ie_num);
+					for(int row_id = 0; row_id < active_const_rank; ++ row_id){
+						Constraint_cov_sub_trip.push_back(Trip(active_const_reduced_seq[row_id](0), active_const_reduced_seq[row_id](0), 1));
+					}
+					Span_reduction.setFromTriplets(Constraint_cov_sub_trip.begin(), Constraint_cov_sub_trip.end());
+					Constraint_ie_reduced_covariance_sub = Span_reduction * Problem.Constraint.cov_ie_reduced_matrix * Span_reduction.transpose();					
+					Constraint_cov_sub_trip.clear();			
+				}				
 			}
+			else{
+//				Cov_ie_obj_reduced_sub = Eigen::VectorXd(active_const_seq.size());
+//				for(int row_id = 0; row_id < active_const_seq.size(); ++ row_id){
+//					
+//				}
+			}
+			
+			Problem.Proj_grad_vector = Problem.Objective.reduced_vector;	// Need to change in the future		
 		}
-		Constraint_ie_reduced_covariance_sub.setFromTriplets(Constraint_cov_sub_trip.begin(), Constraint_cov_sub_trip.end());
-		Constraint_cov_sub_trip.clear();						
+		// If there are no active constraints, projected gradient is the objective vector
+		else{
+			Problem.Proj_grad_vector = Problem.Objective.reduced_vector;
+		}
+		
+		// Check maximum allowed increment along the projected gradient before reaching a constraint
+		Boundary_increment = Problem.Constraint.ie_reduced_matrix * Problem.Proj_grad_vector;
+		
+		// Update status of constraints
+		if(active_const_seq_prev.size() > 0){
+			for(int row_id = 0; row_id < active_const_seq_prev.size(); ++ row_id){
+				if(Problem.Constraint.status_ie_reduced_matrix(active_const_seq_prev[row_id](0), active_const_seq_prev[row_id](1)) == 0){
+					Problem.Constraint.status_ie_reduced_matrix(active_const_seq_prev[row_id](0), active_const_seq_prev[row_id](1)) = -1;
+				}
+			}			
+		}
+		
+		// Update the list of previous active constraints for the next loop
+		active_const_seq_prev = active_const_seq;
+		
+		// Code execution reaches here only if relaxation of constraints does not occur at this loop 
+		if(relax_flag){
+			relax_flag = 0;
+		}
+		std::cout << Problem.Boundary.ie_reduced_matrix << "\n" << std::endl;		
 	}
-	//Constraint_ie_reduced_covariance_sub = Problem.Solver.Spd.matrixL().topLeftCorner(active_const_rank, active_const_rank) * Constraint_cov_D.head(active_const_rank).asDiagonal() * Problem.Solver.Spd.matrixU().topLeftCorner(active_const_rank, active_const_rank);
-	
+
 	//std::cout << Boundary_increment.transpose() << "\n" << std::endl;
 	//std::cout << Problem.Constraint.status_ie_reduced_matrix << "\n" << std::endl;
-	std::cout << Constraint_ie_reduced_covariance_sub << "\n" << std::endl;
-	std::cout << Problem.Constraint.cov_ie_reduced_matrix << "\n" << std::endl;
-	//std::cout << Problem.Solver.Spd.vectorD() << "\n" << std::endl;
+	//std::cout << Constraint_ie_reduced_covariance_sub << "\n" << std::endl;
+	//std::cout << Problem.Constraint.cov_ie_reduced_matrix << "\n" << std::endl;
 }
 
 void test_problem(){
@@ -348,6 +386,3 @@ void test_problem(){
 int main(){
 	test_problem();
 }
-// D:
-// cd D:\Programs\C++\tools\or-tools_VisualStudio2019-64bit_v9.2.9972
-// tools\make run SOURCE="D:\Works\PhD\Research\Processed_Data\basic\LP_gpa.cpp"
