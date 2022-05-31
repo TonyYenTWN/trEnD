@@ -40,7 +40,8 @@ struct LP_boundary{
 struct LP_objective{
 	Eigen::VectorXd orig_vector;
 	Eigen::VectorXd reduced_vector;
-	double value;
+	double orig_value;
+	double reduced_value;
 };
 
 // Solver object
@@ -195,12 +196,12 @@ void LP_optimized(LP_object &Problem){
 
 	// Initialization of starting point and other process variables
 	Problem.Solution.reduced_vector = Eigen::VectorXd::Zero(Problem.Variables_num - Problem.Constraints_eq_num);
-	Problem.Objective.value = Problem.Solution.reduced_vector.dot(Problem.Objective.reduced_vector);
+	Problem.Objective.reduced_value = Problem.Solution.reduced_vector.dot(Problem.Objective.reduced_vector);
 	
 	// Main loop for searching the optimal solution
 	while(1){
 		// Update contracted solution and previous solution for later use in the loop
-		Previous_obj_value = Problem.Objective.value;
+		Previous_obj_value = Problem.Objective.reduced_value;
 		Previous_solution = Problem.Solution.reduced_vector;
 		Contracted_solution = Problem.Solution.reduced_vector_ref;
 		Contracted_solution += (1 - eps) * (Problem.Solution.reduced_vector - Problem.Solution.reduced_vector_ref);
@@ -247,27 +248,44 @@ void LP_optimized(LP_object &Problem){
 		
 		// Check if objective function can be improved or optimality has been reached
 		if(Obj_value >= Previous_obj_value){
-			Problem.Objective.value = Obj_value;
+			Problem.Objective.reduced_value = Obj_value;
 		}
 		else{
+			// If current objective value is smaller than previous, optimality occurs at previous solution
+			Problem.Solution.reduced_vector = Previous_solution;
 			break;
 		}		
 	}
 	
 	// Reconstruct the original solution and objective value from the reduced problem, if necessary
 	if(Problem.Constraints_eq_num != 0){
+		// Reconstruction of the solution
 		// x_r = -A_r^(-1) * (A_e * x_e - b)
-		//Problem.Constraint.eq_orig_matrix
-		Eigen::VectorXd redundant_variables = -Problem.Solver.Normal.solve(Problem.Solution.reduced_vector - Problem.Boundary.eq_vector);
+		// Problem.Constraint.eq_orig_matrix
+		Eigen::VectorXd redundant_variables = -Problem.Solver.Normal.solve(Problem.Constraint.eq_orig_matrix.leftCols(Problem.Variables_num - Problem.Constraints_eq_num) * Problem.Solution.reduced_vector - Problem.Boundary.eq_vector);
+		Problem.Solution.orig_vector = Eigen::VectorXd(Problem.Variables_num);
+		Problem.Solution.orig_vector << Problem.Solution.reduced_vector, redundant_variables;
+		
+		// Reconstruction of the objective value
+		// Z = c_e^T * x_e + c_r^T * x_r 
+		//   = c_e^T * x_e - c_r^T * A_r^(-1) * (A_e * x_e - b)
+		//   = (c_e^T - c_r^T * A_r^(-1) * A_e) * x_e + c_r^T * A_r^(-1) * b
+		Problem.Objective.orig_value = 	Problem.Objective.reduced_value + Problem.Objective.orig_vector.tail(Problem.Constraints_eq_num).transpose() * Problem.Solver.Normal.solve(Problem.Boundary.eq_vector);
 	}
 	else{
 		Problem.Solution.orig_vector = Problem.Solution.reduced_vector;
 	}
-	
-	std::cout << "Solution to the reduced problem:" << std::endl;
-	std::cout << Problem.Solution.reduced_vector.transpose() << "\n" << std::endl;
-	std::cout << "Objective value of the reduced problem:" << std::endl;
-	std::cout << Problem.Objective.value << "\n" << std::endl;
+
+	std::cout << "---------------------------------------------------------------" << std::endl;
+	std::cout << "Reduced Problem" << std::endl;
+	std::cout << "---------------------------------------------------------------" << std::endl;	
+	std::cout << "Solution       : " << Problem.Solution.reduced_vector.transpose() << std::endl;
+	std::cout << "Objective value: " << Problem.Objective.reduced_value << "\n" << std::endl;
+	std::cout << "---------------------------------------------------------------" << std::endl;
+	std::cout << "Original Problem" << std::endl;
+	std::cout << "---------------------------------------------------------------" << std::endl;
+	std::cout << "Solution       : " << Problem.Solution.orig_vector.transpose() << std::endl;
+	std::cout << "Objective value: " << Problem.Objective.orig_value << "\n" << std::endl;
 }
 
 void test_problem(){
