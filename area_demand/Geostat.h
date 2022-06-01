@@ -1,9 +1,10 @@
 // Geostat functions header file
 #pragma once
-#include "../basic/Basic_Definitions.h"
 
 #ifndef GEOSTAT
 #define GEOSTAT
+
+#include "../basic/Basic_Definitions.h"
 
 // Constants of Earth Spheroid
 class Earth_Constant{
@@ -14,6 +15,7 @@ class Earth_Constant{
 	    double Earth_Ecc = pow(2 * Earth_flat - pow(Earth_flat, 2), .5);	// eccentricity
 };
 
+// Functions for calculation of the geodestic
 Eigen::Vector3d xyz_transform(Eigen::Vector2d);
 Eigen::Vector2d uv_transform(Eigen::Vector3d);
 double geodist(Eigen::Vector2d, Eigen::Vector2d);

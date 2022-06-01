@@ -29,7 +29,7 @@ IncludeVersionInfo=0
 SupportXPThemes=0
 CompilerSet=0
 CompilerSettings=0;0;0;1;0;0;0;0;0;0;0;0;0;0;0;0;1;0;0;0;0;0;17;0;0;0
-UnitCount=3
+UnitCount=6
 
 [VersionInfo]
 Major=1
@@ -72,6 +72,36 @@ BuildCmd=
 
 [Unit3]
 FileName=Geostat.h
+CompileCpp=1
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit4]
+FileName=..\basic\rw_csv.cpp
+CompileCpp=1
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit5]
+FileName=..\basic\rw_csv.h
+CompileCpp=1
+Folder=
+Compile=1
+Link=1
+Priority=1000
+OverrideBuildCmd=0
+BuildCmd=
+
+[Unit6]
+FileName=..\basic\Basic_Definitions.h
 CompileCpp=1
 Folder=
 Compile=1

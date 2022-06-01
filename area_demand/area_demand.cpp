@@ -2,8 +2,9 @@
 #include <iostream>
 #include <chrono>
 #include <boost/math/distributions/normal.hpp>
+#include "../basic/Basic_Definitions.h"
 #include "Geostat.h"
-#include "../basic/rw_csv.cpp"
+#include "../basic/rw_csv.h"
 
 boost::math::normal norm_dist(0.0, 1.0);
 

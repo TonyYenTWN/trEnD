@@ -1,14 +1,5 @@
 // Read and write csv files
-//#pragma once
-
-#include <iomanip>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include "../basic/Basic_Definitions.h"
-
-//using namespace std;
-//using namespace Eigen;
+#include "rw_csv.h"
 
 Eigen::MatrixXd read_file(int num_row, int num_col, std::string filename){
 	std::ifstream in(filename);
