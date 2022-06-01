@@ -1,7 +1,6 @@
 // Source file for end-user operational strategy
 #include <iostream>
 //#include <chrono>
-#include <omp.h>
 #include "../basic/Basic_Definitions.h"
 
 struct end_user_decision{

@@ -1,7 +1,6 @@
 // Main Source File
 #include <iostream>
 //#include <chrono>
-#include <omp.h>
 #include "../basic/rw_csv.cpp"
 
 struct network_graph{

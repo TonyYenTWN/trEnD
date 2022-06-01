@@ -10,6 +10,11 @@
 #include <numeric>
 #endif
 
+#ifndef OMP
+#define OMP
+#include <omp.h>
+#endif
+
 #ifndef EIGEN
 #define EIGEN
 #include <Eigen/Dense>
