@@ -10,8 +10,8 @@ LIBS     = -L"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib" -L"C:/P
 INCS     = -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include"
 CXXINCS  = -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include/c++" -I"D:/Programs/C++/tools/eigen-3.3.9" -I"D:/Programs/C++/tools/boost_1_78_0"
 BIN      = area_demand.exe
-CXXFLAGS = $(CXXINCS) -march=native -pg -fopenmp -pthread -DNDEBUG -O3 -Wall
-CFLAGS   = $(INCS) -march=native -pg -fopenmp -pthread -DNDEBUG -O3 -Wall
+CXXFLAGS = $(CXXINCS) -pg -fopenmp -mfma -DNDEBUG -O3 -Wall
+CFLAGS   = $(INCS) -pg -fopenmp -mfma -DNDEBUG -O3 -Wall
 DEL      = C:\Program Files (x86)\Embarcadero\Dev-Cpp\DevCpp.exe INTERNAL_DEL
 
 .PHONY: all all-before all-after clean clean-custom

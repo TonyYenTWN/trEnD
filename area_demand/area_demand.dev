@@ -68,7 +68,7 @@ Compile=1
 Link=1
 Priority=1000
 OverrideBuildCmd=0
-BuildCmd=
+BuildCmd=$(CPP) -c Geostat.cpp -o Geostat.o $(CXXFLAGS)
 
 [Unit3]
 FileName=Geostat.h
