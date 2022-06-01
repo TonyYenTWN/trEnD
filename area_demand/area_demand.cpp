@@ -4,31 +4,32 @@
 #include <omp.h>
 #include <boost/math/distributions/normal.hpp>
 #include "Geostat.cpp"
-#include "rw_csv.cpp"
+//#include "Geostat.h"
+#include "../basic/rw_csv.cpp"
 
 boost::math::normal norm_dist(0.0, 1.0);
 
 int main(){
-	auto start = chrono::high_resolution_clock::now();
-	auto stop = chrono::high_resolution_clock::now();
-	auto duration = chrono::duration_cast <chrono::microseconds> (stop - start);
+	auto start = std::chrono::high_resolution_clock::now();
+	auto stop = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
 	
-	string fin_name;
+	std::string fin_name;
 	// Read population density data; can change to other types of spatial point data in the future
 	fin_name = "input/population_density_10km.csv";
 	int num_row = 4041; 
 	int num_col = 6;
-	MatrixXd sample_inform = read_file(num_row, num_col, fin_name);
+	Eigen::MatrixXd sample_inform = read_file(num_row, num_col, fin_name);
 
 	// Read electricity demand data; can change to other types of spatial point data in the future
 	fin_name = "input/demand_actual_2021.csv";
 	int num_time = 8760; 
 	int num_category = sample_inform.col(0).maxCoeff() + 1;
-	MatrixXd Demand_ts = read_file(num_time, num_category + 1, fin_name);
+	Eigen::MatrixXd Demand_ts = read_file(num_time, num_category + 1, fin_name);
 	
 	// Compute distance of the spatial points, and the corresponding covariance matrix of the random variable
-	MatrixXd Distance_Points(num_row, num_row);
-	MatrixXd Covariance_Points(num_row, num_row);
+	Eigen::MatrixXd Distance_Points(num_row, num_row);
+	Eigen::MatrixXd Covariance_Points(num_row, num_row);
 	
 	#pragma omp parallel
 	{
@@ -50,7 +51,7 @@ int main(){
 	
 	// Read Demand File of Each Demand Pool
 	// Inititalization of Constraint Matrix
-	MatrixXd Constraint = MatrixXd::Zero(num_row, num_category);
+	Eigen::MatrixXd Constraint = Eigen::MatrixXd::Zero(num_row, num_category);
 
 	#pragma omp parallel
 	{
@@ -60,10 +61,10 @@ int main(){
 		}
 	}
 
-	VectorXd Constraint_sum = Constraint.colwise().sum();
+	Eigen::VectorXd Constraint_sum = Constraint.colwise().sum();
 	
 	// Initialization of Demand Data
-	VectorXd Demand_0(num_category);
+	Eigen::VectorXd Demand_0(num_category);
 	Demand_0 = Demand_ts.colwise().sum().tail(num_category);
 	Demand_0 /= num_time;
 	double multiply_factor = 1;
@@ -98,8 +99,8 @@ int main(){
 	// Initialization of constants, vectors, and Matrixs
 	int count;
 	double alpha_iteration = 1;
-	VectorXd mu_0 = VectorXd::LinSpaced(num_row, mu_0_mean, mu_0_mean); 
-	VectorXd x_0(num_row);
+	Eigen::VectorXd mu_0 = Eigen::VectorXd::LinSpaced(num_row, mu_0_mean, mu_0_mean); 
+	Eigen::VectorXd x_0(num_row);
 	#pragma omp parallel
 	{
 		#pragma omp for
@@ -107,17 +108,17 @@ int main(){
 			x_0(item) = quantile(norm_dist, 1 - exp(-pow(mu_0(item) / mu_0_mean, 2)));
 		}
 	}
-	VectorXd dx_0 = VectorXd::LinSpaced(num_row, 1, 1);
-	VectorXd dmu_0 = VectorXd::LinSpaced(num_row, 1, 1);
-	VectorXd mu_inv_0(num_row);
-	VectorXd lambda(num_category);
-	VectorXd Conversion_vec(num_row);
-	MatrixXd Conversion_Mat_1(num_row, num_row);
-	MatrixXd Conversion_Mat_2(num_row, num_category);
+	Eigen::VectorXd dx_0 = Eigen::VectorXd::LinSpaced(num_row, 1, 1);
+	Eigen::VectorXd dmu_0 = Eigen::VectorXd::LinSpaced(num_row, 1, 1);
+	Eigen::VectorXd mu_inv_0(num_row);
+	Eigen::VectorXd lambda(num_category);
+	Eigen::VectorXd Conversion_vec(num_row);
+	Eigen::MatrixXd Conversion_Mat_1(num_row, num_row);
+	Eigen::MatrixXd Conversion_Mat_2(num_row, num_category);
 
 	// Iterations
 	count = 0; 
-	while(count < 5000 && dmu_0.lpNorm<Infinity>() > pow(10, -12)){
+	while(count < 5000 && dmu_0.lpNorm<Eigen::Infinity>()> pow(10, -12)){
 		#pragma omp parallel
 		{
 			#pragma omp for
@@ -146,31 +147,31 @@ int main(){
 		count += 1;
 	}
 	
-	cout << "--------------------------------------------------------------------------" << endl;
-	cout << "Annual Mean" << endl;
-	cout << "Iterations: " << count << endl;
-	cout << "--------------------------------------------------------------------------" << endl;
-	cout << "Aggregated Demand at Each Bidding Zone:" << endl;
-	cout << Constraint.transpose() * mu_0 << endl;
-	cout << "\n" << endl;
-	cout << "Range of Nominal Demand:" << endl;
-	cout << mu_0.minCoeff() << endl;
-	cout << mu_0.maxCoeff() << endl;
-	cout << "\n" << endl;
-	cout << "Relative Error:" << endl;
-	cout << dmu_0.lpNorm<Infinity>() << endl;		
-	cout << "\n" << endl;
-	stop = chrono::high_resolution_clock::now();
-	duration = chrono::duration_cast <chrono::microseconds> (stop - start);
-	cout << "Timelapse of Code:\n";
-	cout << duration.count() / pow(10, 6) << " seconds" << endl;
-	cout << "\n";
+	std::cout << "--------------------------------------------------------------------------" << std::endl;
+	std::cout << "Annual Mean" << std::endl;
+	std::cout << "Iterations: " << count << std::endl;
+	std::cout << "--------------------------------------------------------------------------" << std::endl;
+	std::cout << "Aggregated Demand at Each Bidding Zone:" << std::endl;
+	std::cout << Constraint.transpose() * mu_0 << std::endl;
+	std::cout << "\n" << std::endl;
+	std::cout << "Range of Nominal Demand:" << std::endl;
+	std::cout << mu_0.minCoeff() << std::endl;
+	std::cout << mu_0.maxCoeff() << std::endl;
+	std::cout << "\n" << std::endl;
+	std::cout << "Relative Error:" << std::endl;
+	std::cout << dmu_0.lpNorm<Eigen::Infinity>() << std::endl;		
+	std::cout << "\n" << std::endl;
+	stop = std::chrono::high_resolution_clock::now();
+	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
+	std::cout << "Timelapse of Code:\n";
+	std::cout << duration.count() / pow(10, 6) << " seconds" << std::endl;
+	std::cout << "\n";
 	
 	// ---------------------------------------------------------------------
 	// Output Annual Average Normalized Mean Demand Field Data
-	string fout_name;
+	std::string fout_name;
 	fout_name = "output/nominal_mean_demand_field_10km_annual_mean.csv";
-	vector<string> col_name;
+	std::vector<std::string> col_name;
 	col_name.push_back("nominal_mean_demand");
 	write_file(mu_0, fout_name, col_name);
 	
@@ -181,10 +182,10 @@ int main(){
 	int tick_temp;
 	int count_zeros;
 	alpha_iteration = .01;
-	string digit_zeros;
-	VectorXd Demand(num_category);
-	VectorXd mu_scale = mu_0 * 2 / pow(pi, .5);
-	VectorXd x_scale(num_row);
+	std::string digit_zeros;
+	Eigen::VectorXd Demand(num_category);
+	Eigen::VectorXd mu_scale = mu_0 * 2 / pow(pi, .5);
+	Eigen::VectorXd x_scale(num_row);
 	#pragma omp parallel
 	{
 		#pragma omp for
@@ -192,19 +193,19 @@ int main(){
 			x_scale(item) = quantile(norm_dist, 1 - exp(-pow(1, 2)));
 		}
 	}
-	VectorXd mu = mu_scale; 
-	VectorXd x = x_scale;
-	VectorXd dx = VectorXd::LinSpaced(num_row, 1, 1);
-	VectorXd dmu = VectorXd::LinSpaced(num_row, 1, 1);
-	VectorXd mu_inv(num_row);
+	Eigen::VectorXd mu = mu_scale; 
+	Eigen::VectorXd x = x_scale;
+	Eigen::VectorXd dx = Eigen::VectorXd::LinSpaced(num_row, 1, 1);
+	Eigen::VectorXd dmu = Eigen::VectorXd::LinSpaced(num_row, 1, 1);
+	Eigen::VectorXd mu_inv(num_row);
 
 	for(int tick = 0; tick < num_time; ++ tick){
 		Demand = Demand_ts.row(tick).tail(num_category);
 		
 		// Iterated Optimization
 		count = 0;
-		dmu = VectorXd::LinSpaced(num_row, 1, 1);
-		while(count < 5000 && dmu.lpNorm<Infinity>() > pow(10, -3)){
+		dmu = Eigen::VectorXd::LinSpaced(num_row, 1, 1);
+		while(count < 5000 && dmu.lpNorm<Eigen::Infinity>()> pow(10, -3)){
 		#pragma omp parallel
 		{
 			#pragma omp for			
@@ -241,29 +242,29 @@ int main(){
 			tick_temp /= 10;
 		}
 		for(int item = 0; item < 5 - count_zeros; ++item){
-			digit_zeros += to_string(0);
+			digit_zeros += std::to_string(0);
 		}
-		fout_name = "output/nominal_mean_demand_field_10km_ts_" + digit_zeros + to_string(tick) + ".csv";
+		fout_name = "output/nominal_mean_demand_field_10km_ts_" + digit_zeros + std::to_string(tick) + ".csv";
 		write_file(mu, fout_name, col_name);
 		digit_zeros.clear();
 		
 		if((tick + 1) % 24 == 0){
-			cout << "--------------------------------------------------------------------------" << endl;
-			cout << "Tick: " << tick << endl;
-			cout << "Iterations: " << count << endl;
-			cout << "--------------------------------------------------------------------------" << endl;
-			cout << "Range of Nominal Demand:" << endl;
-			cout << mu.minCoeff() << endl;
-			cout << mu.maxCoeff() << endl;
-			cout << "\n" << endl;
-			cout << "Relative Error:" << endl;
-			cout << dmu.lpNorm<Infinity>() << endl;		
-			cout << "\n" << endl;
-			stop = chrono::high_resolution_clock::now();
-			duration = chrono::duration_cast <chrono::microseconds> (stop - start);
-			cout << "Timelapse of Code:\n";
-			cout << duration.count() / pow(10, 6) << " seconds" << endl;
-			cout << "\n";
+			std::cout << "--------------------------------------------------------------------------" << std::endl;
+			std::cout << "Tick: " << tick << std::endl;
+			std::cout << "Iterations: " << count << std::endl;
+			std::cout << "--------------------------------------------------------------------------" << std::endl;
+			std::cout << "Range of Nominal Demand:" << std::endl;
+			std::cout << mu.minCoeff() << std::endl;
+			std::cout << mu.maxCoeff() << std::endl;
+			std::cout << "\n" << std::endl;
+			std::cout << "Relative Error:" << std::endl;
+			std::cout << dmu.lpNorm<Eigen::Infinity>() << std::endl;		
+			std::cout << "\n" << std::endl;
+			stop = std::chrono::high_resolution_clock::now();
+			duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
+			std::cout << "Timelapse of Code:\n";
+			std::cout << duration.count() / pow(10, 6) << " seconds" << std::endl;
+			std::cout << "\n";
 		}
 	}
 }   
