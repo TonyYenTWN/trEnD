@@ -1,0 +1,31 @@
+# Project: area_demand
+# Makefile created by Embarcadero Dev-C++ 6.3
+
+CPP      = g++.exe
+CC       = gcc.exe
+WINDRES  = windres.exe
+OBJ      = area_demand.o Geostat.o
+LINKOBJ  = area_demand.o Geostat.o
+LIBS     = -L"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib" -L"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/lib" -pg
+INCS     = -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include"
+CXXINCS  = -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include/c++" -I"D:/Programs/C++/tools/eigen-3.3.9" -I"D:/Programs/C++/tools/boost_1_78_0"
+BIN      = area_demand.exe
+CXXFLAGS = $(CXXINCS) -march=native -pg -fopenmp -pthread -DNDEBUG -O3 -Wall
+CFLAGS   = $(INCS) -march=native -pg -fopenmp -pthread -DNDEBUG -O3 -Wall
+DEL      = C:\Program Files (x86)\Embarcadero\Dev-Cpp\DevCpp.exe INTERNAL_DEL
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	${DEL} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+area_demand.o: area_demand.cpp
+	$(CPP) -c area_demand.cpp -o area_demand.o $(CXXFLAGS)
+
+Geostat.o: Geostat.cpp
+	$(CPP) -c Geostat.cpp -o Geostat.o $(CXXFLAGS)
