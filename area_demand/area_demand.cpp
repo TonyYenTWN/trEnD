@@ -1,4 +1,4 @@
-// Main Source File
+// Main Source File that disaggregate electricity demand of bidding zones to spatial points
 #include <iostream>
 #include <chrono>
 #include <omp.h>
@@ -20,7 +20,7 @@ int main(){
 	int num_col = 6;
 	MatrixXd sample_inform = read_file(num_row, num_col, fin_name);
 
-	// Read population density data; can change to other types of spatial point data in the future
+	// Read electricity demand data; can change to other types of spatial point data in the future
 	fin_name = "input/demand_actual_2021.csv";
 	int num_time = 8760; 
 	int num_category = sample_inform.col(0).maxCoeff() + 1;
