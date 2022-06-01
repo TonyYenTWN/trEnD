@@ -1,4 +1,4 @@
-// Main Source File that disaggregate electricity demand of bidding zones to spatial points
+// Main Source File that disaggregate electricity demand of bidding zones to demand density field at each spatial point
 #include <iostream>
 #include <chrono>
 #include <omp.h>
