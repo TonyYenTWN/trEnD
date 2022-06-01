@@ -1,6 +1,111 @@
 // Source file for linear programming using contraction and gradient projection algorithm
 // Applicable when an initial feasible point in the interior is trivial
-// Test case:
+
+#include <iostream>
+#include <omp.h>
+#include "../basic/Basic_Definitions.h"
+#include "../basic/Eigen_Sparse.h"
+
+// Constraint object
+struct LP_constraint{
+	bool eq_normalized_flag = 0;
+	bool eq_solved_flag = 0;
+	Eigen::VectorXd eq_norm;
+	Eigen::VectorXd ie_increment;										// Increment per unit variation in the gradient direction
+	Eigen::SparseMatrix <double> eq_matrix;								// Coefficients for equality constraints
+	Eigen::SparseMatrix <double> ie_matrix;								// Coefficients for inequality constraints
+	Eigen::SparseMatrix <double> eq_cov_matrix;							// Dot product of the equality constraints
+	Eigen::SimplicialLDLT <Eigen::SparseMatrix <double>> eq_cov_solver; // Solver for the covariance (dot product) matrix
+};
+
+// Boundary object
+struct LP_boundary{
+	bool eq_normalized_flag = 0;
+	Eigen::VectorXd eq_vector;			// Value of original equality constraints
+	Eigen::MatrixXd ie_matrix;			// Boundary of original inequality constraints; 0th column: lower bound value; 1st column: upper bound value
+};
+
+// Objective object
+struct LP_objective{
+	Eigen::VectorXd vector;
+	Eigen::VectorXd cov_obj_vector;		// Dot product between the reduced objective and inequality constraints
+	double value;
+};
+
+// Solver object
+struct LP_cov_eq_solver{
+	bool solved_flag = 0;
+	Eigen::SimplicialLDLT <Eigen::SparseMatrix <double>> Spd; 	// Solver for a symmetric positive definite matrix
+};
+
+// Solution object
+struct LP_solution{
+	Eigen::VectorXd vector;
+	Eigen::VectorXd vector_ref;
+};
+
+struct LP_object{
+	// Input parameters
+	int Constraints_eq_num;
+	int Constraints_ie_num;
+	int Variables_num;
+	
+	// Mixed substructure
+	LP_objective Objective;
+	LP_constraint Constraint;
+	LP_boundary Boundary;
+	
+	// Process and output variables
+	Eigen::VectorXd Proj_grad_vector;
+	LP_solution Solution;
+};
+
+void LP_constraint_eq_normalization(LP_object &Problem){
+	// Check if equality constraints has been updated
+	if(!Problem.Constraint.eq_normalized_flag){
+		// Update both the constraints and the boundaries
+		Problem.Constraint.eq_norm = Eigen::VectorXd(Problem.Constraints_eq_num);
+		
+		for(int item_iter = 0; item_iter < Problem.Constraints_eq_num; ++ item_iter){
+			Problem.Constraint.eq_norm(item_iter) = Problem.Constraint.eq_matrix.row(item_iter).norm();
+			Problem.Constraint.eq_matrix.row(item_iter) /= Problem.Constraint.eq_norm(item_iter);
+			Problem.Boundary.ie_matrix.row(item_iter) /= Problem.Constraint.eq_norm(item_iter);
+		}
+		
+		// Update boolean variables indicating normalization of the constraint and the boundary have been made for the current problem
+		Problem.Constraint.eq_normalized_flag = 1;
+		Problem.Boundary.eq_normalized_flag = 1;
+	}
+	else{
+		// Update only the boundaries
+		if(!Problem.Boundary.eq_normalized_flag){
+			for(int item_iter = 0; item_iter < Problem.Constraints_eq_num; ++ item_iter){
+				Problem.Boundary.ie_matrix.row(item_iter) /= Problem.Constraint.eq_norm(item_iter);
+			}			
+			
+			// Update boolean variables indicating normalization of the boundary has been made for the current problem
+			Problem.Boundary.eq_normalized_flag = 1;
+		}
+		else{
+			std::cout << "The equality constraints and boundaries have already been normalized!" << std::endl;
+		}
+	}
+}
+
+void LP_constraint_cov_eq_matrix_generation(LP_object &Problem){
+	if(!Problem.Constraint.eq_solved_flag){
+		Problem.Constraint.eq_cov_matrix = Problem.Constraint.eq_matrix * Problem.Constraint.eq_matrix.transpose();
+		Problem.Constraint.eq_cov_solver.compute(Problem.Constraint.eq_cov_matrix);
+		Problem.Constraint.eq_solved_flag = 1;
+		
+		std::cout << Problem.Constraint.eq_cov_matrix << std::endl;
+	}
+	else{
+		std::cout << "Covariance matrix of the equality constraints has already been generated!" << std::endl;
+	}
+}
+
+// Test case 1, with only equality constraints:
 // maximize z: x_1 + 2 * x_2 + x_3 + x_4;
 // s.t.
 // 0 <= x_1 <= 1;
@@ -11,300 +116,25 @@
 // x_1 + x_2 + 2 * x_3 + 3 * x_4 == 2;
 // 2 * x_1 + x_2 + x_3 + x_4 == 1;
 // Optimal solution is (0, .5, 0, .5) and optimal value is 1.5
-// A trivial initial feasible point is (0, 0, 1, 0) or (.2, 0, 0, .6)
-
-#include <iostream>
-#include <omp.h>
-#include "../basic/Basic_Definitions.h"
-#include "../basic/Eigen_Sparse.h"
-
-// Constraint object
-struct LP_constraint{
-	bool normalized = 0;
-	Eigen::VectorXd norm;
-	Eigen::VectorXd ie_reduced_increment;				// Increment per unit variation in the gradient direction
-	Eigen::SparseMatrix <double> eq_orig_matrix;		// Coefficients for original equality constraints
-	Eigen::SparseMatrix <double> ie_orig_matrix;		// Coefficients for original inequality constraints
-	Eigen::SparseMatrix <double> ie_reduced_matrix;		// Coefficients for reduced inequality constraints			
-};
-
-// Boundary object
-struct LP_boundary{
-	Eigen::VectorXd eq_vector;				// Value of original equality constraints
-	Eigen::MatrixXd ie_orig_matrix;			// Boundary of original inequality constraints; 0th column: lower bound value; 1st column: upper bound value
-	Eigen::MatrixXd ie_reduced_matrix;		// Boundary of reduced inequality constraints
-	
-};
-
-// Objective object
-struct LP_objective{
-	Eigen::VectorXd orig_vector;
-	Eigen::VectorXd reduced_vector;
-	double orig_value;
-	double reduced_value;
-};
-
-// Solver object
-struct LP_matrix_solver{
-	bool Normal_flag = 0;
-	//Eigen::SimplicialLDLT <Eigen::SparseMatrix <double>> Spd; 								// Solver for a symmetric positive definite matrix
-	Eigen::SparseLU <Eigen::SparseMatrix <double>, Eigen::COLAMDOrdering <int>> Normal;			// Solver for an arbitrary matrix
-	Eigen::SparseLU <Eigen::SparseMatrix <double>, Eigen::COLAMDOrdering <int>> Normal_Trans;	// Solver for the transpose of an arbitrary matrix
-};
-
-// Solution object
-struct LP_solution{
-	Eigen::VectorXd orig_vector;
-	Eigen::VectorXd reduced_vector;
-	Eigen::VectorXd reduced_vector_ref;
-};
-
-struct LP_object{
-	// Input parameters
-	int Constraints_eq_num;
-	int Constraints_ie_num;
-	int Variables_num;
-	LP_objective Objective;
-	LP_constraint Constraint;
-	LP_boundary Boundary;
-	LP_matrix_solver Solver;
-	
-	// Process and output variables
-	Eigen::VectorXd Proj_grad_vector;
-	LP_solution Solution;
-};
-
-// Linear system for reducing the redundant variables
-void LP_constraint_redundant_matrix_solved(LP_object &Problem){
-	Problem.Solver.Normal.compute(Problem.Constraint.eq_orig_matrix.rightCols(Problem.Constraints_eq_num));
-	Problem.Solver.Normal_Trans.compute(Problem.Constraint.eq_orig_matrix.rightCols(Problem.Constraints_eq_num).transpose());
-	Problem.Solver.Normal_flag = 1;
-}
-
-void LP_constraint_ie_reduced_generation(LP_object &Problem){
-	// Set default value of reduced constraint matrix
-	Eigen::MatrixXd reduced_matrix = Eigen::MatrixXd(Problem.Constraint.ie_orig_matrix.leftCols(Problem.Variables_num - Problem.Constraints_eq_num));
-	
-	// Check if there are eqaulity constraints in the original problem
-	if(Problem.Constraints_eq_num != 0){
-		// Warm up the solver if not yet done for the current matrix
-		if(!Problem.Solver.Normal_flag){
-			LP_constraint_redundant_matrix_solved(Problem);
-		}
-		
-		// If equality constraints exist, replacing the redundant variables with them
-		// A_e * x_e + A_r * x_r = b
-		// A_e * x_e - b = -A_r * x_r
-		// l_r <= -A_r^(-1) * (A_e * x_e - b) = x_r <= u_r
-		// l_r - A_r^(-1) * b <= -A_r^(-1) * A_e * x_e <= u_r - A_r^(-1) * b
-		Eigen::VectorXd col_orig;
-		for(int var_id = 0; var_id < Problem.Variables_num - Problem.Constraints_eq_num; ++ var_id){
-			col_orig = Problem.Constraint.eq_orig_matrix.col(var_id);
-			reduced_matrix.middleRows(Problem.Variables_num - Problem.Constraints_eq_num, Problem.Constraints_eq_num).col(var_id) = -Problem.Solver.Normal.solve(col_orig);
-		}
-						
-		// Check if there are ineqaulity constraints in the original problem
-		if(Problem.Constraints_ie_num != 0){			
-		}	
-	}
-	
-	double tol = pow(10, -8);
-	Problem.Constraint.ie_reduced_matrix = reduced_matrix.sparseView(tol, 1);
-}
-
-void LP_boundary_ie_reduced_generation(LP_object &Problem){
-	// Set default value of reduced boundary vector
-	Problem.Boundary.ie_reduced_matrix = Problem.Boundary.ie_orig_matrix;
-	
-	// Check if there are eqaulity constraints in the original problem
-	if(Problem.Constraints_eq_num != 0){
-		// Warm up the solver if not yet done for the current matrix
-		if(!Problem.Solver.Normal_flag){
-			LP_constraint_redundant_matrix_solved(Problem);
-		}
-
-		// If equality constraints exist, replacing the redundant variables with them
-		// A_e * x_e + A_r * x_r = b
-		// A_e * x_e - b = -A_r * x_r
-		// l_r <= -A_r^(-1) * (A_e * x_e - b) = x_r <= u_r
-		// l_r - A_r^(-1) * b <= -A_r^(-1) * A_e * x_e <= u_r - A_r^(-1) * b
-		Problem.Boundary.ie_reduced_matrix.middleRows(Problem.Variables_num - Problem.Constraints_eq_num, Problem.Constraints_eq_num).col(0) -= Problem.Solver.Normal.solve(Problem.Boundary.eq_vector);
-		Problem.Boundary.ie_reduced_matrix.middleRows(Problem.Variables_num - Problem.Constraints_eq_num, Problem.Constraints_eq_num).col(1) -= Problem.Solver.Normal.solve(Problem.Boundary.eq_vector);
-						
-		// Check if there are ineqaulity constraints in the original problem
-		if(Problem.Constraints_ie_num != 0){			
-		}	
-	}
-}
-
-void LP_objective_reduced_generation(LP_object &Problem){
-	// Set default value of reduced objective vector
-	Problem.Objective.reduced_vector = Problem.Objective.orig_vector.head(Problem.Variables_num - Problem.Constraints_eq_num);
-	
-	// Check if there are eqaulity constraints in the original problem
-	if(Problem.Constraints_eq_num != 0){
-		// Warm up the solver if not yet done for the current matrix
-		if(!Problem.Solver.Normal_flag){
-			LP_constraint_redundant_matrix_solved(Problem);
-		}
-
-		// Z = c_e^T * x_e + c_r^T * x_r 
-		//   = c_e^T * x_e - c_r^T * A_r^(-1) * (A_e * x_e - b)
-		//   = (c_e^T - c_r^T * A_r^(-1) * A_e) * x_e + c_r^T * A_r^(-1) * b
-		Problem.Objective.reduced_vector = Problem.Objective.orig_vector.head(Problem.Variables_num - Problem.Constraints_eq_num);
-		Eigen::VectorXd coeff_redundant = Problem.Objective.orig_vector.tail(Problem.Constraints_eq_num);
-		Problem.Objective.reduced_vector -= (Problem.Constraint.eq_orig_matrix.leftCols(Problem.Variables_num - Problem.Constraints_eq_num)).transpose() * Problem.Solver.Normal_Trans.solve(coeff_redundant);		
-	}
-}
-
-// Normalization of reduced inequality constraints
-void LP_constraint_ie_reduced_normalization(LP_object &Problem, bool constraint_update = 1){
-	Problem.Constraint.norm = Eigen::VectorXd::Ones(Problem.Variables_num + Problem.Constraints_ie_num);
-	
-	for(int row_id = Problem.Variables_num - Problem.Constraints_eq_num; row_id < Problem.Constraint.ie_reduced_matrix.rows(); ++ row_id){
-		// Check if the constraint coefficients need to be normalized
-		if(constraint_update){
-			Problem.Constraint.norm(row_id) = Problem.Constraint.ie_reduced_matrix.row(row_id).norm();
-			Problem.Constraint.ie_reduced_matrix.row(row_id) /= Problem.Constraint.norm(row_id);
-		}
-		// If not, only boundary values will be normalized
-		Problem.Boundary.ie_reduced_matrix.row(row_id) /= Problem.Constraint.norm(row_id);
-	}
-	
-	if(constraint_update){
-		Problem.Constraint.ie_reduced_increment = Problem.Constraint.ie_reduced_matrix * Problem.Objective.reduced_vector;
-	}
-	Problem.Constraint.normalized = 1;
-}
-
-// Function for the optimization algorithm
-void LP_optimized(LP_object &Problem){
-	// Parameters declaration
-	double tol = pow(10, -8);
-	double eps = pow(10, -6); 
-	
-	// Process variables (in the loop) declaration
-	double min_increment;
-	double Previous_obj_value;
-	double Obj_value;
-	Eigen::MatrixXd Boundary_gap(Problem.Variables_num + Problem.Constraints_ie_num, 2); 
-	Eigen::VectorXd Projected_increment(Problem.Variables_num + Problem.Constraints_ie_num);	
-	Eigen::VectorXd Projected_gradient;
-	Eigen::VectorXd Previous_solution;
-	Eigen::VectorXd Contracted_solution;
-	Eigen::Vector2d current_increment;
-
-	// Initialization of starting point and other process variables
-	Problem.Solution.reduced_vector = Eigen::VectorXd::Zero(Problem.Variables_num - Problem.Constraints_eq_num);
-	Problem.Objective.reduced_value = Problem.Solution.reduced_vector.dot(Problem.Objective.reduced_vector);
-	
-	// Main loop for searching the optimal solution
-	while(1){
-		// Update contracted solution and previous solution for later use in the loop
-		Previous_obj_value = Problem.Objective.reduced_value;
-		Previous_solution = Problem.Solution.reduced_vector;
-		Contracted_solution = Problem.Solution.reduced_vector_ref;
-		Contracted_solution += (1 - eps) * (Problem.Solution.reduced_vector - Problem.Solution.reduced_vector_ref);
-		
-		// Calculate the allowed increment along the objective direction before reaching a constraint
-		Boundary_gap.col(0) = Problem.Constraint.ie_reduced_matrix * Contracted_solution - Problem.Boundary.ie_reduced_matrix.col(0);
-		Boundary_gap.col(1) = Problem.Boundary.ie_reduced_matrix.col(1) - Problem.Constraint.ie_reduced_matrix * Contracted_solution;
-		min_increment = std::numeric_limits<double>::infinity();
-		for(int constraint_id = 0; constraint_id < Boundary_gap.rows(); ++ constraint_id){
-			current_increment(0) = -Boundary_gap(constraint_id, 0) / Problem.Constraint.ie_reduced_increment(constraint_id);
-			if(current_increment(0) > tol && current_increment(0) < min_increment){
-				min_increment = current_increment(0);
-			}
-			current_increment(1) = Boundary_gap(constraint_id, 1) / Problem.Constraint.ie_reduced_increment(constraint_id);
-			if(current_increment(1) > tol && current_increment(1) < min_increment){
-				min_increment = current_increment(1);
-			}		
-		}
-		
-		// Update the solution point and projected gradient on / near the active constraint(s)
-		Problem.Solution.reduced_vector = Contracted_solution + min_increment * Problem.Objective.reduced_vector;
-		Projected_gradient = Problem.Solution.reduced_vector - Previous_solution;
-		Projected_gradient /= Projected_gradient.norm();
-		
-		// Calculate the allowed increment along the projected gradient before reaching another set of constraint(s)
-		Boundary_gap.col(0) = Problem.Constraint.ie_reduced_matrix * Problem.Solution.reduced_vector - Problem.Boundary.ie_reduced_matrix.col(0);
-		Boundary_gap.col(1) = Problem.Boundary.ie_reduced_matrix.col(1) - Problem.Constraint.ie_reduced_matrix * Problem.Solution.reduced_vector;
-		Projected_increment = Problem.Constraint.ie_reduced_matrix * Projected_gradient;
-		min_increment = std::numeric_limits<double>::infinity();
-		for(int constraint_id = 0; constraint_id < Boundary_gap.rows(); ++ constraint_id){
-			if(abs(Projected_increment(constraint_id)) > tol){
-				current_increment(0) = -Boundary_gap(constraint_id, 0) / Projected_increment(constraint_id);
-				if(current_increment(0) > tol && current_increment(0) < min_increment){
-					min_increment = current_increment(0);
-				}
-				current_increment(1) = Boundary_gap(constraint_id, 1) / Projected_increment(constraint_id);
-				if(current_increment(1) > tol && current_increment(1) < min_increment){
-					min_increment = current_increment(1);
-				}			
-			}			
-		}
-		Problem.Solution.reduced_vector += min_increment * Projected_gradient;
-		Obj_value = Problem.Solution.reduced_vector.dot(Problem.Objective.reduced_vector);
-		
-		// Check if objective function can be improved or optimality has been reached
-		if(Obj_value >= Previous_obj_value){
-			Problem.Objective.reduced_value = Obj_value;
-		}
-		else{
-			// If current objective value is smaller than previous, optimality occurs at previous solution
-			Problem.Solution.reduced_vector = Previous_solution;
-			break;
-		}		
-	}
-	
-	// Reconstruct the original solution and objective value from the reduced problem, if necessary
-	if(Problem.Constraints_eq_num != 0){
-		// Reconstruction of the solution
-		// x_r = -A_r^(-1) * (A_e * x_e - b)
-		// Problem.Constraint.eq_orig_matrix
-		Eigen::VectorXd redundant_variables = -Problem.Solver.Normal.solve(Problem.Constraint.eq_orig_matrix.leftCols(Problem.Variables_num - Problem.Constraints_eq_num) * Problem.Solution.reduced_vector - Problem.Boundary.eq_vector);
-		Problem.Solution.orig_vector = Eigen::VectorXd(Problem.Variables_num);
-		Problem.Solution.orig_vector << Problem.Solution.reduced_vector, redundant_variables;
-		
-		// Reconstruction of the objective value
-		// Z = c_e^T * x_e + c_r^T * x_r 
-		//   = c_e^T * x_e - c_r^T * A_r^(-1) * (A_e * x_e - b)
-		//   = (c_e^T - c_r^T * A_r^(-1) * A_e) * x_e + c_r^T * A_r^(-1) * b
-		Problem.Objective.orig_value = 	Problem.Objective.reduced_value + Problem.Objective.orig_vector.tail(Problem.Constraints_eq_num).transpose() * Problem.Solver.Normal.solve(Problem.Boundary.eq_vector);
-	}
-	else{
-		Problem.Solution.orig_vector = Problem.Solution.reduced_vector;
-	}
-
-	std::cout << "---------------------------------------------------------------" << std::endl;
-	std::cout << "Reduced Problem" << std::endl;
-	std::cout << "---------------------------------------------------------------" << std::endl;	
-	std::cout << "Solution       : " << Problem.Solution.reduced_vector.transpose() << std::endl;
-	std::cout << "Objective value: " << Problem.Objective.reduced_value << "\n" << std::endl;
-	std::cout << "---------------------------------------------------------------" << std::endl;
-	std::cout << "Original Problem" << std::endl;
-	std::cout << "---------------------------------------------------------------" << std::endl;
-	std::cout << "Solution       : " << Problem.Solution.orig_vector.transpose() << std::endl;
-	std::cout << "Objective value: " << Problem.Objective.orig_value << "\n" << std::endl;
-}
-
-void test_problem(){
+// A trivial initial feasible point is (0, 0, 1, 0), (0, .5, 0, .5) or (.2, 0, 0, .6)
+// A feasible interior point for reference of contraction can be found by averaging the 3 trivial points
+void test_problem_1(){
 	// Set dimension of the problem
 	LP_object Problem;
 	Problem.Constraints_eq_num = 2;
 	Problem.Constraints_ie_num = 0;
 	Problem.Variables_num = 4;
-	
+
 	// Set objective vector
-	Problem.Objective.orig_vector = Eigen::VectorXd(Problem.Variables_num);
-	Problem.Objective.orig_vector << 1, 2, 1, 1;
+	Problem.Objective.vector = Eigen::VectorXd(Problem.Variables_num);
+	Problem.Objective.vector << 1, 2, 1, 1;
 	
 	// Set boudary values for original equality and inequality constraints
 	Problem.Boundary.eq_vector = Eigen::VectorXd(Problem.Constraints_eq_num);
 	Problem.Boundary.eq_vector << 2, 1;
-	Problem.Boundary.ie_orig_matrix = Eigen::MatrixXd(Problem.Variables_num + Problem.Constraints_ie_num, 2);
-	Problem.Boundary.ie_orig_matrix.col(0) = Eigen::VectorXd::Zero(Problem.Variables_num + Problem.Constraints_ie_num);
-	Problem.Boundary.ie_orig_matrix.col(1) = Eigen::VectorXd::Ones(Problem.Variables_num + Problem.Constraints_ie_num);
+	Problem.Boundary.ie_matrix = Eigen::MatrixXd(Problem.Variables_num + Problem.Constraints_ie_num, 2);
+	Problem.Boundary.ie_matrix.col(0) = Eigen::VectorXd::Zero(Problem.Variables_num + Problem.Constraints_ie_num);
+	Problem.Boundary.ie_matrix.col(1) = Eigen::VectorXd::Ones(Problem.Variables_num + Problem.Constraints_ie_num);
 	
 	// Set sparse matrix for original equality constraints
 	std::vector<Trip> Constraint_eq_trip;
@@ -317,34 +147,32 @@ void test_problem(){
 	Constraint_eq_trip.push_back(Trip(1, 1, 1));
 	Constraint_eq_trip.push_back(Trip(1, 2, 1));
 	Constraint_eq_trip.push_back(Trip(1, 3, 1));
-	Problem.Constraint.eq_orig_matrix = Eigen::SparseMatrix <double> (Problem.Constraints_eq_num, Problem.Variables_num);
-	Problem.Constraint.eq_orig_matrix.setFromTriplets(Constraint_eq_trip.begin(), Constraint_eq_trip.end());
+	Problem.Constraint.eq_matrix = Eigen::SparseMatrix <double> (Problem.Constraints_eq_num, Problem.Variables_num);
+	Problem.Constraint.eq_matrix.setFromTriplets(Constraint_eq_trip.begin(), Constraint_eq_trip.end());
 	
 	// Set sparse matrix for original inequality constraints
-	Problem.Constraint.ie_orig_matrix = Eigen::SparseMatrix <double> (Problem.Variables_num + Problem.Constraints_ie_num, Problem.Variables_num);
-	std::vector<Trip> Constraint_ie_orig_trip;
-	Constraint_ie_orig_trip.reserve((Problem.Constraints_eq_num + 1) * (Problem.Variables_num - Problem.Constraints_eq_num) + Problem.Constraints_ie_num * Problem.Variables_num);
+	Problem.Constraint.ie_matrix = Eigen::SparseMatrix <double> (Problem.Variables_num + Problem.Constraints_ie_num, Problem.Variables_num);
+	std::vector<Trip> Constraint_ie_trip;
+	Constraint_ie_trip.reserve((Problem.Constraints_ie_num + 1) * Problem.Variables_num);
 	for(int var_id = 0; var_id < Problem.Variables_num; ++ var_id){
-		Constraint_ie_orig_trip.push_back(Trip(var_id, var_id, 1));
+		Constraint_ie_trip.push_back(Trip(var_id, var_id, 1));
 	}
-	Problem.Constraint.ie_orig_matrix.setFromTriplets(Constraint_ie_orig_trip.begin(), Constraint_ie_orig_trip.end());
+	Problem.Constraint.ie_matrix.setFromTriplets(Constraint_ie_trip.begin(), Constraint_ie_trip.end());
 	// Put additional inequality constraints here
 	
 	// Set reference point for contraction
-	Problem.Solution.reduced_vector_ref = Eigen::VectorXd(Problem.Variables_num - Problem.Constraints_eq_num);
-	Problem.Solution.reduced_vector_ref << 1. / 6., 1. / 15.;
+	Eigen::VectorXd feasible_point_1(Problem.Variables_num - Problem.Constraints_eq_num);
+	Eigen::VectorXd feasible_point_2(Problem.Variables_num - Problem.Constraints_eq_num);
+	Eigen::VectorXd feasible_point_3(Problem.Variables_num - Problem.Constraints_eq_num);
+	feasible_point_1 << 0, 0, 1, 0;
+	feasible_point_2 << 0, .5, 0, .5;
+	feasible_point_3 << .2, 0, 0, .6;	
+	Problem.Solution.vector_ref = 1. / 3. * (feasible_point_1 + feasible_point_2 + feasible_point_3);
 	
-	// Generate sparse matrix for reduced inequality constraints
-	LP_constraint_redundant_matrix_solved(Problem);
-	LP_constraint_ie_reduced_generation(Problem);
-	LP_boundary_ie_reduced_generation(Problem);
-	LP_objective_reduced_generation(Problem);
-	LP_constraint_ie_reduced_normalization(Problem);
-	
-	// Solve the LP
-	LP_optimized(Problem);
+	// Generate sparse matrix for covariance equality constraints
+	LP_constraint_cov_eq_matrix_generation(Problem);
 }
 
 int main(){
-	test_problem();
+	//test_problem_1();
 }
