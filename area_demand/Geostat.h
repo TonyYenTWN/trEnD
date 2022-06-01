@@ -1,10 +1,9 @@
 // Geostat functions header file
 #pragma once
+#include "../basic/Basic_Definitions.h"
 
 #ifndef GEOSTAT
 #define GEOSTAT
-
-#include "../basic/Basic_Definitions.h"
 
 // Constants of Earth Spheroid
 class Earth_Constant{
