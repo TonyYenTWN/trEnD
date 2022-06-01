@@ -12,7 +12,8 @@ struct LP_constraint{
 	Eigen::VectorXd ie_reduced_increment;				// Increment per unit variation in the gradient direction
 	Eigen::SparseMatrix <double> eq_orig_matrix;		// Coefficients for original equality constraints
 	Eigen::SparseMatrix <double> ie_orig_matrix;		// Coefficients for original inequality constraints
-	Eigen::SparseMatrix <double> ie_reduced_matrix;		// Coefficients for reduced inequality constraints			
+	Eigen::SparseMatrix <double> ie_reduced_matrix;		// Coefficients for reduced inequality constraints
+	Eigen::SparseMatrix <double> permutation_matrix; 	// Record of permutation order			
 };
 
 // Boundary object
@@ -104,23 +105,38 @@ void LP_variables_permutation(LP_object &Problem){
 	// Check which of the original variables should be chosen as redundant
 	Problem.Solver.Spd.compute(Problem.Constraint.eq_orig_matrix.transpose() * Problem.Constraint.eq_orig_matrix);
 	std::vector<int> redundant_var_seq;
+	std::vector<int> necessary_var_seq;
 	redundant_var_seq.reserve(Problem.Constraints_eq_num);
+	necessary_var_seq.reserve(Problem.Constraints_eq_num);
 	Eigen::VectorXd Constraint_eq_cov_D = Problem.Solver.Spd.vectorD();
 	for(int var_id = Problem.Variables_num - 1; var_id > -1; -- var_id){
-		if(abs(Constraint_eq_cov_D(var_id)) >= tol){
+		if(abs(Constraint_eq_cov_D(var_id)) >= tol && redundant_var_seq.size() < Problem.Constraints_eq_num){
 			redundant_var_seq.push_back(var_id);
-			
-			// Exit for loop once sufficient redundant variables are gathered
-			if(redundant_var_seq.size() == Problem.Constraints_eq_num){
-				break;
-			}
+		}
+		else{
+			necessary_var_seq.push_back(var_id);
 		}
 	}
 	std::reverse(redundant_var_seq.begin(), redundant_var_seq.end());
+	std::reverse(necessary_var_seq.begin(), necessary_var_seq.end());
 	
 	// Set a permutation matrix so that the redundant variables are put to the end
 	std::vector<Trip> Var_permut_trip;
-	Var_permut_trip.reserve(redundant_var_seq.size());
+	Var_permut_trip.reserve(Problem.Variables_num);
+	Eigen::SparseMatrix <double> Permutation_matrix(Problem.Variables_num, Problem.Variables_num);
+	for(int var_id = 0; var_id < necessary_var_seq.size(); ++ var_id){
+		Var_permut_trip.push_back(Trip(necessary_var_seq[var_id], Problem.Variables_num - Problem.Constraints_eq_num + var_id, 1));
+	}
+	for(int var_id = 0; var_id < redundant_var_seq.size(); ++ var_id){
+		Var_permut_trip.push_back(Trip(redundant_var_seq[var_id], var_id, 1));
+	}
+	Permutation_matrix.setFromTriplets(Var_permut_trip.begin(), Var_permut_trip.end());
+	
+	// Update constraints, and the objective function with the permutation
+	Problem.Constraint.permutation_matrix = Permutation_matrix;
+	Problem.Constraint.eq_orig_matrix = Problem.Constraint.eq_orig_matrix * Permutation_matrix;
+	Problem.Constraint.ie_orig_matrix = Problem.Constraint.ie_orig_matrix * Permutation_matrix;
+	Problem.Objective.orig_vector = Problem.Constraint.permutation_matrix.transpose() * Problem.Objective.orig_vector;
 }
 
 // Linear system for reducing the redundant variables
@@ -309,6 +325,9 @@ void LP_optimization(LP_object &Problem){
 	else{
 		Problem.Solution.orig_vector = Problem.Solution.reduced_vector;
 	}
+	
+	// Permute the original solution to the correct order
+	Problem.Solution.orig_vector = Problem.Constraint.permutation_matrix * Problem.Solution.orig_vector;
 }
 
 // Function for the optimization algorithm
@@ -493,8 +512,10 @@ void test_problem_2_set(LP_object &Problem){
 }
 
 int main(){
-	LP_object* Problem = new LP_object;
-	test_problem_1_set(*Problem);
-	LP_process(*Problem);
-	delete Problem;
+	LP_object Problem;
+	test_problem_1_set(Problem);
+	LP_process(Problem);
+	
+	test_problem_2_set(Problem);
+	LP_process(Problem);
 }
