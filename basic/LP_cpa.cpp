@@ -218,12 +218,12 @@ void LP_optimization(LP_object &Problem){
 
 // Function for the optimization algorithm
 void LP_result_print(LP_object &Problem, std::string Problem_name){
-	std::cout << "---------------------------------------------------------------" << std::endl;
+	std::cout << "----------------------------------------------------------------------------------------------------" << std::endl;
 	std::cout << "| " << Problem_name << std::endl;
-	std::cout << "---------------------------------------------------------------" << std::endl;
+	std::cout << "----------------------------------------------------------------------------------------------------" << std::endl;
 	std::cout << "| Solution         | " << Problem.Solution.vector.transpose() << std::endl;
 	std::cout << "| Objective value  | " << Problem.Objective.value << std::endl;
-	std::cout << "---------------------------------------------------------------" << std::endl;
+	std::cout << "----------------------------------------------------------------------------------------------------" << std::endl;
 	std::cout << "\n" << std::endl;
 }
 
@@ -326,8 +326,83 @@ void test_problem_1_set(LP_object &Problem){
 	Problem.Solution.vector_ini = feasible_point_1;		// Choose an extreme point that is far away enough from reference point
 }
 
+// Test case 2, with only equality constraints:
+// maximize z: 100 * x_1 + 13 * x_2 + 10 * x_3 + x_4 + x_5 + x_6;
+// s.t.
+// 0 <= x_1 <= 1;
+// 0 <= x_2 <= 1;
+// 0 <= x_3 <= 1;
+// 0 <= x_4 <= 1;
+// 0 <= x_5 <= 1;
+// 0 <= x_6 <= 1;
+// x_1 + 2 * x_2 + 2 * x_3 + 3 * x_4 == 2;
+// 2 * x_1 + x_2 + x_3 + x_4 == 1;
+// x_1 + x_2 + x_5 + x_6 == 1;
+// Optimal solution is (.2, 0, 0, .6, 0, .8) and optimal value is 21.4
+// 3 trivial feasible points is (0, 1, 0, 0, 0, 0), (.2, 0, 0, .6, .4, .4), or (0, 0, 1, 0, .5, .5)
+// A feasible interior point for reference of contraction can be found by averaging the 3 trivial points
+void test_problem_2_set(LP_object &Problem){
+	// Set dimension of the problem
+	Problem.Constraints_eq_num = 3;
+	Problem.Constraints_ie_num = 0;
+	Problem.Variables_num = 6;
+	
+	// Set objective vector
+	Problem.Objective.vector = Eigen::VectorXd(Problem.Variables_num);
+	Problem.Objective.vector << 100, 13, 10, 1, 1, 1;
+	
+	// Set boudary values for original equality and inequality constraints
+	Problem.Boundary.eq_vector = Eigen::VectorXd(Problem.Constraints_eq_num);
+	Problem.Boundary.eq_vector << 2, 1, 1;
+	Problem.Boundary.ie_matrix = Eigen::MatrixXd(Problem.Variables_num + Problem.Constraints_ie_num, 2);
+	Problem.Boundary.ie_matrix.col(0) = Eigen::VectorXd::Zero(Problem.Variables_num + Problem.Constraints_ie_num);
+	Problem.Boundary.ie_matrix.col(1) = Eigen::VectorXd::Ones(Problem.Variables_num + Problem.Constraints_ie_num);
+	
+	// Set sparse matrix for original equality constraints
+	std::vector<Trip> Constraint_eq_trip;
+	Constraint_eq_trip.reserve(Problem.Constraints_eq_num * Problem.Variables_num);
+	Constraint_eq_trip.push_back(Trip(0, 0, 1));
+	Constraint_eq_trip.push_back(Trip(0, 1, 2));
+	Constraint_eq_trip.push_back(Trip(0, 2, 2));
+	Constraint_eq_trip.push_back(Trip(0, 3, 3));
+	Constraint_eq_trip.push_back(Trip(1, 0, 2));
+	Constraint_eq_trip.push_back(Trip(1, 1, 1));
+	Constraint_eq_trip.push_back(Trip(1, 2, 1));
+	Constraint_eq_trip.push_back(Trip(1, 3, 1));
+	Constraint_eq_trip.push_back(Trip(2, 0, 1));
+	Constraint_eq_trip.push_back(Trip(2, 1, 1));
+	Constraint_eq_trip.push_back(Trip(2, 4, 1));
+	Constraint_eq_trip.push_back(Trip(2, 5, 1));
+	Problem.Constraint.eq_matrix = Eigen::SparseMatrix <double> (Problem.Constraints_eq_num, Problem.Variables_num);
+	Problem.Constraint.eq_matrix.setFromTriplets(Constraint_eq_trip.begin(), Constraint_eq_trip.end());
+	
+	// Set sparse matrix for original inequality constraints
+	Problem.Constraint.ie_matrix = Eigen::SparseMatrix <double> (Problem.Variables_num + Problem.Constraints_ie_num, Problem.Variables_num);
+	std::vector<Trip> Constraint_ie_trip;
+	Constraint_ie_trip.reserve((Problem.Constraints_ie_num + 1) * Problem.Variables_num);
+	for(int var_id = 0; var_id < Problem.Variables_num; ++ var_id){
+		Constraint_ie_trip.push_back(Trip(var_id, var_id, 1));
+	}
+	Problem.Constraint.ie_matrix.setFromTriplets(Constraint_ie_trip.begin(), Constraint_ie_trip.end());
+	
+	// Set reference point for contraction
+	Eigen::VectorXd feasible_point_1(Problem.Variables_num);
+	Eigen::VectorXd feasible_point_2(Problem.Variables_num);
+	Eigen::VectorXd feasible_point_3(Problem.Variables_num);
+	feasible_point_1 << 0, 1, 0, 0, 0, 0;
+	feasible_point_2 << .2, 0, 0, .6, .4, .4;
+	feasible_point_3 << 0, 0, 1, 0, .5, .5;
+	Problem.Solution.vector_ref = 1. / 3. * (feasible_point_1 + feasible_point_2 + feasible_point_3);
+	Problem.Solution.vector_ini = feasible_point_1;
+}
+
 int main(){
-	LP_object Problem;
-	test_problem_1_set(Problem);
-	LP_process(Problem);
+	LP_object* Problem = new LP_object;
+	test_problem_1_set(*Problem);
+	LP_process(*Problem, "1st Test");
+	delete Problem;
+	
+	Problem = new LP_object;
+	test_problem_2_set(*Problem);
+	LP_process(*Problem, "2nd Test");
 }
