@@ -29,7 +29,9 @@ void LP_constraint_cov_eq_matrix_generation(LP_object &Problem){
 	
 	// Check if the equality constraints has maximum possible rank
 	if(Problem.Solver.qr.rank() < Problem.Constraints_eq_num){
-		// If redundant eqaulity constraint occurs, check feasibility of the system 
+		// If redundant eqaulity constraint occurs, check feasibility of the system
+		// Because an initial feasible point is needed for the algorithm, feasibility should be checked earlier
+		// However, redundant eqaulity constraints can still occur so this step should still be performed
 		
 		// Update the information about equality constraints after removing the redundant ones
 		Problem.Constraint.eq_matrix = Problem.Solver.qr.colsPermutation() * Problem.Constraint.eq_matrix;
@@ -41,40 +43,13 @@ void LP_constraint_cov_eq_matrix_generation(LP_object &Problem){
 	
 	// Compute the default covariance matrix and its solver
 	Problem.Constraint.eq_cov_matrix = Problem.Constraint.eq_matrix * Problem.Constraint.eq_matrix.transpose();
-	Problem.Constraint.eq_cov_solver.compute(Problem.Constraint.eq_cov_matrix);
-	
-//	// Check if the coavriance matrix is not of full rank (determinant = 0)
-//	if(abs(Problem.Constraint.eq_cov_solver.determinant()) < tol){
-//		// Declare a dynamic vector of list of active (non-redeundant) equality constraints
-//		std::vector<int> active_const_seq;
-//		active_const_seq.reserve(Problem.Constraints_eq_num);
-//		Eigen::VectorXd Constraint_eq_cov_D = Problem.Constraint.eq_cov_solver.vectorD();
-//		for(int item_iter = 0; item_iter < Problem.Constraints_eq_num; ++ item_iter){
-//			if(abs(Constraint_eq_cov_D(item_iter)) >= tol){
-//				active_const_seq.push_back(item_iter);
-//			}
-//		}
-//		
-//		std::vector<Trip> Constraint_cov_sub_trip;
-//		Constraint_cov_sub_trip.reserve(active_const_seq.size());
-//		Eigen::SparseMatrix <double> Span_reduction(active_const_seq.size(), Problem.Constraints_eq_num);
-//		for(int item_iter = 0; item_iter < active_const_seq.size(); ++ item_iter){
-//			Constraint_cov_sub_trip.push_back(Trip(active_const_seq[item_iter], active_const_seq[item_iter], 1));
-//		}
-//		Span_reduction.setFromTriplets(Constraint_cov_sub_trip.begin(), Constraint_cov_sub_trip.end());
-//		
-//		// Update the information about equality constraints after removing the redundant ones
-//		Problem.Constraint.eq_cov_matrix = Span_reduction * Problem.Constraint.eq_cov_matrix * Span_reduction.transpose();
-//		Problem.Constraint.eq_matrix = Span_reduction * Problem.Constraint.eq_matrix;
-//		Problem.Constraints_eq_num = active_const_seq.size();
-//		Problem.Constraint.eq_cov_solver.compute(Problem.Constraint.eq_cov_matrix);
-//	}
+	Problem.Solver.ldlt.compute(Problem.Constraint.eq_cov_matrix);
 }
 
 // Compute the default gradient vector projected on the equality constraints
 void LP_default_gradient(LP_object &Problem){
 	Eigen::VectorXd Obj_cov_vector = Problem.Constraint.eq_matrix * Problem.Objective.vector;
-	Problem.Proj_grad.vector_default = Problem.Objective.vector - Problem.Constraint.eq_matrix.transpose() * Problem.Constraint.eq_cov_solver.solve(Obj_cov_vector);
+	Problem.Proj_grad.vector_default = Problem.Objective.vector - Problem.Constraint.eq_matrix.transpose() * Problem.Solver.ldlt.solve(Obj_cov_vector);
 	Problem.Constraint.ie_increment = Problem.Constraint.ie_matrix * Problem.Proj_grad.vector_default;
 }
 

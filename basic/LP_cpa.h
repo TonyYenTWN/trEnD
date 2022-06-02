@@ -34,7 +34,7 @@ struct LP_objective{
 
 // Solver object
 struct LP_solver{
-	Eigen::SimplicialLDLT <Eigen::SparseMatrix <double>> Spd; 	// Solver for a symmetric positive definite matrix
+	Eigen::SimplicialLDLT <Eigen::SparseMatrix <double>> ldlt; 	// Solver for a symmetric positive definite matrix
 	Eigen::SparseQR <Eigen::SparseMatrix <double>, Eigen::COLAMDOrdering <int>> qr;
 };
 
