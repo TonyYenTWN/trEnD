@@ -2,6 +2,7 @@
 #include <iostream>
 //#include <chrono>
 #include "../basic/Basic_Definitions.h"
+#include "../basic/LP_CPA.cpp"
 
 struct end_user_decision{
 	bool dynamic_tariff;
@@ -104,7 +105,65 @@ void smart_appliance_schedule(sorted_vector sorted_tariff, Eigen::VectorXd norma
 	result.normalized_scheduled_profile(sorted_tariff.id(flex_demand_duration - 1)) = total_flex_demand_energy - (flex_demand_duration - 1) * flex_demand_capacity_max;
 }
 
-void storage_schedule(sorted_vector sorted_tariff, storage_inform &result){
+void storage_schedule_LP(Eigen::VectorXd subscept_tariff, storage_inform &result){
+	LP_object Problem;
+	
+	// Set dimension of the problem
+	Problem.Constraints_eq_num = subscept_tariff.size();
+	Problem.Constraints_ie_num = 0;
+	Problem.Variables_num = 3 * subscept_tariff.size();
+	
+	// Set objective vector
+	// The variables are ordered as {q_dc(0), q_ch(0), s(0), q_dc(1), q_ch(1), s(1), ...}
+	Problem.Objective.vector = Eigen::VectorXd::Zero(Problem.Variables_num);
+	for(int tick = 0; tick < subscept_tariff.size(); ++ tick){
+		Problem.Objective.vector(3 * tick) = subscept_tariff(tick);
+		Problem.Objective.vector(3 * tick + 1) = -subscept_tariff(tick);
+	}
+	// Can add terminal value for final storage level in the future
+	
+	// Set boudary values for equality and inequality constraints
+	Problem.Boundary.eq_vector = Eigen::VectorXd::Zero(Problem.Constraints_eq_num);
+	Problem.Boundary.eq_vector(0) = result.soc_ini;		// Initial storage level
+	Problem.Boundary.ie_matrix = Eigen::MatrixXd::Zero(Problem.Variables_num + Problem.Constraints_ie_num, 2);
+	for(int tick = 0; tick < subscept_tariff.size(); ++ tick){
+		Problem.Boundary.ie_matrix(3 * tick, 1) = result.capacity_scale * result.efficiency;
+		Problem.Boundary.ie_matrix(3 * tick + 1, 1) = result.capacity_scale / result.efficiency;
+		Problem.Boundary.ie_matrix(3 * tick + 2, 1) = result.energy_scale;
+	}
+	
+	// Set sparse matrix for equality constraints
+	std::vector<Trip> Constraint_eq_trip;
+	Constraint_eq_trip.reserve(Problem.Constraints_eq_num * Problem.Variables_num);
+	Constraint_eq_trip.push_back(Trip(0, 0, 1. / result.efficiency));
+	Constraint_eq_trip.push_back(Trip(0, 1, -result.efficiency));
+	for(int tick = 1; tick < subscept_tariff.size(); ++ tick){
+		Constraint_eq_trip.push_back(Trip(tick, 3 * tick - 1, -1));
+		Constraint_eq_trip.push_back(Trip(tick, 3 * tick, 1. / result.efficiency));
+		Constraint_eq_trip.push_back(Trip(tick, 3 * tick + 1, -result.efficiency));
+		Constraint_eq_trip.push_back(Trip(tick, 3 * tick + 2, 1));
+	}
+	Problem.Constraint.eq_matrix = Eigen::SparseMatrix <double> (Problem.Constraints_eq_num, Problem.Variables_num);
+	Problem.Constraint.eq_matrix.setFromTriplets(Constraint_eq_trip.begin(), Constraint_eq_trip.end());
+	
+	// Set sparse matrix for original inequality constraints
+	Problem.Constraint.ie_matrix = Eigen::SparseMatrix <double> (Problem.Variables_num + Problem.Constraints_ie_num, Problem.Variables_num);
+	std::vector<Trip> Constraint_ie_trip;
+	Constraint_ie_trip.reserve((Problem.Constraints_ie_num + 1) * Problem.Variables_num);
+	for(int var_id = 0; var_id < Problem.Variables_num; ++ var_id){
+		Constraint_ie_trip.push_back(Trip(var_id, var_id, 1));
+	}
+	Problem.Constraint.ie_matrix.setFromTriplets(Constraint_ie_trip.begin(), Constraint_ie_trip.end());
+	
+	// Set reference point for contraction
+	// The first feasible solution is where soc goes towards maximum asap and stays there; then q_dc(t) = q_ch(t) = 0
+	// The second feasible solution is where soc goes towards minimum asap and stays there; then q_dc(t) / eff = q_ch(t) * eff = maximum possible value
+	Eigen::VectorXd feasible_point_1(Problem.Variables_num);
+	Eigen::VectorXd feasible_point_2(Problem.Variables_num);	
+	
+}
+
+void storage_schedule_naive(sorted_vector sorted_tariff, storage_inform &result){
 	// Initialization
 	int total_duration = sorted_tariff.value.size();
 	int ch_surplus_duration = int(std::max(result.soc_final - result.soc_ini, 0.) / result.capacity_scale);
@@ -227,7 +286,7 @@ void EV_schedule(Eigen::VectorXd subscept_tariff, EV_inform &result){
 		
 		result.BESS.soc_final = result.BESS.energy_scale;
 		sorted_vector sorted_tariff = sort(subscept_tariff.head(tick));
-		storage_schedule(sorted_tariff, result.BESS);
+		storage_schedule_naive(sorted_tariff, result.BESS);
 	}
 }
 
@@ -252,7 +311,8 @@ int main(){
 	test_user.BESS.efficiency = .95;
 	test_user.BESS.soc_ini = 2;
 	test_user.BESS.soc_final = 2;
-	storage_schedule(sorted_tariff, test_user.BESS);
+	storage_schedule_naive(sorted_tariff, test_user.BESS);
+	//storage_schedule_LP(subscept_tariff, test_user.BESS);
 	std::cout << test_user.BESS.normalized_scheduled_capacity_profile.transpose() << "\n" << std::endl;
 	
 	// EV test
