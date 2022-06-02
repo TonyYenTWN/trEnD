@@ -24,39 +24,51 @@ void LP_boundary_eq_normalization(LP_object &Problem){
 
 // Generate sparse matrix for covariance equality constraints
 void LP_constraint_cov_eq_matrix_generation(LP_object &Problem){
-	// Set precision of zero detection
-	double tol = pow(10, -12);
+	
+	Problem.Solver.qr.compute(Problem.Constraint.eq_matrix.transpose());
+	
+	// Check if the equality constraints has maximum possible rank
+	if(Problem.Solver.qr.rank() < Problem.Constraints_eq_num){
+		// If redundant eqaulity constraint occurs, check feasibility of the system 
+		
+		// Update the information about equality constraints after removing the redundant ones
+		Problem.Constraint.eq_matrix = Problem.Solver.qr.colsPermutation() * Problem.Constraint.eq_matrix;
+		Problem.Constraint.eq_matrix = Problem.Constraint.eq_matrix.topRows(Problem.Solver.qr.rank());
+		Problem.Constraints_eq_num = Problem.Solver.qr.rank();
+		Problem.Boundary.eq_vector = Problem.Solver.qr.colsPermutation() * Problem.Boundary.eq_vector;
+		Problem.Boundary.eq_vector = Problem.Boundary.eq_vector.head(Problem.Solver.qr.rank());
+	}
 	
 	// Compute the default covariance matrix and its solver
 	Problem.Constraint.eq_cov_matrix = Problem.Constraint.eq_matrix * Problem.Constraint.eq_matrix.transpose();
 	Problem.Constraint.eq_cov_solver.compute(Problem.Constraint.eq_cov_matrix);
 	
-	// Check if the coavriance matrix is not of full rank (determinant = 0)
-	if(abs(Problem.Constraint.eq_cov_solver.determinant()) < tol){
-		// Declare a dynamic vector of list of active (non-redeundant) equality constraints
-		std::vector<int> active_const_seq;
-		active_const_seq.reserve(Problem.Constraints_eq_num);
-		Eigen::VectorXd Constraint_eq_cov_D = Problem.Constraint.eq_cov_solver.vectorD();
-		for(int item_iter = 0; item_iter < Problem.Constraints_eq_num; ++ item_iter){
-			if(abs(Constraint_eq_cov_D(item_iter)) >= tol){
-				active_const_seq.push_back(item_iter);
-			}
-		}
-		
-		std::vector<Trip> Constraint_cov_sub_trip;
-		Constraint_cov_sub_trip.reserve(active_const_seq.size());
-		Eigen::SparseMatrix <double> Span_reduction(active_const_seq.size(), Problem.Constraints_eq_num);
-		for(int item_iter = 0; item_iter < active_const_seq.size(); ++ item_iter){
-			Constraint_cov_sub_trip.push_back(Trip(active_const_seq[item_iter], active_const_seq[item_iter], 1));
-		}
-		Span_reduction.setFromTriplets(Constraint_cov_sub_trip.begin(), Constraint_cov_sub_trip.end());
-		
-		// Update the information about equality constraints after removing the redundant ones
-		Problem.Constraint.eq_cov_matrix = Span_reduction * Problem.Constraint.eq_cov_matrix * Span_reduction.transpose();
-		Problem.Constraint.eq_matrix = Span_reduction * Problem.Constraint.eq_matrix;
-		Problem.Constraints_eq_num = active_const_seq.size();
-		Problem.Constraint.eq_cov_solver.compute(Problem.Constraint.eq_cov_matrix);
-	}
+//	// Check if the coavriance matrix is not of full rank (determinant = 0)
+//	if(abs(Problem.Constraint.eq_cov_solver.determinant()) < tol){
+//		// Declare a dynamic vector of list of active (non-redeundant) equality constraints
+//		std::vector<int> active_const_seq;
+//		active_const_seq.reserve(Problem.Constraints_eq_num);
+//		Eigen::VectorXd Constraint_eq_cov_D = Problem.Constraint.eq_cov_solver.vectorD();
+//		for(int item_iter = 0; item_iter < Problem.Constraints_eq_num; ++ item_iter){
+//			if(abs(Constraint_eq_cov_D(item_iter)) >= tol){
+//				active_const_seq.push_back(item_iter);
+//			}
+//		}
+//		
+//		std::vector<Trip> Constraint_cov_sub_trip;
+//		Constraint_cov_sub_trip.reserve(active_const_seq.size());
+//		Eigen::SparseMatrix <double> Span_reduction(active_const_seq.size(), Problem.Constraints_eq_num);
+//		for(int item_iter = 0; item_iter < active_const_seq.size(); ++ item_iter){
+//			Constraint_cov_sub_trip.push_back(Trip(active_const_seq[item_iter], active_const_seq[item_iter], 1));
+//		}
+//		Span_reduction.setFromTriplets(Constraint_cov_sub_trip.begin(), Constraint_cov_sub_trip.end());
+//		
+//		// Update the information about equality constraints after removing the redundant ones
+//		Problem.Constraint.eq_cov_matrix = Span_reduction * Problem.Constraint.eq_cov_matrix * Span_reduction.transpose();
+//		Problem.Constraint.eq_matrix = Span_reduction * Problem.Constraint.eq_matrix;
+//		Problem.Constraints_eq_num = active_const_seq.size();
+//		Problem.Constraint.eq_cov_solver.compute(Problem.Constraint.eq_cov_matrix);
+//	}
 }
 
 // Compute the default gradient vector projected on the equality constraints
@@ -69,7 +81,7 @@ void LP_default_gradient(LP_object &Problem){
 void LP_optimization(LP_object &Problem){
 	// Parameters declaration
 	double tol = pow(10, -12);
-	double eps = pow(10, -6);
+	double eps = pow(10, -8);
 	
 	// Main process
 	// Process variables (in the loop) declaration
@@ -158,7 +170,7 @@ void LP_result_print(LP_object &Problem, std::string Problem_name){
 	std::cout << "\n" << std::endl;
 }
 
-void LP_process(LP_object &Problem, std::string Problem_name = "Linear Problem", bool print_result = 1, bool constraint_flag = 1, bool boundary_flag = 1, bool objective_flag = 1){
+void LP_process(LP_object &Problem, std::string Problem_name, bool print_result, bool constraint_flag, bool boundary_flag, bool objective_flag){
 	// Pre-processing steps
 	// Generate the covariance matrix for equality constraints if not yet done
 	if(constraint_flag){

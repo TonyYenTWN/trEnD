@@ -33,8 +33,9 @@ struct LP_objective{
 };
 
 // Solver object
-struct LP_cov_eq_solver{
+struct LP_solver{
 	Eigen::SimplicialLDLT <Eigen::SparseMatrix <double>> Spd; 	// Solver for a symmetric positive definite matrix
+	Eigen::SparseQR <Eigen::SparseMatrix <double>, Eigen::COLAMDOrdering <int>> qr;
 };
 
 // Projection gradient object
@@ -59,6 +60,7 @@ struct LP_object{
 	LP_objective Objective;
 	LP_constraint Constraint;
 	LP_boundary Boundary;
+	LP_solver Solver;
 	LP_proj_gradient Proj_grad;
 	
 	// Process and output variables
