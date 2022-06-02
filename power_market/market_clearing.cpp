@@ -1,4 +1,4 @@
-// Main Source File
+// Main Source File for market clearing
 #include <iostream>
 //#include <chrono>
 #include "../basic/rw_csv.cpp"
@@ -84,7 +84,7 @@ market_inform International_Market_Set(int Time, std::string fin_name_moc){
 	return(International_Market);
 }
 
-void International_Market_Optimization(int tick, market_inform &International_Market){
+void International_Market_Optimization(int tick, market_inform &International_Market, bool print_result = 1){
 	// Initialization of process variables
 	int type_capacity_exchange;
 	double exchange_quantity;
@@ -173,10 +173,12 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 		International_Market.confirmed_price(tick, zone_ID) = International_Market.bidded_price(default_price_ID(zone_ID));		
 	}
 	
-	std::cout << "  Default Price: " << default_price_ID.transpose() << std::endl;
-	std::cout << "  Sell Quantity: " << International_Market.confirmed_supply << std::endl;
-	std::cout << "   Buy Quantity: " << International_Market.confirmed_demand << std::endl;
-	std::cout << "Residual Demand: " << bidded_demand.bottomRows(1) << "\n" << std::endl;
+	if(print_result){
+//		std::cout << "  Default Price: " << default_price_ID.transpose() << std::endl;
+//		std::cout << "  Sell Quantity: " << International_Market.confirmed_supply << std::endl;
+//		std::cout << "   Buy Quantity: " << International_Market.confirmed_demand << std::endl;
+//		std::cout << "Residual Demand: " << bidded_demand.bottomRows(1) << "\n" << std::endl;		
+	}
 	
 	// Optimization of cross border exchange
 	for(int zone_ID = 0; zone_ID < International_Market.num_zone; ++ zone_ID){
@@ -357,22 +359,26 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 
 	// Calculate exchange flow and market clearing prices of the bidding zones
 	actual_capacity_exchange = maximum_capacity_exchange - remaining_capacity_exchange;
+	
+	// Record the cross-border flow
+	for(int edge_ID = 0; edge_ID < International_Market.network.num_edges; ++ edge_ID){
+		if(actual_capacity_exchange(International_Market.network.incidence_matrix(edge_ID, 0), International_Market.network.incidence_matrix(edge_ID, 1)) > 0){
+			International_Market.network.confirmed_power(tick, edge_ID) = actual_capacity_exchange(International_Market.network.incidence_matrix(edge_ID, 0), International_Market.network.incidence_matrix(edge_ID, 1));
+		}
+		else{
+			International_Market.network.confirmed_power(tick, edge_ID) = -actual_capacity_exchange(International_Market.network.incidence_matrix(edge_ID, 1), International_Market.network.incidence_matrix(edge_ID, 0));
+		}
+	}
 
 	// Results Output
-	std::cout << "Export Price ID: " << price_supply_ID.transpose() << std::endl;
-	std::cout << "Import Price ID: " << price_demand_ID.transpose() << std::endl;
-	std::cout << "   Market Price: " << International_Market.confirmed_price.row(0) << std::endl;
-	std::cout << "  Sell Quantity: " << International_Market.confirmed_supply << std::endl;
-	std::cout << "   Buy Quantity: " << International_Market.confirmed_demand << std::endl;
-	std::cout << "Residual Demand: " << bidded_demand_default.bottomRows(1) - International_Market.confirmed_demand << "\n" << std::endl;
-	std::cout << "    Trade Zones: " << maximum_price_diff_ID.transpose() << "\n" << std::endl;
-	std::cout << "        Surplus: " << maximum_price_diff << "\n" << std::endl;
-	std::cout << "Available Trade: " << std::endl; 
-	std::cout << available_capacity_exchange << "\n" << std::endl;
-	std::cout << "Used Capacity: " << std::endl; 
-	std::cout << actual_capacity_exchange << "\n" << std::endl;
-	std::cout << "Remaining Capacity: " << std::endl; 
-	std::cout << remaining_capacity_exchange << "\n" << std::endl;
+	if(print_result){
+		std::cout << "  Export Price ID: " << price_supply_ID.transpose() << std::endl;
+		std::cout << "  Import Price ID: " << price_demand_ID.transpose() << std::endl;
+		std::cout << "     Market Price: " << International_Market.confirmed_price.row(tick) << std::endl;
+		std::cout << "    Sell Quantity: " << International_Market.confirmed_supply.row(tick) << std::endl;
+		std::cout << "     Buy Quantity: " << International_Market.confirmed_demand.row(tick) << std::endl;
+		std::cout << "Cross border flow: " << International_Market.network.confirmed_power.row(tick) << std::endl;		
+	}
 }
 
 int main(){
