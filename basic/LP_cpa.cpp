@@ -50,13 +50,14 @@ void LP_constraint_cov_eq_matrix_generation(LP_object &Problem){
 void LP_default_gradient(LP_object &Problem){
 	Eigen::VectorXd Obj_cov_vector = Problem.Constraint.eq_matrix * Problem.Objective.vector;
 	Problem.Proj_grad.vector_default = Problem.Objective.vector - Problem.Constraint.eq_matrix.transpose() * Problem.Solver.ldlt.solve(Obj_cov_vector);
+	Problem.Proj_grad.vector_default /= Problem.Proj_grad.vector_default.norm();
 	Problem.Constraint.ie_increment = Problem.Constraint.ie_matrix * Problem.Proj_grad.vector_default;
 }
 
 void LP_optimization(LP_object &Problem){
 	// Parameters declaration
-	double tol = pow(10, -12);
-	double eps = pow(10, -8);
+	double tol = pow(10, -6);
+	double eps = pow(10, -3);
 	
 	// Main process
 	// Process variables (in the loop) declaration
@@ -66,6 +67,7 @@ void LP_optimization(LP_object &Problem){
 	Eigen::MatrixXd Boundary_gap(Problem.Variables_num + Problem.Constraints_ie_num, 2); 
 	Eigen::VectorXd Projected_increment(Problem.Variables_num + Problem.Constraints_ie_num);
 	Eigen::VectorXd Projected_gradient;
+	Eigen::VectorXd Contracted_gradient;
 	Eigen::VectorXd Previous_solution;
 	Eigen::VectorXd Contracted_solution;
 	Eigen::Vector2d current_increment;
@@ -76,36 +78,36 @@ void LP_optimization(LP_object &Problem){
 	
 	// Main loop for searching the optimal solution
 	while(1){
-		// Update contracted solution and previous solution for later use in the loop
+		std::cout << "---------------------------------------------------------------------------" << std::endl;
+		std::cout << "New loop" << std::endl;
+		std::cout << "---------------------------------------------------------------------------" << std::endl;
+		// Update previous solution for later use in the loop
 		Previous_obj_value = Problem.Objective.value;
 		Previous_solution = Problem.Solution.vector;
-		Contracted_solution = Problem.Solution.vector_ref;
-		Contracted_solution += (1 - eps) * (Problem.Solution.vector - Problem.Solution.vector_ref);
 		
-		// Calculate the allowed increment along the objective direction before reaching a constraint
-		Boundary_gap.col(0) = Problem.Constraint.ie_matrix * Contracted_solution - Problem.Boundary.ie_matrix.col(0);
-		Boundary_gap.col(1) = Problem.Boundary.ie_matrix.col(1) - Problem.Constraint.ie_matrix * Contracted_solution;
-		min_increment = std::numeric_limits<double>::infinity();
-		for(int constraint_id = 0; constraint_id < Boundary_gap.rows(); ++ constraint_id){
-			current_increment(0) = -Boundary_gap(constraint_id, 0) / Problem.Constraint.ie_increment(constraint_id);
-			if(current_increment(0) > 0 && current_increment(0) < min_increment){
-				min_increment = current_increment(0);
-			}
-			current_increment(1) = Boundary_gap(constraint_id, 1) / Problem.Constraint.ie_increment(constraint_id);
-			if(current_increment(1) > 0 && current_increment(1) < min_increment){
-				min_increment = current_increment(1);
-			}
-		}
-		
-		// Update the solution point and projected gradient on / near the active constraint(s)
-		Problem.Solution.vector = Contracted_solution + min_increment * Problem.Proj_grad.vector_default;
-		Projected_gradient = Problem.Solution.vector - Previous_solution;
-		Projected_gradient /= Projected_gradient.norm();
-		
-		// Calculate the allowed increment along the projected gradient before reaching another set of constraint(s)
+		// Identify the active constraints and the normalized contracted gradient
+		Contracted_gradient = Eigen::VectorXd::Zero(Problem.Variables_num);
 		Boundary_gap.col(0) = Problem.Constraint.ie_matrix * Problem.Solution.vector - Problem.Boundary.ie_matrix.col(0);
 		Boundary_gap.col(1) = Problem.Boundary.ie_matrix.col(1) - Problem.Constraint.ie_matrix * Problem.Solution.vector;
-		Projected_increment = Problem.Constraint.ie_matrix * Projected_gradient;
+		std::cout << std::fixed << std::setprecision(8) << Boundary_gap << "\n" << std::endl;
+		for(int constraint_id = 0; constraint_id < Boundary_gap.rows(); ++ constraint_id){
+			if(Boundary_gap(constraint_id, 0) < tol){
+				Boundary_gap(constraint_id, 0) = Problem.Boundary.ie_matrix(constraint_id, 0);
+				Contracted_gradient += Problem.Constraint.ie_matrix.row(constraint_id);
+			}
+			else if(Boundary_gap(constraint_id, 1) < tol){
+				Boundary_gap(constraint_id, 1) = Problem.Boundary.ie_matrix(constraint_id, 1);
+				Contracted_gradient -= Problem.Constraint.ie_matrix.row(constraint_id);
+			}
+		}
+		Contracted_gradient -= Problem.Constraint.eq_matrix.transpose() * Problem.Solver.ldlt.solve(Problem.Constraint.eq_matrix * Contracted_gradient);
+		Contracted_gradient -= Problem.Proj_grad.vector_default.dot(Contracted_gradient) * Problem.Proj_grad.vector_default;
+		Contracted_gradient /= Contracted_gradient.norm();
+		
+		// Calculate the allowed increment along the normalized contracted gradient direction before reaching a constraint
+		Boundary_gap.col(0) = Problem.Constraint.ie_matrix * Problem.Solution.vector - Problem.Boundary.ie_matrix.col(0);
+		Boundary_gap.col(1) = Problem.Boundary.ie_matrix.col(1) - Problem.Constraint.ie_matrix * Problem.Solution.vector;
+		Projected_increment = Problem.Constraint.ie_matrix * Contracted_gradient;
 		min_increment = std::numeric_limits<double>::infinity();
 		for(int constraint_id = 0; constraint_id < Boundary_gap.rows(); ++ constraint_id){
 			if(abs(Projected_increment(constraint_id)) > tol){
@@ -119,10 +121,81 @@ void LP_optimization(LP_object &Problem){
 				}			
 			}			
 		}
-		Problem.Solution.vector += min_increment * Projected_gradient;
-		Obj_value = Problem.Solution.vector.dot(Problem.Objective.vector);
+		if(min_increment > tol){
+			Contracted_solution = Problem.Solution.vector_ref;
+			Contracted_solution += eps * min_increment * Contracted_gradient;
+			std::cout << min_increment << std::endl;
+		}
+		else{
+			break;
+		}		
 		
-		// Check if objective function can be improved or optimality has been reached
+		//Contracted_solution = Problem.Solution.vector_ref;
+		//Contracted_solution += (1 - eps) * (Problem.Solution.vector - Problem.Solution.vector_ref);
+		std::cout << std::fixed << std::setprecision(12) << Previous_solution.transpose() << std::endl;
+		//std::cout << std::fixed << std::setprecision(12) << Contracted_gradient.transpose() << std::endl;
+		std::cout << std::fixed << std::setprecision(12) << Contracted_solution.transpose() << "\n" << std::endl;
+		
+		// Calculate the allowed increment along the objective direction before reaching a constraint
+		Boundary_gap.col(0) = Problem.Constraint.ie_matrix * Contracted_solution - Problem.Boundary.ie_matrix.col(0);
+		Boundary_gap.col(1) = Problem.Boundary.ie_matrix.col(1) - Problem.Constraint.ie_matrix * Contracted_solution;
+		//std::cout << std::fixed << std::setprecision(5) << Boundary_gap << std::endl;
+		min_increment = std::numeric_limits<double>::infinity();
+		for(int constraint_id = 0; constraint_id < Boundary_gap.rows(); ++ constraint_id){
+			if(abs(Problem.Constraint.ie_increment(constraint_id)) > tol){
+				current_increment(0) = -Boundary_gap(constraint_id, 0) / Problem.Constraint.ie_increment(constraint_id);
+				if(current_increment(0) > 0 && current_increment(0) < min_increment){
+					min_increment = current_increment(0);
+				}
+				current_increment(1) = Boundary_gap(constraint_id, 1) / Problem.Constraint.ie_increment(constraint_id);
+				if(current_increment(1) > 0 && current_increment(1) < min_increment){
+					min_increment = current_increment(1);
+				}
+				//std::cout << std::fixed << std::setprecision(5) << current_increment.transpose() << std::endl;
+			}
+		}
+		//std::cout << std::fixed << std::setprecision(5) << min_increment << "\n" << std::endl;
+		
+		// Update the solution point and projected gradient on / near the active constraint(s)
+		Problem.Solution.vector = Contracted_solution + min_increment * Problem.Proj_grad.vector_default;
+		Projected_gradient = Problem.Solution.vector - Previous_solution;
+		Projected_gradient /= Projected_gradient.norm();
+		//std::cout << std::fixed << std::setprecision(5) << Problem.Solution.vector.transpose() << std::endl;
+		//std::cout << std::fixed << std::setprecision(5) << Problem.Proj_grad.vector_default.transpose() << std::endl;
+		//std::cout << std::fixed << std::setprecision(5) << Projected_gradient.transpose() << "\n" << std::endl;
+		
+		// Calculate the allowed increment along the projected gradient before reaching another set of constraint(s)
+		Boundary_gap.col(0) = Problem.Constraint.ie_matrix * Problem.Solution.vector - Problem.Boundary.ie_matrix.col(0);
+		Boundary_gap.col(1) = Problem.Boundary.ie_matrix.col(1) - Problem.Constraint.ie_matrix * Problem.Solution.vector;
+		Projected_increment = Problem.Constraint.ie_matrix * Projected_gradient;
+		//std::cout << std::fixed << std::setprecision(5) << Boundary_gap << "\n" << std::endl;
+		//std::cout << std::fixed << std::setprecision(5) << Projected_increment.transpose() << "\n" << std::endl;
+		min_increment = std::numeric_limits<double>::infinity();
+		for(int constraint_id = 0; constraint_id < Boundary_gap.rows(); ++ constraint_id){
+			if(abs(Projected_increment(constraint_id)) > tol){
+				current_increment(0) = -Boundary_gap(constraint_id, 0) / Projected_increment(constraint_id);
+				if(current_increment(0) > 0 && current_increment(0) < min_increment){
+					min_increment = current_increment(0);
+				}
+				current_increment(1) = Boundary_gap(constraint_id, 1) / Projected_increment(constraint_id);
+				if(current_increment(1) > 0 && current_increment(1) < min_increment){
+					min_increment = current_increment(1);
+				}
+				//std::cout << std::fixed << std::setprecision(5) << current_increment.transpose() << std::endl;			
+			}
+			else{
+				//std::cout << "Not compared" << std::endl;
+			}			
+		}
+		//std::cout << std::fixed << std::setprecision(5) << min_increment << "\n" << std::endl;
+		Problem.Solution.vector += min_increment * Projected_gradient;
+		Problem.Solution.vector_ref = .5 * (Problem.Solution.vector_ref + Problem.Solution.vector);
+		Obj_value = Problem.Solution.vector.dot(Problem.Objective.vector);
+		//std::cout << std::fixed << std::setprecision(8) << Problem.Solution.vector.transpose() << std::endl;
+		//std::cout << std::fixed << std::setprecision(5) << Problem.Solution.vector_ref.transpose() << std::endl;
+		//std::cout << std::fixed << std::setprecision(8) << Obj_value << "\n" << std::endl;
+		
+		// Check if objective function can be improved or optimality has been reached	
 		if(Obj_value >= Previous_obj_value){
 			Problem.Objective.value = Obj_value;
 		}

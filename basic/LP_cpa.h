@@ -5,6 +5,7 @@
 #define LP_CPA
 
 #include <iostream>
+#include <iomanip>
 #include <omp.h>
 #include "../basic/Basic_Definitions.h"
 #include "../basic/Eigen_Sparse.h"
@@ -17,7 +18,6 @@ struct LP_constraint{
 	Eigen::SparseMatrix <double> eq_matrix;								// Coefficients for equality constraints
 	Eigen::SparseMatrix <double> ie_matrix;								// Coefficients for inequality constraints
 	Eigen::SparseMatrix <double> eq_cov_matrix;							// Dot product of the equality constraints
-	Eigen::SimplicialLDLT <Eigen::SparseMatrix <double>> eq_cov_solver; // Solver for the covariance (dot product) matrix
 };
 
 // Boundary object
