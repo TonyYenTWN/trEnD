@@ -303,7 +303,7 @@ void LP_optimization(LP_object &Problem){
 			}
 			
 			// Check if there are feasible directions for improvement
-			if(min_increment > tol && min_increment != std::numeric_limits<double>::infinity()){
+			if(min_increment != std::numeric_limits<double>::infinity()){
 				Problem.Solution.reduced_vector += min_increment * Projected_grad;
 				//std::cout << std::fixed << std::setprecision(16) << "\n" << min_increment << std::endl;
 				//std::cout << std::fixed << std::setprecision(6) << Projected_grad.transpose() << "\n" << std::endl;
