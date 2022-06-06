@@ -169,6 +169,7 @@ void LP_constraint_ie_reduced_normalization(LP_object &Problem){
 		Problem.Constraint.norm(row_id) = Problem.Constraint.ie_reduced_matrix.row(row_id).norm();
 		Problem.Constraint.ie_reduced_matrix.row(row_id) /= Problem.Constraint.norm(row_id);
 	}
+	//std::cout << std::fixed << std::setprecision(6) << Problem.Constraint.ie_reduced_matrix << "\n" << std::endl;
 }
 
 // Normalization of reduced inequality boundaries
@@ -254,6 +255,7 @@ void LP_optimization(LP_object &Problem){
 		if(Active_constraint_now.size() > 0){
 			active_constraint_num = 0;
 			for(int constraint_iter = 0; constraint_iter < Active_constraint_now.size(); ++ constraint_iter){
+				//std::cout << "\n" << constraint_iter << std::endl;;
 				Subspan_matrix.insert(active_constraint_num, Active_constraint_now[constraint_iter](0)) = 1;
 				Subcov_matrix = Subspan_matrix.topRows(active_constraint_num + 1) * Problem.Constraint.ie_reduced_cov_matrix * Subspan_matrix.topRows(active_constraint_num + 1).transpose();
 				//std::cout << Subcov_matrix << "\n" << std::endl;
@@ -288,7 +290,8 @@ void LP_optimization(LP_object &Problem){
 					}
 					
 					// Exit loop if a feasible direction for improvement of solution is found
-					if(min_increment > tol){
+					if(min_increment > eps){
+						//std::cout << std::fixed << std::setprecision(16) << "\n" << min_increment << std::endl;
 						break;
 					}
 					active_constraint_num += 1;
@@ -302,7 +305,8 @@ void LP_optimization(LP_object &Problem){
 			// Check if there are feasible directions for improvement
 			if(min_increment > tol && min_increment != std::numeric_limits<double>::infinity()){
 				Problem.Solution.reduced_vector += min_increment * Projected_grad;
-				//std::cout << std::fixed << std::setprecision(16) << "\n" << min_increment << "\n" << std::endl;
+				//std::cout << std::fixed << std::setprecision(16) << "\n" << min_increment << std::endl;
+				//std::cout << std::fixed << std::setprecision(6) << Projected_grad.transpose() << "\n" << std::endl;
 			}
 			else{
 				break;
