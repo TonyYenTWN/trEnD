@@ -337,6 +337,7 @@ void EV_schedule(Eigen::VectorXd subscept_tariff, EV_inform &result){
 		result.BESS.soc_final = result.BESS.energy_scale;
 		sorted_vector sorted_tariff = sort(subscept_tariff.head(tick));
 		storage_schedule_naive(sorted_tariff, result.BESS);
+		//storage_schedule_LP(subscept_tariff.head(tick), result.BESS);
 	}
 }
 
@@ -347,13 +348,13 @@ int main(){
 	sorted_vector sorted_tariff = sort(subscept_tariff);
 	end_user_operation test_user;
 	test_user.normalized_default_demand_profile = Eigen::VectorXd(subscept_tariff.size());
-	test_user.normalized_default_demand_profile << 1, 1.2;
+	test_user.normalized_default_demand_profile << 1, 1.2, .8, .3, .4, .6, 2, 1.5, 1.7;
 	
 	// Smart appliance test
 	test_user.smart_appliance.scale = .2;
 	test_user.smart_appliance.flexibility_factor = .5;
-	//smart_appliance_schedule(sorted_tariff, test_user.normalized_default_demand_profile, 0, test_user.smart_appliance);
-	//std::cout << test_user.smart_appliance.normalized_scheduled_profile.transpose() << "\n" << std::endl;
+	smart_appliance_schedule(sorted_tariff, test_user.normalized_default_demand_profile, 0, test_user.smart_appliance);
+	std::cout << test_user.smart_appliance.normalized_scheduled_profile.transpose() << "\n" << std::endl;
 	
 	// BESS test, naive
 	test_user.BESS.energy_scale = 4;
@@ -367,14 +368,14 @@ int main(){
 	std::cout << test_user.BESS.normalized_scheduled_capacity_profile.transpose() << "\n" << std::endl;
 	
 	// EV test
-//	test_user.EV.energy_demand = 1;
-//	test_user.EV.BESS = test_user.BESS;
-//	test_user.EV.usage_default_period = Eigen::VectorXi::Zero(subscept_tariff.size());
-//	test_user.EV.usage_default_period(3) = 1;
-//	test_user.EV.usage_default_period(6) = 1;
-//	test_user.EV.house_default_period = Eigen::VectorXi::Zero(subscept_tariff.size());
-//	test_user.EV.house_default_period.head(3) << 1, 1, 1;
-//	test_user.EV.house_default_period.tail(3) << 1, 1, 1;
-//	EV_schedule(subscept_tariff, test_user.EV);
-	//std::cout << test_user.EV.BESS.normalized_scheduled_capacity_profile.transpose() << std::endl;
+	test_user.EV.energy_demand = 1;
+	test_user.EV.BESS = test_user.BESS;
+	test_user.EV.usage_default_period = Eigen::VectorXi::Zero(subscept_tariff.size());
+	test_user.EV.usage_default_period(3) = 1;
+	test_user.EV.usage_default_period(6) = 1;
+	test_user.EV.house_default_period = Eigen::VectorXi::Zero(subscept_tariff.size());
+	test_user.EV.house_default_period.head(3) << 1, 1, 1;
+	test_user.EV.house_default_period.tail(3) << 1, 1, 1;
+	EV_schedule(subscept_tariff, test_user.EV);
+	std::cout << test_user.EV.BESS.normalized_scheduled_capacity_profile.transpose() << std::endl;
 }
