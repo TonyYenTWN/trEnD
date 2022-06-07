@@ -1,4 +1,4 @@
-// Geostat functions header file
+// Header file for read and write csv
 #pragma once
 
 #ifndef RW_CSV
