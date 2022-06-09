@@ -20,7 +20,7 @@
 #include <Eigen/Dense>
 #endif
 
-#ifndef PI
-#define PI
+#ifndef M_PI
+#define M_PI
 #define pi 3.14159265358979323846  /* pi */
 #endif
