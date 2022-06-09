@@ -1,47 +1,9 @@
-// Main Source File for market clearing
+// Source File for market clearing of the international market operator of the energy-only-market
 #include <iostream>
 //#include <chrono>
-#include "../basic/rw_csv.cpp"
+#include "power_market.h"
 
-struct network_graph{
-	// Input parameters
-	int num_vertice;
-	int num_edges;
-	// Compact Incidence Matrix
-	Eigen::MatrixXi incidence_matrix;		// 0th col: start; 1st col: end
-	// Power flow constraint
-	Eigen::MatrixXd power_constraint;  		// 0th col: from start to end; 1st col: from end to start
-
-	// Output variables
-	Eigen::MatrixXd confirmed_power;		// Power flow across each edge; positive indicates flowing from start to end
-	Eigen::MatrixXd confirmed_voltage;		// Voltage at each vertice
-};
-
-struct market_inform{
-	// Input parameters
-	int num_zone;							// Can be the actual bidding zones, or just a node / spatial element
-	int cross_border_zone_start;			// Indicate the index, after whose corresponding bidding zones are on the boundary and only act by cross-border flow
-	int time_intervals;
-	int price_intervals;
-	std::vector<std::string> zone_names;
-	Eigen::Vector2d price_range_inflex;
-	Eigen::Vector2d price_range_flex;
-	Eigen::VectorXd bidded_price;
-	Eigen::MatrixXd merit_order_curve;
-	//Eigen::MatrixXd cross_border_price;		// Default price of cross border zones without cross-border flow with bidding zones inside the boundary
-	
-	// Output variables
-	Eigen::MatrixXd confirmed_supply;		// Confirmed supply quantity from MO or TSO 
-	Eigen::MatrixXd confirmed_demand;		// Confirmed demand quantity from MO or TSO 
-	Eigen::MatrixXd confirmed_price;		// Confirmed market clearing price from MO or TSO 
-	Eigen::MatrixXd confirmed_bid_supply; 	// Confirmed supply bids from DSOs forwarding to wholesale electricity market
-	Eigen::MatrixXd confirmed_bid_demand;	// Confirmed demand bids from DSOs forwarding to wholesale electricity market
-	
-	// Mixed Substructure
-	network_graph network;
-};
-
-market_inform International_Market_Set(int Time, std::string fin_name_moc){
+market_inform International_Market_Set(int Time, std::string fin_name_moc, std::string fin_name_demand){
 	market_inform International_Market;
 	
 	// Input Parameters of international market
@@ -75,6 +37,12 @@ market_inform International_Market_Set(int Time, std::string fin_name_moc){
 	International_Market.merit_order_curve.bottomRows(num_row - 1) = diff_merit_order_curve_q;
 	International_Market.merit_order_curve = Eigen::MatrixXd::Ones(num_row, num_col).array() * International_Market.merit_order_curve.array().max(0);
 	
+	// Default demand time series
+	// Read default demand data
+	num_row = International_Market.time_intervals;
+	num_col = International_Market.num_zone + 1;
+	International_Market.demand_default = read_file(num_row, num_col, fin_name_demand).rightCols(International_Market.num_zone);
+	
 	// Initialization of output variables
 	International_Market.confirmed_supply = Eigen::MatrixXd(Time, International_Market.num_zone);
 	International_Market.confirmed_demand = Eigen::MatrixXd(Time, International_Market.num_zone);
@@ -84,7 +52,7 @@ market_inform International_Market_Set(int Time, std::string fin_name_moc){
 	return(International_Market);
 }
 
-void International_Market_Optimization(int tick, market_inform &International_Market, bool print_result = 1){
+void International_Market_Optimization(int tick, market_inform &International_Market, bool print_result){
 	// Initialization of process variables
 	int type_capacity_exchange;
 	double exchange_quantity;
@@ -94,7 +62,8 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 	Eigen::VectorXi price_demand_ID;
 	Eigen::VectorXi price_supply_ID;
 	Eigen::VectorXd demand_inflex(International_Market.num_zone);
-	demand_inflex << 4500, 4000, 3500, 2500, 2500, 15000, 500, 2000, 10000, 5000, 5000, 5000, 10000;
+	//demand_inflex << 4500, 4000, 3500, 2500, 2500, 15000, 500, 2000, 10000, 5000, 5000, 5000, 10000;
+	demand_inflex << International_Market.demand_default.row(tick).transpose();	// Assume all the demand is inflexible
 	Eigen::MatrixXd bidded_supply_default = Eigen::MatrixXd::Zero(International_Market.price_intervals + 2, International_Market.num_zone);
 	Eigen::MatrixXd bidded_demand_default = Eigen::MatrixXd::Zero(International_Market.price_intervals + 2, International_Market.num_zone);	
 	Eigen::MatrixXd bidded_supply = Eigen::MatrixXd::Zero(International_Market.price_intervals + 2, International_Market.num_zone);
@@ -174,10 +143,10 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 	}
 	
 	if(print_result){
-//		std::cout << "  Default Price: " << default_price_ID.transpose() << std::endl;
-//		std::cout << "  Sell Quantity: " << International_Market.confirmed_supply << std::endl;
-//		std::cout << "   Buy Quantity: " << International_Market.confirmed_demand << std::endl;
-//		std::cout << "Residual Demand: " << bidded_demand.bottomRows(1) << "\n" << std::endl;		
+//		std::cout << "  Default Price: " << default_price_ID.transpose() << "\n";
+//		std::cout << "  Sell Quantity: " << International_Market.confirmed_supply << "\n";
+//		std::cout << "   Buy Quantity: " << International_Market.confirmed_demand << "\n";
+//		std::cout << "Residual Demand: " << bidded_demand.bottomRows(1) << "\n\n";
 	}
 	
 	// Optimization of cross border exchange
@@ -254,8 +223,8 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 							}
 							else{
 								type_capacity_exchange = 2;				// Replace demand in exporting zone with import
-								std::cout << type_capacity_exchange << " " << row_ID << " " << col_ID << std::endl;
-								std::cout << price_demand_ID(col_ID) << " " << price_supply_ID(row_ID) << std::endl;
+								std::cout << type_capacity_exchange << " " << row_ID << " " << col_ID << "\n";
+								std::cout << price_demand_ID(col_ID) << " " << price_supply_ID(row_ID) << "\n";
 							}
 							
 							// Encode maximum surplus and occuring zones
@@ -372,24 +341,26 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 
 	// Results Output
 	if(print_result){
-		std::cout << "  Export Price ID: " << price_supply_ID.transpose() << std::endl;
-		std::cout << "  Import Price ID: " << price_demand_ID.transpose() << std::endl;
-		std::cout << "     Market Price: " << International_Market.confirmed_price.row(tick) << std::endl;
-		std::cout << "    Sell Quantity: " << International_Market.confirmed_supply.row(tick) << std::endl;
-		std::cout << "     Buy Quantity: " << International_Market.confirmed_demand.row(tick) << std::endl;
-		std::cout << "Cross border flow: " << International_Market.network.confirmed_power.row(tick) << std::endl;		
+		std::cout << "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \n";
+		std::cout << "Tick: " << tick << "\n";
+		std::cout << "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \n";
+		std::cout << "  Export Price ID: " << price_supply_ID.transpose() << "\n";
+		std::cout << "  Import Price ID: " << price_demand_ID.transpose() << "\n";
+		std::cout << "     Market Price: " << International_Market.confirmed_price.row(tick) << "\n";
+		std::cout << "    Sell Quantity: " << International_Market.confirmed_supply.row(tick) << "\n";
+		std::cout << "     Buy Quantity: " << International_Market.confirmed_demand.row(tick) << "\n";
+		std::cout << "Cross border flow: " << International_Market.network.confirmed_power.row(tick) << "\n\n";		
 	}
 }
 
 int main(){
 	// Input Variables
-	int Time = 1;
+	int Time = 8760;
 	std::string fin_name_moc = "input/merit_order_curve_q_assimilated_2021.csv";
-	market_inform International_Market = International_Market_Set(Time, fin_name_moc);
-	International_Market_Optimization(0, International_Market);
+	std::string fin_name_demand = "input/residual_load_default_forecast_2021.csv";
+	market_inform International_Market = International_Market_Set(Time, fin_name_moc, fin_name_demand);
 	
-	//std::cout << "Supply" << std::endl;
-	//std::cout << International_Market.bidded_supply << "\n" << std::endl;
-	//std::cout << "Demand" << std::endl;
-	//std::cout << International_Market.bidded_demand << std::endl;
+	for(int tick = 0; tick < 10; ++ tick){
+		International_Market_Optimization(tick, International_Market);
+	}
 }
