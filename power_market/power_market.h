@@ -35,6 +35,10 @@ struct market_inform{
 	Eigen::MatrixXd merit_order_curve;
 	Eigen::MatrixXd demand_default;			// Default demand profiles of the bidding zones; in later runs demand bids from Norway should come from lower level markets
 	
+	// Process Variables
+	Eigen::MatrixXd submitted_supply;		// Supply bid submitted in the bidding zones
+	Eigen::MatrixXd submitted_demand;		// Demand bid submitted in the bidding zones
+	
 	// Output variables
 	Eigen::MatrixXd confirmed_supply;		// Confirmed supply quantity from MO or TSO 
 	Eigen::MatrixXd confirmed_demand;		// Confirmed demand quantity from MO or TSO 
@@ -52,6 +56,7 @@ struct market_inform{
 #define IMO
 
 market_inform International_Market_Set(int, std::string, std::string);
+void International_Market_Initialization(market_inform&);
 void International_Market_Optimization(int, market_inform&, bool print_result = 1);
 
 #endif
