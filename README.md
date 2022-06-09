@@ -14,7 +14,7 @@ Infer the mean electricity demand per area.
 
 ### Output files
 
-## power market
+## power_market
 
 ### Input files
 
@@ -22,7 +22,7 @@ Infer the mean electricity demand per area.
 
 ### Output files
 
-## power network
+## power_network
 
 ### Input files
 
