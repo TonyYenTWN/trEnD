@@ -8,6 +8,24 @@ The library Eigen (https://eigen.tuxfamily.org/index.php?title=Main_Page) and Bo
 ## area_demand
 Infer the mean electricity demand per area.
 
+### Input files
+
+### Program files
+
+### Output files
+
 ## power market
 
+### Input files
+
+### Program files
+
+### Output files
+
 ## power network
+
+### Input files
+
+### Program files
+
+### Output files
