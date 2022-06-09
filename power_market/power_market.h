@@ -52,11 +52,17 @@ struct market_inform{
 
 #endif
 
+#ifndef POWER_MARKET
+#define POWER_MARKET
+
+void Market_Initialization(market_inform&);
+
+#endif
+
 #ifndef IMO
 #define IMO
 
 market_inform International_Market_Set(int, std::string, std::string);
-void International_Market_Initialization(market_inform&);
 void International_Market_Optimization(int, market_inform&, bool print_result = 1);
 
 #endif
