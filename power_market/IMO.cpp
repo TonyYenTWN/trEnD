@@ -2,6 +2,7 @@
 #include <iostream>
 //#include <chrono>
 #include "power_market.h"
+#include "power_market.cpp"
 
 market_inform International_Market_Set(int Time, std::string fin_name_moc, std::string fin_name_demand){
 	market_inform International_Market;
@@ -50,13 +51,6 @@ market_inform International_Market_Set(int Time, std::string fin_name_moc, std::
 	International_Market.network.confirmed_power = Eigen::MatrixXd(Time, International_Market.network.num_edges);
 
 	return(International_Market);
-}
-
-void International_Market_Initialization(market_inform &International_Market){
-	// Initialization of process variables
-	// Should re-initialize for every time slice
-	International_Market.submitted_supply = Eigen::MatrixXd::Zero(International_Market.price_intervals + 2, International_Market.num_zone);
-	International_Market.submitted_demand = Eigen::MatrixXd::Zero(International_Market.price_intervals + 2, International_Market.num_zone);
 }
 
 void International_Market_Optimization(int tick, market_inform &International_Market, bool print_result){
@@ -370,7 +364,7 @@ int main(){
 	market_inform International_Market = International_Market_Set(Time, fin_name_moc, fin_name_demand);
 	
 	for(int tick = 0; tick < 10; ++ tick){
-		International_Market_Initialization(International_Market);
+		Market_Initialization(International_Market);
 		International_Market_Optimization(tick, International_Market);
 	}
 }
