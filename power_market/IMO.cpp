@@ -45,8 +45,8 @@ market_inform International_Market_Set(int Time, std::string fin_name_moc, std::
 	International_Market.demand_default = read_file(num_row, num_col, fin_name_demand).rightCols(International_Market.num_zone);
 		
 	// Initialization of output variables
-	International_Market.confirmed_supply = Eigen::MatrixXd(Time, International_Market.num_zone);
-	International_Market.confirmed_demand = Eigen::MatrixXd(Time, International_Market.num_zone);
+	International_Market.confirmed_supply = Eigen::MatrixXd::Zero(Time, International_Market.num_zone);
+	International_Market.confirmed_demand = Eigen::MatrixXd::Zero(Time, International_Market.num_zone);
 	International_Market.confirmed_price = Eigen::MatrixXd(Time, International_Market.num_zone);
 	International_Market.network.confirmed_power = Eigen::MatrixXd(Time, International_Market.network.num_edges);
 
@@ -86,6 +86,7 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 		}
 		else{
 			International_Market.submitted_supply(0, zone_ID) += -International_Market.demand_default(tick, zone_ID);
+			std::cout << "Negative residual demand!!! \n\n"; 
 		}
 	}
 	bidded_supply = International_Market.submitted_supply;
@@ -146,10 +147,13 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 	}
 	
 	if(print_result){
-//		std::cout << "  Default Price: " << default_price_ID.transpose() << "\n";
-//		std::cout << "  Sell Quantity: " << International_Market.confirmed_supply << "\n";
-//		std::cout << "   Buy Quantity: " << International_Market.confirmed_demand << "\n";
-//		std::cout << "Residual Demand: " << bidded_demand.bottomRows(1) << "\n\n";
+		std::cout << "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \n";
+		std::cout << "Tick: " << tick << "\n";
+		std::cout << "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \n";
+		std::cout << "  Default Price: " << default_price_ID.transpose() << "\n";
+		std::cout << "  Sell Quantity: " << International_Market.confirmed_supply.row(tick) << "\n";
+		std::cout << "   Buy Quantity: " << International_Market.confirmed_demand.row(tick) << "\n";
+		std::cout << "Residual Demand: " << bidded_demand.bottomRows(1) << "\n\n";
 	}
 	
 	// Optimization of cross border exchange
@@ -363,7 +367,7 @@ int main(){
 	std::string fin_name_demand = "input/residual_load_default_forecast_2021.csv";
 	market_inform International_Market = International_Market_Set(Time, fin_name_moc, fin_name_demand);
 	
-	for(int tick = 0; tick < 10; ++ tick){
+	for(int tick = 0; tick < 2; ++ tick){
 		Market_Initialization(International_Market);
 		International_Market_Optimization(tick, International_Market);
 	}
