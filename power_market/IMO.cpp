@@ -15,6 +15,10 @@ market_inform International_Market_Set(int Time, std::string fin_name_moc, std::
 	International_Market.zone_names = {"NO1","NO2","NO3","NO4","NO5","DE-LU","DK1","FI","GB","NL","SE1","SE2","SE3"};
 	International_Market.price_range_inflex << -500, 3000;
 	International_Market.price_range_flex << -100, 500;
+	International_Market.bidded_price = Eigen::VectorXd(International_Market.price_intervals + 2);
+	International_Market.bidded_price(0) = International_Market.price_range_inflex(0);
+	International_Market.bidded_price.array().tail(1) = International_Market.price_range_inflex(1);
+	International_Market.bidded_price.array().segment(1, International_Market.price_intervals) = Eigen::VectorXd::LinSpaced(International_Market.price_intervals, International_Market.price_range_flex(0) + .5 * (International_Market.price_range_flex(1) - International_Market.price_range_flex(0)) / International_Market.price_intervals, International_Market.price_range_flex(1) - .5 * (International_Market.price_range_flex(1) - International_Market.price_range_flex(0)) / International_Market.price_intervals);
 	International_Market.network.num_vertice = International_Market.num_zone;
 	International_Market.network.num_edges = 15;
 	International_Market.network.incidence_matrix = Eigen::MatrixXi(International_Market.network.num_edges, 2);
@@ -23,10 +27,6 @@ market_inform International_Market_Set(int Time, std::string fin_name_moc, std::
 	International_Market.network.power_constraint = Eigen::MatrixXd(International_Market.network.num_edges, 2);
 	International_Market.network.power_constraint.col(0) << 1900, 100, 500, 2130, 300, 1400, 1680, 720, 720, 300, 500, 600, 0, 650, 200;
 	International_Market.network.power_constraint.col(1) << 3400, 350, 3900, 2095, 500, 1400, 1150, 720, 720, 1100, 450, 1000, 0, 600, 250;
-	International_Market.bidded_price = Eigen::VectorXd(International_Market.price_intervals + 2);
-	International_Market.bidded_price(0) = International_Market.price_range_inflex(0);
-	International_Market.bidded_price.array().tail(1) = International_Market.price_range_inflex(1);
-	International_Market.bidded_price.array().segment(1, International_Market.price_intervals) = Eigen::VectorXd::LinSpaced(International_Market.price_intervals, International_Market.price_range_flex(0) + .5, International_Market.price_range_flex(1) - .5);
 	
 	// Quantity density at each price
 	// Read inferred merit order curve data

@@ -14,6 +14,8 @@ struct network_graph{
 	int num_edges;
 	// Compact Incidence Matrix
 	Eigen::MatrixXi incidence_matrix;		// 0th col: start; 1st col: end
+	// Admittance of each edge
+	Eigen::VectorXd admittance_vector;		// (Imaginary part of the) admittance of each edge
 	// Power flow constraint
 	Eigen::MatrixXd power_constraint;  		// 0th col: from start to end; 1st col: from end to start
 
