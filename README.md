@@ -15,7 +15,7 @@ Inference of the mean electricity demand per area (aka density field).
 
 ### Program files
 - [area_demand.cpp](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/blob/main/area_demand/area_demand.cpp): main source file for the inference of mean electricity demand density field using Bayesian maximum entropy method.
-- [Geostat.cpp](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/blob/main/area_demand/Geostat.cpp): source file for geostatisitc related functions, including the calculation of geodestic on a ellipsoid.
+- [Geostat.cpp](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/blob/main/area_demand/Geostat.cpp): source file for geostatisitc related functions, including the calculation of geodestic on an ellipsoid.
 - [Geostat.h](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/blob/main/area_demand/Geostat.h): header file for [Geostat.cpp](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/blob/main/area_demand/Geostat.cpp).
 
 ### Output files
