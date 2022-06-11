@@ -74,11 +74,14 @@ void TSO_LP_Set(market_inform &TSO_Market, LP_object &Problem){
 	// Set objective vector
 	// Since submitted bids not yet updated, will set to 0
 	// The variables are ordered as {{V}, {S}, {I}}
+	Problem.Objective.orig_vector = Eigen::VectorXd::Zero(Problem.Variables_num);
 
 	// Set boudary values for equality and inequality constraints 
-	// Since submitted bids not yet updated, will set to 0
+	// Since submitted bids not yet updated, inequality constraints for {S} will set to 0
 	Problem.Boundary.eq_vector = Eigen::VectorXd::Zero(Problem.Constraints_eq_num);
 	Problem.Boundary.ie_orig_matrix = Eigen::MatrixXd::Zero(Problem.Variables_num + Problem.Constraints_ie_num, 2);
+	Problem.Boundary.ie_orig_matrix.topRows(TSO_Market.network.num_vertice) = TSO_Market.network.voltage_constraint;
+	Problem.Boundary.ie_orig_matrix.bottomRows(TSO_Market.network.num_edges) = TSO_Market.network.power_constraint;
 	
 	// Set sparse matrix for equality constraints
 	Eigen::VectorXd Y_n_diag = Eigen::VectorXd::Zero(TSO_Market.network.num_vertice);
@@ -105,7 +108,6 @@ void TSO_LP_Set(market_inform &TSO_Market, LP_object &Problem){
 	Constraint_eq_trip.push_back(Trip(TSO_Market.network.num_vertice + TSO_Market.network.num_edges, 0, 1));
 	Problem.Constraint.eq_orig_matrix = Eigen::SparseMatrix <double> (Problem.Constraints_eq_num, Problem.Variables_num);
 	Problem.Constraint.eq_orig_matrix.setFromTriplets(Constraint_eq_trip.begin(), Constraint_eq_trip.end());
-	std::cout << Problem.Constraint.eq_orig_matrix << "\n\n";
 	
 	// Set sparse matrix for original inequality constraints
 	Problem.Constraint.ie_orig_matrix = Eigen::SparseMatrix <double> (Problem.Variables_num + Problem.Constraints_ie_num, Problem.Variables_num);
@@ -115,7 +117,12 @@ void TSO_LP_Set(market_inform &TSO_Market, LP_object &Problem){
 		Constraint_ie_trip.push_back(Trip(var_iter, var_iter, 1));
 	}
 	Problem.Constraint.ie_orig_matrix.setFromTriplets(Constraint_ie_trip.begin(), Constraint_ie_trip.end());
-	std::cout << Problem.Constraint.ie_orig_matrix << "\n\n";	
+	
+	// Set initial feasible solution
+	Problem.Solution.orig_vector = Eigen::VectorXd::Zero(Problem.Variables_num);
+	
+	// Initialize the LP problem solver
+	LP_process(Problem, "Linear Problem", 0, 0);
 }
 
 void TSO_LP_Update(market_inform &TSO_Market, LP_object &Problem){
