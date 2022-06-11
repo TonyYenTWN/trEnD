@@ -11,7 +11,7 @@ Operational strategies of agents relevant to the distribution power network.
 ## [area_demand](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/tree/main/area_demand)
 Inference of the mean electricity demand per area (aka density field).
 
-### Input files
+### [Input files](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/tree/main/area_demand/input)
 
 ### Program files
 - [area_demand.cpp](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/blob/main/area_demand/area_demand.cpp): main source file for the inference of mean electricity demand density field using Bayesian maximum entropy method.
@@ -33,7 +33,7 @@ Basic functions and header files for generic usage, including
 ## [power_market](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/tree/main/power_market)
 Operation of the power market in Norway and between its neighbors.
 
-### Input files
+### [Input files](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/tree/main/power_market/input)
 
 ### Program files
 
@@ -42,7 +42,7 @@ Operation of the power market in Norway and between its neighbors.
 ## [power_network](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/tree/main/power_network/)
 Physical model of the transmission and distribution power network in Norway.
 
-### Input files
+### [Input files](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/tree/main/power_network/input)
 
 ### Program files
 
