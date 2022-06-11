@@ -88,7 +88,7 @@ void TSO_LP_Set(market_inform &TSO_Market, LP_object &Problem){
 	std::vector<Trip> Constraint_eq_trip;
 	Constraint_eq_trip.reserve(pow(TSO_Market.network.num_edges, 2) + TSO_Market.network.num_edges + 2 * TSO_Market.network.num_vertice);
 	for(int edge_iter = 0; edge_iter < TSO_Market.network.num_edges; ++ edge_iter){
-		// Equality constraints of voltage at the nodes, non-diagonal terms
+		// Equality constraints of voltage at the nodes, off-diagonal terms
 		Constraint_eq_trip.push_back(Trip(TSO_Market.network.incidence_matrix(edge_iter, 0), TSO_Market.network.incidence_matrix(edge_iter, 1), -TSO_Market.network.admittance_vector(edge_iter)));
 		Constraint_eq_trip.push_back(Trip(TSO_Market.network.incidence_matrix(edge_iter, 1), TSO_Market.network.incidence_matrix(edge_iter, 0), -TSO_Market.network.admittance_vector(edge_iter)));
 		Y_n_diag(TSO_Market.network.incidence_matrix(edge_iter, 0)) += TSO_Market.network.admittance_vector(edge_iter);
@@ -125,18 +125,13 @@ void TSO_LP_Set(market_inform &TSO_Market, LP_object &Problem){
 	LP_process(Problem, "Linear Problem", 0, 0);
 }
 
-void TSO_LP_Update(market_inform &TSO_Market, LP_object &Problem){
-
-
-}
-
 void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &TSO_Problem, bool print_result){
 	Eigen::MatrixXd bidded_supply = TSO_Market.submitted_supply;
 	Eigen::MatrixXd bidded_demand = TSO_Market.submitted_demand;
 	
 	// Initial market clearing within each nodes
-	Eigen::VectorXi default_price_ID(TSO_Market.num_zone);
-	Market_clearing_nodal(tick, TSO_Market, default_price_ID, bidded_supply, bidded_demand);
+	Eigen::VectorXi price_ID(TSO_Market.num_zone);
+	Market_clearing_nodal(tick, TSO_Market, price_ID, bidded_supply, bidded_demand);
 	//std::cout << default_price_ID.transpose();
 	
 	// Initialization of process variables for the main optimization loop
@@ -144,22 +139,42 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &TSO
 	Eigen::MatrixXd bidded_demand_export = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 2, TSO_Market.num_zone);
 	Eigen::MatrixXd bidded_supply_import = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 2, TSO_Market.num_zone);
 	Eigen::MatrixXd bidded_demand_import = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 2, TSO_Market.num_zone);
-	for(int zone_ID = 0; zone_ID < TSO_Market.num_zone; ++ zone_ID){
-		// Supply curves
-		bidded_supply_export.col(zone_ID).array().tail(TSO_Market.price_intervals + 1 - default_price_ID(zone_ID)) = TSO_Market.submitted_supply.col(zone_ID).array().tail(TSO_Market.price_intervals + 1 - default_price_ID(zone_ID));
-		bidded_supply_export(default_price_ID(zone_ID), zone_ID) = bidded_supply(default_price_ID(zone_ID), zone_ID);
-		bidded_supply_import.col(zone_ID).array().head(default_price_ID(zone_ID)) = TSO_Market.submitted_supply.col(zone_ID).array().head(default_price_ID(zone_ID));
-		bidded_supply_import(default_price_ID(zone_ID), zone_ID) = TSO_Market.submitted_supply(default_price_ID(zone_ID), zone_ID) - bidded_supply(default_price_ID(zone_ID), zone_ID);
-		
-		// Demand curves
-		bidded_demand_export.col(zone_ID).array().tail(TSO_Market.price_intervals + 1 - default_price_ID(zone_ID)) = TSO_Market.submitted_demand.col(zone_ID).array().tail(TSO_Market.price_intervals + 1 - default_price_ID(zone_ID));
-		bidded_demand_export(default_price_ID(zone_ID), zone_ID) = TSO_Market.submitted_demand(default_price_ID(zone_ID), zone_ID) - bidded_demand(default_price_ID(zone_ID), zone_ID);
-		bidded_demand_import.col(zone_ID).array().head(default_price_ID(zone_ID)) = TSO_Market.submitted_demand.col(zone_ID).array().head(default_price_ID(zone_ID));
-		bidded_demand_import(default_price_ID(zone_ID), zone_ID) = bidded_demand(default_price_ID(zone_ID), zone_ID);		
+	#pragma omp parallel
+	{
+		#pragma omp for
+		for(int zone_ID = 0; zone_ID < TSO_Market.num_zone; ++ zone_ID){
+			// Supply curves
+			bidded_supply_export.col(zone_ID).array().tail(TSO_Market.price_intervals + 1 - price_ID(zone_ID)) = TSO_Market.submitted_supply.col(zone_ID).array().tail(TSO_Market.price_intervals + 1 - price_ID(zone_ID));
+			bidded_supply_export(price_ID(zone_ID), zone_ID) = bidded_supply(price_ID(zone_ID), zone_ID);
+			bidded_supply_import.col(zone_ID).array().head(price_ID(zone_ID)) = TSO_Market.submitted_supply.col(zone_ID).array().head(price_ID(zone_ID));
+			bidded_supply_import(price_ID(zone_ID), zone_ID) = TSO_Market.submitted_supply(price_ID(zone_ID), zone_ID) - bidded_supply(price_ID(zone_ID), zone_ID);
+			
+			// Demand curves
+			bidded_demand_export.col(zone_ID).array().tail(TSO_Market.price_intervals + 1 - price_ID(zone_ID)) = TSO_Market.submitted_demand.col(zone_ID).array().tail(TSO_Market.price_intervals + 1 - price_ID(zone_ID));
+			bidded_demand_export(price_ID(zone_ID), zone_ID) = TSO_Market.submitted_demand(price_ID(zone_ID), zone_ID) - bidded_demand(price_ID(zone_ID), zone_ID);
+			bidded_demand_import.col(zone_ID).array().head(price_ID(zone_ID)) = TSO_Market.submitted_demand.col(zone_ID).array().head(price_ID(zone_ID));
+			bidded_demand_import(price_ID(zone_ID), zone_ID) = bidded_demand(price_ID(zone_ID), zone_ID);		
+		}
 	}
 	
-	// Update the objective values for the LP problem
-	TSO_LP_Update(TSO_Market, TSO_Problem);
+	// Main loop
+	// Update objective values and inequality boundary values for the LP problem
+	for(int node_iter = 0; node_iter < TSO_Market.network.num_vertice; ++ node_iter){
+		if(bidded_supply_export(price_ID(node_iter), node_iter) + bidded_demand_export(price_ID(node_iter), node_iter) != 0){
+			Problem.Objective.orig_vector(TSO_Market.network.num_vertice + node_iter) = -price_ID(node_iter);
+			Problem.Boundary.ie_orig_matrix(TSO_Market.network.num_vertice + node_iter, 1) = bidded_supply_export(price_ID(node_iter), node_iter) + bidded_demand_export(price_ID(node_iter), node_iter);
+		}
+		else{
+			Problem.Objective.orig_vector(TSO_Market.network.num_vertice + node_iter) = price_ID(node_iter);
+			Problem.Boundary.ie_orig_matrix(TSO_Market.network.num_vertice + node_iter, 1) = bidded_supply_import(price_ID(node_iter), node_iter) + bidded_demand_import(price_ID(node_iter), node_iter);
+		}
+	}
+	
+	// One iteration of optimization
+	
+	// Update equality boundary values for the LP problem and confirmed prices and bids for the market
+	
+	// Check optimality
 }
 
 int main(){

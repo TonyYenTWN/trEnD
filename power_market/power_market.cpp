@@ -13,8 +13,8 @@ void Market_clearing_nodal(int tick, market_inform &Market, Eigen::VectorXi &def
 	Eigen::VectorXi price_supply_ID = Eigen::VectorXi::Zero(Market.num_zone);
 	
 	double trade_quantity;
+	#pragma omp parallel for
 	for(int zone_ID = 0; zone_ID < Market.num_zone; ++ zone_ID){
-		
 		while(price_demand_ID(zone_ID) > price_supply_ID(zone_ID)){
 			// Check if there are demand bids at current price interval
 			while(bidded_demand(price_demand_ID(zone_ID), zone_ID) == 0){

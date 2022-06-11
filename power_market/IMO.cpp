@@ -69,9 +69,13 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 	Eigen::MatrixXd bidded_supply_import = Eigen::MatrixXd::Zero(International_Market.price_intervals + 2, International_Market.num_zone);
 	Eigen::MatrixXd bidded_demand_import = Eigen::MatrixXd::Zero(International_Market.price_intervals + 2, International_Market.num_zone);
 	Eigen::MatrixXd maximum_capacity_exchange = Eigen::MatrixXd::Zero(International_Market.num_zone, International_Market.num_zone);
-	for(int edge_ID = 0; edge_ID < International_Market.network.num_edges; ++ edge_ID){
-		maximum_capacity_exchange(International_Market.network.incidence_matrix(edge_ID, 0), International_Market.network.incidence_matrix(edge_ID, 1)) = International_Market.network.power_constraint(edge_ID, 0);
-		maximum_capacity_exchange(International_Market.network.incidence_matrix(edge_ID, 1), International_Market.network.incidence_matrix(edge_ID, 0)) = International_Market.network.power_constraint(edge_ID, 1);
+	#pragma omp parallel
+	{
+		#pragma omp for
+		for(int edge_ID = 0; edge_ID < International_Market.network.num_edges; ++ edge_ID){
+			maximum_capacity_exchange(International_Market.network.incidence_matrix(edge_ID, 0), International_Market.network.incidence_matrix(edge_ID, 1)) = International_Market.network.power_constraint(edge_ID, 0);
+			maximum_capacity_exchange(International_Market.network.incidence_matrix(edge_ID, 1), International_Market.network.incidence_matrix(edge_ID, 0)) = International_Market.network.power_constraint(edge_ID, 1);
+		}
 	}
 	Eigen::MatrixXi available_capacity_exchange;
 	Eigen::MatrixXd remaining_capacity_exchange;
@@ -82,13 +86,17 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 	// In the future, input of bidding zones of Norway should come from results of DSOs
 	// Bidding zones of other nations: assume inflexible supply or demand
 	International_Market.submitted_supply = International_Market.merit_order_curve;
-	for(int zone_ID = 0; zone_ID < International_Market.num_zone; ++ zone_ID){
-		if(International_Market.demand_default(tick, zone_ID) >= 0){
-			International_Market.submitted_demand(International_Market.price_intervals + 1, zone_ID) += International_Market.demand_default(tick, zone_ID);
-		}
-		else{
-			International_Market.submitted_supply(0, zone_ID) += -International_Market.demand_default(tick, zone_ID);
-			std::cout << "Negative residual demand!!! \n\n"; 
+	#pragma omp parallel
+	{
+		#pragma omp for
+		for(int zone_ID = 0; zone_ID < International_Market.num_zone; ++ zone_ID){
+			if(International_Market.demand_default(tick, zone_ID) >= 0){
+				International_Market.submitted_demand(International_Market.price_intervals + 1, zone_ID) += International_Market.demand_default(tick, zone_ID);
+			}
+			else{
+				International_Market.submitted_supply(0, zone_ID) += -International_Market.demand_default(tick, zone_ID);
+				std::cout << "Negative residual demand!!! \n\n"; 
+			}
 		}
 	}
 	bidded_supply = International_Market.submitted_supply;
@@ -109,18 +117,22 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 	}
 	
 	// Optimization of cross border exchange
-	for(int zone_ID = 0; zone_ID < International_Market.num_zone; ++ zone_ID){
-		// Supply curves
-		bidded_supply_export.col(zone_ID).array().tail(International_Market.price_intervals + 1 - default_price_ID(zone_ID)) = International_Market.submitted_supply.col(zone_ID).array().tail(International_Market.price_intervals + 1 - default_price_ID(zone_ID));
-		bidded_supply_export(default_price_ID(zone_ID), zone_ID) = bidded_supply(default_price_ID(zone_ID), zone_ID);
-		bidded_supply_import.col(zone_ID).array().head(default_price_ID(zone_ID)) = International_Market.submitted_supply.col(zone_ID).array().head(default_price_ID(zone_ID));
-		bidded_supply_import(default_price_ID(zone_ID), zone_ID) = International_Market.submitted_supply(default_price_ID(zone_ID), zone_ID) - bidded_supply(default_price_ID(zone_ID), zone_ID);
-		
-		// Demand curves
-		bidded_demand_export.col(zone_ID).array().tail(International_Market.price_intervals + 1 - default_price_ID(zone_ID)) = International_Market.submitted_demand.col(zone_ID).array().tail(International_Market.price_intervals + 1 - default_price_ID(zone_ID));
-		bidded_demand_export(default_price_ID(zone_ID), zone_ID) = International_Market.submitted_demand(default_price_ID(zone_ID), zone_ID) - bidded_demand(default_price_ID(zone_ID), zone_ID);
-		bidded_demand_import.col(zone_ID).array().head(default_price_ID(zone_ID)) = International_Market.submitted_demand.col(zone_ID).array().head(default_price_ID(zone_ID));
-		bidded_demand_import(default_price_ID(zone_ID), zone_ID) = bidded_demand(default_price_ID(zone_ID), zone_ID);		
+	#pragma omp parallel
+	{
+		#pragma omp for
+		for(int zone_ID = 0; zone_ID < International_Market.num_zone; ++ zone_ID){
+			// Supply curves
+			bidded_supply_export.col(zone_ID).array().tail(International_Market.price_intervals + 1 - default_price_ID(zone_ID)) = International_Market.submitted_supply.col(zone_ID).array().tail(International_Market.price_intervals + 1 - default_price_ID(zone_ID));
+			bidded_supply_export(default_price_ID(zone_ID), zone_ID) = bidded_supply(default_price_ID(zone_ID), zone_ID);
+			bidded_supply_import.col(zone_ID).array().head(default_price_ID(zone_ID)) = International_Market.submitted_supply.col(zone_ID).array().head(default_price_ID(zone_ID));
+			bidded_supply_import(default_price_ID(zone_ID), zone_ID) = International_Market.submitted_supply(default_price_ID(zone_ID), zone_ID) - bidded_supply(default_price_ID(zone_ID), zone_ID);
+			
+			// Demand curves
+			bidded_demand_export.col(zone_ID).array().tail(International_Market.price_intervals + 1 - default_price_ID(zone_ID)) = International_Market.submitted_demand.col(zone_ID).array().tail(International_Market.price_intervals + 1 - default_price_ID(zone_ID));
+			bidded_demand_export(default_price_ID(zone_ID), zone_ID) = International_Market.submitted_demand(default_price_ID(zone_ID), zone_ID) - bidded_demand(default_price_ID(zone_ID), zone_ID);
+			bidded_demand_import.col(zone_ID).array().head(default_price_ID(zone_ID)) = International_Market.submitted_demand.col(zone_ID).array().head(default_price_ID(zone_ID));
+			bidded_demand_import(default_price_ID(zone_ID), zone_ID) = bidded_demand(default_price_ID(zone_ID), zone_ID);		
+		}
 	}
 	
 	price_demand_ID = default_price_ID;
@@ -289,13 +301,17 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 	actual_capacity_exchange = maximum_capacity_exchange - remaining_capacity_exchange;
 	
 	// Record the cross-border flow
-	for(int edge_ID = 0; edge_ID < International_Market.network.num_edges; ++ edge_ID){
-		if(actual_capacity_exchange(International_Market.network.incidence_matrix(edge_ID, 0), International_Market.network.incidence_matrix(edge_ID, 1)) > 0){
-			International_Market.network.confirmed_power(tick, edge_ID) = actual_capacity_exchange(International_Market.network.incidence_matrix(edge_ID, 0), International_Market.network.incidence_matrix(edge_ID, 1));
-		}
-		else{
-			International_Market.network.confirmed_power(tick, edge_ID) = -actual_capacity_exchange(International_Market.network.incidence_matrix(edge_ID, 1), International_Market.network.incidence_matrix(edge_ID, 0));
-		}
+	#pragma omp parallel
+	{
+		#pragma omp for
+		for(int edge_ID = 0; edge_ID < International_Market.network.num_edges; ++ edge_ID){
+			if(actual_capacity_exchange(International_Market.network.incidence_matrix(edge_ID, 0), International_Market.network.incidence_matrix(edge_ID, 1)) > 0){
+				International_Market.network.confirmed_power(tick, edge_ID) = actual_capacity_exchange(International_Market.network.incidence_matrix(edge_ID, 0), International_Market.network.incidence_matrix(edge_ID, 1));
+			}
+			else{
+				International_Market.network.confirmed_power(tick, edge_ID) = -actual_capacity_exchange(International_Market.network.incidence_matrix(edge_ID, 1), International_Market.network.incidence_matrix(edge_ID, 0));
+			}
+		}	
 	}
 
 	// Results Output
@@ -319,8 +335,8 @@ int main(){
 	std::string fin_name_demand = "input/residual_load_default_forecast_2021.csv";
 	market_inform International_Market = International_Market_Set(Time, fin_name_moc, fin_name_demand);
 	
-	for(int tick = 0; tick < 2; ++ tick){
+	for(int tick = 0; tick < 10; ++ tick){
 		Market_Initialization(International_Market);
 		International_Market_Optimization(tick, International_Market);
-	}
+	}		
 }
