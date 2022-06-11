@@ -7,7 +7,7 @@ The library Eigen (https://eigen.tuxfamily.org/index.php?title=Main_Page) and Bo
 Operational strategies of agents relevant to the distribution power network.
 
 ## area_demand
-Infer the mean electricity demand per area.
+Inference of the mean electricity demand per area.
 
 ### Input files
 
