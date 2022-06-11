@@ -160,7 +160,7 @@ void storage_schedule_LP(Eigen::VectorXd subscept_tariff, storage_inform &result
 	Problem.Constraint.ie_orig_matrix.setFromTriplets(Constraint_ie_trip.begin(), Constraint_ie_trip.end());
 	//std::cout << Problem.Constraint.ie_matrix << std::endl;
 	
-	// Set initial feasible solutions and also reference point for contraction
+	// Set initial feasible solutions 
 	// The first feasible solution is where soc goes towards maximum asap and stays there; then q_dc(t) = q_ch(t) = 0
 	// The second feasible solution is where soc goes towards minimum asap and stays there; then q_dc(t) / eff = q_ch(t) * eff = maximum possible value
 	int transient_time_start = int (std::min(result.energy_scale - result.soc_ini, result.soc_ini)  / result.capacity_scale);
@@ -344,7 +344,7 @@ void EV_schedule(Eigen::VectorXd subscept_tariff, EV_inform &result){
 int main(){
 	// Test case Initialization
 	Eigen::VectorXd subscept_tariff(9);
-	subscept_tariff << 1, 3, 1, -1, -1, -.5, 2, 2.5, 1.5;
+	subscept_tariff << 1., 3., 1., -1., -1., -.5, 2., 2.5, 1.5;
 	sorted_vector sorted_tariff = sort(subscept_tariff);
 	end_user_operation test_user;
 	test_user.normalized_default_demand_profile = Eigen::VectorXd(subscept_tariff.size());
@@ -357,18 +357,18 @@ int main(){
 	std::cout << test_user.smart_appliance.normalized_scheduled_profile.transpose() << "\n" << std::endl;
 	
 	// BESS test, naive
-	test_user.BESS.energy_scale = 4;
-	test_user.BESS.capacity_scale = 1;
+	test_user.BESS.energy_scale = 4.;
+	test_user.BESS.capacity_scale = 1.;
 	test_user.BESS.efficiency = .95;
-	test_user.BESS.soc_ini = 2;
-	test_user.BESS.soc_final = 2;
+	test_user.BESS.soc_ini = 2.;
+	test_user.BESS.soc_final = 2.;
 	storage_schedule_naive(sorted_tariff, test_user.BESS);
 	std::cout << test_user.BESS.normalized_scheduled_capacity_profile.transpose() << "\n" << std::endl;
 	storage_schedule_LP(subscept_tariff, test_user.BESS);
 	std::cout << test_user.BESS.normalized_scheduled_capacity_profile.transpose() << "\n" << std::endl;
 	
 	// EV test
-	test_user.EV.energy_demand = 1;
+	test_user.EV.energy_demand = 1.;
 	test_user.EV.BESS = test_user.BESS;
 	test_user.EV.usage_default_period = Eigen::VectorXi::Zero(subscept_tariff.size());
 	test_user.EV.usage_default_period(3) = 1;
