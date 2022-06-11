@@ -78,6 +78,6 @@ void LP_boundary_ie_reduced_normalization(LP_object&);
 void LP_constraint_ie_reduced_cov_matrix_generation(LP_object&);
 void LP_optimization(LP_object&);
 void LP_result_print(LP_object&, std::string);
-void LP_process(LP_object &Problem, std::string Problem_name = "Linear Problem", bool result_output = 1, bool constraint_update = 1, bool boundary_update = 1, bool objective_update = 1);
+void LP_process(LP_object &Problem, std::string Problem_name = "Linear Problem", bool result_output = 1, bool find_sol = 1, bool constraint_update = 1, bool boundary_update = 1, bool objective_update = 1);
 
 #endif

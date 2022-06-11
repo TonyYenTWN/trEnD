@@ -395,7 +395,7 @@ void LP_result_print(LP_object &Problem, std::string Problem_name = "Linear Prob
 }
 
 // Wrapping up all the process
-void LP_process(LP_object &Problem, std::string Problem_name, bool result_output, bool constraint_update, bool boundary_update, bool objective_update){
+void LP_process(LP_object &Problem, std::string Problem_name, bool result_output, bool find_sol, bool constraint_update, bool boundary_update, bool objective_update){
 	// Generate sparse matrix for reduced inequality constraints, if needed
 	if(constraint_update){
 		LP_constraint_eq_redundant_deletion(Problem);	
