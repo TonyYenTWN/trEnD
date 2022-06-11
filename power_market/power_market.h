@@ -5,6 +5,7 @@
 #define MARKET_OBJECT
 
 #include "../basic/Basic_Definitions.h"
+#include "../basic/Eigen_Sparse.h"
 #include "../basic/rw_csv.cpp"
 
 // Power market objects
@@ -12,12 +13,11 @@ struct network_graph{
 	// Input parameters
 	int num_vertice;
 	int num_edges;
-	// Compact Incidence Matrix
-	Eigen::MatrixXi incidence_matrix;		// 0th col: start; 1st col: end
-	// Admittance of each edge
-	Eigen::VectorXd admittance_vector;		// (Imaginary part of the) admittance of each edge
-	// Power flow constraint
-	Eigen::MatrixXd power_constraint;  		// 0th col: from start to end; 1st col: from end to start
+	Eigen::MatrixXi incidence_matrix;		// Compact Incidence Matrix (0th col: start; 1st col: end)
+	Eigen::VectorXd admittance_vector;		// (Imaginary part of) admittance of each edge; used in TSO and DSO
+	Eigen::SparseMatrix <double> Y_n;		// Node admittance matrix; used in TSO and DSO
+	Eigen::MatrixXd voltage_constraint;		// Voltage constraint at each node; used in TSO and DSO
+	Eigen::MatrixXd power_constraint;  		// Power flow constraint (0th col: from start to end; 1st col: from end to start)
 
 	// Output variables
 	Eigen::MatrixXd confirmed_power;		// Power flow across each edge; positive indicates flowing from start to end

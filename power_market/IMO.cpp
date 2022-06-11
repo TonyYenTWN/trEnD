@@ -62,8 +62,8 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 	Eigen::VectorXi default_price_ID;
 	Eigen::VectorXi price_demand_ID;
 	Eigen::VectorXi price_supply_ID;
-	Eigen::MatrixXd bidded_supply = Eigen::MatrixXd::Zero(International_Market.price_intervals + 2, International_Market.num_zone);
-	Eigen::MatrixXd bidded_demand = Eigen::MatrixXd::Zero(International_Market.price_intervals + 2, International_Market.num_zone);	
+	Eigen::MatrixXd bidded_supply;
+	Eigen::MatrixXd bidded_demand;	
 	Eigen::MatrixXd bidded_supply_export = Eigen::MatrixXd::Zero(International_Market.price_intervals + 2, International_Market.num_zone);
 	Eigen::MatrixXd bidded_demand_export = Eigen::MatrixXd::Zero(International_Market.price_intervals + 2, International_Market.num_zone);
 	Eigen::MatrixXd bidded_supply_import = Eigen::MatrixXd::Zero(International_Market.price_intervals + 2, International_Market.num_zone);
@@ -78,7 +78,9 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 	Eigen::MatrixXd surplus_exchange;
 	Eigen::MatrixXd actual_capacity_exchange;
 	
-	// Execution of optimization process
+	// Update of submitted supply and demand bids
+	// In the future, input of bidding zones of Norway should come from results of DSOs
+	// Bidding zones of other nations: assume inflexible supply or demand
 	International_Market.submitted_supply = International_Market.merit_order_curve;
 	for(int zone_ID = 0; zone_ID < International_Market.num_zone; ++ zone_ID){
 		if(International_Market.demand_default(tick, zone_ID) >= 0){
@@ -92,59 +94,9 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 	bidded_supply = International_Market.submitted_supply;
 	bidded_demand = International_Market.submitted_demand;
 	
-	// Initial optimization within each bidding zones
+	// Initial market clearing within each bidding zones
 	default_price_ID = Eigen::VectorXi(International_Market.num_zone);
-	price_demand_ID = (International_Market.price_intervals + 1) * Eigen::VectorXi::Ones(International_Market.num_zone);
-	price_supply_ID = Eigen::VectorXi::Zero(International_Market.num_zone);
-	
-	double trade_quantity;
-	for(int zone_ID = 0; zone_ID < International_Market.num_zone; ++ zone_ID){
-		
-		while(price_demand_ID(zone_ID) > price_supply_ID(zone_ID)){
-			// Check if there are demand bids at current price interval
-			while(bidded_demand(price_demand_ID(zone_ID), zone_ID) == 0){
-				if(price_demand_ID(zone_ID) > 0){
-					price_demand_ID(zone_ID) -= 1;
-				}
-				else{
-					// No available buyer left to buy electricity
-					default_price_ID(zone_ID) = price_supply_ID(zone_ID);
-					break;
-				}
-			}
-			
-			// Check if there are supply bids at current price interval
-			while(bidded_supply(price_supply_ID(zone_ID), zone_ID) == 0){
-				if(price_supply_ID(zone_ID) < International_Market.bidded_price.size() - 1){
-					price_supply_ID(zone_ID) += 1;
-				}
-				else{
-					// No available seller left to sell electricity
-					default_price_ID(zone_ID) = price_demand_ID(zone_ID);
-					break;				
-				}			
-			}
-			
-			if(price_demand_ID(zone_ID) > price_supply_ID(zone_ID)){
-				trade_quantity = std::min(bidded_supply(price_supply_ID(zone_ID), zone_ID), bidded_demand(price_demand_ID(zone_ID), zone_ID));
-				International_Market.confirmed_supply(tick, zone_ID) += trade_quantity;
-				International_Market.confirmed_demand(tick, zone_ID) += trade_quantity;
-				bidded_supply(price_supply_ID(zone_ID), zone_ID) -= trade_quantity;
-				bidded_demand(price_demand_ID(zone_ID), zone_ID) -= trade_quantity;
-			}
-			else{
-				if(bidded_supply(price_supply_ID(zone_ID), zone_ID) >= 0){
-					default_price_ID(zone_ID) = price_supply_ID(zone_ID);
-				}
-				else{
-					default_price_ID(zone_ID) = price_demand_ID(zone_ID);
-				}
-			}
-		}
-		
-		// Record default market clearing prices
-		International_Market.confirmed_price(tick, zone_ID) = International_Market.bidded_price(default_price_ID(zone_ID));		
-	}
+	Market_clearing_nodal(tick, International_Market, default_price_ID, bidded_supply, bidded_demand);
 	
 	if(print_result){
 		std::cout << "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \n";
@@ -164,7 +116,7 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 		bidded_supply_import.col(zone_ID).array().head(default_price_ID(zone_ID)) = International_Market.submitted_supply.col(zone_ID).array().head(default_price_ID(zone_ID));
 		bidded_supply_import(default_price_ID(zone_ID), zone_ID) = International_Market.submitted_supply(default_price_ID(zone_ID), zone_ID) - bidded_supply(default_price_ID(zone_ID), zone_ID);
 		
-		// Demand curves: inflexible case
+		// Demand curves
 		bidded_demand_export.col(zone_ID).array().tail(International_Market.price_intervals + 1 - default_price_ID(zone_ID)) = International_Market.submitted_demand.col(zone_ID).array().tail(International_Market.price_intervals + 1 - default_price_ID(zone_ID));
 		bidded_demand_export(default_price_ID(zone_ID), zone_ID) = International_Market.submitted_demand(default_price_ID(zone_ID), zone_ID) - bidded_demand(default_price_ID(zone_ID), zone_ID);
 		bidded_demand_import.col(zone_ID).array().head(default_price_ID(zone_ID)) = International_Market.submitted_demand.col(zone_ID).array().head(default_price_ID(zone_ID));
@@ -178,7 +130,7 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 	available_capacity_exchange = Eigen::MatrixXi::Ones(International_Market.num_zone, International_Market.num_zone);
 	available_capacity_exchange.bottomRightCorner(International_Market.num_zone - International_Market.cross_border_zone_start, International_Market.num_zone - International_Market.cross_border_zone_start) = Eigen::MatrixXi::Identity(International_Market.num_zone - International_Market.cross_border_zone_start, International_Market.num_zone - International_Market.cross_border_zone_start);
 	
-	// Main loop for optimization
+	// Main loop for optimization of cross border exchange
 	while(available_capacity_exchange.sum() > 0){
 		// Update price of demand and supply at each bidding zone
 		for(int zone_ID = 0; zone_ID < International_Market.num_zone; ++ zone_ID){
