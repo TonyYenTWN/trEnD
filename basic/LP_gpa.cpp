@@ -423,7 +423,9 @@ void LP_process(LP_object &Problem, std::string Problem_name, bool result_output
 	}
 
 	// Solve the LP
-	LP_optimization(Problem);
+	if(find_sol){
+		LP_optimization(Problem);
+	}
 	
 	// Print results
 	if(result_output){
