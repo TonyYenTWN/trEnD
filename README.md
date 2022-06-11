@@ -15,6 +15,12 @@ Inference of the mean electricity demand per area.
 
 ### Output files
 
+## basic
+Basic functions and header files for generic usage, including
+
+- [LP_gpa.cpp](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/blob/main/basic/LP_gpa.cpp): linear programming solver using gradient projection algorithm.
+- [LP_gpa.h](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/blob/main/basic/LP_gpa.h): header file for [LP_gpa.cpp](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/blob/main/basic/LP_gpa.cpp).
+
 ## power_market
 Operation of the power market in Norway and between its neighbors.
 
