@@ -12,8 +12,8 @@ market_inform TSO_Market_Set(int Time){
 	TSO_Market.num_zone = 2;
 	TSO_Market.time_intervals = Time;
 	TSO_Market.price_intervals = 600;
-	TSO_Market.price_range_inflex << -500, 3000;
-	TSO_Market.price_range_flex << -100, 500;
+	TSO_Market.price_range_inflex << -500., 3000.;
+	TSO_Market.price_range_flex << -100., 500.;
 	TSO_Market.bidded_price = Eigen::VectorXd(TSO_Market.price_intervals + 2);
 	TSO_Market.bidded_price(0) = TSO_Market.price_range_inflex(0);
 	TSO_Market.bidded_price.array().tail(1) = TSO_Market.price_range_inflex(1);
@@ -25,21 +25,21 @@ market_inform TSO_Market_Set(int Time){
 	TSO_Market.network.incidence_matrix = Eigen::MatrixXi(TSO_Market.network.num_edges, 2);
 	TSO_Market.network.incidence_matrix.row(0) << 0, 1;
 	TSO_Market.network.admittance_vector = Eigen::VectorXd(1);
-	TSO_Market.network.admittance_vector << 1;
-	TSO_Market.network.Y_n = Eigen::SparseMatrix <double> (TSO_Market.network.num_vertice, TSO_Market.network.num_vertice);
-	Eigen::VectorXd Y_n_diag = Eigen::VectorXd::Zero(TSO_Market.network.num_vertice);
-	std::vector<Trip> Y_n_trip;
-	Y_n_trip.reserve(2 * TSO_Market.network.num_edges + TSO_Market.network.num_vertice);
-	for(int edge_iter = 0; edge_iter < TSO_Market.network.num_edges; ++ edge_iter){
-		Y_n_trip.push_back(Trip(TSO_Market.network.incidence_matrix(edge_iter, 0), TSO_Market.network.incidence_matrix(edge_iter, 1), -TSO_Market.network.admittance_vector(edge_iter)));
-		Y_n_trip.push_back(Trip(TSO_Market.network.incidence_matrix(edge_iter, 1), TSO_Market.network.incidence_matrix(edge_iter, 0), -TSO_Market.network.admittance_vector(edge_iter)));
-		Y_n_diag(TSO_Market.network.incidence_matrix(edge_iter, 0)) += TSO_Market.network.admittance_vector(edge_iter);
-		Y_n_diag(TSO_Market.network.incidence_matrix(edge_iter, 1)) += TSO_Market.network.admittance_vector(edge_iter);
-	}
-	for(int node_iter = 0; node_iter < TSO_Market.network.num_vertice; ++ node_iter){
-		Y_n_trip.push_back(Trip(node_iter, node_iter, Y_n_diag(node_iter)));
-	}
-	TSO_Market.network.Y_n.setFromTriplets(Y_n_trip.begin(), Y_n_trip.end());
+	TSO_Market.network.admittance_vector << .5;
+//	TSO_Market.network.Y_n = Eigen::SparseMatrix <double> (TSO_Market.network.num_vertice, TSO_Market.network.num_vertice);
+//	Eigen::VectorXd Y_n_diag = Eigen::VectorXd::Zero(TSO_Market.network.num_vertice);
+//	std::vector<Trip> Y_n_trip;
+//	Y_n_trip.reserve(2 * TSO_Market.network.num_edges + TSO_Market.network.num_vertice);
+//	for(int edge_iter = 0; edge_iter < TSO_Market.network.num_edges; ++ edge_iter){
+//		Y_n_trip.push_back(Trip(TSO_Market.network.incidence_matrix(edge_iter, 0), TSO_Market.network.incidence_matrix(edge_iter, 1), -TSO_Market.network.admittance_vector(edge_iter)));
+//		Y_n_trip.push_back(Trip(TSO_Market.network.incidence_matrix(edge_iter, 1), TSO_Market.network.incidence_matrix(edge_iter, 0), -TSO_Market.network.admittance_vector(edge_iter)));
+//		Y_n_diag(TSO_Market.network.incidence_matrix(edge_iter, 0)) += TSO_Market.network.admittance_vector(edge_iter);
+//		Y_n_diag(TSO_Market.network.incidence_matrix(edge_iter, 1)) += TSO_Market.network.admittance_vector(edge_iter);
+//	}
+//	for(int node_iter = 0; node_iter < TSO_Market.network.num_vertice; ++ node_iter){
+//		Y_n_trip.push_back(Trip(node_iter, node_iter, Y_n_diag(node_iter)));
+//	}
+//	TSO_Market.network.Y_n.setFromTriplets(Y_n_trip.begin(), Y_n_trip.end());
 	
 	// Set voltage and power constraints at each edge
 	TSO_Market.network.voltage_constraint = Eigen::MatrixXd(TSO_Market.network.num_vertice, 2);
@@ -57,30 +57,80 @@ market_inform TSO_Market_Set(int Time){
 	// For the trivial case only: initialize submitted supply and demand bids at each node
 	TSO_Market.submitted_supply = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 2, TSO_Market.num_zone);
 	TSO_Market.submitted_demand = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 2, TSO_Market.num_zone);
-	TSO_Market.submitted_supply(0, 0) = 10;
-	TSO_Market.submitted_supply(0, 1) = 20;
-	TSO_Market.submitted_demand(TSO_Market.price_intervals + 1, 0) = 20;
-	TSO_Market.submitted_demand(TSO_Market.price_intervals + 1, 1) = 10;	
+	TSO_Market.submitted_supply(0, 0) = 10.;
+	TSO_Market.submitted_supply(0, 1) = 20.;
+	TSO_Market.submitted_demand(TSO_Market.price_intervals + 1, 0) = 20.;
+	TSO_Market.submitted_demand(TSO_Market.price_intervals + 1, 1) = 10.;	
 	
 	return(TSO_Market);
 }
 
 void TSO_LP_Set(market_inform &TSO_Market, LP_object &Problem){
 	// Set dimension of the problem
-	Problem.Constraints_eq_num = TSO_Market.network.num_edges + TSO_Market.network.num_vertice;
+	Problem.Constraints_eq_num = TSO_Market.network.num_vertice + TSO_Market.network.num_edges + 1;
 	Problem.Constraints_ie_num = 0;
-	Problem.Variables_num = 2 * TSO_Market.network.num_edges + TSO_Market.network.num_vertice;
+	Problem.Variables_num = 2 * TSO_Market.network.num_vertice + TSO_Market.network.num_edges;
+
+	// Set objective vector
+	// Since submitted bids not yet updated, will set to 0
+	// The variables are ordered as {{V}, {S}, {I}}
+
+	// Set boudary values for equality and inequality constraints 
+	// Since submitted bids not yet updated, will set to 0
+	Problem.Boundary.eq_vector = Eigen::VectorXd::Zero(Problem.Constraints_eq_num);
+	Problem.Boundary.ie_orig_matrix = Eigen::MatrixXd::Zero(Problem.Variables_num + Problem.Constraints_ie_num, 2);
+	
+	// Set sparse matrix for equality constraints
+	Eigen::VectorXd Y_n_diag = Eigen::VectorXd::Zero(TSO_Market.network.num_vertice);
+	std::vector<Trip> Constraint_eq_trip;
+	Constraint_eq_trip.reserve(pow(TSO_Market.network.num_edges, 2) + TSO_Market.network.num_edges + 2 * TSO_Market.network.num_vertice);
+	for(int edge_iter = 0; edge_iter < TSO_Market.network.num_edges; ++ edge_iter){
+		// Equality constraints of voltage at the nodes, non-diagonal terms
+		Constraint_eq_trip.push_back(Trip(TSO_Market.network.incidence_matrix(edge_iter, 0), TSO_Market.network.incidence_matrix(edge_iter, 1), -TSO_Market.network.admittance_vector(edge_iter)));
+		Constraint_eq_trip.push_back(Trip(TSO_Market.network.incidence_matrix(edge_iter, 1), TSO_Market.network.incidence_matrix(edge_iter, 0), -TSO_Market.network.admittance_vector(edge_iter)));
+		Y_n_diag(TSO_Market.network.incidence_matrix(edge_iter, 0)) += TSO_Market.network.admittance_vector(edge_iter);
+		Y_n_diag(TSO_Market.network.incidence_matrix(edge_iter, 1)) += TSO_Market.network.admittance_vector(edge_iter);
+		
+		// Equality constraints of power flows at the edges
+		Constraint_eq_trip.push_back(Trip(TSO_Market.network.num_vertice + edge_iter, TSO_Market.network.incidence_matrix(edge_iter, 0), TSO_Market.network.admittance_vector(edge_iter)));
+		Constraint_eq_trip.push_back(Trip(TSO_Market.network.num_vertice + edge_iter, TSO_Market.network.incidence_matrix(edge_iter, 1), -TSO_Market.network.admittance_vector(edge_iter)));
+		Constraint_eq_trip.push_back(Trip(TSO_Market.network.num_vertice + edge_iter, 2 * TSO_Market.network.num_vertice + edge_iter, -1));	
+	}
+	for(int node_iter = 0; node_iter < TSO_Market.network.num_vertice; ++ node_iter){
+		// Equality constraints of voltage at the nodes, diagonal terms
+		Constraint_eq_trip.push_back(Trip(node_iter, node_iter, Y_n_diag(node_iter)));
+		Constraint_eq_trip.push_back(Trip(node_iter, TSO_Market.network.num_vertice + node_iter, -1));
+	}
+	// Equality constraint for the reference bus
+	Constraint_eq_trip.push_back(Trip(TSO_Market.network.num_vertice + TSO_Market.network.num_edges, 0, 1));
+	Problem.Constraint.eq_orig_matrix = Eigen::SparseMatrix <double> (Problem.Constraints_eq_num, Problem.Variables_num);
+	Problem.Constraint.eq_orig_matrix.setFromTriplets(Constraint_eq_trip.begin(), Constraint_eq_trip.end());
+	std::cout << Problem.Constraint.eq_orig_matrix << "\n\n";
+	
+	// Set sparse matrix for original inequality constraints
+	Problem.Constraint.ie_orig_matrix = Eigen::SparseMatrix <double> (Problem.Variables_num + Problem.Constraints_ie_num, Problem.Variables_num);
+	std::vector<Trip> Constraint_ie_trip;
+	Constraint_ie_trip.reserve((Problem.Constraints_ie_num + 1) * Problem.Variables_num);
+	for(int var_iter = 0; var_iter < Problem.Variables_num; ++ var_iter){
+		Constraint_ie_trip.push_back(Trip(var_iter, var_iter, 1));
+	}
+	Problem.Constraint.ie_orig_matrix.setFromTriplets(Constraint_ie_trip.begin(), Constraint_ie_trip.end());
+	std::cout << Problem.Constraint.ie_orig_matrix << "\n\n";	
+}
+
+void TSO_LP_Update(market_inform &TSO_Market, LP_object &Problem){
+
 
 }
 
-void TSO_Market_Optimization(int tick, market_inform &TSO_Market, bool print_result){
+void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &TSO_Problem, bool print_result){
 	Eigen::MatrixXd bidded_supply = TSO_Market.submitted_supply;
 	Eigen::MatrixXd bidded_demand = TSO_Market.submitted_demand;
 	
 	// Initial market clearing within each nodes
 	Eigen::VectorXi default_price_ID(TSO_Market.num_zone);
 	Market_clearing_nodal(tick, TSO_Market, default_price_ID, bidded_supply, bidded_demand);
-	std::cout << default_price_ID.transpose();
+	//std::cout << default_price_ID.transpose();
 	
 	// Initialization of process variables for the main optimization loop
 	Eigen::MatrixXd bidded_supply_export = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 2, TSO_Market.num_zone);
@@ -101,12 +151,14 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, bool print_res
 		bidded_demand_import(default_price_ID(zone_ID), zone_ID) = bidded_demand(default_price_ID(zone_ID), zone_ID);		
 	}
 	
-	// Set the LP problem
-	LP_object TSO_Problem;
-	TSO_LP_Set(TSO_Market, TSO_Problem);
+	// Update the objective values for the LP problem
+	TSO_LP_Update(TSO_Market, TSO_Problem);
 }
 
 int main(){
 	market_inform TSO_Market = TSO_Market_Set(1);
-	TSO_Market_Optimization(0, TSO_Market, 1);
+	LP_object TSO_Problem;
+	TSO_LP_Set(TSO_Market, TSO_Problem);
+	
+	TSO_Market_Optimization(0, TSO_Market, TSO_Problem, 1);
 }

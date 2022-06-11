@@ -15,7 +15,7 @@ struct network_graph{
 	int num_edges;
 	Eigen::MatrixXi incidence_matrix;		// Compact Incidence Matrix (0th col: start; 1st col: end)
 	Eigen::VectorXd admittance_vector;		// (Imaginary part of) admittance of each edge; used in TSO and DSO
-	Eigen::SparseMatrix <double> Y_n;		// Node admittance matrix; used in TSO and DSO
+//	Eigen::SparseMatrix <double> Y_n;		// Node admittance matrix; used in TSO and DSO
 	Eigen::MatrixXd voltage_constraint;		// Voltage constraint at each node; used in TSO and DSO
 	Eigen::MatrixXd power_constraint;  		// Power flow constraint (0th col: from start to end; 1st col: from end to start)
 
