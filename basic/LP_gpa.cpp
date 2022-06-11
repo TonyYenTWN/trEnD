@@ -100,6 +100,7 @@ void LP_constraint_ie_reduced_generation(LP_object &Problem){
 		// l_r <= -A_r^(-1) * (A_e * x_e - b) = x_r <= u_r
 		// l_r - A_r^(-1) * b <= -A_r^(-1) * A_e * x_e <= u_r - A_r^(-1) * b
 		Eigen::VectorXd col_orig;
+		// Do not use openmp parallel thread to run the loop below; may yield wrong solution
 		for(int var_id = 0; var_id < Problem.Variables_num - Problem.Constraints_eq_num; ++ var_id){
 			col_orig = Problem.Constraint.eq_orig_matrix.col(var_id);
 			reduced_matrix.middleRows(Problem.Variables_num - Problem.Constraints_eq_num, Problem.Constraints_eq_num).col(var_id) = -Problem.Solver.lu.solve(col_orig);
@@ -164,18 +165,26 @@ void LP_feasible_solution_reduced_generation(LP_object &Problem){
 // Normalization of reduced inequality constraints
 void LP_constraint_ie_reduced_normalization(LP_object &Problem){
 	Problem.Constraint.norm = Eigen::VectorXd::Ones(Problem.Variables_num + Problem.Constraints_ie_num);
-	
-	for(int row_id = Problem.Variables_num - Problem.Constraints_eq_num; row_id < Problem.Constraint.ie_reduced_matrix.rows(); ++ row_id){
-		Problem.Constraint.norm(row_id) = Problem.Constraint.ie_reduced_matrix.row(row_id).norm();
-		Problem.Constraint.ie_reduced_matrix.row(row_id) /= Problem.Constraint.norm(row_id);
+
+	#pragma omp parallel
+	{
+		#pragma omp for
+		for(int row_id = Problem.Variables_num - Problem.Constraints_eq_num; row_id < Problem.Constraint.ie_reduced_matrix.rows(); ++ row_id){
+			Problem.Constraint.norm(row_id) = Problem.Constraint.ie_reduced_matrix.row(row_id).norm();
+			Problem.Constraint.ie_reduced_matrix.row(row_id) /= Problem.Constraint.norm(row_id);
+		}
 	}
 	//std::cout << std::fixed << std::setprecision(6) << Problem.Constraint.ie_reduced_matrix << "\n" << std::endl;
 }
 
 // Normalization of reduced inequality boundaries
 void LP_boundary_ie_reduced_normalization(LP_object &Problem){
-	for(int row_id = Problem.Variables_num - Problem.Constraints_eq_num; row_id < Problem.Constraint.ie_reduced_matrix.rows(); ++ row_id){
-		Problem.Boundary.ie_reduced_matrix.row(row_id) /= Problem.Constraint.norm(row_id);
+	#pragma omp parallel
+	{
+		#pragma omp for
+		for(int row_id = Problem.Variables_num - Problem.Constraints_eq_num; row_id < Problem.Constraint.ie_reduced_matrix.rows(); ++ row_id){
+			Problem.Boundary.ie_reduced_matrix.row(row_id) /= Problem.Constraint.norm(row_id);
+		}
 	}
 }
 
@@ -271,21 +280,25 @@ void LP_optimization(LP_object &Problem){
 					// Check the minimum allow increment along the projected gradient is greater than 0
 					Projected_increment = Problem.Constraint.ie_reduced_matrix * Projected_grad;
 					min_increment = std::numeric_limits<double>::infinity();
-					for(int constraint_iter = 0; constraint_iter < Boundary_gap.rows(); ++ constraint_iter){
-						if(abs(Projected_increment(constraint_iter)) > tol){
-							// Lower bound
-							current_increment = -Boundary_gap(constraint_iter, 0) / Projected_increment(constraint_iter);
-							if(current_increment > 0 && current_increment < min_increment){
-								min_increment = current_increment;
+					#pragma omp parallel
+					{
+						#pragma omp for reduction(min: min_increment)
+						for(int constraint_iter = 0; constraint_iter < Boundary_gap.rows(); ++ constraint_iter){
+							if(abs(Projected_increment(constraint_iter)) > tol){
+								// Lower bound
+								current_increment = -Boundary_gap(constraint_iter, 0) / Projected_increment(constraint_iter);
+								if(current_increment > 0 && current_increment < min_increment){
+									min_increment = current_increment;
+								}
+								//std::cout << std::fixed << std::setprecision(6) << current_increment << " ";
+								
+								// Upper bound
+								current_increment = Boundary_gap(constraint_iter, 1) / Projected_increment(constraint_iter);
+								if(current_increment > 0 && current_increment < min_increment){
+									min_increment = current_increment;
+								}
+								//std::cout << std::fixed << std::setprecision(6) << current_increment << std::endl;												
 							}
-							//std::cout << std::fixed << std::setprecision(6) << current_increment << " ";
-							
-							// Upper bound
-							current_increment = Boundary_gap(constraint_iter, 1) / Projected_increment(constraint_iter);
-							if(current_increment > 0 && current_increment < min_increment){
-								min_increment = current_increment;
-							}
-							//std::cout << std::fixed << std::setprecision(6) << current_increment << std::endl;												
 						}
 					}
 					
@@ -317,19 +330,23 @@ void LP_optimization(LP_object &Problem){
 			Projected_grad = Problem.Objective.reduced_vector;
 			Projected_increment = Problem.Constraint.ie_reduced_matrix * Projected_grad;
 			min_increment = std::numeric_limits<double>::infinity();
-			for(int constraint_iter = 0; constraint_iter < Boundary_gap.rows(); ++ constraint_iter){
-				if(abs(Projected_increment(constraint_iter)) > tol){
-					// Lower bound
-					current_increment = -Boundary_gap(constraint_iter, 0) / Projected_increment(constraint_iter);
-					if(current_increment > 0 && current_increment < min_increment){
-						min_increment = current_increment;
+			#pragma omp parallel
+			{
+				#pragma omp for reduction(min: min_increment)
+				for(int constraint_iter = 0; constraint_iter < Boundary_gap.rows(); ++ constraint_iter){
+					if(abs(Projected_increment(constraint_iter)) > tol){
+						// Lower bound
+						current_increment = -Boundary_gap(constraint_iter, 0) / Projected_increment(constraint_iter);
+						if(current_increment > 0 && current_increment < min_increment){
+							min_increment = current_increment;
+						}
+						
+						// Upper bound
+						current_increment = Boundary_gap(constraint_iter, 1) / Projected_increment(constraint_iter);
+						if(current_increment > 0 && current_increment < min_increment){
+							min_increment = current_increment;
+						}												
 					}
-					
-					// Upper bound
-					current_increment = Boundary_gap(constraint_iter, 1) / Projected_increment(constraint_iter);
-					if(current_increment > 0 && current_increment < min_increment){
-						min_increment = current_increment;
-					}												
 				}
 			}
 			Problem.Solution.reduced_vector += min_increment * Projected_grad;
