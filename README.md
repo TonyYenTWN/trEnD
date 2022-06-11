@@ -1,23 +1,29 @@
-# distribution_grid_transition_Norway
+# Program Introduction
 The codes are for my PhD prgram and it is undergoing revision. Feel free to comment on any issues.
 
 The library [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page) and [Boost](https://www.boost.org/) are required to compile the codes.
+
+# File Documentation
 
 ## agent_operational
 Operational strategies of agents relevant to the distribution power network.
 
 ## area_demand
-Inference of the mean electricity demand per area.
+Inference of the mean electricity demand per area (aka density field).
 
 ### Input files
 
 ### Program files
+- [area_demand.cpp](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/blob/main/area_demand/area_demand.cpp): main source file for the inference of mean electricity demand density field using Bayesian maximum entropy method.
+- [Geostat.cpp](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/blob/main/area_demand/Geostat.cpp): source file for geostatisitc related functions, including the calculation of geodestic on a ellipsoid.
+- [Geostat.h](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/blob/main/area_demand/Geostat.h): header file for [Geostat.cpp](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/blob/main/area_demand/Geostat.cpp).
 
 ### Output files
 
 ## basic
 Basic functions and header files for generic usage, including
 
+- [Basic_Definitions.h](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/blob/main/basic/Basic_Definitions.h): header file for basic definitions.
 - [Eigen_Sparse.h](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/blob/main/basic/Eigen_Sparse.h): header file for using sparse matrices from the [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page) library.
 - [LP_gpa.cpp](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/blob/main/basic/LP_gpa.cpp): source file of a linear programming solver using gradient projection algorithm.
 - [LP_gpa.h](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/blob/main/basic/LP_gpa.h): header file for [LP_gpa.cpp](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/blob/main/basic/LP_gpa.cpp).
