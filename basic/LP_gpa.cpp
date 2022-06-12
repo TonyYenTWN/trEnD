@@ -22,7 +22,7 @@ void LP_constraint_eq_redundant_deletion(LP_object &Problem){
 }
 
 // Choose redundant variables forming full rank square matrix from the equality constraints
-void LP_variables_permutation(LP_object &Problem){
+void LP_variables_permutation(LP_object &Problem, bool stepwise_obj){
 	// Set precision of zero detection
 	double tol = pow(10, -12);
 	
@@ -80,6 +80,9 @@ void LP_variables_permutation(LP_object &Problem){
 	Problem.Boundary.ie_orig_matrix = Problem.Constraint.permutation_matrix.transpose() * Problem.Boundary.ie_orig_matrix;
 	Problem.Objective.orig_vector = Problem.Constraint.permutation_matrix.transpose() * Problem.Objective.orig_vector;
 	Problem.Solution.orig_vector = Problem.Constraint.permutation_matrix.transpose() * Problem.Solution.orig_vector;
+	if(stepwise_obj){
+		Problem.Objective.varying_vector = Problem.Constraint.permutation_matrix.transpose() * Problem.Objective.varying_vector;	
+	}
 }
 
 // Linear system for reducing the redundant variables
@@ -195,16 +198,17 @@ void LP_constraint_ie_reduced_cov_matrix_generation(LP_object &Problem){
 }
 
 // Main function for the optimization algorithm
-void LP_optimization(LP_object &Problem){
+void LP_optimization(LP_object &Problem, bool stepwise_obj){
 	// Set precision for 0 detection
 	double tol = pow(10, -12);
 	double eps = pow(10, -8);
 	
 	// Declare variables for the main loop
+	bool coeff_update_flag;
 	int active_constraint_num;
 	double min_increment;
 	double current_increment;
-	double Previous_Obj = -std::numeric_limits<double>::infinity();
+	double Previous_Obj = Problem.Solution.reduced_vector.dot(Problem.Objective.reduced_vector);
 	std::vector <Eigen::Vector2i> Active_constraint_now;
 	Active_constraint_now.reserve(Problem.Variables_num + Problem.Constraints_ie_num);
 	std::vector <Eigen::Vector2i> Active_constraint_next;
@@ -234,12 +238,12 @@ void LP_optimization(LP_object &Problem){
 		//std::cout << std::fixed << std::setprecision(6) << Boundary_gap << "\n" << std::endl;
 		for(int constraint_iter = 0; constraint_iter < Boundary_gap.rows(); ++ constraint_iter){
 			if(Boundary_gap(constraint_iter, 0) < tol){
-				Boundary_gap(constraint_iter, 0) = tol;
+				Boundary_gap(constraint_iter, 0) = 0.;
 				Active_constraint_now.push_back(Eigen::Vector2i(constraint_iter, 0));
 				//std::cout << Active_constraint_now[Active_constraint_now.size() - 1].transpose() << std::endl; 
 			}
 			else if(Boundary_gap(constraint_iter, 1) < tol){
-				Boundary_gap(constraint_iter, 1) = tol;
+				Boundary_gap(constraint_iter, 1) = 0.;
 				Active_constraint_now.push_back(Eigen::Vector2i(constraint_iter, 1));
 				//std::cout << Active_constraint_now[Active_constraint_now.size() - 1].transpose() << std::endl;
 			}
@@ -248,12 +252,16 @@ void LP_optimization(LP_object &Problem){
 		
 		// Check if the active constraints form a degenerate extreme point
 		if(Active_constraint_now.size() > Problem.Variables_num - Problem.Constraints_eq_num){
-			for(int constraint_iter = 0; constraint_iter < Active_constraint_now.size(); ++ constraint_iter){
-				if(Active_constraint_now[constraint_iter](1) == 0){
-					Problem.Boundary.ie_reduced_matrix(Active_constraint_now[constraint_iter](0), 0) -= eps;
-				}
-				else{
-					Problem.Boundary.ie_reduced_matrix(Active_constraint_now[constraint_iter](0), 1) += eps;
+			#pragma omp parallel
+			{
+				#pragma omp for
+				for(int constraint_iter = 0; constraint_iter < Active_constraint_now.size(); ++ constraint_iter){
+					if(Active_constraint_now[constraint_iter](1) == 0){
+						Problem.Boundary.ie_reduced_matrix(Active_constraint_now[constraint_iter](0), 0) -= eps;
+					}
+					else{
+						Problem.Boundary.ie_reduced_matrix(Active_constraint_now[constraint_iter](0), 1) += eps;
+					}
 				}
 			}
 			//std::cout << "\nBoundary Relaxed\n" << std::endl;
@@ -282,19 +290,19 @@ void LP_optimization(LP_object &Problem){
 					min_increment = std::numeric_limits<double>::infinity();
 					#pragma omp parallel
 					{
-						#pragma omp for reduction(min: min_increment)
+						#pragma omp for reduction(min: min_increment) private(current_increment)
 						for(int constraint_iter = 0; constraint_iter < Boundary_gap.rows(); ++ constraint_iter){
 							if(abs(Projected_increment(constraint_iter)) > tol){
 								// Lower bound
 								current_increment = -Boundary_gap(constraint_iter, 0) / Projected_increment(constraint_iter);
-								if(current_increment > 0 && current_increment < min_increment){
+								if(current_increment >= 0. && current_increment < min_increment){
 									min_increment = current_increment;
 								}
 								//std::cout << std::fixed << std::setprecision(6) << current_increment << " ";
 								
 								// Upper bound
 								current_increment = Boundary_gap(constraint_iter, 1) / Projected_increment(constraint_iter);
-								if(current_increment > 0 && current_increment < min_increment){
+								if(current_increment >= 0. && current_increment < min_increment){
 									min_increment = current_increment;
 								}
 								//std::cout << std::fixed << std::setprecision(6) << current_increment << std::endl;												
@@ -303,7 +311,7 @@ void LP_optimization(LP_object &Problem){
 					}
 					
 					// Exit loop if a feasible direction for improvement of solution is found
-					if(min_increment > eps){
+					if(min_increment > tol){
 						//std::cout << std::fixed << std::setprecision(16) << "\n" << min_increment << std::endl;
 						break;
 					}
@@ -332,7 +340,7 @@ void LP_optimization(LP_object &Problem){
 			min_increment = std::numeric_limits<double>::infinity();
 			#pragma omp parallel
 			{
-				#pragma omp for reduction(min: min_increment)
+				#pragma omp for reduction(min: min_increment) private(current_increment)
 				for(int constraint_iter = 0; constraint_iter < Boundary_gap.rows(); ++ constraint_iter){
 					if(abs(Projected_increment(constraint_iter)) > tol){
 						// Lower bound
@@ -350,6 +358,34 @@ void LP_optimization(LP_object &Problem){
 				}
 			}
 			Problem.Solution.reduced_vector += min_increment * Projected_grad;
+		}
+		
+		// If the objective is step-wise linear, check if the coefficient should be updated
+		if(stepwise_obj){
+			coeff_update_flag = 0;
+			Problem.Objective.update_coeff = Eigen::VectorXd::Zero(Problem.Variables_num);
+			Boundary_gap.col(0) = Problem.Constraint.ie_reduced_matrix * Problem.Solution.reduced_vector - Problem.Boundary.ie_reduced_matrix.col(0);
+			Boundary_gap.col(1) = Problem.Boundary.ie_reduced_matrix.col(1) - Problem.Constraint.ie_reduced_matrix * Problem.Solution.reduced_vector;
+			
+			for(int constraint_iter = 0; constraint_iter < Problem.Objective.varying_vector.size(); ++ constraint_iter){
+				if(Problem.Objective.varying_vector(constraint_iter) == 1. && abs(Projected_increment(constraint_iter)) > tol){
+					if(Boundary_gap(constraint_iter, 0) < tol){
+						Problem.Objective.update_coeff(constraint_iter) = -1;
+						coeff_update_flag = 1;
+					}
+					else if(Boundary_gap(constraint_iter, 1) < tol){
+						Problem.Objective.update_coeff(constraint_iter) = 1;
+						coeff_update_flag = 1;
+					}				
+				}
+			}
+			
+			// Exit the while loop if there exist some step-wise obkective coefficients to be updated
+			if(coeff_update_flag){
+				Previous_Obj = Problem.Solution.reduced_vector.dot(Problem.Objective.reduced_vector);
+				Problem.Objective.update_coeff = Problem.Constraint.permutation_matrix * Problem.Objective.update_coeff;
+				break;
+			}			
 		}
 		
 		// Check if objective value actually improved significantly
@@ -412,11 +448,11 @@ void LP_result_print(LP_object &Problem, std::string Problem_name = "Linear Prob
 }
 
 // Wrapping up all the process
-void LP_process(LP_object &Problem, std::string Problem_name, bool result_output, bool find_sol, bool constraint_update, bool boundary_update, bool objective_update){
+void LP_process(LP_object &Problem, std::string Problem_name, bool result_output, bool find_sol, bool stepwise_obj, bool constraint_update, bool boundary_update, bool objective_update){
 	// Generate sparse matrix for reduced inequality constraints, if needed
 	if(constraint_update){
 		LP_constraint_eq_redundant_deletion(Problem);	
-		LP_variables_permutation(Problem);
+		LP_variables_permutation(Problem, stepwise_obj);
 		LP_constraint_redundant_matrix_solver(Problem);
 		LP_constraint_ie_reduced_generation(Problem);
 		LP_boundary_ie_reduced_generation(Problem);
@@ -441,7 +477,7 @@ void LP_process(LP_object &Problem, std::string Problem_name, bool result_output
 
 	// Solve the LP
 	if(find_sol){
-		LP_optimization(Problem);
+		LP_optimization(Problem, stepwise_obj);
 	}
 	
 	// Print results

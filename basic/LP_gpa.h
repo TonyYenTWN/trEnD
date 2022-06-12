@@ -33,6 +33,8 @@ struct LP_objective{
 	Eigen::VectorXd orig_vector;
 	Eigen::VectorXd reduced_vector;
 	Eigen::VectorXd ie_reduced_cov_vector;
+	Eigen::VectorXd varying_vector;			// Indicates whether the coefficients of the objective is stepwise-linear for a variable 
+	Eigen::VectorXd update_coeff;			// Indicates the stepwise-linear coefficient to be updated next loop
 	double orig_value;
 	double reduced_value;
 };
@@ -67,7 +69,7 @@ struct LP_object{
 
 // Functions
 void LP_constraint_eq_redundant_deletion(LP_object&);
-void LP_variables_permutation(LP_object&);
+void LP_variables_permutation(LP_object&, bool stepwise_obj = 0);
 void LP_constraint_redundant_matrix_solver(LP_object&);
 void LP_constraint_ie_reduced_generation(LP_object&);
 void LP_boundary_ie_reduced_generation(LP_object&);
@@ -76,8 +78,8 @@ void LP_feasible_solution_reduced_generation(LP_object&);
 void LP_constraint_ie_reduced_normalization(LP_object&);
 void LP_boundary_ie_reduced_normalization(LP_object&);
 void LP_constraint_ie_reduced_cov_matrix_generation(LP_object&);
-void LP_optimization(LP_object&);
+void LP_optimization(LP_object&, bool stepwise_obj = 0);
 void LP_result_print(LP_object&, std::string);
-void LP_process(LP_object &Problem, std::string Problem_name = "Linear Problem", bool result_output = 1, bool find_sol = 1, bool constraint_update = 1, bool boundary_update = 1, bool objective_update = 1);
+void LP_process(LP_object &Problem, std::string Problem_name = "Linear Problem", bool result_output = 1, bool find_sol = 1, bool stepwise_obj = 0, bool constraint_update = 1, bool boundary_update = 1, bool objective_update = 1);
 
 #endif
