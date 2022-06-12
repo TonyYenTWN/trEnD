@@ -366,6 +366,10 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 			Problem.Objective.update_coeff = Eigen::VectorXd::Zero(Problem.Variables_num);
 			Boundary_gap.col(0) = Problem.Constraint.ie_reduced_matrix * Problem.Solution.reduced_vector - Problem.Boundary.ie_reduced_matrix.col(0);
 			Boundary_gap.col(1) = Problem.Boundary.ie_reduced_matrix.col(1) - Problem.Constraint.ie_reduced_matrix * Problem.Solution.reduced_vector;
+			//std::cout << Problem.Objective.varying_vector.transpose() << "\n\n";
+			//std::cout << Boundary_gap << "\n\n";
+			//std::cout << Problem.Constraint.ie_reduced_matrix << "\n\n";
+			//std::cout << Problem.Boundary.ie_reduced_matrix << "\n\n";
 			
 			for(int constraint_iter = 0; constraint_iter < Problem.Objective.varying_vector.size(); ++ constraint_iter){
 				if(Problem.Objective.varying_vector(constraint_iter) == 1. && abs(Projected_increment(constraint_iter)) > tol){
