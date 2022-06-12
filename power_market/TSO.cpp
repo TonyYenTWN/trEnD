@@ -125,7 +125,7 @@ void TSO_LP_Set(market_inform &TSO_Market, LP_object &Problem){
 	LP_process(Problem, "Linear Problem", 0, 0);
 }
 
-void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &TSO_Problem, bool print_result){
+void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Problem){
 	Eigen::MatrixXd bidded_supply = TSO_Market.submitted_supply;
 	Eigen::MatrixXd bidded_demand = TSO_Market.submitted_demand;
 	
@@ -171,6 +171,7 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &TSO
 	}
 	
 	// One iteration of optimization
+	LP_process(Problem, "Linear Problem", 1, 1, 0, 0, 1, 1);
 	
 	// Update equality boundary values for the LP problem and confirmed prices and bids for the market
 	
@@ -182,5 +183,5 @@ int main(){
 	LP_object TSO_Problem;
 	TSO_LP_Set(TSO_Market, TSO_Problem);
 	
-	TSO_Market_Optimization(0, TSO_Market, TSO_Problem, 1);
+	TSO_Market_Optimization(0, TSO_Market, TSO_Problem);
 }
