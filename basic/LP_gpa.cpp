@@ -260,23 +260,23 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 		//std::cout << std::endl;
 		
 		// Check if the active constraints form a degenerate extreme point
-//		if(Active_constraint_now.size() > Problem.Variables_num - Problem.Constraints_eq_num){
-//			#pragma omp parallel
-//			{
-//				#pragma omp for
-//				for(int constraint_iter = 0; constraint_iter < Active_constraint_now.size(); ++ constraint_iter){
-//					if(Active_constraint_now[constraint_iter](1) == 0){
-//						Problem.Boundary.ie_reduced_matrix(Active_constraint_now[constraint_iter](0), 0) -= eps;
-//					}
-//					else{
-//						Problem.Boundary.ie_reduced_matrix(Active_constraint_now[constraint_iter](0), 1) += eps;
-//					}
-//				}
-//			}
-//			std::cout << std::setprecision(8) <<  Problem.Boundary.ie_reduced_matrix << "\n\n" << std::endl;
-//			std::cout << "\nBoundary Relaxed\n\n" << std::endl;
-//			continue;
-//		}
+		if(Active_constraint_now.size() > Problem.Variables_num - Problem.Constraints_eq_num){
+			#pragma omp parallel
+			{
+				#pragma omp for
+				for(int constraint_iter = 0; constraint_iter < Active_constraint_now.size(); ++ constraint_iter){
+					if(Active_constraint_now[constraint_iter](1) == 0){
+						Problem.Boundary.ie_reduced_matrix(Active_constraint_now[constraint_iter](0), 0) -= eps;
+					}
+					else{
+						Problem.Boundary.ie_reduced_matrix(Active_constraint_now[constraint_iter](0), 1) += eps;
+					}
+				}
+			}
+			//std::cout << std::setprecision(8) <<  Problem.Boundary.ie_reduced_matrix << "\n\n" << std::endl;
+			//std::cout << "\nBoundary Relaxed\n\n" << std::endl;
+			continue;
+		}
 		
 		// Update the active constraints along projected gradient, if the current solution is on the boundary
 		if(Active_constraint_now.size() > 0){
@@ -289,27 +289,27 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 				// Check if subspan of covariance matrix is full rank
 				Problem.Solver.ldlt.compute(Subcov_matrix);
 				if(abs(Problem.Solver.ldlt.determinant()) > tol){
-					// Relax boundary if rank is equal to the dimension while total active constraint is greater
-					// which correspond to a degenerate extreme point
-					if(active_constraint_num + 1 == Problem.Variables_num - Problem.Constraints_eq_num){
-						if(Active_constraint_now.size() > Problem.Variables_num - Problem.Constraints_eq_num){
-							#pragma omp parallel
-							{
-								#pragma omp for
-								for(int active_iter = 0; active_iter < Active_constraint_now.size(); ++ active_iter){
-									if(Active_constraint_now[active_iter](1) == 0){
-										Problem.Boundary.ie_reduced_matrix(Active_constraint_now[active_iter](0), 0) -= eps;
-									}
-									else{
-										Problem.Boundary.ie_reduced_matrix(Active_constraint_now[active_iter](0), 1) += eps;
-									}
-								}
-							}
-							//std::cout << std::setprecision(8) <<  Problem.Boundary.ie_reduced_matrix << "\n\n" << std::endl;
-							//std::cout << "\nBoundary Relaxed\n\n" << std::endl;
-							break;							
-						}
-					}
+//					// Relax boundary if rank is equal to the dimension while total active constraint is greater
+//					// which correspond to a degenerate extreme point
+//					if(active_constraint_num + 1 == Problem.Variables_num - Problem.Constraints_eq_num){
+//						if(Active_constraint_now.size() > Problem.Variables_num - Problem.Constraints_eq_num){
+//							#pragma omp parallel
+//							{
+//								#pragma omp for
+//								for(int active_iter = 0; active_iter < Active_constraint_now.size(); ++ active_iter){
+//									if(Active_constraint_now[active_iter](1) == 0){
+//										Problem.Boundary.ie_reduced_matrix(Active_constraint_now[active_iter](0), 0) -= eps;
+//									}
+//									else{
+//										Problem.Boundary.ie_reduced_matrix(Active_constraint_now[active_iter](0), 1) += eps;
+//									}
+//								}
+//							}
+//							//std::cout << std::setprecision(8) <<  Problem.Boundary.ie_reduced_matrix << "\n\n" << std::endl;
+//							//std::cout << "\nBoundary Relaxed\n\n" << std::endl;
+//							break;
+//						}
+//					}
 					
 					// If subspan of covariance matrix is full rank, solve for the projected gradient on the active constraints
 					Projected_grad = Problem.Objective.reduced_vector;
@@ -362,12 +362,12 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 				//std::cout << std::fixed << std::setprecision(6) << Projected_grad.transpose() << "\n" << std::endl;
 			}
 			else{
-				if(active_constraint_num + 1 == Problem.Variables_num - Problem.Constraints_eq_num){
-					if(Active_constraint_now.size() > Problem.Variables_num - Problem.Constraints_eq_num){
-						//std::cout << std::fixed << std::setprecision(16) << min_increment << " 3\n\n"  << std::endl;
-						continue;						
-					}
-				}
+//				if(active_constraint_num + 1 == Problem.Variables_num - Problem.Constraints_eq_num){
+//					if(Active_constraint_now.size() > Problem.Variables_num - Problem.Constraints_eq_num){
+//						//std::cout << std::fixed << std::setprecision(16) << min_increment << " 3\n\n"  << std::endl;
+//						continue;						
+//					}
+//				}
 
 				break;
 			}			
