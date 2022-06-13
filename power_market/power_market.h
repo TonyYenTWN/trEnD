@@ -45,8 +45,8 @@ struct market_inform{
 	Eigen::MatrixXd confirmed_supply;		// Confirmed supply quantity from MO or TSO 
 	Eigen::MatrixXd confirmed_demand;		// Confirmed demand quantity from MO or TSO 
 	Eigen::MatrixXd confirmed_price;		// Confirmed market clearing price from MO or TSO 
-	Eigen::MatrixXd confirmed_bid_supply; 	// Confirmed supply bids from DSOs forwarding to wholesale electricity market
-	Eigen::MatrixXd confirmed_bid_demand;	// Confirmed demand bids from DSOs forwarding to wholesale electricity market
+	//Eigen::MatrixXd confirmed_bid_supply; 	// Confirmed supply bids from DSOs forwarding to wholesale electricity market
+	//Eigen::MatrixXd confirmed_bid_demand;	// Confirmed demand bids from DSOs forwarding to wholesale electricity market
 	
 	// Mixed Substructure
 	network_graph network;

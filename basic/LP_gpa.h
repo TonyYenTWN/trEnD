@@ -36,6 +36,7 @@ struct LP_objective{
 	Eigen::VectorXd varying_vector;			// Indicates whether the coefficients of the objective is stepwise-linear for a variable 
 	Eigen::VectorXd update_coeff;			// Indicates the stepwise-linear coefficient to be updated next loop
 	double orig_value;
+	double orig_value_sum;			// Sum of stepwise-linear optimization iterations
 	double reduced_value;
 };
 
@@ -70,6 +71,7 @@ struct LP_object{
 // Functions
 void LP_constraint_eq_redundant_deletion(LP_object&);
 void LP_variables_permutation(LP_object&, bool stepwise_obj = 0);
+void LP_solution_permutation(LP_object&, bool inverse = 0);
 void LP_constraint_redundant_matrix_solver(LP_object&);
 void LP_constraint_ie_reduced_generation(LP_object&);
 void LP_boundary_ie_reduced_generation(LP_object&);

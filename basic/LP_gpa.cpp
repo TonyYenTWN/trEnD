@@ -79,9 +79,18 @@ void LP_variables_permutation(LP_object &Problem, bool stepwise_obj){
 	Problem.Constraint.eq_orig_matrix = Problem.Constraint.eq_orig_matrix * Problem.Constraint.permutation_matrix;
 	Problem.Boundary.ie_orig_matrix = Problem.Constraint.permutation_matrix.transpose() * Problem.Boundary.ie_orig_matrix;
 	Problem.Objective.orig_vector = Problem.Constraint.permutation_matrix.transpose() * Problem.Objective.orig_vector;
-	Problem.Solution.orig_vector = Problem.Constraint.permutation_matrix.transpose() * Problem.Solution.orig_vector;
 	if(stepwise_obj){
 		Problem.Objective.varying_vector = Problem.Constraint.permutation_matrix.transpose() * Problem.Objective.varying_vector;	
+	}
+}
+
+// Permute solution to correct order
+void LP_solution_permutation(LP_object &Problem, bool inverse){
+	if(!inverse){
+		Problem.Solution.orig_vector = Problem.Constraint.permutation_matrix.transpose() * Problem.Solution.orig_vector;
+	}
+	else{
+		Problem.Solution.orig_vector = Problem.Constraint.permutation_matrix * Problem.Solution.orig_vector;
 	}
 }
 
@@ -221,7 +230,7 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 	Eigen::SparseMatrix <double> Subcov_matrix;
 	
 	int loop_count = 0;
-	//while(loop_count < 5){
+	//while(loop_count < 10){
 	while(1){
 		loop_count += 1;
 		//std::cout << "---------------------------------------------------------------------------" << std::endl;
@@ -374,11 +383,11 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 			for(int constraint_iter = 0; constraint_iter < Problem.Objective.varying_vector.size(); ++ constraint_iter){
 				if(Problem.Objective.varying_vector(constraint_iter) == 1. && abs(Projected_increment(constraint_iter)) > tol){
 					if(Boundary_gap(constraint_iter, 0) < tol){
-						Problem.Objective.update_coeff(constraint_iter) = -1;
+						Problem.Objective.update_coeff(constraint_iter) = -1.;
 						coeff_update_flag = 1;
 					}
 					else if(Boundary_gap(constraint_iter, 1) < tol){
-						Problem.Objective.update_coeff(constraint_iter) = 1;
+						Problem.Objective.update_coeff(constraint_iter) = 1.;
 						coeff_update_flag = 1;
 					}				
 				}
@@ -396,6 +405,7 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 		if(Problem.Solution.reduced_vector.dot(Problem.Objective.reduced_vector) - Previous_Obj > eps){
 			// If improved, update the previous solution
 			Previous_Obj = Problem.Solution.reduced_vector.dot(Problem.Objective.reduced_vector);
+			std::cout << Previous_Obj << "\n";
 		}
 		else{
 			break;
@@ -431,7 +441,8 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 	}
 	
 	// Permute the original solution to the correct order
-	Problem.Solution.orig_vector = Problem.Constraint.permutation_matrix * Problem.Solution.orig_vector;	 
+	Problem.Solution.orig_vector = Problem.Constraint.permutation_matrix * Problem.Solution.orig_vector;
+	//std::cout << Problem.Solution.orig_vector.transpose() << "\n\n";	 
 }
 
 // Function for the optimization algorithm
@@ -461,7 +472,6 @@ void LP_process(LP_object &Problem, std::string Problem_name, bool result_output
 		LP_constraint_ie_reduced_generation(Problem);
 		LP_boundary_ie_reduced_generation(Problem);
 		LP_objective_reduced_generation(Problem);
-		LP_feasible_solution_reduced_generation(Problem);
 		LP_constraint_ie_reduced_normalization(Problem);
 		LP_boundary_ie_reduced_normalization(Problem);
 		LP_constraint_ie_reduced_cov_matrix_generation(Problem);	
@@ -481,6 +491,8 @@ void LP_process(LP_object &Problem, std::string Problem_name, bool result_output
 
 	// Solve the LP
 	if(find_sol){
+		LP_solution_permutation(Problem);
+		LP_feasible_solution_reduced_generation(Problem);
 		LP_optimization(Problem, stepwise_obj);
 	}
 	
