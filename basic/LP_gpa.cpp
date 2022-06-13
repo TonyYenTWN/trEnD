@@ -260,35 +260,57 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 		//std::cout << std::endl;
 		
 		// Check if the active constraints form a degenerate extreme point
-		if(Active_constraint_now.size() > Problem.Variables_num - Problem.Constraints_eq_num){
-			#pragma omp parallel
-			{
-				#pragma omp for
-				for(int constraint_iter = 0; constraint_iter < Active_constraint_now.size(); ++ constraint_iter){
-					if(Active_constraint_now[constraint_iter](1) == 0){
-						Problem.Boundary.ie_reduced_matrix(Active_constraint_now[constraint_iter](0), 0) -= eps;
-					}
-					else{
-						Problem.Boundary.ie_reduced_matrix(Active_constraint_now[constraint_iter](0), 1) += eps;
-					}
-				}
-			}
-			//std::cout << "\nBoundary Relaxed\n" << std::endl;
-			continue;
-		}
+//		if(Active_constraint_now.size() > Problem.Variables_num - Problem.Constraints_eq_num){
+//			#pragma omp parallel
+//			{
+//				#pragma omp for
+//				for(int constraint_iter = 0; constraint_iter < Active_constraint_now.size(); ++ constraint_iter){
+//					if(Active_constraint_now[constraint_iter](1) == 0){
+//						Problem.Boundary.ie_reduced_matrix(Active_constraint_now[constraint_iter](0), 0) -= eps;
+//					}
+//					else{
+//						Problem.Boundary.ie_reduced_matrix(Active_constraint_now[constraint_iter](0), 1) += eps;
+//					}
+//				}
+//			}
+//			std::cout << std::setprecision(8) <<  Problem.Boundary.ie_reduced_matrix << "\n\n" << std::endl;
+//			std::cout << "\nBoundary Relaxed\n\n" << std::endl;
+//			continue;
+//		}
 		
 		// Update the active constraints along projected gradient, if the current solution is on the boundary
 		if(Active_constraint_now.size() > 0){
 			active_constraint_num = 0;
 			for(int constraint_iter = 0; constraint_iter < Active_constraint_now.size(); ++ constraint_iter){
-				//std::cout << "\n" << constraint_iter << std::endl;;
+				min_increment = std::numeric_limits<double>::infinity();
 				Subspan_matrix.insert(active_constraint_num, Active_constraint_now[constraint_iter](0)) = 1;
 				Subcov_matrix = Subspan_matrix.topRows(active_constraint_num + 1) * Problem.Constraint.ie_reduced_cov_matrix * Subspan_matrix.topRows(active_constraint_num + 1).transpose();
-				//std::cout << Subcov_matrix << "\n" << std::endl;
 				
 				// Check if subspan of covariance matrix is full rank
 				Problem.Solver.ldlt.compute(Subcov_matrix);
 				if(abs(Problem.Solver.ldlt.determinant()) > tol){
+					// Relax boundary if rank is equal to the dimension while total active constraint is greater
+					// which correspond to a degenerate extreme point
+					if(active_constraint_num + 1 == Problem.Variables_num - Problem.Constraints_eq_num){
+						if(Active_constraint_now.size() > Problem.Variables_num - Problem.Constraints_eq_num){
+							#pragma omp parallel
+							{
+								#pragma omp for
+								for(int active_iter = 0; active_iter < Active_constraint_now.size(); ++ active_iter){
+									if(Active_constraint_now[active_iter](1) == 0){
+										Problem.Boundary.ie_reduced_matrix(Active_constraint_now[active_iter](0), 0) -= eps;
+									}
+									else{
+										Problem.Boundary.ie_reduced_matrix(Active_constraint_now[active_iter](0), 1) += eps;
+									}
+								}
+							}
+							//std::cout << std::setprecision(8) <<  Problem.Boundary.ie_reduced_matrix << "\n\n" << std::endl;
+							//std::cout << "\nBoundary Relaxed\n\n" << std::endl;
+							break;							
+						}
+					}
+					
 					// If subspan of covariance matrix is full rank, solve for the projected gradient on the active constraints
 					Projected_grad = Problem.Objective.reduced_vector;
 					Projected_grad -= (Subspan_matrix.topRows(active_constraint_num + 1) * Problem.Constraint.ie_reduced_matrix).transpose() * Problem.Solver.ldlt.solve(Subspan_matrix.topRows(active_constraint_num + 1) * Problem.Objective.ie_reduced_cov_vector);
@@ -296,7 +318,6 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 					
 					// Check the minimum allow increment along the projected gradient is greater than 0
 					Projected_increment = Problem.Constraint.ie_reduced_matrix * Projected_grad;
-					min_increment = std::numeric_limits<double>::infinity();
 					#pragma omp parallel
 					{
 						#pragma omp for reduction(min: min_increment) private(current_increment)
@@ -330,7 +351,9 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 					// If subspan of covariance matrix is not full rank, remove the current entry for the subspan matrix and move on
 					Subspan_matrix.coeffRef(active_constraint_num, Active_constraint_now[constraint_iter](0)) = 0;
 				}
+				//std::cout << std::fixed << std::setprecision(16) << min_increment << " 1\n\n"  << std::endl;
 			}
+			//std::cout << std::fixed << std::setprecision(16) << min_increment << " 2\n\n"  << std::endl;
 			
 			// Check if there are feasible directions for improvement
 			if(min_increment != std::numeric_limits<double>::infinity()){
@@ -339,10 +362,17 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 				//std::cout << std::fixed << std::setprecision(6) << Projected_grad.transpose() << "\n" << std::endl;
 			}
 			else{
+				if(active_constraint_num + 1 == Problem.Variables_num - Problem.Constraints_eq_num){
+					if(Active_constraint_now.size() > Problem.Variables_num - Problem.Constraints_eq_num){
+						//std::cout << std::fixed << std::setprecision(16) << min_increment << " 3\n\n"  << std::endl;
+						continue;						
+					}
+				}
+
 				break;
 			}			
 		}
-		else{
+		else{			
 			// If the point is in the interior, use the default gradient as the direct of improvement
 			Projected_grad = Problem.Objective.reduced_vector;
 			Projected_increment = Problem.Constraint.ie_reduced_matrix * Projected_grad;
@@ -367,6 +397,7 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 				}
 			}
 			Problem.Solution.reduced_vector += min_increment * Projected_grad;
+			//std::cout << Problem.Solution.reduced_vector.transpose() << "\n\n";
 		}
 		
 		// If the objective is step-wise linear, check if the coefficient should be updated
@@ -405,7 +436,7 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 		if(Problem.Solution.reduced_vector.dot(Problem.Objective.reduced_vector) - Previous_Obj > eps){
 			// If improved, update the previous solution
 			Previous_Obj = Problem.Solution.reduced_vector.dot(Problem.Objective.reduced_vector);
-			std::cout << Previous_Obj << "\n";
+			//std::cout << Previous_Obj << "\n";
 		}
 		else{
 			break;
