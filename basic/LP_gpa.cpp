@@ -218,11 +218,14 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 	double Previous_Obj = Problem.Solution.reduced_vector.dot(Problem.Objective.reduced_vector);
 	std::vector <Eigen::Vector2i> Active_constraint_now;
 	Active_constraint_now.reserve(Problem.Variables_num + Problem.Constraints_ie_num);
-	std::vector <Eigen::Vector2i> Active_constraint_next;
-	Active_constraint_next.reserve(Problem.Variables_num + Problem.Constraints_ie_num);
+	std::vector <Eigen::Vector2i> Active_constraint_prior;
+	Active_constraint_prior.reserve(Problem.Variables_num + Problem.Constraints_ie_num);
+	std::vector <Eigen::Vector2i> Active_constraint_later;
+	Active_constraint_later.reserve(Problem.Variables_num + Problem.Constraints_ie_num);
 	std::vector <Trip> Subspan_trip;
 	Eigen::VectorXd Projected_grad;
 	Eigen::VectorXd Projected_increment;
+	Eigen::VectorXi Previous_active_constraint = Eigen::VectorXi::Zero(Problem.Variables_num + Problem.Constraints_ie_num);
 	Eigen::MatrixXd Boundary_gap(Problem.Variables_num + Problem.Constraints_ie_num, 2);
 	Eigen::SparseMatrix <double> Subspan_matrix;
 	Eigen::SparseMatrix <double> Subcov_matrix;
@@ -231,32 +234,47 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 	//while(loop_count < 10){
 	while(1){
 		loop_count += 1;
-		//std::cout << "---------------------------------------------------------------------------" << std::endl;
-		//std::cout << "New loop" << std::endl;
-		//std::cout << "---------------------------------------------------------------------------" << std::endl;
+		std::cout << "---------------------------------------------------------------------------" << std::endl;
+		std::cout << "New loop" << std::endl;
+		std::cout << "---------------------------------------------------------------------------" << std::endl;
 		// Clear list of current active constraints
 		Active_constraint_now.clear();
+		Active_constraint_prior.clear();
+		Active_constraint_later.clear();
 		Subspan_matrix = Eigen::SparseMatrix <double> (Problem.Variables_num + Problem.Constraints_ie_num, Problem.Variables_num + Problem.Constraints_ie_num);
 		Subspan_matrix.reserve(Eigen::VectorXi::Constant(Problem.Variables_num + Problem.Constraints_ie_num, 2));
 		
 		// Check which constraints are active currently
 		Boundary_gap.col(0) = Problem.Constraint.ie_reduced_matrix * Problem.Solution.reduced_vector - Problem.Boundary.ie_reduced_matrix.col(0);
-		Boundary_gap.col(1) = Problem.Boundary.ie_reduced_matrix.col(1) - Problem.Constraint.ie_reduced_matrix * Problem.Solution.reduced_vector;	
-//		std::cout << std::fixed << std::setprecision(6) << Problem.Boundary.ie_orig_matrix << "\n\n" << std::endl;
-//		std::cout << std::fixed << std::setprecision(6) << Problem.Boundary.ie_reduced_matrix << "\n\n" << std::endl;
-//		std::cout << std::fixed << std::setprecision(6) << Boundary_gap << "\n\n" << std::endl;
+		Boundary_gap.col(1) = Problem.Boundary.ie_reduced_matrix.col(1) - Problem.Constraint.ie_reduced_matrix * Problem.Solution.reduced_vector;
 		for(int constraint_iter = 0; constraint_iter < Boundary_gap.rows(); ++ constraint_iter){
 			if(Boundary_gap(constraint_iter, 0) < tol){
 				Boundary_gap(constraint_iter, 0) = 0.;
-				Active_constraint_now.push_back(Eigen::Vector2i(constraint_iter, 0));
-				//std::cout << Active_constraint_now[Active_constraint_now.size() - 1].transpose() << std::endl; 
+				
+				if(Previous_active_constraint(constraint_iter) == 0){
+					Active_constraint_prior.push_back(Eigen::Vector2i(constraint_iter, 0));
+				}
+				else{
+					Active_constraint_later.push_back(Eigen::Vector2i(constraint_iter, 0));
+				}
+				
+				//Active_constraint_now.push_back(Eigen::Vector2i(constraint_iter, 0));
 			}
 			else if(Boundary_gap(constraint_iter, 1) < tol){
 				Boundary_gap(constraint_iter, 1) = 0.;
-				Active_constraint_now.push_back(Eigen::Vector2i(constraint_iter, 1));
-				//std::cout << Active_constraint_now[Active_constraint_now.size() - 1].transpose() << std::endl;
+				
+				if(Previous_active_constraint(constraint_iter) == 0){
+					Active_constraint_prior.push_back(Eigen::Vector2i(constraint_iter, 1));
+				}
+				else{
+					Active_constraint_later.push_back(Eigen::Vector2i(constraint_iter, 1));
+				}				
+				
+				//Active_constraint_now.push_back(Eigen::Vector2i(constraint_iter, 1));
 			}
 		}
+		Active_constraint_now.insert(Active_constraint_now.begin(), Active_constraint_prior.begin(), Active_constraint_prior.end());
+		Active_constraint_now.insert(Active_constraint_now.end(), Active_constraint_later.begin(), Active_constraint_later.end());
 		
 		// Check if the active constraints form a degenerate extreme point
 		if(Active_constraint_now.size() > Problem.Variables_num - Problem.Constraints_eq_num){
@@ -272,13 +290,14 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 					}
 				}
 			}
-			//std::cout << std::setprecision(8) <<  Problem.Boundary.ie_reduced_matrix << "\n\n" << std::endl;
+			Previous_active_constraint = Eigen::VectorXi::Zero(Problem.Variables_num + Problem.Constraints_ie_num);
 			//std::cout << "\nBoundary Relaxed\n\n" << std::endl;
 			continue;
 		}
 		
 		// Update the active constraints along projected gradient, if the current solution is on the boundary
 		if(Active_constraint_now.size() > 0){
+			Previous_active_constraint = Eigen::VectorXi::Zero(Problem.Variables_num + Problem.Constraints_ie_num);
 			active_constraint_num = 0;
 			for(int constraint_iter = 0; constraint_iter < Active_constraint_now.size(); ++ constraint_iter){
 				Subspan_matrix.insert(active_constraint_num, Active_constraint_now[constraint_iter](0)) = 1;
@@ -287,11 +306,14 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 				// Check if subspan of covariance matrix is full rank
 				Problem.Solver.ldlt.compute(Subcov_matrix);
 				if(abs(Problem.Solver.ldlt.determinant()) > tol){
+					Previous_active_constraint(Active_constraint_now[constraint_iter](0)) = 1;
 					min_increment = std::numeric_limits<double>::infinity();
 									
 					// If subspan of covariance matrix is full rank, solve for the projected gradient on the active constraints
 					Projected_grad = Problem.Objective.reduced_vector;
+					std::cout << std::setprecision(6) << Projected_grad.transpose() << "\n\n";
 					Projected_grad -= (Subspan_matrix.topRows(active_constraint_num + 1) * Problem.Constraint.ie_reduced_matrix).transpose() * Problem.Solver.ldlt.solve(Subspan_matrix.topRows(active_constraint_num + 1) * Problem.Objective.ie_reduced_cov_vector);
+					std::cout << std::setprecision(6) << Projected_grad.transpose() << "\n\n";
 					if(Projected_grad.norm() != 0){
 						Projected_grad /= Projected_grad.norm();
 					}
@@ -315,6 +337,7 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 					
 					// Exit loop if a feasible direction for improvement of solution is found
 					if(min_increment > tol){
+						std::cout << std::setprecision(6) << min_increment << "\n\n";
 						break;
 					}
 					active_constraint_num += 1;
@@ -349,7 +372,6 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 				}
 			}
 		}
-		
 		
 		// Check if there are feasible directions for improvement
 		if(min_increment != std::numeric_limits<double>::infinity()){
