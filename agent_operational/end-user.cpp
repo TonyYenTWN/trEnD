@@ -184,14 +184,11 @@ void storage_schedule_LP(Eigen::VectorXd subscept_tariff, storage_inform &result
 //	}
 	Problem.Solution.orig_vector.head(subscept_tariff.size()) = Eigen::VectorXd::LinSpaced(subscept_tariff.size(), result.soc_ini, result.soc_final);
 	if(soc_final > result.soc_ini){
-		Problem.Solution.orig_vector.tail(subscept_tariff.size()) = Eigen::VectorXd::Constant(subscept_tariff.size(), (result.soc_ini - soc_final) / subscept_tariff.size());
+		Problem.Solution.orig_vector.tail(subscept_tariff.size()) = Eigen::VectorXd::Constant(subscept_tariff.size(), (soc_final - result.soc_ini) / subscept_tariff.size());
 	}
 	else if (soc_final < result.soc_ini){
 		Problem.Solution.orig_vector.segment(subscept_tariff.size(), subscept_tariff.size()) = Eigen::VectorXd::Constant(subscept_tariff.size(), (result.soc_ini - soc_final) / subscept_tariff.size());
 	}
-//	else{
-//		Problem.Solution.orig_vector.tail(2 * subscept_tariff.size()) = Eigen::VectorXd::Constant(subscept_tariff.size(), result.capacity_scale);
-//	}
 	std::cout << std::fixed << std::setprecision(3) << Problem.Solution.orig_vector.transpose() << "\n\n";
 	
 	// Solve the LP and store the output schedule
