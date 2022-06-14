@@ -250,8 +250,8 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 	//std::cout << Previous_active_constraint.transpose() << "\n\n";
 	
 	int loop_count = 0;
-	//while(loop_count < 10){
-	while(1){
+	while(loop_count < Problem.Variables_num){
+	//while(1){
 		loop_count += 1;
 		//std::cout << "---------------------------------------------------------------------------" << std::endl;
 		//std::cout << "New loop" << std::endl;
@@ -352,9 +352,9 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 					
 					// Exit loop if a feasible direction for improvement of solution is found
 					if(min_increment > tol){
-						std::cout << std::setprecision(6) << Previous_active_constraint.transpose() << "\n\n";
+						//std::cout << std::setprecision(6) << Previous_active_constraint.transpose() << "\n\n";
 						//std::cout << std::setprecision(6) << Projected_grad.transpose() << "\n\n";
-						std::cout << std::setprecision(6) << min_increment << "\n\n";
+						//std::cout << std::setprecision(6) << min_increment << "\n\n";
 						break;
 					}
 					active_constraint_num += 1;
