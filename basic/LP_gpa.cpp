@@ -237,9 +237,7 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 	}
 	Projected_increment = Problem.Constraint.ie_reduced_matrix * Projected_grad;
 	Boundary_gap.col(0) = Problem.Constraint.ie_reduced_matrix * Problem.Solution.reduced_vector - Problem.Boundary.ie_reduced_matrix.col(0);
-	Boundary_gap.col(1) = Problem.Boundary.ie_reduced_matrix.col(1) - Problem.Constraint.ie_reduced_matrix * Problem.Solution.reduced_vector;
-	Projected_grad = Problem.Objective.reduced_vector;
-	Projected_increment = Problem.Constraint.ie_reduced_matrix * Projected_grad;		
+	Boundary_gap.col(1) = Problem.Boundary.ie_reduced_matrix.col(1) - Problem.Constraint.ie_reduced_matrix * Problem.Solution.reduced_vector;		
 	for(int constraint_iter = 0; constraint_iter < Boundary_gap.rows(); ++ constraint_iter){
 		if(Boundary_gap(constraint_iter, 0) < tol && Projected_increment(constraint_iter) < 0){
 			Previous_active_constraint(constraint_iter) = 0;
@@ -248,15 +246,16 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 			Previous_active_constraint(constraint_iter) = 0;
 		}
 	}
-	std::cout << Previous_active_constraint.transpose() << "\n\n";
+	//std::cout << std::setprecision(3) << Projected_increment.transpose() << "\n\n";
+	//std::cout << Previous_active_constraint.transpose() << "\n\n";
 	
 	int loop_count = 0;
 	//while(loop_count < 10){
 	while(1){
 		loop_count += 1;
-		std::cout << "---------------------------------------------------------------------------" << std::endl;
-		std::cout << "New loop" << std::endl;
-		std::cout << "---------------------------------------------------------------------------" << std::endl;
+		//std::cout << "---------------------------------------------------------------------------" << std::endl;
+		//std::cout << "New loop" << std::endl;
+		//std::cout << "---------------------------------------------------------------------------" << std::endl;
 		// Clear list of current active constraints
 		Active_constraint_now.clear();
 		Active_constraint_prior.clear();
@@ -292,7 +291,7 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 		}
 		Active_constraint_now.insert(Active_constraint_now.begin(), Active_constraint_prior.begin(), Active_constraint_prior.end());
 		Active_constraint_now.insert(Active_constraint_now.end(), Active_constraint_later.begin(), Active_constraint_later.end());
-		std::cout << Active_constraint_now[0].transpose() << "\n\n";
+		//std::cout << Active_constraint_now[0].transpose() << "\n\n";
 		
 		// Check if the active constraints form a degenerate extreme point
 		if(Active_constraint_now.size() > Problem.Variables_num - Problem.Constraints_eq_num){
@@ -354,7 +353,7 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 					// Exit loop if a feasible direction for improvement of solution is found
 					if(min_increment > tol){
 						std::cout << std::setprecision(6) << Previous_active_constraint.transpose() << "\n\n";
-						std::cout << std::setprecision(6) << Projected_grad.transpose() << "\n\n";
+						//std::cout << std::setprecision(6) << Projected_grad.transpose() << "\n\n";
 						std::cout << std::setprecision(6) << min_increment << "\n\n";
 						break;
 					}
@@ -428,13 +427,13 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 		}
 		
 		// Check if objective value actually improved significantly
-		if(Problem.Solution.reduced_vector.dot(Problem.Objective.reduced_vector) - Previous_Obj > eps){
+		if(Problem.Solution.reduced_vector.dot(Problem.Objective.reduced_vector) - Previous_Obj > tol){
 			// If improved, update the previous solution
 			Previous_Obj = Problem.Solution.reduced_vector.dot(Problem.Objective.reduced_vector);
 		}
 		else{
-			std::cout << std::setprecision(8) << Previous_Obj << "\n\n";
-			std::cout << std::setprecision(8) << Problem.Solution.reduced_vector.dot(Problem.Objective.reduced_vector) << "\n\n";
+			//std::cout << std::setprecision(8) << Previous_Obj << "\n\n";
+			//std::cout << std::setprecision(8) << Problem.Solution.reduced_vector.dot(Problem.Objective.reduced_vector) << "\n\n";
 			Problem.Solution.reduced_vector -= min_increment * Projected_grad;
 			break;
 		}
