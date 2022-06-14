@@ -105,51 +105,55 @@ void smart_appliance_schedule(sorted_vector sorted_tariff, Eigen::VectorXd norma
 	result.normalized_scheduled_profile(sorted_tariff.id(flex_demand_duration - 1)) = total_flex_demand_energy - (flex_demand_duration - 1) * flex_demand_capacity_max;
 }
 
-void storage_schedule_LP(Eigen::VectorXd subscept_tariff, storage_inform &result){
+void storage_schedule_LP(Eigen::VectorXd subscept_tariff, storage_inform &result, bool fixed_end = 0){
 	LP_object Problem;
 	
 	// Set dimension of the problem
-	Problem.Constraints_eq_num = subscept_tariff.size();
+	Problem.Constraints_eq_num = subscept_tariff.size() + fixed_end;	// fixed_end indicates the final soc is held fixed
 	Problem.Constraints_ie_num = 0;
 	Problem.Variables_num = 3 * subscept_tariff.size();
 	
 	// Set objective vector
-	// The variables are ordered as {q_dc(0), q_ch(0), s(0), q_dc(1), q_ch(1), s(1), ...}
+	// The variables are ordered as {s(0), s(1), ..., q_dc(0), q_dc(1), ..., q_ch(0), q_ch(1), ...}
 	Problem.Objective.orig_vector = Eigen::VectorXd::Zero(Problem.Variables_num);
 	for(int tick = 0; tick < subscept_tariff.size(); ++ tick){
-		Problem.Objective.orig_vector(3 * tick) = subscept_tariff(tick) * result.efficiency;
-		Problem.Objective.orig_vector(3 * tick + 1) = -subscept_tariff(tick) / result.efficiency;
+		Problem.Objective.orig_vector(subscept_tariff.size() + tick) = subscept_tariff(tick) * result.efficiency;
+		Problem.Objective.orig_vector(2 * subscept_tariff.size() + tick) = -subscept_tariff(tick) / result.efficiency;
 	}
 	// Can add terminal value for final storage level in the future
-	//std::cout << std::fixed << std::setprecision(3) << Problem.Objective.orig_vector.transpose() << "\n" << std::endl;
+	// if(!fixed_end){}
+	std::cout << std::fixed << std::setprecision(3) << Problem.Objective.orig_vector.transpose() << "\n\n";
 	
 	// Set boudary values for equality and inequality constraints
 	Problem.Boundary.eq_vector = Eigen::VectorXd::Zero(Problem.Constraints_eq_num);
-	Problem.Boundary.eq_vector(0) = result.soc_ini;		// Initial storage level
+	Problem.Boundary.eq_vector(0) = result.soc_ini;								// Initial storage level
 	Problem.Boundary.ie_orig_matrix = Eigen::MatrixXd::Zero(Problem.Variables_num + Problem.Constraints_ie_num, 2);
 	for(int tick = 0; tick < subscept_tariff.size(); ++ tick){
-		Problem.Boundary.ie_orig_matrix(3 * tick, 1) = result.capacity_scale;
-		Problem.Boundary.ie_orig_matrix(3 * tick + 1, 1) = result.capacity_scale;
-		Problem.Boundary.ie_orig_matrix(3 * tick + 2, 1) = result.energy_scale;
+		Problem.Boundary.ie_orig_matrix(subscept_tariff.size() + tick, 1) = result.capacity_scale;
+		Problem.Boundary.ie_orig_matrix(2 * subscept_tariff.size() + tick, 1) = result.capacity_scale;
+		Problem.Boundary.ie_orig_matrix(tick, 1) = result.energy_scale;
 	}
-	//std::cout << Problem.Boundary.eq_vector.transpose() << "\n" << std::endl;
-	//std::cout << Problem.Boundary.ie_matrix.transpose() << "\n" << std::endl;
+	if(fixed_end){
+		Problem.Boundary.eq_vector(subscept_tariff.size()) = result.soc_final;	// Final storage level
+	}
 	
 	// Set sparse matrix for equality constraints
 	std::vector<Trip> Constraint_eq_trip;
 	Constraint_eq_trip.reserve(Problem.Constraints_eq_num * Problem.Variables_num);
 	for(int tick = 0; tick < subscept_tariff.size(); ++ tick){
 		if(tick > 0){
-			Constraint_eq_trip.push_back(Trip(tick, 3 * tick - 1, -1));
+			Constraint_eq_trip.push_back(Trip(tick, tick - 1, -1));
 		}
-		Constraint_eq_trip.push_back(Trip(tick, 3 * tick, 1));
-		Constraint_eq_trip.push_back(Trip(tick, 3 * tick + 1, -1));
-		Constraint_eq_trip.push_back(Trip(tick, 3 * tick + 2, 1));
+		Constraint_eq_trip.push_back(Trip(tick, subscept_tariff.size() + tick, 1));
+		Constraint_eq_trip.push_back(Trip(tick, 2 * subscept_tariff.size() + tick, -1));
+		Constraint_eq_trip.push_back(Trip(tick, tick, 1));
+	}
+	if(fixed_end){
+		Constraint_eq_trip.push_back(Trip(subscept_tariff.size(), subscept_tariff.size() - 1, 1));
 	}
 	Problem.Constraint.eq_orig_matrix = Eigen::SparseMatrix <double> (Problem.Constraints_eq_num, Problem.Variables_num);
 	Problem.Constraint.eq_orig_matrix.setFromTriplets(Constraint_eq_trip.begin(), Constraint_eq_trip.end());
-	//std::cout << Problem.Constraint.eq_matrix << "\n" << std::endl;
-	
+
 	// Set sparse matrix for original inequality constraints
 	Problem.Constraint.ie_orig_matrix = Eigen::SparseMatrix <double> (Problem.Variables_num + Problem.Constraints_ie_num, Problem.Variables_num);
 	std::vector<Trip> Constraint_ie_trip;
@@ -158,59 +162,79 @@ void storage_schedule_LP(Eigen::VectorXd subscept_tariff, storage_inform &result
 		Constraint_ie_trip.push_back(Trip(var_id, var_id, 1));
 	}
 	Problem.Constraint.ie_orig_matrix.setFromTriplets(Constraint_ie_trip.begin(), Constraint_ie_trip.end());
-	//std::cout << Problem.Constraint.ie_matrix << std::endl;
 	
-	// Set initial feasible solutions 
-	// The first feasible solution is where soc goes towards maximum asap and stays there; then q_dc(t) = q_ch(t) = 0
-	// The second feasible solution is where soc goes towards minimum asap and stays there; then q_dc(t) / eff = q_ch(t) * eff = maximum possible value
-	int transient_time_start = int (std::min(result.energy_scale - result.soc_ini, result.soc_ini)  / result.capacity_scale);
-	transient_time_start = std::min(transient_time_start, int (subscept_tariff.size() / 2));
-	Eigen::VectorXd feasible_point_1 = Eigen::VectorXd::Zero(Problem.Variables_num);
-	Eigen::VectorXd feasible_point_2 = Eigen::VectorXd::Zero(Problem.Variables_num);
-	if(transient_time_start > 0){
-		feasible_point_1(1) = result.capacity_scale;
-		feasible_point_2(0) = result.capacity_scale;
-		feasible_point_1(2) = result.soc_ini + result.capacity_scale;
-		feasible_point_2(2) = result.soc_ini - result.capacity_scale;
+	// Set initial feasible solutions
+	double soc_final;
+	if(fixed_end){
+		soc_final = result.soc_final;
 	}
 	else{
-		feasible_point_1(2) = result.soc_ini;
-		feasible_point_2(2) = result.soc_ini;
+		soc_final = result.soc_ini;
 	}
-	for(int tick = 1; tick < subscept_tariff.size(); ++ tick){
-		if(tick < transient_time_start){
-			feasible_point_1(3 * tick + 1) = result.capacity_scale;
-			feasible_point_2(3 * tick) = result.capacity_scale;
-			feasible_point_1(3 * tick + 2) = feasible_point_1(3 * tick - 1) + result.capacity_scale;
-			feasible_point_2(3 * tick + 2) = feasible_point_2(3 * tick - 1) - result.capacity_scale;			
-		}
-		else{
-			feasible_point_2(3 * tick) = result.capacity_scale;
-			feasible_point_2(3 * tick + 1) = result.capacity_scale;
-			feasible_point_1(3 * tick + 2) = feasible_point_1(3 * tick - 1);
-			feasible_point_2(3 * tick + 2) = feasible_point_2(3 * tick - 1);
-		}
+	Problem.Solution.orig_vector = Eigen::VectorXd::Zero(Problem.Variables_num);
+	Problem.Solution.orig_vector.head(subscept_tariff.size()) = Eigen::VectorXd::LinSpaced(subscept_tariff.size(), result.soc_ini, result.soc_final);
+	if(soc_final > result.soc_ini){
+		Problem.Solution.orig_vector.tail(subscept_tariff.size()) = Eigen::VectorXd::Constant(subscept_tariff.size(), (result.soc_ini - soc_final) / subscept_tariff.size());
 	}
-	Problem.Solution.orig_vector = .5 * (feasible_point_1 + feasible_point_2);
+	else if (soc_final < result.soc_ini){
+		Problem.Solution.orig_vector.segment(subscept_tariff.size(), subscept_tariff.size()) = Eigen::VectorXd::Constant(subscept_tariff.size(), (result.soc_ini - soc_final) / subscept_tariff.size());
+	}
+//	else{
+//		Problem.Solution.orig_vector.tail(2 * subscept_tariff.size()) = Eigen::VectorXd::Constant(subscept_tariff.size(), result.capacity_scale);
+//	}
+	//std::cout << std::fixed << std::setprecision(3) << Problem.Solution.orig_vector << "\n\n";
+	
+	 
+//	// The first feasible solution is where soc goes towards maximum asap and stays there; then q_dc(t) = q_ch(t) = 0
+//	// The second feasible solution is where soc goes towards minimum asap and stays there; then q_dc(t) / eff = q_ch(t) * eff = maximum possible value
+//	int transient_time_start = int (std::min(result.energy_scale - result.soc_ini, result.soc_ini)  / result.capacity_scale) + 1;
+//	transient_time_start = std::min(transient_time_start, int (subscept_tariff.size() / 2));
+//	Eigen::VectorXd feasible_point_1 = Eigen::VectorXd::Zero(Problem.Variables_num);
+//	Eigen::VectorXd feasible_point_2 = Eigen::VectorXd::Zero(Problem.Variables_num);
+//	if(transient_time_start > 0){
+//		feasible_point_1(subscept_tariff.size() + 1) = result.capacity_scale;
+//		feasible_point_2(subscept_tariff.size()) = result.capacity_scale;
+//		feasible_point_1(0) = result.soc_ini + result.capacity_scale;
+//		feasible_point_2(0) = result.soc_ini - result.capacity_scale;
+//	}
+//	else{
+//		feasible_point_1(0) = result.soc_ini;
+//		feasible_point_2(0) = result.soc_ini;
+//	}
+//	for(int tick = 1; tick < subscept_tariff.size(); ++ tick){
+//		if(tick < transient_time_start){
+//			feasible_point_1(subscept_tariff.size() + 2 * tick + 1) = result.capacity_scale;
+//			feasible_point_2(subscept_tariff.size() + 2 * tick) = result.capacity_scale;
+//			feasible_point_1(tick) = feasible_point_1(tick - 1) + result.capacity_scale;
+//			feasible_point_2(tick) = feasible_point_2(tick - 1) - result.capacity_scale;			
+//		}
+//		else{
+//			feasible_point_2(subscept_tariff.size() + 2 * tick) = result.capacity_scale;
+//			feasible_point_2(subscept_tariff.size() + 2 * tick + 1) = result.capacity_scale;
+//			feasible_point_1(tick) = feasible_point_1(tick - 1);
+//			feasible_point_2(tick) = feasible_point_2(tick - 1);
+//		}
+//	}
+//	//Problem.Solution.orig_vector = .5 * (feasible_point_1 + feasible_point_2);
+//	Problem.Solution.orig_vector = feasible_point_1;
+//	std::cout << std::fixed << std::setprecision(3) << Problem.Solution.orig_vector << "\n\n";
 	
 	// Solve the LP and store the output schedule
 	// Solution is degenerate; need to minimize energy loss due to efficiency by minimizing total amount of dc or ch
 	double tol = pow(10, -12);
-	LP_process(Problem, "BESS Schedule", 0);
+	LP_process(Problem, "BESS Schedule", 1);
+	//std::cout << std::fixed << std::setprecision(3) << Problem.Constraint.ie_reduced_matrix << "\n\n";
 	//std::cout << std::fixed << std::setprecision(3) << Problem.Solution.orig_vector.transpose() << std::endl;
+	//std::cout << std::fixed << std::setprecision(3) << Problem.Solution.orig_vector.transpose() << "\n\n";
 	result.normalized_scheduled_capacity_profile = Eigen::VectorXd::Zero(subscept_tariff.size());
 	result.normalized_scheduled_soc_profile = Eigen::VectorXd::Zero(subscept_tariff.size());
 	for(int tick = 0; tick < subscept_tariff.size(); ++ tick){
-		if(Problem.Solution.orig_vector(3 * tick) > tol){
-			result.normalized_scheduled_capacity_profile(tick) = Problem.Solution.orig_vector(3 * tick) * result.efficiency;
-		}
-		else{
-			result.normalized_scheduled_capacity_profile(tick) = -Problem.Solution.orig_vector(3 * tick + 1) / result.efficiency;
-		}
-		result.normalized_scheduled_soc_profile(tick) = Problem.Solution.orig_vector(3 * tick + 2);
+		result.normalized_scheduled_capacity_profile(tick) = Problem.Solution.orig_vector(subscept_tariff.size() + 2 * tick) - Problem.Solution.orig_vector(subscept_tariff.size() + 2 * tick + 1);
+		result.normalized_scheduled_capacity_profile(tick) = result.normalized_scheduled_capacity_profile(tick) * result.efficiency * (result.normalized_scheduled_capacity_profile(tick) >= 0) + result.normalized_scheduled_capacity_profile(tick) / result.efficiency * (result.normalized_scheduled_capacity_profile(tick) < 0);
+		result.normalized_scheduled_soc_profile(tick) = Problem.Solution.orig_vector(tick);
 	}
-	//std::cout << result.normalized_scheduled_capacity_profile.transpose() << std::endl;
-	//std::cout << result.normalized_scheduled_soc_profile.transpose() << std::endl;
+	//std::cout << std::setprecision(3) << result.normalized_scheduled_capacity_profile.transpose() << std::endl;
+	//std::cout << std::setprecision(3) << result.normalized_scheduled_soc_profile.transpose() << std::endl;
 }
 
 void storage_schedule_naive(sorted_vector sorted_tariff, storage_inform &result){
@@ -336,25 +360,25 @@ void EV_schedule(Eigen::VectorXd subscept_tariff, EV_inform &result){
 		
 		result.BESS.soc_final = result.BESS.energy_scale;
 		sorted_vector sorted_tariff = sort(subscept_tariff.head(tick));
-		storage_schedule_naive(sorted_tariff, result.BESS);
-		//storage_schedule_LP(subscept_tariff.head(tick), result.BESS);
+		//storage_schedule_naive(sorted_tariff, result.BESS);
+		storage_schedule_LP(subscept_tariff.head(tick), result.BESS, 1);
 	}
 }
 
 int main(){
 	// Test case Initialization
-	Eigen::VectorXd subscept_tariff(9);
-	subscept_tariff << 1., 3., 1., -1., -1., -.5, 2., 2.5, 1.5;
+	Eigen::VectorXd subscept_tariff(3);
+	subscept_tariff << 1., 3., 1.;
 	sorted_vector sorted_tariff = sort(subscept_tariff);
 	end_user_operation test_user;
 	test_user.normalized_default_demand_profile = Eigen::VectorXd(subscept_tariff.size());
-	test_user.normalized_default_demand_profile << 1, 1.2, .8, .3, .4, .6, 2, 1.5, 1.7;
+	test_user.normalized_default_demand_profile << 1, 1.2, .8;
 	
 	// Smart appliance test
 	test_user.smart_appliance.scale = .2;
 	test_user.smart_appliance.flexibility_factor = .5;
 	smart_appliance_schedule(sorted_tariff, test_user.normalized_default_demand_profile, 0, test_user.smart_appliance);
-	std::cout << test_user.smart_appliance.normalized_scheduled_profile.transpose() << "\n" << std::endl;
+	//std::cout << test_user.smart_appliance.normalized_scheduled_profile.transpose() << "\n" << std::endl;
 	
 	// BESS test, naive
 	test_user.BESS.energy_scale = 4.;
@@ -363,9 +387,9 @@ int main(){
 	test_user.BESS.soc_ini = 2.;
 	test_user.BESS.soc_final = 2.;
 	storage_schedule_naive(sorted_tariff, test_user.BESS);
-	std::cout << test_user.BESS.normalized_scheduled_capacity_profile.transpose() << "\n" << std::endl;
+	//std::cout << test_user.BESS.normalized_scheduled_capacity_profile.transpose() << "\n" << std::endl;
 	storage_schedule_LP(subscept_tariff, test_user.BESS);
-	std::cout << test_user.BESS.normalized_scheduled_capacity_profile.transpose() << "\n" << std::endl;
+	//std::cout << test_user.BESS.normalized_scheduled_capacity_profile.transpose() << "\n\n";
 	
 	// EV test
 	test_user.EV.energy_demand = 1.;
@@ -376,6 +400,6 @@ int main(){
 	test_user.EV.house_default_period = Eigen::VectorXi::Zero(subscept_tariff.size());
 	test_user.EV.house_default_period.head(3) << 1, 1, 1;
 	test_user.EV.house_default_period.tail(3) << 1, 1, 1;
-	EV_schedule(subscept_tariff, test_user.EV);
-	std::cout << test_user.EV.BESS.normalized_scheduled_capacity_profile.transpose() << std::endl;
+	//EV_schedule(subscept_tariff, test_user.EV);
+	//std::cout << test_user.EV.BESS.normalized_scheduled_capacity_profile.transpose() << "\n";
 }
