@@ -39,9 +39,9 @@ int main(){
 					Distance_Points(row_ID, col_ID) = 0;
 				}
 				else{
-					Distance_Points(row_ID, col_ID) = geodist(sample_inform.row(row_ID).tail(2) * pi / 180, sample_inform.row(col_ID).tail(2) * pi / 180);
+					Distance_Points(row_ID, col_ID) = geodist(sample_inform.row(row_ID).tail(2) * pi / 180., sample_inform.row(col_ID).tail(2) * pi / 180.);
 				}
-				Covariance_Points(row_ID, col_ID) = exp(-pow(Distance_Points(row_ID, col_ID), 1) / 2 / pow(10, 4));
+				Covariance_Points(row_ID, col_ID) = exp(-pow(Distance_Points(row_ID, col_ID), 1) / 2. / pow(10., 4.));
 				Distance_Points(col_ID, row_ID) = Distance_Points(row_ID, col_ID);
 				Covariance_Points(col_ID, row_ID) = Covariance_Points(row_ID, col_ID);
 			}
@@ -66,9 +66,9 @@ int main(){
 	Eigen::VectorXd Demand_0(num_category);
 	Demand_0 = Demand_ts.colwise().sum().tail(num_category);
 	Demand_0 /= num_time;
-	double multiply_factor = 1;
+	double multiply_factor = 1.;
 	Demand_0 *= multiply_factor;
-	double mu_0_mean = Demand_0.sum() / Constraint.sum() * 2 / pow(pi, .5);
+	double mu_0_mean = Demand_0.sum() / Constraint.sum() * 2. / pow(pi, .5);
 	
 	// ---------------------------------------------------------------------
 	// Infer temporal average of the normalized mean demand field
@@ -104,11 +104,11 @@ int main(){
 	{
 		#pragma omp for
 		for(int item = 0; item < num_row; ++ item){
-			x_0(item) = quantile(norm_dist, 1 - exp(-pow(mu_0(item) / mu_0_mean, 2)));
+			x_0(item) = quantile(norm_dist, 1. - exp(-pow(mu_0(item) / mu_0_mean, 2.)));
 		}
 	}
-	Eigen::VectorXd dx_0 = Eigen::VectorXd::LinSpaced(num_row, 1, 1);
-	Eigen::VectorXd dmu_0 = Eigen::VectorXd::LinSpaced(num_row, 1, 1);
+	Eigen::VectorXd dx_0 = Eigen::VectorXd::LinSpaced(num_row, 1., 1.);
+	Eigen::VectorXd dmu_0 = Eigen::VectorXd::LinSpaced(num_row, 1., 1.);
 	Eigen::VectorXd mu_inv_0(num_row);
 	Eigen::VectorXd lambda(num_category);
 	Eigen::VectorXd Conversion_vec(num_row);
@@ -117,12 +117,12 @@ int main(){
 
 	// Iterations
 	count = 0; 
-	while(count < 5000 && dmu_0.lpNorm<Eigen::Infinity>()> pow(10, -12)){
+	while(count < 5000 && dmu_0.lpNorm<Eigen::Infinity>() > pow(10., -12.)){
 		#pragma omp parallel
 		{
 			#pragma omp for
 			for(int item = 0; item < num_row; ++ item){
-				Conversion_vec(item) = .5 * mu_0_mean * pow((-log(1 - cdf(norm_dist, x_0(item)))), -.5) * pow(1 - cdf(norm_dist, x_0(item)), -1) * pdf(norm_dist, x_0(item));
+				Conversion_vec(item) = .5 * mu_0_mean * pow((-log(1. - cdf(norm_dist, x_0(item)))), -.5) * pow(1. - cdf(norm_dist, x_0(item)), -1.) * pdf(norm_dist, x_0(item));
 			}
 		} 
 		Conversion_Mat_1 = Conversion_vec.asDiagonal();
@@ -136,11 +136,11 @@ int main(){
 		{
 			#pragma omp for
 			for(int item = 0; item < num_row; ++ item){
-				dmu_0(item) = mu_0_mean * pow(-log(1 - cdf(norm_dist, x_0(item))), .5) - mu_0(item);
+				dmu_0(item) = mu_0_mean * pow(-log(1. - cdf(norm_dist, x_0(item))), .5) - mu_0(item);
 				mu_0(item) += dmu_0(item);
 			}
 		}
-		mu_inv_0 = pow(mu_0.array(), -1);
+		mu_inv_0 = pow(mu_0.array(), -1.);
 		dmu_0 *= mu_inv_0;
 		
 		count += 1;
@@ -163,7 +163,7 @@ int main(){
 	stop = std::chrono::high_resolution_clock::now();
 	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
 	std::cout << "Timelapse of Code:\n";
-	std::cout << duration.count() / pow(10, 6) << " seconds" << std::endl;
+	std::cout << duration.count() / pow(10., 6.) << " seconds" << std::endl;
 	std::cout << "\n";
 	
 	// ---------------------------------------------------------------------
@@ -183,19 +183,19 @@ int main(){
 	alpha_iteration = .01;
 	std::string digit_zeros;
 	Eigen::VectorXd Demand(num_category);
-	Eigen::VectorXd mu_scale = mu_0 * 2 / pow(pi, .5);
+	Eigen::VectorXd mu_scale = mu_0 * 2. / pow(pi, .5);
 	Eigen::VectorXd x_scale(num_row);
 	#pragma omp parallel
 	{
 		#pragma omp for
 		for(int item = 0; item < num_row; ++ item){
-			x_scale(item) = quantile(norm_dist, 1 - exp(-pow(1, 2)));
+			x_scale(item) = quantile(norm_dist, 1. - exp(-pow(1., 2.)));
 		}
 	}
 	Eigen::VectorXd mu = mu_scale; 
 	Eigen::VectorXd x = x_scale;
-	Eigen::VectorXd dx = Eigen::VectorXd::LinSpaced(num_row, 1, 1);
-	Eigen::VectorXd dmu = Eigen::VectorXd::LinSpaced(num_row, 1, 1);
+	Eigen::VectorXd dx = Eigen::VectorXd::LinSpaced(num_row, 1., 1.);
+	Eigen::VectorXd dmu = Eigen::VectorXd::LinSpaced(num_row, 1., 1.);
 	Eigen::VectorXd mu_inv(num_row);
 
 	for(int tick = 0; tick < num_time; ++ tick){
@@ -203,13 +203,13 @@ int main(){
 		
 		// Iterated Optimization
 		count = 0;
-		dmu = Eigen::VectorXd::LinSpaced(num_row, 1, 1);
-		while(count < 5000 && dmu.lpNorm<Eigen::Infinity>()> pow(10, -3)){
+		dmu = Eigen::VectorXd::LinSpaced(num_row, 1., 1.);
+		while(count < 5000 && dmu.lpNorm<Eigen::Infinity>() > pow(10., -3.)){
 		#pragma omp parallel
 		{
 			#pragma omp for			
 			for(int item = 0; item < num_row; ++ item){
-				Conversion_vec(item) = .5 * mu_scale(item) * pow((-log(1 - cdf(norm_dist, x(item)))), -.5) * pow((-log(1 - cdf(norm_dist, x(item)))), -1) * pdf(norm_dist, x(item));
+				Conversion_vec(item) = .5 * mu_scale(item) * pow((-log(1. - cdf(norm_dist, x(item)))), -.5) * pow((-log(1. - cdf(norm_dist, x(item)))), -1.) * pdf(norm_dist, x(item));
 			}
 		}	
 			Conversion_Mat_1 = Conversion_vec.asDiagonal();
@@ -223,11 +223,11 @@ int main(){
 		{
 			#pragma omp for
 			for(int item = 0; item < num_row; ++ item){
-				dmu(item) = mu_scale(item) * pow(-log(1 - cdf(norm_dist, x(item))), .5) - mu(item);
+				dmu(item) = mu_scale(item) * pow(-log(1. - cdf(norm_dist, x(item))), .5) - mu(item);
 				mu(item) += dmu(item);
 			}
 		}
-			mu_inv = pow(mu.array(), -1);
+			mu_inv = pow(mu.array(), -1.);
 			dmu *= mu_inv;
 			
 			count += 1;
@@ -262,7 +262,7 @@ int main(){
 			stop = std::chrono::high_resolution_clock::now();
 			duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
 			std::cout << "Timelapse of Code:\n";
-			std::cout << duration.count() / pow(10, 6) << " seconds" << std::endl;
+			std::cout << duration.count() / pow(10., 6.) << " seconds" << std::endl;
 			std::cout << "\n";
 		}
 	}
