@@ -21,12 +21,13 @@ market_inform TSO_Market_Set(int Time){
 	
 	// Set node admittance matrix Y_n
 	TSO_Market.network.num_vertice = TSO_Market.num_zone;
-	TSO_Market.network.num_edges = 2;
+	TSO_Market.network.num_edges = 3;
 	TSO_Market.network.incidence_matrix = Eigen::MatrixXi(TSO_Market.network.num_edges, 2);
 	TSO_Market.network.incidence_matrix.row(0) << 0, 1;
 	TSO_Market.network.incidence_matrix.row(1) << 0, 2;
-	TSO_Market.network.admittance_vector = Eigen::VectorXd(2);
-	TSO_Market.network.admittance_vector << 100., 100.;
+	TSO_Market.network.incidence_matrix.row(1) << 1, 2;
+	TSO_Market.network.admittance_vector = Eigen::VectorXd(3);
+	TSO_Market.network.admittance_vector << 100., 50., 25.;
 	
 	// Set voltage and power constraints at each edge
 	TSO_Market.network.voltage_constraint = Eigen::MatrixXd(TSO_Market.network.num_vertice, 2);
@@ -193,7 +194,7 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 		loop_count += 1;
 		
 		// One iteration of optimization
-		LP_process(Problem, "TSO Problem", 0, 1, 1, 0, 1, 1);
+		LP_process(Problem, "TSO Problem", 1, 1, 1, 0, 1, 1);
 		
 		// Update equality boundary values for the LP problem and confirmed prices and bids for the market
 		trade_quantity = Problem.Solution.orig_vector - Previous_Sol;
@@ -248,8 +249,8 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 			Problem.Objective.orig_value_sum += Improvement_Obj;
 		}
 		else{
-			//std::cout << Problem.Solution.orig_vector.transpose() << "\n\n";
-			//std::cout << Problem.Objective.orig_value_sum << "\n\n";
+			std::cout << Problem.Solution.orig_vector.transpose() << "\n\n";
+			std::cout << Problem.Objective.orig_value_sum << "\n\n";
 			break;
 		}		
 	}

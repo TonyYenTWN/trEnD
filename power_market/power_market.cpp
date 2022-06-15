@@ -48,7 +48,7 @@ void Market_clearing_nodal(int tick, market_inform &Market, Eigen::VectorXi &def
 				bidded_demand(price_demand_ID(zone_ID), zone_ID) -= trade_quantity;
 			}
 			else{
-				if(bidded_supply(price_supply_ID(zone_ID), zone_ID) >= 0){
+				if(bidded_supply(price_supply_ID(zone_ID), zone_ID) > 0){
 					default_price_ID(zone_ID) = price_supply_ID(zone_ID);
 				}
 				else{

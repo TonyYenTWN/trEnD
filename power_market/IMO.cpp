@@ -86,16 +86,25 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 	// In the future, input of bidding zones of Norway should come from results of DSOs
 	// Bidding zones of other nations: assume inflexible supply or demand
 	International_Market.submitted_supply = International_Market.merit_order_curve;
+	for(int zone_ID = 0; zone_ID < International_Market.cross_border_zone_start; ++ zone_ID){
+		if(International_Market.demand_default(tick, zone_ID) >= 0){
+			International_Market.submitted_demand(International_Market.price_intervals + 1, zone_ID) += International_Market.demand_default(tick, zone_ID);
+		}
+		else{
+			International_Market.submitted_supply(0, zone_ID) += -International_Market.demand_default(tick, zone_ID);
+			//std::cout << "Negative residual demand!!! \n\n"; 
+		}
+	}
 	#pragma omp parallel
 	{
 		#pragma omp for
-		for(int zone_ID = 0; zone_ID < International_Market.num_zone; ++ zone_ID){
+		for(int zone_ID = International_Market.cross_border_zone_start; zone_ID < International_Market.num_zone; ++ zone_ID){
 			if(International_Market.demand_default(tick, zone_ID) >= 0){
-				International_Market.submitted_demand(International_Market.price_intervals + 1, zone_ID) += International_Market.demand_default(tick, zone_ID);
+				International_Market.submitted_demand(International_Market.price_intervals, zone_ID) += International_Market.demand_default(tick, zone_ID);
 			}
 			else{
 				International_Market.submitted_supply(0, zone_ID) += -International_Market.demand_default(tick, zone_ID);
-				std::cout << "Negative residual demand!!! \n\n"; 
+				//std::cout << "Negative residual demand!!! \n\n"; 
 			}
 		}
 	}
@@ -143,7 +152,10 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 	available_capacity_exchange.bottomRightCorner(International_Market.num_zone - International_Market.cross_border_zone_start, International_Market.num_zone - International_Market.cross_border_zone_start) = Eigen::MatrixXi::Identity(International_Market.num_zone - International_Market.cross_border_zone_start, International_Market.num_zone - International_Market.cross_border_zone_start);
 	
 	// Main loop for optimization of cross border exchange
+	int loop_count = 0;
+	//while(loop_count < 100){
 	while(available_capacity_exchange.sum() > 0){
+		loop_count += 1;
 		// Update price of demand and supply at each bidding zone
 		for(int zone_ID = 0; zone_ID < International_Market.num_zone; ++ zone_ID){
 			// Check if there are demand bids at current price interval
@@ -173,9 +185,18 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 		
 		// Find the exchange with the greatest surplus
 		maximum_price_diff = 0;
-		for(int row_ID = 0; row_ID < International_Market.num_zone; ++ row_ID){
-			for(int col_ID = 0; col_ID < International_Market.num_zone; ++ col_ID){
+//		for(int row_ID = 0; row_ID < International_Market.num_zone; ++ row_ID){
+//			for(int col_ID = 0; col_ID < International_Market.num_zone; ++ col_ID){
+		for(int row_ID = International_Market.num_zone - 1; row_ID > -1; -- row_ID){
+			for(int col_ID = International_Market.num_zone - 1; col_ID > - 1; -- col_ID){
 				if(available_capacity_exchange(row_ID, col_ID)){
+					// Check if limit of edge capacity is reached
+					if(remaining_capacity_exchange(row_ID, col_ID) == 0){
+						available_capacity_exchange(row_ID, col_ID) = 0;
+						// Skip the comparison below
+						continue;
+					}					
+					
 					// Check if surplus according to updated price is still positive
 					if(price_demand_ID(col_ID) >= price_supply_ID(row_ID)){
 						// Update surplus for each possible exchange configuration
@@ -194,8 +215,8 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 							}
 							else{
 								type_capacity_exchange = 2;				// Replace demand in exporting zone with import
-								std::cout << type_capacity_exchange << " " << row_ID << " " << col_ID << "\n";
-								std::cout << price_demand_ID(col_ID) << " " << price_supply_ID(row_ID) << "\n";
+								//std::cout << type_capacity_exchange << " " << row_ID << " " << col_ID << "\n";
+								//std::cout << price_demand_ID(col_ID) << " " << price_supply_ID(row_ID) << "\n";
 							}
 							
 							// Encode maximum surplus and occuring zones
@@ -207,10 +228,10 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 						available_capacity_exchange(row_ID, col_ID) = 0;
 					}
 					
-					// Check if limit of edge capacity is reached
-					if(remaining_capacity_exchange(row_ID, col_ID) == 0){
-						available_capacity_exchange(row_ID, col_ID) = 0;
-					}
+//					// Check if limit of edge capacity is reached
+//					if(remaining_capacity_exchange(row_ID, col_ID) == 0){
+//						available_capacity_exchange(row_ID, col_ID) = 0;
+//					}
 				}
 			}
 		}
@@ -221,11 +242,12 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 				case 0:
 					// Update traded quantity
 					exchange_quantity = std::min(bidded_demand_import(price_demand_ID(maximum_price_diff_ID(1)), maximum_price_diff_ID(1)), bidded_supply_export(price_supply_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0)));
-					exchange_quantity = std::min(exchange_quantity, remaining_capacity_exchange(maximum_price_diff_ID(0), maximum_price_diff_ID(1)));
+					exchange_quantity = std::min(exchange_quantity, remaining_capacity_exchange(maximum_price_diff_ID(0), maximum_price_diff_ID(1)));					
 					International_Market.confirmed_supply(tick, maximum_price_diff_ID(0)) += exchange_quantity;
 					International_Market.confirmed_demand(tick, maximum_price_diff_ID(1)) += exchange_quantity;
 					bidded_demand_import(price_demand_ID(maximum_price_diff_ID(1)), maximum_price_diff_ID(1)) -= exchange_quantity;
 					bidded_supply_export(price_supply_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0)) -= exchange_quantity;
+					//std::cout << bidded_supply_export(price_supply_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0)) << "\n";										
 					
 					// Update market clearing price
 					if(exchange_quantity == remaining_capacity_exchange(maximum_price_diff_ID(0), maximum_price_diff_ID(1))){
@@ -245,13 +267,19 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 					break;
 				case 1:
 					// Update traded quantity
+					//std::cout << bidded_supply_export(price_supply_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0)) << "\n";
+					//std::cout << bidded_supply_import(price_demand_ID(maximum_price_diff_ID(1)), maximum_price_diff_ID(1)) << "\n";
 					exchange_quantity = std::min(bidded_supply_import(price_demand_ID(maximum_price_diff_ID(1)), maximum_price_diff_ID(1)), bidded_supply_export(price_supply_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0)));
+					//std::cout << exchange_quantity << "\n";
 					exchange_quantity = std::min(exchange_quantity, remaining_capacity_exchange(maximum_price_diff_ID(0), maximum_price_diff_ID(1)));
+					//std::cout << exchange_quantity << "\n";
 					International_Market.confirmed_supply(tick, maximum_price_diff_ID(0)) += exchange_quantity;
 					International_Market.confirmed_supply(tick, maximum_price_diff_ID(1)) -= exchange_quantity;
 					bidded_supply_import(price_demand_ID(maximum_price_diff_ID(1)), maximum_price_diff_ID(1)) -= exchange_quantity;
 					bidded_supply_export(price_supply_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0)) -= exchange_quantity;		
-					
+					//std::cout << bidded_supply_export(price_supply_ID(maximum_price_diff_ID(0)), maximum_price_diff_ID(0)) << "\n";
+					//std::cout << bidded_supply_import(price_demand_ID(maximum_price_diff_ID(1)), maximum_price_diff_ID(1)) << "\n";
+										
 					// Update market clearing price
 					if(exchange_quantity == remaining_capacity_exchange(maximum_price_diff_ID(0), maximum_price_diff_ID(1))){
 						International_Market.confirmed_price(tick, maximum_price_diff_ID(0)) == International_Market.bidded_price(price_supply_ID(maximum_price_diff_ID(0)));
@@ -293,8 +321,19 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 					}					
 					break;	
 			}
-			remaining_capacity_exchange(maximum_price_diff_ID(0), maximum_price_diff_ID(1)) -= exchange_quantity;			
+			//std::cout << remaining_capacity_exchange(maximum_price_diff_ID(0), maximum_price_diff_ID(1)) << "\n";
+			remaining_capacity_exchange(maximum_price_diff_ID(0), maximum_price_diff_ID(1)) -= exchange_quantity;
+			//std::cout << remaining_capacity_exchange(maximum_price_diff_ID(0), maximum_price_diff_ID(1)) << "\n";			
 		}
+		
+//		std::cout << "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \n";
+//		std::cout << "Tick: " << tick << "\n";
+//		std::cout << "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \n";
+//		std::cout << "  Export Price ID: " << price_supply_ID.transpose() << "\n";
+//		std::cout << "  Import Price ID: " << price_demand_ID.transpose() << "\n";
+//		std::cout << "    Sell Quantity: " << International_Market.confirmed_supply.row(tick) << "\n";
+//		std::cout << "     Buy Quantity: " << International_Market.confirmed_demand.row(tick) << "\n";
+//		std::cout << type_capacity_exchange << ": " << maximum_price_diff_ID.transpose() << "\n\n";
 	}
 
 	// Calculate exchange flow and market clearing prices of the bidding zones
@@ -328,15 +367,24 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 	}
 }
 
+void International_Market_Output(market_inform &International_Market){
+	std::string fout_name = "output/IMO_confirmed_price.csv";
+	write_file(International_Market.confirmed_price, fout_name, International_Market.zone_names);
+}
+
 int main(){
-	// Input Variables
+	// Input variables
 	int Time = 8760;
 	std::string fin_name_moc = "input/merit_order_curve_q_assimilated_2021.csv";
 	std::string fin_name_demand = "input/residual_load_default_forecast_2021.csv";
 	market_inform International_Market = International_Market_Set(Time, fin_name_moc, fin_name_demand);
 	
-	for(int tick = 0; tick < 10; ++ tick){
+	// Naive market clearing
+	for(int tick = 0; tick < Time; ++ tick){
 		Market_Initialization(International_Market);
-		International_Market_Optimization(tick, International_Market);
-	}		
+		International_Market_Optimization(tick, International_Market, 0);
+	}
+	
+	// Write csv file
+	International_Market_Output(International_Market);		
 }
