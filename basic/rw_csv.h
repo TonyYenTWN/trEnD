@@ -10,6 +10,7 @@
 #include <string>
 #include "../basic/Basic_Definitions.h"
 
+std::vector <int> get_file_dim(std::string);
 Eigen::MatrixXd read_file(int, int, std::string);
 void write_file(Eigen::MatrixXd, std::string, std::vector<std::string>);
 
