@@ -34,6 +34,7 @@ struct edges{
 };
 
 struct plants{
+	std::string type;
 	Eigen::VectorXd x;
 	Eigen::VectorXd y;
 	Eigen::VectorXd lon;
@@ -42,6 +43,12 @@ struct plants{
 
 class network_inform{
 	public:
+		std::complex<double> x_trans_series(0, 5. * pow(10., -4.));		// Series impedence per meter of transmission line
+		std::complex<double> x_trans_shunt(0, 0);						// Shunt impedence per meter of transmission line
+		std::complex<double> x_distr_series(0, 7. * pow(10., -4.));		// Series impedence per meter of distribution line
+		std::complex<double> x_distr_shunt(0, 0);						// Shunt impedence per meter of distribution line
+		Eigen::VectorXi DSO_group;										// Which DSO group a DSO belongs to
+		Eigen::VectorXi bidding_zone; 									// Which bidding zone a DSO group belongs to
 		
 	private:
 };
