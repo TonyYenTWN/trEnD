@@ -4,7 +4,7 @@
 #include "../basic/LP_gpa.cpp"
 #include "power_market.cpp"
 
-market_inform TSO_Market_Set_Test(int Time){
+market_inform TSO_Market_Set_Test_1(int Time){
 	market_inform TSO_Market;
 	
 	// Input parameters of TSO market
@@ -109,39 +109,28 @@ market_inform TSO_Market_Set(int Time, std::string fin_node, std::string fin_edg
 	for(int edge_iter = 0; edge_iter < TSO_Market.network.num_edges; ++ edge_iter){
 		TSO_Market.network.incidence_matrix(edge_iter, 0) = edge_inform(edge_iter, 0) - 1;
 		TSO_Market.network.incidence_matrix(edge_iter, 1) = edge_inform(edge_iter, 1) - 1;
-		TSO_Market.network.admittance_vector(edge_iter) = x_L * edge_inform(edge_iter, 5) / impedence_conversion(pu_dc_inform, edge_inform(edge_iter, 4));
+		TSO_Market.network.admittance_vector(edge_iter) = impedence_conversion(pu_dc_inform, edge_inform(edge_iter, 4)) / x_L / edge_inform(edge_iter, 5);
 	}
-	std::cout << TSO_Market.network.admittance_vector.head(10) << "\n\n";
 
 	// Set voltage and power constraints at each edge
 	TSO_Market.network.voltage_constraint = Eigen::MatrixXd(TSO_Market.network.num_vertice, 2);
 	TSO_Market.network.voltage_constraint.col(0) = Eigen::VectorXd::Constant(TSO_Market.network.num_vertice, -pi / 18);
 	TSO_Market.network.voltage_constraint.col(1) = Eigen::VectorXd::Constant(TSO_Market.network.num_vertice, pi / 18);
 	TSO_Market.network.power_constraint = Eigen::MatrixXd(TSO_Market.network.num_edges, 2);
-	TSO_Market.network.power_constraint.col(0) = Eigen::VectorXd::Constant(TSO_Market.network.num_edges, -5000. * pow(3., .5));
-	TSO_Market.network.power_constraint.col(1) = Eigen::VectorXd::Constant(TSO_Market.network.num_edges, 5000. * pow(3., .5));
+	TSO_Market.network.power_constraint.col(0) = Eigen::VectorXd::Constant(TSO_Market.network.num_edges, -5.);
+	TSO_Market.network.power_constraint.col(1) = Eigen::VectorXd::Constant(TSO_Market.network.num_edges, 5.);
 
 	// Initialization of output variables
 	TSO_Market.confirmed_supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.confirmed_demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.confirmed_price = Eigen::MatrixXd(Time, TSO_Market.num_zone);
 	TSO_Market.network.confirmed_power = Eigen::MatrixXd(Time, TSO_Market.network.num_edges);
-	
-//	// For the trivial case only: initialize submitted supply and demand bids at each node
-//	TSO_Market.submitted_supply = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 2, TSO_Market.num_zone);
-//	TSO_Market.submitted_demand = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 2, TSO_Market.num_zone);
-//	TSO_Market.submitted_supply(0, 0) = 10.;
-//	TSO_Market.submitted_supply(0, 1) = 20.;
-//	TSO_Market.submitted_supply(0, 2) = 20.;
-//	TSO_Market.submitted_supply(1, 0) = 5.;
-//	TSO_Market.submitted_supply(1, 1) = 15.;
-//	TSO_Market.submitted_supply(1, 2) = 25.;
-//	TSO_Market.submitted_demand(TSO_Market.price_intervals + 1, 0) = 25.;
-//	TSO_Market.submitted_demand(TSO_Market.price_intervals + 1, 1) = 15.;
-//	TSO_Market.submitted_demand(TSO_Market.price_intervals + 1, 2) = 5.;
-//	TSO_Market.submitted_demand(TSO_Market.price_intervals, 0) = 10.;
-//	TSO_Market.submitted_demand(TSO_Market.price_intervals, 1) = 7.5;
-//	TSO_Market.submitted_demand(TSO_Market.price_intervals, 2) = 5.;
+
+	// Trivial initialization at the nodes
+	TSO_Market.submitted_supply = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 2, TSO_Market.num_zone);
+	TSO_Market.submitted_demand = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 2, TSO_Market.num_zone);
+	TSO_Market.submitted_supply.row(0).head(10) = Eigen::VectorXd::Constant(10, 10.);
+	TSO_Market.submitted_demand.row(TSO_Market.price_intervals + 1).tail(10) = Eigen::VectorXd::Constant(10, 10.);
 	
 	return(TSO_Market);
 }
@@ -334,7 +323,7 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 }
 
 int main(){
-//	market_inform TSO_Market = TSO_Market_Set_Test(1);
+//	market_inform TSO_Market = TSO_Market_Set_Test_1(1);
 //	LP_object TSO_Problem;
 //	TSO_LP_Set(TSO_Market, TSO_Problem);
 
@@ -342,6 +331,8 @@ int main(){
 	auto fin_edge = "../power_network/input/transmission_edges.csv";
 	auto fin_pu_dc = "../power_network/input/transmission_pu_dc.csv";
 	auto TSO_Market = TSO_Market_Set(1, fin_node, fin_edge, fin_pu_dc);
+	LP_object TSO_Problem;
+	TSO_LP_Set(TSO_Market, TSO_Problem);
 	
-//	TSO_Market_Optimization(0, TSO_Market, TSO_Problem);
+	TSO_Market_Optimization(0, TSO_Market, TSO_Problem);
 }
