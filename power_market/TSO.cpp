@@ -69,6 +69,53 @@ market_inform TSO_Market_Set_Test_1(int Time){
 	return(TSO_Market);
 }
 
+market_inform TSO_Market_Set_Test_2(int Time){
+	market_inform TSO_Market;
+	
+	// Input parameters of TSO market
+	// A trivial test case with 20 nodes connected as a radial line
+	TSO_Market.num_zone = 6;
+	TSO_Market.time_intervals = Time;
+	TSO_Market.price_intervals = 600;
+	TSO_Market.price_range_inflex << -500., 3000.;
+	TSO_Market.price_range_flex << -100., 500.;
+	TSO_Market.bidded_price = Eigen::VectorXd(TSO_Market.price_intervals + 2);
+	TSO_Market.bidded_price(0) = TSO_Market.price_range_inflex(0);
+	TSO_Market.bidded_price.array().tail(1) = TSO_Market.price_range_inflex(1);
+	TSO_Market.bidded_price.array().segment(1, TSO_Market.price_intervals) = Eigen::VectorXd::LinSpaced(TSO_Market.price_intervals, TSO_Market.price_range_flex(0) + .5 * (TSO_Market.price_range_flex(1) - TSO_Market.price_range_flex(0)) / TSO_Market.price_intervals, TSO_Market.price_range_flex(1) - .5 * (TSO_Market.price_range_flex(1) - TSO_Market.price_range_flex(0)) / TSO_Market.price_intervals);
+	
+	// Set node admittance matrix Y_n
+	TSO_Market.network.num_vertice = TSO_Market.num_zone;
+	TSO_Market.network.num_edges = TSO_Market.num_zone - 1;
+	TSO_Market.network.incidence_matrix = Eigen::MatrixXi(TSO_Market.network.num_edges, 2);
+	for(int edge_iter = 0; edge_iter < TSO_Market.network.num_edges; ++ edge_iter){
+		TSO_Market.network.incidence_matrix.row(edge_iter) << edge_iter, edge_iter + 1;
+	}
+	TSO_Market.network.admittance_vector = Eigen::VectorXd::Constant(TSO_Market.network.num_edges, 2000.);
+	
+	// Set voltage and power constraints at each edge
+	TSO_Market.network.voltage_constraint = Eigen::MatrixXd(TSO_Market.network.num_vertice, 2);
+	TSO_Market.network.voltage_constraint.col(0) = Eigen::VectorXd::Constant(TSO_Market.network.num_vertice, -1.);
+	TSO_Market.network.voltage_constraint.col(1) = Eigen::VectorXd::Constant(TSO_Market.network.num_vertice, 1.);
+	TSO_Market.network.power_constraint = Eigen::MatrixXd(TSO_Market.network.num_edges, 2);
+	TSO_Market.network.power_constraint.col(0) = Eigen::VectorXd::Constant(TSO_Market.network.num_edges, -50.);
+	TSO_Market.network.power_constraint.col(1) = Eigen::VectorXd::Constant(TSO_Market.network.num_edges, 50.);
+
+	// Initialization of output variables
+	TSO_Market.confirmed_supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.confirmed_demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.confirmed_price = Eigen::MatrixXd(Time, TSO_Market.num_zone);
+	TSO_Market.network.confirmed_power = Eigen::MatrixXd(Time, TSO_Market.network.num_edges);
+	
+	// For the trivial case only: initialize submitted supply and demand bids at each node
+	TSO_Market.submitted_supply = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 2, TSO_Market.num_zone);
+	TSO_Market.submitted_demand = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 2, TSO_Market.num_zone);
+	TSO_Market.submitted_supply.row(0).head(TSO_Market.num_zone / 2) = Eigen::VectorXd::Constant(TSO_Market.num_zone / 2, 10.);
+	TSO_Market.submitted_demand.row(TSO_Market.price_intervals + 1).tail(TSO_Market.num_zone / 2) = Eigen::VectorXd::Constant(TSO_Market.num_zone / 2, 10.);
+	
+	return(TSO_Market);
+}
+
 double impedence_conversion(Eigen::MatrixXd pu_dc_inform, double voltage){
 	int v_iter = 0;
 	while(pu_dc_inform(v_iter, 0) != voltage){
@@ -211,9 +258,9 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 	Eigen::MatrixXd bidded_demand_export = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 2, TSO_Market.num_zone);
 	Eigen::MatrixXd bidded_supply_import = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 2, TSO_Market.num_zone);
 	Eigen::MatrixXd bidded_demand_import = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 2, TSO_Market.num_zone);
-	#pragma omp parallel
+	//#pragma omp parallel
 	{
-		#pragma omp for
+		//#pragma omp for
 		for(int zone_ID = 0; zone_ID < TSO_Market.num_zone; ++ zone_ID){
 			// Supply curves
 			bidded_supply_export.col(zone_ID).array().tail(TSO_Market.price_intervals + 1 - price_ID(zone_ID)) = TSO_Market.submitted_supply.col(zone_ID).array().tail(TSO_Market.price_intervals + 1 - price_ID(zone_ID));
@@ -225,7 +272,10 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 			bidded_demand_export.col(zone_ID).array().tail(TSO_Market.price_intervals + 1 - price_ID(zone_ID)) = TSO_Market.submitted_demand.col(zone_ID).array().tail(TSO_Market.price_intervals + 1 - price_ID(zone_ID));
 			bidded_demand_export(price_ID(zone_ID), zone_ID) = TSO_Market.submitted_demand(price_ID(zone_ID), zone_ID) - bidded_demand(price_ID(zone_ID), zone_ID);
 			bidded_demand_import.col(zone_ID).array().head(price_ID(zone_ID)) = TSO_Market.submitted_demand.col(zone_ID).array().head(price_ID(zone_ID));
-			bidded_demand_import(price_ID(zone_ID), zone_ID) = bidded_demand(price_ID(zone_ID), zone_ID);		
+			bidded_demand_import(price_ID(zone_ID), zone_ID) = bidded_demand(price_ID(zone_ID), zone_ID);
+			
+			//std::cout << price_ID(zone_ID) << " " << bidded_supply_import(price_ID(zone_ID), zone_ID) << " " << bidded_demand_import(price_ID(zone_ID), zone_ID) << "\n";
+			//std::cout << price_ID(zone_ID) << " " << bidded_supply_export(price_ID(zone_ID), zone_ID) << " " << bidded_demand_export(price_ID(zone_ID), zone_ID) << "\n\n";		
 		}
 	}
 	
@@ -252,6 +302,7 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 	Problem.Objective.orig_vector = Problem.Constraint.permutation_matrix.transpose() * Updated_Objective;
 	Problem.Boundary.ie_orig_matrix = Problem.Constraint.permutation_matrix.transpose() * Updated_Boundary;
 	Problem.Objective.orig_value_sum = Problem.Solution.orig_vector.dot(Problem.Objective.orig_vector);
+	//std::cout << Problem.Objective.orig_vector.transpose() << "\n\n";
 	
 	// Main loop
 	int loop_count = 0;
@@ -259,8 +310,13 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 	while(1){
 		loop_count += 1;
 		
+		// Test optimization
+		//LP_process(Problem, "TSO Problem", 1, 1, 0, 0, 1, 1);
+		//break;
+		
 		// One iteration of optimization
 		LP_process(Problem, "TSO Problem", 1, 1, 1, 0, 1, 1);
+		//std::cout << Problem.Objective.update_coeff.transpose() << "\n\n";
 		
 		// Update equality boundary values for the LP problem and confirmed prices and bids for the market
 		trade_quantity = Problem.Solution.orig_vector - Previous_Sol;
@@ -270,18 +326,32 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 			// Update confirmed supply and demand bids at each node
 			// Check whether the node is importing or exporting electricity
 			if(Problem.Solution.orig_vector(TSO_Market.network.num_edges + node_iter) <= Previous_Sol(TSO_Market.network.num_edges + node_iter)){
-				ratio = bidded_supply_import(price_ID(node_iter), node_iter) / (bidded_supply_import(price_ID(node_iter), node_iter) + bidded_demand_import(price_ID(node_iter), node_iter));
-				TSO_Market.confirmed_supply(tick, node_iter) -= ratio * trade_quantity(TSO_Market.network.num_edges + node_iter);
-				TSO_Market.confirmed_demand(tick, node_iter) += (1 - ratio) * trade_quantity(TSO_Market.network.num_edges + node_iter);	
-				bidded_supply_import(price_ID(node_iter), node_iter) -= ratio * trade_quantity(TSO_Market.network.num_edges + node_iter);
-				bidded_demand_import(price_ID(node_iter), node_iter) -= (1 - ratio) * trade_quantity(TSO_Market.network.num_edges + node_iter);	
+				if(bidded_supply_import(price_ID(node_iter), node_iter) + bidded_demand_import(price_ID(node_iter), node_iter) > tol){
+					ratio = bidded_supply_import(price_ID(node_iter), node_iter) / (bidded_supply_import(price_ID(node_iter), node_iter) + bidded_demand_import(price_ID(node_iter), node_iter));
+					TSO_Market.confirmed_supply(tick, node_iter) -= ratio * trade_quantity(TSO_Market.network.num_edges + node_iter);
+					TSO_Market.confirmed_demand(tick, node_iter) += (1 - ratio) * trade_quantity(TSO_Market.network.num_edges + node_iter);
+					bidded_supply_import(price_ID(node_iter), node_iter) -= ratio * trade_quantity(TSO_Market.network.num_edges + node_iter);
+					bidded_demand_import(price_ID(node_iter), node_iter) -= (1 - ratio) * trade_quantity(TSO_Market.network.num_edges + node_iter);					
+				}
+				else{
+					bidded_supply_import(price_ID(node_iter), node_iter) = 0.;
+					bidded_demand_import(price_ID(node_iter), node_iter) = 0.;
+				}
+//				std::cout << price_ID(node_iter) << " " << bidded_supply_import(price_ID(node_iter), node_iter) << " " << bidded_demand_import(price_ID(node_iter), node_iter) << "\n\n";	
 			}
 			else{
-				ratio = bidded_supply_export(price_ID(node_iter), node_iter) / (bidded_supply_export(price_ID(node_iter), node_iter) + bidded_demand_export(price_ID(node_iter), node_iter));
-				TSO_Market.confirmed_supply(tick, node_iter) += ratio * trade_quantity(TSO_Market.network.num_edges + node_iter);
-				TSO_Market.confirmed_demand(tick, node_iter) -= (1 - ratio) * trade_quantity(TSO_Market.network.num_edges + node_iter);
-				bidded_supply_export(price_ID(node_iter), node_iter) -= ratio * trade_quantity(TSO_Market.network.num_edges + node_iter);
-				bidded_demand_export(price_ID(node_iter), node_iter) -= (1 - ratio) * trade_quantity(TSO_Market.network.num_edges + node_iter);					
+				if(bidded_supply_export(price_ID(node_iter), node_iter) + bidded_demand_export(price_ID(node_iter), node_iter) > tol){
+					ratio = bidded_supply_export(price_ID(node_iter), node_iter) / (bidded_supply_export(price_ID(node_iter), node_iter) + bidded_demand_export(price_ID(node_iter), node_iter));
+					TSO_Market.confirmed_supply(tick, node_iter) += ratio * trade_quantity(TSO_Market.network.num_edges + node_iter);
+					TSO_Market.confirmed_demand(tick, node_iter) -= (1 - ratio) * trade_quantity(TSO_Market.network.num_edges + node_iter);
+					bidded_supply_export(price_ID(node_iter), node_iter) -= ratio * trade_quantity(TSO_Market.network.num_edges + node_iter);
+					bidded_demand_export(price_ID(node_iter), node_iter) -= (1 - ratio) * trade_quantity(TSO_Market.network.num_edges + node_iter);					
+				}
+				else{
+					bidded_supply_export(price_ID(node_iter), node_iter) = 0.;
+					bidded_demand_export(price_ID(node_iter), node_iter) = 0.;
+				}
+//				std::cout << price_ID(node_iter) << " " << bidded_supply_export(price_ID(node_iter), node_iter) << " " << bidded_demand_export(price_ID(node_iter), node_iter) << "\n\n";
 			}
 			
 			// Update price_ID and boundary at each node
@@ -323,16 +393,16 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 }
 
 int main(){
-//	market_inform TSO_Market = TSO_Market_Set_Test_1(1);
-//	LP_object TSO_Problem;
-//	TSO_LP_Set(TSO_Market, TSO_Problem);
-
-	auto fin_node = "../power_network/input/transmission_nodes.csv";
-	auto fin_edge = "../power_network/input/transmission_edges.csv";
-	auto fin_pu_dc = "../power_network/input/transmission_pu_dc.csv";
-	auto TSO_Market = TSO_Market_Set(1, fin_node, fin_edge, fin_pu_dc);
+	market_inform TSO_Market = TSO_Market_Set_Test_2(1);
 	LP_object TSO_Problem;
 	TSO_LP_Set(TSO_Market, TSO_Problem);
+
+//	auto fin_node = "../power_network/input/transmission_nodes.csv";
+//	auto fin_edge = "../power_network/input/transmission_edges.csv";
+//	auto fin_pu_dc = "../power_network/input/transmission_pu_dc.csv";
+//	auto TSO_Market = TSO_Market_Set(1, fin_node, fin_edge, fin_pu_dc);
+//	LP_object TSO_Problem;
+//	TSO_LP_Set(TSO_Market, TSO_Problem);
 	
 	TSO_Market_Optimization(0, TSO_Market, TSO_Problem);
 }
