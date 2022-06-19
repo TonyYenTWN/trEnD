@@ -289,8 +289,7 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 	}
 	//std::cout << bidded_supply_aggregated.topRows(5) << "\n\n";
 	//std::cout << bidded_demand_aggregated.bottomRows(5) << "\n\n";
-	std::cout << bidded_supply_aggregated.bottomRows(5) + bidded_demand_aggregated.bottomRows(5) << "\n\n";
-	
+	//std::cout << bidded_supply_aggregated.bottomRows(5) + bidded_demand_aggregated.bottomRows(5) << "\n\n";
 	
 	// Declare variables for the main loop
 	double eps = pow(10, -8);
@@ -330,8 +329,8 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 		//break;
 		
 		// One iteration of optimization
-		LP_process(Problem, "TSO Problem", 1, 1, 1, 0, 1, 1);
-		std::cout << Problem.Objective.update_coeff.transpose() << "\n\n";
+		LP_process(Problem, "TSO Problem", 0, 1, 1, 0, 1, 1);
+		//std::cout << Problem.Objective.update_coeff.transpose() << "\n\n";
 		
 		// Update equality boundary values for the LP problem and confirmed prices and bids for the market
 		trade_quantity = Problem.Solution.orig_vector - Previous_Sol;
