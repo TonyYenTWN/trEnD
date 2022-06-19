@@ -251,16 +251,14 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 			Previous_active_constraint(constraint_iter) = 0;
 		}
 	}
-	//std::cout << std::setprecision(3) << Projected_increment.transpose() << "\n\n";
-	//std::cout << Previous_active_constraint.transpose() << "\n\n";
 	
 	int loop_count = 0;
 	//while(loop_count < Problem.Variables_num){
 	while(1){
 		loop_count += 1;
-		//std::cout << "---------------------------------------------------------------------------" << std::endl;
-		//std::cout << "New loop" << std::endl;
-		//std::cout << "---------------------------------------------------------------------------" << std::endl;
+//		std::cout << "---------------------------------------------------------------------------" << std::endl;
+//		std::cout << "New loop" << std::endl;
+//		std::cout << "---------------------------------------------------------------------------" << std::endl;
 		// Clear list of current active constraints
 		Active_constraint_now.clear();
 		Active_constraint_prior.clear();
@@ -271,10 +269,6 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 		// Check which constraints are active currently
 		Boundary_gap.col(0) = Problem.Constraint.ie_reduced_matrix * Problem.Solution.reduced_vector - Problem.Boundary.ie_reduced_matrix.col(0);
 		Boundary_gap.col(1) = Problem.Boundary.ie_reduced_matrix.col(1) - Problem.Constraint.ie_reduced_matrix * Problem.Solution.reduced_vector;
-		//std::cout << std::setprecision(6) << Problem.Constraint.ie_reduced_matrix << "\n\n";
-		//std::cout << std::setprecision(8) << (Problem.Constraint.ie_reduced_matrix * Problem.Solution.reduced_vector).transpose() << "\n\n";
-		//std::cout << std::setprecision(6) << Problem.Boundary.ie_reduced_matrix << "\n\n";
-		//std::cout << std::setprecision(6) << Problem.Objective.reduced_vector.transpose() << "\n\n";
 		for(int constraint_iter = 0; constraint_iter < Boundary_gap.rows(); ++ constraint_iter){
 			if(Boundary_gap(constraint_iter, 0) < tol){
 				Problem.Boundary.ie_reduced_matrix(constraint_iter, 0) += Boundary_gap(constraint_iter, 0);
@@ -308,25 +302,10 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 		
 		// Check if the active constraints form a degenerate extreme point
 		if(Active_constraint_now.size() > Problem.Variables_num - Problem.Constraints_eq_num){
-			//std::cout << std::setprecision(8) << Problem.Boundary.ie_reduced_matrix << "\n\n";
 			#pragma omp parallel
 			{
 				#pragma omp for
 				for(int constraint_iter = 0; constraint_iter < Active_constraint_now.size(); ++ constraint_iter){
-//					// Interior points exist between constraints
-//					if(Problem.Boundary.ie_reduced_matrix(Active_constraint_now[constraint_iter](0), 1) - Problem.Boundary.ie_reduced_matrix(Active_constraint_now[constraint_iter](0), 0) > tol){
-//						if(Active_constraint_now[constraint_iter](1) == 0){
-//							Problem.Boundary.ie_reduced_matrix(Active_constraint_now[constraint_iter](0), 0) -= eps;
-//						}
-//						else{
-//							Problem.Boundary.ie_reduced_matrix(Active_constraint_now[constraint_iter](0), 1) += eps;
-//						}
-//					}
-//					// Interior point does not exist
-//					else{
-//						Problem.Boundary.ie_reduced_matrix(Active_constraint_now[constraint_iter](0), 0) -= eps;
-//						Problem.Boundary.ie_reduced_matrix(Active_constraint_now[constraint_iter](0), 1) += eps;
-//					}
 					if(Active_constraint_now[constraint_iter](1) == 0){
 						Problem.Boundary.ie_reduced_matrix(Active_constraint_now[constraint_iter](0), 0) -= eps;
 					}
@@ -337,7 +316,6 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 			}
 			Previous_active_constraint = Eigen::VectorXi::Zero(Problem.Variables_num + Problem.Constraints_ie_num);
 			//std::cout << "\nBoundary Relaxed\n\n" << std::endl;
-			//std::cout << std::setprecision(8) << Problem.Boundary.ie_reduced_matrix << "\n\n";
 			continue;
 		}
 		
@@ -348,24 +326,17 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 			for(int constraint_iter = 0; constraint_iter < Active_constraint_now.size(); ++ constraint_iter){
 				Subspan_matrix.insert(active_constraint_num, Active_constraint_now[constraint_iter](0)) = 1;
 				Subcov_matrix = Subspan_matrix.topRows(active_constraint_num + 1) * Problem.Constraint.ie_reduced_cov_matrix * Subspan_matrix.topRows(active_constraint_num + 1).transpose();
-				//std::cout << std::setprecision(6) << Problem.Constraint.ie_reduced_matrix << "\n\n";
-				//std::cout << std::setprecision(6) << Subspan_matrix << "\n\n";
-				//std::cout << std::setprecision(6) << Subcov_matrix << "\n\n";
 				
 				// Check if subspan of covariance matrix is full rank
 				Problem.Solver.ldlt.compute(Subcov_matrix);
-				if(abs(Problem.Solver.ldlt.determinant()) > tol){
+				if(abs(Problem.Solver.ldlt.determinant()) > tol * pow(10., -4.)){
+					//std::cout << active_constraint_num << "\n";
 					Previous_active_constraint(Active_constraint_now[constraint_iter](0)) = 1;
 					min_increment = std::numeric_limits<double>::infinity();
 									
 					// If subspan of covariance matrix is full rank, solve for the projected gradient on the active constraints
 					Projected_grad = Problem.Objective.reduced_vector;
-					//std::cout << std::setprecision(6) << Projected_grad.transpose() << "\n";
 					Projected_grad -= (Subspan_matrix.topRows(active_constraint_num + 1) * Problem.Constraint.ie_reduced_matrix).transpose() * Problem.Solver.ldlt.solve(Subspan_matrix.topRows(active_constraint_num + 1) * Problem.Objective.ie_reduced_cov_vector);
-					//std::cout << std::setprecision(16) << Subspan_matrix.topRows(active_constraint_num + 1) * Problem.Objective.ie_reduced_cov_vector << "\n\n";
-					//std::cout << std::setprecision(16) << Problem.Objective.ie_reduced_cov_vector.transpose() << "\n\n";
-					//std::cout << std::setprecision(16) << Problem.Solver.ldlt.solve(Subspan_matrix.topRows(active_constraint_num + 1) * Problem.Objective.ie_reduced_cov_vector).transpose() << "\n\n";
-					//std::cout << std::setprecision(6) << Projected_grad.transpose() << "\n\n";
 					if(Projected_grad.norm() != 0){
 						Projected_grad /= Projected_grad.norm();
 					}
@@ -373,11 +344,9 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 						// The objective function is degenerate so no further improvement is possible
 						break;
 					}
-					//std::cout << std::setprecision(6) << Projected_grad.transpose() << "\n\n";
 					
 					// Check the minimum allow increment along the projected gradient is greater than 0
 					Projected_increment = Problem.Constraint.ie_reduced_matrix * Projected_grad;
-					//std::cout << std::setprecision(6) << Projected_increment.transpose() << "\n\n";
 					#pragma omp parallel
 					{
 						#pragma omp for reduction(min: min_increment) private(current_increment)
@@ -385,25 +354,25 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 							if(abs(Projected_increment(constraint_iter)) > tol){								
 								current_increment = std::max(-Boundary_gap(constraint_iter, 0) / Projected_increment(constraint_iter), Boundary_gap(constraint_iter, 1) / Projected_increment(constraint_iter));
 								min_increment = std::min(current_increment, min_increment);
-								//std::cout << std::setprecision(12) << current_increment << " " << Projected_increment(constraint_iter) << "\n";																				
+								//std::cout << constraint_iter << ": " << -Boundary_gap(constraint_iter, 0) / Projected_increment(constraint_iter) << " " << Boundary_gap(constraint_iter, 1) / Projected_increment(constraint_iter) << " " << Projected_increment(constraint_iter) << "\n";																				
 							}
 							else{
 								//std::cout << "Pass\n";
-							}							
+							}					
 						}
+						//std::cout << "\n";
 					}
-					//std::cout << "\n";
 					//std::cout << std::setprecision(16) << min_increment << "\n\n";
 					
 					// Exit loop if a feasible direction for improvement of solution is found
 					if(min_increment > tol){
-						//std::cout << std::setprecision(6) << Previous_active_constraint.transpose() << "\n\n";
-						//std::cout << std::setprecision(6) << min_increment << "\n\n";
 						break;
 					}
 					active_constraint_num += 1;
 				}
 				else{
+					//std::cout << "Pass active constraint!!\n";
+					//std::cout << std::setprecision(16) << Problem.Solver.ldlt.determinant() << "\n\n";
 					// If subspan of covariance matrix is not full rank, remove the current entry for the subspan matrix and move on
 					Subspan_matrix.coeffRef(active_constraint_num, Active_constraint_now[constraint_iter](0)) = 0;
 				}
@@ -421,9 +390,7 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 				// The objective function is degenerate so no further improvement is possible
 				break;
 			}
-			//std::cout << std::setprecision(6) << Projected_grad.transpose() << "\n\n";
 			Projected_increment = Problem.Constraint.ie_reduced_matrix * Projected_grad;
-			//std::cout << std::setprecision(6) << Projected_increment.transpose() << "\n\n";
 			#pragma omp parallel
 			{
 				#pragma omp for reduction(min: min_increment) private(current_increment)
@@ -435,7 +402,7 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 				}
 			}
 		}
-		//std::cout << std::setprecision(12) << min_increment << "\n\n";
+		//std::cout << std::setprecision(16) << min_increment << "\n\n";
 		
 		// Check if there are feasible directions for improvement
 		if(min_increment != std::numeric_limits<double>::infinity()){
@@ -479,8 +446,6 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 			Previous_Obj = Problem.Solution.reduced_vector.dot(Problem.Objective.reduced_vector);
 		}
 		else{
-			//std::cout << std::setprecision(8) << Previous_Obj << "\n\n";
-			//std::cout << std::setprecision(8) << Problem.Solution.reduced_vector.dot(Problem.Objective.reduced_vector) << "\n\n";
 			Problem.Solution.reduced_vector -= min_increment * Projected_grad;
 			break;
 		}
