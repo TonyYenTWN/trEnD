@@ -126,7 +126,7 @@ void LP_constraint_ie_reduced_generation(LP_object &Problem){
 		}
 	}
 	
-	double tol = pow(10, -8);
+	double tol = pow(10, -12);
 	Problem.Constraint.ie_reduced_matrix = reduced_matrix.sparseView(tol, 1);
 }
 
@@ -211,7 +211,7 @@ void LP_objective_ie_reduced_cov_matrix_generation(LP_object &Problem){
 // Main function for the optimization algorithm
 void LP_optimization(LP_object &Problem, bool stepwise_obj){
 	// Set precision for 0 detection
-	double tol = pow(10, -12);
+	double tol = pow(10, -10);
 	double eps = pow(10, -8);
 	
 	// Declare variables for the main loop
@@ -329,7 +329,7 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 				
 				// Check if subspan of covariance matrix is full rank
 				Problem.Solver.ldlt.compute(Subcov_matrix);
-				if(abs(Problem.Solver.ldlt.determinant()) > tol * pow(10., -4.)){
+				if(abs(Problem.Solver.ldlt.determinant()) > -0.){
 					//std::cout << active_constraint_num << "\n";
 					Previous_active_constraint(Active_constraint_now[constraint_iter](0)) = 1;
 					min_increment = std::numeric_limits<double>::infinity();
