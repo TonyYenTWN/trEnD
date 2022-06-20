@@ -211,7 +211,7 @@ void LP_objective_ie_reduced_cov_matrix_generation(LP_object &Problem){
 // Main function for the optimization algorithm
 void LP_optimization(LP_object &Problem, bool stepwise_obj){
 	// Set precision for 0 detection
-	double tol = pow(10, -10);
+	double tol = pow(10, -9);
 	double eps = pow(10, -8);
 	
 	// Declare variables for the main loop
@@ -349,33 +349,6 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 					
 					// Update status of full rank
 					full_rank_flag = 1;
-					
-//					// Check the minimum allow increment along the projected gradient greater than 0
-//					Projected_increment = Problem.Constraint.ie_reduced_matrix * Projected_grad;
-//					#pragma omp parallel
-//					{
-//						#pragma omp for reduction(min: min_increment) private(current_increment)
-//						for(int constraint_iter_2 = 0; constraint_iter_2 < Boundary_gap.rows(); ++ constraint_iter_2){
-//							if(abs(Projected_increment(constraint_iter_2)) > tol){								
-//								current_increment = std::max(-Boundary_gap(constraint_iter_2, 0) / Projected_increment(constraint_iter_2), Boundary_gap(constraint_iter_2, 1) / Projected_increment(constraint_iter_2));
-////								if(current_increment < min_increment){
-////									std::cout << constraint_iter_2 << ": " << -Boundary_gap(constraint_iter_2, 0) / Projected_increment(constraint_iter_2) << " " << Boundary_gap(constraint_iter_2, 1) / Projected_increment(constraint_iter_2) << " " << Projected_increment(constraint_iter_2) << "\n";	
-////								}
-//								min_increment = std::min(current_increment, min_increment);
-//							}
-////							else{
-////								std::cout << constraint_iter << ": " << "Pass\n";
-////							}
-//						}
-////						std::cout << "\n";
-//					}
-////					std::cout << std::setprecision(16) << min_increment << "\n\n";
-//
-//					// Exit loop if a feasible direction for improvement of solution is found
-//					if(min_increment > tol){
-//						break;
-//					}
-//					active_constraint_num += 1;
 				}
 				else{
 					// LDLT has numerical stability issues so use qr solver to check for full rank again
@@ -430,10 +403,10 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 					active_constraint_num += 1;					
 				}
 				else{
-					std::cout << constraint_iter << ": " <<  "Pass active constraint!!\n";
+					//std::cout << constraint_iter << ": " <<  "Pass active constraint!!\n";
 					//std::cout << std::setprecision(16) << Problem.Solver.ldlt.determinant() << "\n\n";
 					//Problem.Solver.qr.compute(Subcov_matrix);
-					std::cout << std::setprecision(16) << Problem.Solver.qr.rank() << "\n\n";
+					//std::cout << std::setprecision(16) << Problem.Solver.qr.rank() << "\n\n";
 					
 					// If subspan of covariance matrix is not full rank, remove the current entry for the subspan matrix and move on
 					Subspan_matrix.coeffRef(active_constraint_num, Active_constraint_now[constraint_iter](0)) = 0;					
