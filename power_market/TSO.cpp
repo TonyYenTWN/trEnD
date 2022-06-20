@@ -74,7 +74,7 @@ market_inform TSO_Market_Set_Test_2(int Time){
 	
 	// Input parameters of TSO market
 	// A trivial test case with 20 nodes connected as a radial line
-	TSO_Market.num_zone = 30;
+	TSO_Market.num_zone = 424;
 	TSO_Market.time_intervals = Time;
 	TSO_Market.price_intervals = 600;
 	TSO_Market.price_range_inflex << -500., 3000.;
