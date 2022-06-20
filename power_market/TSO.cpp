@@ -74,7 +74,7 @@ market_inform TSO_Market_Set_Test_2(int Time){
 	
 	// Input parameters of TSO market
 	// A trivial test case with 20 nodes connected as a radial line
-	TSO_Market.num_zone = 424;
+	TSO_Market.num_zone = 1000;
 	TSO_Market.time_intervals = Time;
 	TSO_Market.price_intervals = 600;
 	TSO_Market.price_range_inflex << -500., 3000.;
@@ -176,8 +176,8 @@ market_inform TSO_Market_Set(int Time, std::string fin_node, std::string fin_edg
 	// Trivial initialization at the nodes
 	TSO_Market.submitted_supply = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 2, TSO_Market.num_zone);
 	TSO_Market.submitted_demand = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 2, TSO_Market.num_zone);
-	TSO_Market.submitted_supply.row(0).head(10) = Eigen::VectorXd::Constant(10, 10.);
-	TSO_Market.submitted_demand.row(TSO_Market.price_intervals + 1).tail(10) = Eigen::VectorXd::Constant(10, 10.);
+	TSO_Market.submitted_supply.row(0).head(100) = Eigen::VectorXd::Constant(100, 10.);
+	TSO_Market.submitted_demand.row(TSO_Market.price_intervals + 1).tail(100) = Eigen::VectorXd::Constant(100, 10.);
 	
 	return(TSO_Market);
 }
@@ -293,8 +293,7 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 	
 	// Declare variables for the main loop
 	double eps = pow(10, -8);
-	double tol = pow(10, -12);
-	double ratio; 
+	double tol = pow(10, -12); 
 	double Improvement_Obj;
 	Eigen::MatrixXd Updated_Boundary = Problem.Constraint.permutation_matrix * Problem.Boundary.ie_orig_matrix;
 	Eigen::VectorXd Updated_Objective = Eigen::VectorXd::Zero(Problem.Variables_num);
@@ -322,10 +321,6 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 	//while(loop_count < 3){
 	while(1){
 		loop_count += 1;
-		
-		// Test optimization
-//		LP_process(Problem, "TSO Problem", 1, 1, 0, 0, 1, 1);
-//		break;
 		
 		// One iteration of optimization
 		LP_process(Problem, "TSO Problem", 0, 1, 1, 0, 1, 1);
@@ -365,19 +360,22 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 		
 		// Check optimality
 		//if(Problem.Objective.orig_value > tol && Improvement_Obj > tol){
-		if(Improvement_Obj > tol){
+		if(Improvement_Obj > eps * Problem.Objective.orig_value_sum){
 			Previous_Sol = Problem.Solution.orig_vector;
 			Problem.Objective.orig_value_sum += Improvement_Obj;
+			std::cout << std::setprecision(8) << Problem.Solution.orig_vector.segment(TSO_Market.network.num_edges, TSO_Market.network.num_vertice).transpose() << "\n\n";
+			std::cout << Problem.Objective.orig_value_sum << "\n\n";
 		}
 		else{
 			//std::cout << std::setprecision(12) << Improvement_Obj << "\n\n";
-			std::cout << std::setprecision(8) << Problem.Solution.orig_vector.transpose() << "\n\n";
+			std::cout << std::setprecision(8) << Problem.Solution.orig_vector.segment(TSO_Market.network.num_edges, TSO_Market.network.num_vertice).transpose() << "\n\n";
 			std::cout << Problem.Objective.orig_value_sum << "\n\n";
 			break;
 		}		
 	}
 	
 	// Update confirmed trade quantity of supply and demand and nodal prices
+	double ratio;
 }
 
 int main(){
