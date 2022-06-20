@@ -215,6 +215,7 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 	double eps = pow(10, -8);
 	
 	// Declare variables for the main loop
+	bool full_rank_flag;
 	bool coeff_update_flag;
 	int active_constraint_num;
 	double min_increment;
@@ -256,9 +257,9 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 	//while(loop_count < Problem.Variables_num){
 	while(1){
 		loop_count += 1;
-//		std::cout << "---------------------------------------------------------------------------" << std::endl;
-//		std::cout << "New loop" << std::endl;
-//		std::cout << "---------------------------------------------------------------------------" << std::endl;
+		//std::cout << "---------------------------------------------------------------------------" << std::endl;
+		//std::cout << "New loop" << std::endl;
+		//std::cout << "---------------------------------------------------------------------------" << std::endl;
 		// Clear list of current active constraints
 		Active_constraint_now.clear();
 		Active_constraint_prior.clear();
@@ -324,6 +325,7 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 			Previous_active_constraint = Eigen::VectorXi::Zero(Problem.Variables_num + Problem.Constraints_ie_num);
 			active_constraint_num = 0;
 			for(int constraint_iter = 0; constraint_iter < Active_constraint_now.size(); ++ constraint_iter){
+				full_rank_flag = 0;
 				Subspan_matrix.insert(active_constraint_num, Active_constraint_now[constraint_iter](0)) = 1;
 				Subcov_matrix = Subspan_matrix.topRows(active_constraint_num + 1) * Problem.Constraint.ie_reduced_cov_matrix * Subspan_matrix.topRows(active_constraint_num + 1).transpose();
 				
@@ -331,8 +333,8 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 				Problem.Solver.ldlt.compute(Subcov_matrix);
 				if(abs(Problem.Solver.ldlt.determinant()) > -0.){
 					//std::cout << active_constraint_num << "\n";
-					Previous_active_constraint(Active_constraint_now[constraint_iter](0)) = 1;
-					min_increment = std::numeric_limits<double>::infinity();
+//					Previous_active_constraint(Active_constraint_now[constraint_iter](0)) = 1;
+//					min_increment = std::numeric_limits<double>::infinity();
 									
 					// If subspan of covariance matrix is full rank, solve for the projected gradient on the active constraints
 					Projected_grad = Problem.Objective.reduced_vector;
@@ -345,36 +347,96 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 						break;
 					}
 					
-					// Check the minimum allow increment along the projected gradient is greater than 0
+					// Update status of full rank
+					full_rank_flag = 1;
+					
+//					// Check the minimum allow increment along the projected gradient greater than 0
+//					Projected_increment = Problem.Constraint.ie_reduced_matrix * Projected_grad;
+//					#pragma omp parallel
+//					{
+//						#pragma omp for reduction(min: min_increment) private(current_increment)
+//						for(int constraint_iter_2 = 0; constraint_iter_2 < Boundary_gap.rows(); ++ constraint_iter_2){
+//							if(abs(Projected_increment(constraint_iter_2)) > tol){								
+//								current_increment = std::max(-Boundary_gap(constraint_iter_2, 0) / Projected_increment(constraint_iter_2), Boundary_gap(constraint_iter_2, 1) / Projected_increment(constraint_iter_2));
+////								if(current_increment < min_increment){
+////									std::cout << constraint_iter_2 << ": " << -Boundary_gap(constraint_iter_2, 0) / Projected_increment(constraint_iter_2) << " " << Boundary_gap(constraint_iter_2, 1) / Projected_increment(constraint_iter_2) << " " << Projected_increment(constraint_iter_2) << "\n";	
+////								}
+//								min_increment = std::min(current_increment, min_increment);
+//							}
+////							else{
+////								std::cout << constraint_iter << ": " << "Pass\n";
+////							}
+//						}
+////						std::cout << "\n";
+//					}
+////					std::cout << std::setprecision(16) << min_increment << "\n\n";
+//
+//					// Exit loop if a feasible direction for improvement of solution is found
+//					if(min_increment > tol){
+//						break;
+//					}
+//					active_constraint_num += 1;
+				}
+				else{
+					// LDLT has numerical stability issues so use qr solver to check for full rank again
+					Problem.Solver.qr.compute(Subcov_matrix);
+					// If subspan of covariance matrix is full rank, solve for the projected gradient on the active constraints
+					if(Problem.Solver.qr.rank() == active_constraint_num + 1){
+						Projected_grad = Problem.Objective.reduced_vector;
+						Projected_grad -= (Subspan_matrix.topRows(active_constraint_num + 1) * Problem.Constraint.ie_reduced_matrix).transpose() * Problem.Solver.qr.solve(Subspan_matrix.topRows(active_constraint_num + 1) * Problem.Objective.ie_reduced_cov_vector);
+						if(Projected_grad.norm() != 0){
+							Projected_grad /= Projected_grad.norm();
+						}
+						else{
+							// The objective function is degenerate so no further improvement is possible
+							break;
+						}
+						
+						// Update status of full rank						
+						full_rank_flag = 1;											
+					}
+					else{
+						// Update status of full rank
+						full_rank_flag = 0;
+					}					
+				}
+				
+				if(full_rank_flag){
+					Previous_active_constraint(Active_constraint_now[constraint_iter](0)) = 1;
+					min_increment = std::numeric_limits<double>::infinity();					
+					
+					// Check the minimum allow increment along the projected gradient greater than 0
 					Projected_increment = Problem.Constraint.ie_reduced_matrix * Projected_grad;
 					#pragma omp parallel
 					{
 						#pragma omp for reduction(min: min_increment) private(current_increment)
-						for(int constraint_iter = 0; constraint_iter < Boundary_gap.rows(); ++ constraint_iter){
-							if(abs(Projected_increment(constraint_iter)) > tol){								
-								current_increment = std::max(-Boundary_gap(constraint_iter, 0) / Projected_increment(constraint_iter), Boundary_gap(constraint_iter, 1) / Projected_increment(constraint_iter));
+						for(int constraint_iter_2 = 0; constraint_iter_2 < Boundary_gap.rows(); ++ constraint_iter_2){
+							if(abs(Projected_increment(constraint_iter_2)) > tol){								
+								current_increment = std::max(-Boundary_gap(constraint_iter_2, 0) / Projected_increment(constraint_iter_2), Boundary_gap(constraint_iter_2, 1) / Projected_increment(constraint_iter_2));
+//								if(current_increment < min_increment){
+//									std::cout << constraint_iter_2 << ": " << -Boundary_gap(constraint_iter_2, 0) / Projected_increment(constraint_iter_2) << " " << Boundary_gap(constraint_iter_2, 1) / Projected_increment(constraint_iter_2) << " " << Projected_increment(constraint_iter_2) << "\n";	
+//								}								
 								min_increment = std::min(current_increment, min_increment);
-								//std::cout << constraint_iter << ": " << -Boundary_gap(constraint_iter, 0) / Projected_increment(constraint_iter) << " " << Boundary_gap(constraint_iter, 1) / Projected_increment(constraint_iter) << " " << Projected_increment(constraint_iter) << "\n";																				
 							}
-							else{
-								//std::cout << "Pass\n";
-							}					
 						}
-						//std::cout << "\n";
 					}
-					//std::cout << std::setprecision(16) << min_increment << "\n\n";
+//					std::cout << "\n";
+//					std::cout << std::setprecision(16) << active_constraint_num << ": " << min_increment << "\n\n";
 					
 					// Exit loop if a feasible direction for improvement of solution is found
 					if(min_increment > tol){
 						break;
 					}
-					active_constraint_num += 1;
+					active_constraint_num += 1;					
 				}
 				else{
-					//std::cout << "Pass active constraint!!\n";
+					std::cout << constraint_iter << ": " <<  "Pass active constraint!!\n";
 					//std::cout << std::setprecision(16) << Problem.Solver.ldlt.determinant() << "\n\n";
+					//Problem.Solver.qr.compute(Subcov_matrix);
+					std::cout << std::setprecision(16) << Problem.Solver.qr.rank() << "\n\n";
+					
 					// If subspan of covariance matrix is not full rank, remove the current entry for the subspan matrix and move on
-					Subspan_matrix.coeffRef(active_constraint_num, Active_constraint_now[constraint_iter](0)) = 0;
+					Subspan_matrix.coeffRef(active_constraint_num, Active_constraint_now[constraint_iter](0)) = 0;					
 				}
 			}
 		}
