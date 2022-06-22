@@ -336,7 +336,7 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 			// Check if subspan of covariance matrix is full rank
 			std::cout << "\nCheck Full Rank LDLT\n\n";
 			Problem.Solver.ldlt.compute(Subcov_matrix);
-			if(abs(Problem.Solver.ldlt.determinant()) > tol){
+			if(abs(Problem.Solver.ldlt.determinant()) == 0.){
 				// LDLT has numerical stability issues so use qr solver to check for full rank again
 				std::cout << "\nCheck Full Rank QR\n\n";
 				ldlt_flag = 0;
@@ -427,11 +427,13 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 			
 			for(int constraint_iter = 0; constraint_iter < Problem.Objective.varying_vector.size(); ++ constraint_iter){
 				if(Problem.Objective.varying_vector(constraint_iter) == 1. && abs(Projected_increment(constraint_iter)) > tol){
-					if(Boundary_gap(constraint_iter, 0) == 0.){
+					//if(Boundary_gap(constraint_iter, 0) < tol){
+					if(Boundary_gap(constraint_iter, 0) <= 0.){
 						Problem.Objective.update_coeff(constraint_iter) = -1.;
 						coeff_update_flag = 1;
 					}
-					else if(Boundary_gap(constraint_iter, 1) == 0.){
+					//else if(Boundary_gap(constraint_iter, 1) < tol){
+					else if(Boundary_gap(constraint_iter, 1) <= 0.){
 						Problem.Objective.update_coeff(constraint_iter) = 1.;
 						coeff_update_flag = 1;
 					}				
