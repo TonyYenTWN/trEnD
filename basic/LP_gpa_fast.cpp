@@ -211,8 +211,8 @@ void LP_objective_ie_reduced_cov_matrix_generation(LP_object &Problem){
 // Main function for the optimization algorithm
 void LP_optimization(LP_object &Problem, bool stepwise_obj){
 	// Set precision for 0 detection
-	double tol = pow(10, -9);
-	double eps = pow(10, -7);
+	double tol = pow(10., -12.);
+	double eps = pow(10., -10.);
 	
 	// Declare variables for the main loop
 	bool ldlt_flag;
@@ -427,13 +427,11 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 			
 			for(int constraint_iter = 0; constraint_iter < Problem.Objective.varying_vector.size(); ++ constraint_iter){
 				if(Problem.Objective.varying_vector(constraint_iter) == 1. && abs(Projected_increment(constraint_iter)) > tol){
-					//if(Boundary_gap(constraint_iter, 0) < tol){
-					if(Boundary_gap(constraint_iter, 0) <= 0.){
+					if(Boundary_gap(constraint_iter, 0) < tol){
 						Problem.Objective.update_coeff(constraint_iter) = -1.;
 						coeff_update_flag = 1;
 					}
-					//else if(Boundary_gap(constraint_iter, 1) < tol){
-					else if(Boundary_gap(constraint_iter, 1) <= 0.){
+					else if(Boundary_gap(constraint_iter, 1) < tol){
 						Problem.Objective.update_coeff(constraint_iter) = 1.;
 						coeff_update_flag = 1;
 					}				
