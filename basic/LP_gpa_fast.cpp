@@ -237,6 +237,7 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 	Eigen::MatrixXd Boundary_gap(Problem.Variables_num + Problem.Constraints_ie_num, 2);
 	Eigen::SparseMatrix <double> Subspan_matrix;
 	Eigen::SparseMatrix <double> Subcov_matrix;
+	Eigen::SparseMatrix <double> Subconstraint_matrix;
 	
 	// Initialize previous active constraint
 	Projected_grad = Problem.Objective.reduced_vector;
@@ -339,40 +340,49 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 				// LDLT has numerical stability issues so use qr solver to check for full rank again
 				std::cout << "\nCheck Full Rank QR\n\n";
 				ldlt_flag = 0;
-				Problem.Solver.qr.compute(Subcov_matrix);
+				Subconstraint_matrix = Subspan_matrix.topRows(active_constraint_max) * Problem.Constraint.ie_reduced_matrix;
+				Problem.Solver.qr.compute(Subconstraint_matrix.transpose());
 				
 				// If the constraints are degenerate, need to pick only part of the constraints for projection
 				if(Problem.Solver.qr.rank() < active_constraint_max){
 					std::cout << "\nFind subspan of the constraint\n\n";
-					Subspan_matrix = Eigen::SparseMatrix <double> (active_constraint_max, Problem.Variables_num + Problem.Constraints_ie_num);
-					Subspan_matrix.reserve(Eigen::VectorXi::Constant(Problem.Variables_num + Problem.Constraints_ie_num, 2));				
-					Previous_active_constraint = Eigen::VectorXi::Zero(Problem.Variables_num + Problem.Constraints_ie_num);
-					active_constraint_num = 0;
-					active_constraint_max_temp = Problem.Solver.qr.rank();
-										
-					for(int constraint_iter = 0; constraint_iter < Active_constraint_now.size(); ++ constraint_iter){
-						Subspan_matrix.insert(active_constraint_num, Active_constraint_now[constraint_iter](0)) = 1;
-						Subcov_matrix = Subspan_matrix.topRows(active_constraint_num + 1) * Problem.Constraint.ie_reduced_cov_matrix * Subspan_matrix.topRows(active_constraint_num + 1).transpose();
-						
-						ldlt_flag = 1;
-						Problem.Solver.ldlt.compute(Subcov_matrix);
-						if(abs(Problem.Solver.ldlt.determinant()) == 0.){
-							ldlt_flag = 0;
-							Problem.Solver.qr.compute(Subcov_matrix);
-							if(Problem.Solver.qr.rank() < active_constraint_num + 1){
-								Subspan_matrix.coeffRef(active_constraint_num, Active_constraint_now[constraint_iter](0)) = 0;
-								continue;
-							}
-						}
-
-						Previous_active_constraint(Active_constraint_now[constraint_iter](0)) = 1;
-						active_constraint_num += 1;
-						
-						if(active_constraint_num == active_constraint_max_temp)	{
-							break;
-						}					
-					}
-				}					
+//					Subspan_matrix = Subspan_matrix * Problem.Solver.qr.colsPermutation().transpose();				
+//					Subcov_matrix = Subspan_matrix.topRows(Problem.Solver.qr.rank()) * Problem.Constraint.ie_reduced_cov_matrix * Subspan_matrix.topRows(Problem.Solver.qr.rank()).transpose();
+					Subconstraint_matrix = Problem.Solver.qr.colsPermutation() * Subconstraint_matrix;
+					Subconstraint_matrix = Subconstraint_matrix.topRows(Problem.Solver.qr.rank());
+					Subcov_matrix = Subconstraint_matrix * Subconstraint_matrix.transpose();
+					
+//					Subspan_matrix = Eigen::SparseMatrix <double> (active_constraint_max, Problem.Variables_num + Problem.Constraints_ie_num);
+//					Subspan_matrix.reserve(Eigen::VectorXi::Constant(Problem.Variables_num + Problem.Constraints_ie_num, 2));				
+//					Previous_active_constraint = Eigen::VectorXi::Zero(Problem.Variables_num + Problem.Constraints_ie_num);
+//					active_constraint_num = 0;
+//					active_constraint_max_temp = Problem.Solver.qr.rank();
+//
+//					for(int constraint_iter = 0; constraint_iter < Active_constraint_now.size(); ++ constraint_iter){
+//						Subspan_matrix.insert(active_constraint_num, Active_constraint_now[constraint_iter](0)) = 1;
+//						Subcov_matrix = Subspan_matrix.topRows(active_constraint_num + 1) * Problem.Constraint.ie_reduced_cov_matrix * Subspan_matrix.topRows(active_constraint_num + 1).transpose();
+//
+//						ldlt_flag = 1;
+//						Problem.Solver.ldlt.compute(Subcov_matrix);
+//						if(abs(Problem.Solver.ldlt.determinant()) == 0.){
+//							ldlt_flag = 0;
+//							Problem.Solver.qr.compute(Subcov_matrix);
+//							if(Problem.Solver.qr.rank() < active_constraint_num + 1){
+//								Subspan_matrix.coeffRef(active_constraint_num, Active_constraint_now[constraint_iter](0)) = 0;
+//								continue;
+//							}
+//						}
+//
+//						Previous_active_constraint(Active_constraint_now[constraint_iter](0)) = 1;
+//						active_constraint_num += 1;
+//						
+//						if(active_constraint_num == active_constraint_max_temp)	{
+//							break;
+//						}					
+//					}
+				}
+				
+				Problem.Solver.qr.compute(Subcov_matrix);					
 			}
 			
 			if(ldlt_flag){
@@ -437,7 +447,7 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 		}
 
 		// If the objective is step-wise linear, check if the coefficient should be updated
-		std::cout << "\nCheck COefficient Update\n\n";
+		std::cout << "\nCheck Coefficient Update\n\n";
 		if(stepwise_obj){
 			coeff_update_flag = 0;
 			Problem.Objective.update_coeff = Eigen::VectorXd::Zero(Problem.Variables_num);
