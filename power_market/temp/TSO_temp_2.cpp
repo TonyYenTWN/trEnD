@@ -322,7 +322,7 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 	double tol = pow(10., -12.);
 	double eps = 1.;
 	double mu = 1. - eps;
-	double dS;
+	double dS = 1.;
 	double obj_max = -std::numeric_limits<double>::infinity();
 	Eigen::VectorXi price_ID_temp = price_ID;
 	Eigen::VectorXd quan = Eigen::VectorXd::Zero(TSO_Market.num_zone);
@@ -385,6 +385,8 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 		Problem.Solver.ldlt.compute((Problem.Constraint.eq_orig_matrix).block(TSO_Market.network.num_edges + 1, TSO_Market.network.num_edges + TSO_Market.network.num_vertice + 1, TSO_Market.network.num_vertice - 1, TSO_Market.network.num_vertice - 1));
 		Problem.Solution.orig_vector.tail(TSO_Market.network.num_vertice - 1) = Problem.Solver.ldlt.solve(Problem.Solution.orig_vector.segment(TSO_Market.network.num_edges + 1, TSO_Market.network.num_vertice - 1));
 		Problem.Solution.orig_vector.head(TSO_Market.network.num_edges) = (Problem.Constraint.eq_orig_matrix).topRightCorner(TSO_Market.network.num_edges, TSO_Market.network.num_vertice) * Problem.Solution.orig_vector.tail(TSO_Market.network.num_vertice);		
+		std::cout << Problem.Solution.orig_vector.transpose() << "\n";
+		std::cout << quan_temp.transpose() << "\n\n";
 		
 		// Update utility function after small increase / decrease
 		
@@ -397,7 +399,7 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 		utility_orig_temp(TSO_Market.network.incidence_matrix(edge_iter, 1)) = utility_orig_temp(TSO_Market.network.incidence_matrix(edge_iter, 1));
 	}
 	
-	std::cout << Problem.Solution.orig_vector.transpose() << "\n";	
+	//std::cout << Problem.Solution.orig_vector.transpose() << "\n";	
 }
 
 int main(){
