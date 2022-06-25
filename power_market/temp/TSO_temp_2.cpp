@@ -75,7 +75,7 @@ market_inform TSO_Market_Set_Test_2(int Time){
 	
 	// Input parameters of TSO market
 	// A trivial test case with 20 nodes connected as a radial line
-	TSO_Market.num_zone = 4;
+	TSO_Market.num_zone = 100;
 	TSO_Market.time_intervals = Time;
 	TSO_Market.price_intervals = 600;
 	TSO_Market.price_range_inflex << -500., 3000.;
@@ -99,8 +99,8 @@ market_inform TSO_Market_Set_Test_2(int Time){
 	TSO_Market.network.voltage_constraint.col(0) = Eigen::VectorXd::Constant(TSO_Market.network.num_vertice, -10.);
 	TSO_Market.network.voltage_constraint.col(1) = Eigen::VectorXd::Constant(TSO_Market.network.num_vertice, 10.);
 	TSO_Market.network.power_constraint = Eigen::MatrixXd(TSO_Market.network.num_edges, 2);
-	TSO_Market.network.power_constraint.col(0) = Eigen::VectorXd::Constant(TSO_Market.network.num_edges, -1000.);
-	TSO_Market.network.power_constraint.col(1) = Eigen::VectorXd::Constant(TSO_Market.network.num_edges, 1000.);
+	TSO_Market.network.power_constraint.col(0) = Eigen::VectorXd::Constant(TSO_Market.network.num_edges, -20.);
+	TSO_Market.network.power_constraint.col(1) = Eigen::VectorXd::Constant(TSO_Market.network.num_edges, 20.);
 
 	// Initialization of output variables
 	TSO_Market.confirmed_supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
@@ -325,23 +325,23 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 	bool break_flag = 0;
 	int flow_dir = 0;
 	double tol = pow(10., -12.);
-	double eps = .9;
+	double eps = 0.;
 	double mu = 1. - eps;
-	double dS = 1.;
+	double dS = .1;
 	double error;
 	double obj_temp;
 	double obj_max = -std::numeric_limits<double>::infinity();
 	Eigen::VectorXi price_ID_temp = price_ID;
-	Eigen::VectorXd quan(TSO_Market.num_zone);
-	Eigen::VectorXd quan_temp;
+	Eigen::VectorXd quan = Eigen::VectorXd::Zero(TSO_Market.num_zone);
+	Eigen::VectorXd quan_temp = quan;
 	Eigen::VectorXd utility = Eigen::VectorXd::Zero(TSO_Market.num_zone);
 	Eigen::VectorXd utility_temp = Eigen::VectorXd::Zero(TSO_Market.num_zone);
 	Eigen::MatrixXd Boundary_gap(Problem.Variables_num + Problem.Constraints_ie_num, 2);
 	
-	for(int zone_iter = 0; zone_iter < TSO_Market.network.num_vertice; ++ zone_iter){
-		quan(zone_iter) = .5 * (bidded_total_aggregated(price_ID(zone_iter), zone_iter) + bidded_total_aggregated(price_ID(zone_iter) + 1, zone_iter));
-	}
-	quan_temp = quan;
+//	for(int zone_iter = 0; zone_iter < TSO_Market.network.num_vertice; ++ zone_iter){
+//		quan(zone_iter) = .5 * (bidded_total_aggregated(price_ID(zone_iter), zone_iter) + bidded_total_aggregated(price_ID(zone_iter) + 1, zone_iter));
+//	}
+//	quan_temp = quan;
 	
 	int loop_count = 0;
 	//while(loop_count < 30){
@@ -359,7 +359,7 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 					flow_dir = 1;
 				}
 				else{
-					std::cout << "Pass 0\n\n";
+					//std::cout << "Pass 0\n\n";
 					continue;
 				}
 
@@ -369,22 +369,22 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 
 				if(quan_temp(zone_iter_0) < bidded_total_aggregated(0, zone_iter_0)){
 					quan_temp(zone_iter_0) = quan(zone_iter_0);
-					std::cout << "Pass 1\n\n";
+					//std::cout << "Pass 1\n\n";
 					continue;
 				}
 				if(quan_temp(zone_iter_0) > bidded_total_aggregated(TSO_Market.price_intervals + 2, zone_iter_0)){
 					quan_temp(zone_iter_0) = quan(zone_iter_0);
-					std::cout << "Pass 2\n\n";
+					//std::cout << "Pass 2\n\n";
 					continue;
 				}
 				if(quan_temp(zone_iter_1) < bidded_total_aggregated(0, zone_iter_1)){
 					quan_temp(zone_iter_1) = quan(zone_iter_1);
-					std::cout << "Pass 3\n\n";
+					//std::cout << "Pass 3\n\n";
 					continue;
 				}
 				if(quan_temp(zone_iter_1) > bidded_total_aggregated(TSO_Market.price_intervals + 2, zone_iter_1)){
 					quan_temp(zone_iter_1) = quan(zone_iter_1);
-					std::cout << "Pass 4\n\n";
+					//std::cout << "Pass 4\n\n";
 					continue;
 				}
 				
@@ -449,9 +449,9 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 				
 				// Check if objective has been improved
 				obj_temp = (1 - mu) * utility_temp.sum() - mu * error;
-				std::cout << quan_temp.transpose() << "\n";
-				std::cout << obj_temp << "\n";
-				std::cout << Problem.Solution.orig_vector.transpose() << "\n";			
+				//std::cout << quan_temp.transpose() << "\n";
+				//std::cout << obj_temp << "\n\n";
+				//std::cout << Problem.Solution.orig_vector.transpose() << "\n";			
 				if(obj_temp >= obj_max){
 					// If objective is improved, update values and start at the new origin
 					obj_max = obj_temp;
@@ -462,7 +462,7 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 					utility(zone_iter_0) = utility_temp(zone_iter_0);
 					utility(zone_iter_1) = utility_temp(zone_iter_1);
 					break_flag = 0;
-					std::cout << "Objective updated\n\n";
+					//std::cout << "Objective updated\n\n";
 					break;			
 				}
 				else{
@@ -483,7 +483,8 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 	Problem.Solver.ldlt.compute((Problem.Constraint.eq_orig_matrix).block(TSO_Market.network.num_edges + 1, TSO_Market.network.num_edges + TSO_Market.network.num_vertice + 1, TSO_Market.network.num_vertice - 1, TSO_Market.network.num_vertice - 1));
 	Problem.Solution.orig_vector.tail(TSO_Market.network.num_vertice - 1) = Problem.Solver.ldlt.solve(Problem.Solution.orig_vector.segment(TSO_Market.network.num_edges + 1, TSO_Market.network.num_vertice - 1));
 	Problem.Solution.orig_vector.head(TSO_Market.network.num_edges) = (Problem.Constraint.eq_orig_matrix).topRightCorner(TSO_Market.network.num_edges, TSO_Market.network.num_vertice) * Problem.Solution.orig_vector.tail(TSO_Market.network.num_vertice);		
-	std::cout << Problem.Solution.orig_vector.transpose() << "\n";
+	std::cout << Problem.Solution.orig_vector.segment(TSO_Market.network.num_edges, TSO_Market.network.num_vertice).transpose() << "\n\n";
+	//std::cout << Problem.Solution.orig_vector.transpose() << "\n\n";
 }
 
 int main(){
