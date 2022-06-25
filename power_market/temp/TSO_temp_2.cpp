@@ -111,8 +111,10 @@ market_inform TSO_Market_Set_Test_2(int Time){
 	// For the trivial case only: initialize submitted supply and demand bids at each node
 	TSO_Market.submitted_supply = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 2, TSO_Market.num_zone);
 	TSO_Market.submitted_demand = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 2, TSO_Market.num_zone);
-	TSO_Market.submitted_supply.leftCols(TSO_Market.num_zone / 2) = Eigen::VectorXd::Constant(TSO_Market.price_intervals + 2, TSO_Market.num_zone / 2, 1.);
-	TSO_Market.submitted_demand.rightCols(TSO_Market.num_zone / 2) = Eigen::VectorXd::Constant(TSO_Market.price_intervals + 2, TSO_Market.num_zone / 2, 1.);
+	TSO_Market.submitted_supply.row(0).head(TSO_Market.num_zone / 2) = Eigen::VectorXd::Constant(TSO_Market.num_zone / 2, 10.);
+	TSO_Market.submitted_demand.row(TSO_Market.price_intervals + 1).tail(TSO_Market.num_zone / 2) = Eigen::VectorXd::Constant(TSO_Market.num_zone / 2, 10.);
+	//TSO_Market.submitted_supply.leftCols(TSO_Market.num_zone / 2) = Eigen::MatrixXd::Constant(TSO_Market.price_intervals + 2, TSO_Market.num_zone / 2, 1.);
+	//TSO_Market.submitted_demand.rightCols(TSO_Market.num_zone / 2) = Eigen::MatrixXd::Constant(TSO_Market.price_intervals + 2, TSO_Market.num_zone / 2, 1.);
 	
 	return(TSO_Market);
 }
@@ -268,6 +270,7 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 	Eigen::MatrixXd bidded_demand_import = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 2, TSO_Market.num_zone);
 	Eigen::MatrixXd bidded_supply_aggregated = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 3, TSO_Market.num_zone);
 	Eigen::MatrixXd bidded_demand_aggregated = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 3, TSO_Market.num_zone);
+	Eigen::MatrixXd bidded_total_aggregated = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 3, TSO_Market.num_zone);
 	Eigen::MatrixXd utility_aggregated = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 3, TSO_Market.num_zone);
 	#pragma omp parallel
 	{
@@ -293,6 +296,7 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 		bidded_supply_aggregated.row(price_iter) = bidded_supply_aggregated.row(price_iter - 1) + bidded_supply_import.row(price_iter - 1) + bidded_supply_export.row(price_iter - 1);
 		bidded_demand_aggregated.row(price_iter) = bidded_demand_aggregated.row(price_iter - 1) + bidded_demand_import.row(price_iter - 1) + bidded_demand_export.row(price_iter - 1);
 	}
+	bidded_total_aggregated = bidded_supply_aggregated + bidded_demand_aggregated;
 	// Aggregated utility function for each bidding zone
 	for(int zone_iter = 0; zone_iter < TSO_Market.num_zone; ++ zone_iter){	
 		// Demand
@@ -318,92 +322,172 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 //	std::cout << (bidded_demand_import + bidded_supply_import).bottomRows(10) << "\n\n";
 
 	// Declare variables for the main loop
+	bool break_flag = 0;
 	int flow_dir = 0;
 	double tol = pow(10., -12.);
-	double eps = 1.;
+	double eps = .9;
 	double mu = 1. - eps;
 	double dS = 1.;
+	double error;
+	double obj_temp;
 	double obj_max = -std::numeric_limits<double>::infinity();
 	Eigen::VectorXi price_ID_temp = price_ID;
-	Eigen::VectorXd quan = Eigen::VectorXd::Zero(TSO_Market.num_zone);
-	Eigen::VectorXd quan_temp = Eigen::VectorXd::Zero(TSO_Market.num_zone);
-	Eigen::VectorXd utility_orig = Eigen::VectorXd::Zero(TSO_Market.num_zone);
-	Eigen::VectorXd utility_orig_temp = Eigen::VectorXd::Zero(TSO_Market.num_zone);
-	Eigen::VectorXd error(Problem.Constraints_eq_num + Problem.Variables_num);
+	Eigen::VectorXd quan(TSO_Market.num_zone);
+	Eigen::VectorXd quan_temp;
+	Eigen::VectorXd utility = Eigen::VectorXd::Zero(TSO_Market.num_zone);
+	Eigen::VectorXd utility_temp = Eigen::VectorXd::Zero(TSO_Market.num_zone);
 	Eigen::MatrixXd Boundary_gap(Problem.Variables_num + Problem.Constraints_ie_num, 2);
 	
-	for(int edge_iter = 0; edge_iter < TSO_Market.network.num_edges; ++ edge_iter){
-		// Determine flow direction
-		if(price_ID(TSO_Market.network.incidence_matrix(edge_iter, 0)) > price_ID(TSO_Market.network.incidence_matrix(edge_iter, 1))){
-			flow_dir = 1;
-		}
-		else if(price_ID(TSO_Market.network.incidence_matrix(edge_iter, 0)) < price_ID(TSO_Market.network.incidence_matrix(edge_iter, 1))){
-			flow_dir = -1;
-		}
-		else{
-			continue;
-		}
-		
-		// Update quantity and price after small increase / decrease
-		quan_temp(TSO_Market.network.incidence_matrix(edge_iter, 0)) = quan(TSO_Market.network.incidence_matrix(edge_iter, 0)) + flow_dir * dS;
-		quan_temp(TSO_Market.network.incidence_matrix(edge_iter, 1)) = quan(TSO_Market.network.incidence_matrix(edge_iter, 1)) - flow_dir * dS;
-		if(quan_temp(TSO_Market.network.incidence_matrix(edge_iter, 0)) < bidded_supply_aggregated(price_ID(TSO_Market.network.incidence_matrix(edge_iter, 0)), TSO_Market.network.incidence_matrix(edge_iter, 0)) + bidded_demand_aggregated(price_ID(TSO_Market.network.incidence_matrix(edge_iter, 0)), TSO_Market.network.incidence_matrix(edge_iter, 0))){
-			while(quan_temp(TSO_Market.network.incidence_matrix(edge_iter, 0)) < bidded_supply_aggregated(price_ID_temp(TSO_Market.network.incidence_matrix(edge_iter, 0)), TSO_Market.network.incidence_matrix(edge_iter, 0)) + bidded_demand_aggregated(price_ID_temp(TSO_Market.network.incidence_matrix(edge_iter, 0)), TSO_Market.network.incidence_matrix(edge_iter, 0))){
-				if(price_ID_temp(TSO_Market.network.incidence_matrix(edge_iter, 0)) == 0){
-					break;
-				}
-				price_ID_temp(TSO_Market.network.incidence_matrix(edge_iter, 0)) -= 1;
-			}
-		}
-		else if(quan_temp(TSO_Market.network.incidence_matrix(edge_iter, 0)) > bidded_supply_aggregated(price_ID(TSO_Market.network.incidence_matrix(edge_iter, 0)) + 1, TSO_Market.network.incidence_matrix(edge_iter, 0)) + bidded_demand_aggregated(price_ID(TSO_Market.network.incidence_matrix(edge_iter, 0)) + 1, TSO_Market.network.incidence_matrix(edge_iter, 0))){
-			while(quan_temp(TSO_Market.network.incidence_matrix(edge_iter, 0)) > bidded_supply_aggregated(price_ID_temp(TSO_Market.network.incidence_matrix(edge_iter, 0)) + 1, TSO_Market.network.incidence_matrix(edge_iter, 0)) + bidded_demand_aggregated(price_ID_temp(TSO_Market.network.incidence_matrix(edge_iter, 0)) + 1, TSO_Market.network.incidence_matrix(edge_iter, 0))){
-				if(price_ID_temp(TSO_Market.network.incidence_matrix(edge_iter, 0)) == TSO_Market.price_intervals + 1){
-					break;
-				}
-				price_ID_temp(TSO_Market.network.incidence_matrix(edge_iter, 0)) += 1;
-			}
-		}
-		if(quan_temp(TSO_Market.network.incidence_matrix(edge_iter, 1)) < bidded_supply_aggregated(price_ID(TSO_Market.network.incidence_matrix(edge_iter, 1)), TSO_Market.network.incidence_matrix(edge_iter, 1)) + bidded_demand_aggregated(price_ID(TSO_Market.network.incidence_matrix(edge_iter, 1)), TSO_Market.network.incidence_matrix(edge_iter, 1))){
-			while(quan_temp(TSO_Market.network.incidence_matrix(edge_iter, 1)) < bidded_supply_aggregated(price_ID_temp(TSO_Market.network.incidence_matrix(edge_iter, 1)), TSO_Market.network.incidence_matrix(edge_iter, 1)) + bidded_demand_aggregated(price_ID_temp(TSO_Market.network.incidence_matrix(edge_iter, 1)), TSO_Market.network.incidence_matrix(edge_iter, 1))){
-				if(price_ID_temp(TSO_Market.network.incidence_matrix(edge_iter, 1)) == 0){
-					break;
-				}
-				price_ID_temp(TSO_Market.network.incidence_matrix(edge_iter, 1)) -= 1;
-			}
-		}
-		else if(quan_temp(TSO_Market.network.incidence_matrix(edge_iter, 1)) > bidded_supply_aggregated(price_ID(TSO_Market.network.incidence_matrix(edge_iter, 1)) + 1, TSO_Market.network.incidence_matrix(edge_iter, 1)) + bidded_demand_aggregated(price_ID(TSO_Market.network.incidence_matrix(edge_iter, 1)) + 1, TSO_Market.network.incidence_matrix(edge_iter, 1))){
-			while(quan_temp(TSO_Market.network.incidence_matrix(edge_iter, 1)) > bidded_supply_aggregated(price_ID_temp(TSO_Market.network.incidence_matrix(edge_iter, 1)) + 1, TSO_Market.network.incidence_matrix(edge_iter, 1)) + bidded_demand_aggregated(price_ID_temp(TSO_Market.network.incidence_matrix(edge_iter, 1)) + 1, TSO_Market.network.incidence_matrix(edge_iter, 1))){
-				if(price_ID_temp(TSO_Market.network.incidence_matrix(edge_iter, 1)) == TSO_Market.price_intervals + 1){
-					break;
-				}
-				price_ID_temp(TSO_Market.network.incidence_matrix(edge_iter, 1)) += 1;
-			}
-		}
-		
-		// Update source / sink, voltage, and power flow
-		Problem.Solution.orig_vector.segment(TSO_Market.network.num_edges, TSO_Market.network.num_vertice) = quan_temp;
-		Problem.Solver.ldlt.compute((Problem.Constraint.eq_orig_matrix).block(TSO_Market.network.num_edges + 1, TSO_Market.network.num_edges + TSO_Market.network.num_vertice + 1, TSO_Market.network.num_vertice - 1, TSO_Market.network.num_vertice - 1));
-		Problem.Solution.orig_vector.tail(TSO_Market.network.num_vertice - 1) = Problem.Solver.ldlt.solve(Problem.Solution.orig_vector.segment(TSO_Market.network.num_edges + 1, TSO_Market.network.num_vertice - 1));
-		Problem.Solution.orig_vector.head(TSO_Market.network.num_edges) = (Problem.Constraint.eq_orig_matrix).topRightCorner(TSO_Market.network.num_edges, TSO_Market.network.num_vertice) * Problem.Solution.orig_vector.tail(TSO_Market.network.num_vertice);		
-		std::cout << Problem.Solution.orig_vector.transpose() << "\n";
-		std::cout << quan_temp.transpose() << "\n\n";
-		
-		// Update utility function after small increase / decrease
-		
-		// If objective not improved, return to original values
-		price_ID_temp(TSO_Market.network.incidence_matrix(edge_iter, 0)) = price_ID(TSO_Market.network.incidence_matrix(edge_iter, 0));
-		price_ID_temp(TSO_Market.network.incidence_matrix(edge_iter, 1)) = price_ID(TSO_Market.network.incidence_matrix(edge_iter, 1));
-		quan_temp(TSO_Market.network.incidence_matrix(edge_iter, 0)) = quan(TSO_Market.network.incidence_matrix(edge_iter, 0));
-		quan_temp(TSO_Market.network.incidence_matrix(edge_iter, 1)) = quan(TSO_Market.network.incidence_matrix(edge_iter, 1));
-		utility_orig_temp(TSO_Market.network.incidence_matrix(edge_iter, 0)) = utility_orig_temp(TSO_Market.network.incidence_matrix(edge_iter, 0));
-		utility_orig_temp(TSO_Market.network.incidence_matrix(edge_iter, 1)) = utility_orig_temp(TSO_Market.network.incidence_matrix(edge_iter, 1));
+	for(int zone_iter = 0; zone_iter < TSO_Market.network.num_vertice; ++ zone_iter){
+		quan(zone_iter) = .5 * (bidded_total_aggregated(price_ID(zone_iter), zone_iter) + bidded_total_aggregated(price_ID(zone_iter) + 1, zone_iter));
 	}
+	quan_temp = quan;
 	
-	//std::cout << Problem.Solution.orig_vector.transpose() << "\n";	
+	int loop_count = 0;
+	//while(loop_count < 30){
+	while(!break_flag){
+		loop_count += 1;
+		break_flag = 1;
+		//for(int edge_iter = 0; edge_iter < TSO_Market.network.num_edges; ++ edge_iter){
+		for(int zone_iter_0 = 0; zone_iter_0 < TSO_Market.network.num_vertice; ++ zone_iter_0){
+			for(int zone_iter_1 = zone_iter_0; zone_iter_1 < TSO_Market.network.num_vertice; ++ zone_iter_1){
+				// Determine flow direction
+				if(price_ID(zone_iter_0) > price_ID(zone_iter_1)){
+					flow_dir = -1;
+				}
+				else if(price_ID(zone_iter_0) < price_ID(zone_iter_1)){
+					flow_dir = 1;
+				}
+				else{
+					std::cout << "Pass 0\n\n";
+					continue;
+				}
+
+				// Update quantity after small increase / decrease
+				quan_temp(zone_iter_0) = quan(zone_iter_0) + flow_dir * dS;
+				quan_temp(zone_iter_1) = quan(zone_iter_1) - flow_dir * dS;
+
+				if(quan_temp(zone_iter_0) < bidded_total_aggregated(0, zone_iter_0)){
+					quan_temp(zone_iter_0) = quan(zone_iter_0);
+					std::cout << "Pass 1\n\n";
+					continue;
+				}
+				if(quan_temp(zone_iter_0) > bidded_total_aggregated(TSO_Market.price_intervals + 2, zone_iter_0)){
+					quan_temp(zone_iter_0) = quan(zone_iter_0);
+					std::cout << "Pass 2\n\n";
+					continue;
+				}
+				if(quan_temp(zone_iter_1) < bidded_total_aggregated(0, zone_iter_1)){
+					quan_temp(zone_iter_1) = quan(zone_iter_1);
+					std::cout << "Pass 3\n\n";
+					continue;
+				}
+				if(quan_temp(zone_iter_1) > bidded_total_aggregated(TSO_Market.price_intervals + 2, zone_iter_1)){
+					quan_temp(zone_iter_1) = quan(zone_iter_1);
+					std::cout << "Pass 4\n\n";
+					continue;
+				}
+				
+				// Update price after small increase / decrease
+				if(quan_temp(zone_iter_0) < bidded_total_aggregated(price_ID(zone_iter_0), zone_iter_0)){
+					while(quan_temp(zone_iter_0) < bidded_total_aggregated(price_ID(zone_iter_0), zone_iter_0)){
+						if(price_ID_temp(zone_iter_0) == 0){
+							break;
+						}
+						price_ID_temp(zone_iter_0) -= 1;
+					}
+				}
+				else if(quan_temp(zone_iter_0) > bidded_total_aggregated(price_ID(zone_iter_0) + 1, zone_iter_0)){
+					while(quan_temp(zone_iter_0) > bidded_total_aggregated(price_ID_temp(zone_iter_0) + 1, zone_iter_0)){
+						if(price_ID_temp(zone_iter_0) == TSO_Market.price_intervals + 1){
+							break;
+						}
+						price_ID_temp(zone_iter_0) += 1;
+					}
+				}
+				if(quan_temp(zone_iter_1) < bidded_total_aggregated(price_ID(zone_iter_1), zone_iter_1)){
+					while(quan_temp(zone_iter_1) < bidded_total_aggregated(price_ID_temp(zone_iter_1), zone_iter_1)){
+						if(price_ID_temp(zone_iter_1) == 0){
+							break;
+						}
+						price_ID_temp(zone_iter_1) -= 1;
+					}
+				}
+				else if(quan_temp(zone_iter_1) > bidded_total_aggregated(price_ID(zone_iter_1) + 1, zone_iter_1)){
+					while(quan_temp(zone_iter_1) > bidded_total_aggregated(price_ID_temp(zone_iter_1) + 1, zone_iter_1)){
+						if(price_ID_temp(zone_iter_1) == TSO_Market.price_intervals + 1){
+							break;
+						}
+						price_ID_temp(zone_iter_1) += 1;
+					}
+				}
+				
+				// Update utility function after small increase / decrease
+				utility_temp(zone_iter_0) = (bidded_total_aggregated(price_ID(zone_iter_0) + 1, zone_iter_0) - quan_temp(zone_iter_0)) * utility_aggregated(price_ID_temp(zone_iter_0), zone_iter_0)
+					+ (quan_temp(zone_iter_0) - bidded_total_aggregated(price_ID(zone_iter_0), zone_iter_0)) * utility_aggregated(price_ID_temp(zone_iter_0) + 1, zone_iter_0);
+				utility_temp(zone_iter_0) /= bidded_total_aggregated(price_ID(zone_iter_0) + 1, zone_iter_0) - bidded_total_aggregated(price_ID(zone_iter_0), zone_iter_0);
+				utility_temp(zone_iter_1) = (bidded_total_aggregated(price_ID(zone_iter_1) + 1, zone_iter_1) - quan_temp(zone_iter_1)) * utility_aggregated(price_ID_temp(zone_iter_1), zone_iter_1)
+					+ (quan_temp(zone_iter_1) - bidded_total_aggregated(price_ID(zone_iter_1), zone_iter_1)) * utility_aggregated(price_ID_temp(zone_iter_1) + 1, zone_iter_1);
+				utility_temp(zone_iter_1) /= bidded_total_aggregated(price_ID(zone_iter_1) + 1, zone_iter_1) - bidded_total_aggregated(price_ID(zone_iter_1), zone_iter_1);
+				
+				// Update source / sink, voltage, and power flow
+				Problem.Solution.orig_vector.segment(TSO_Market.network.num_edges, TSO_Market.network.num_vertice) = quan_temp;
+				Problem.Solver.ldlt.compute((Problem.Constraint.eq_orig_matrix).block(TSO_Market.network.num_edges + 1, TSO_Market.network.num_edges + TSO_Market.network.num_vertice + 1, TSO_Market.network.num_vertice - 1, TSO_Market.network.num_vertice - 1));
+				Problem.Solution.orig_vector.tail(TSO_Market.network.num_vertice - 1) = Problem.Solver.ldlt.solve(Problem.Solution.orig_vector.segment(TSO_Market.network.num_edges + 1, TSO_Market.network.num_vertice - 1));
+				Problem.Solution.orig_vector.head(TSO_Market.network.num_edges) = (Problem.Constraint.eq_orig_matrix).topRightCorner(TSO_Market.network.num_edges, TSO_Market.network.num_vertice) * Problem.Solution.orig_vector.tail(TSO_Market.network.num_vertice);		
+				
+				// Update errors
+				error = 0;
+				// Power flow errors
+				for(int edge_iter = 0; edge_iter < TSO_Market.network.num_edges; ++ edge_iter){
+					error += pow(std::min(Problem.Solution.orig_vector(edge_iter) - Problem.Boundary.ie_orig_matrix(edge_iter, 0), 0.) + std::max(Problem.Solution.orig_vector(edge_iter) - Problem.Boundary.ie_orig_matrix(edge_iter, 1), 0.), 2.);
+				}
+				// Voltage errors
+				for(int node_iter = TSO_Market.network.num_edges + TSO_Market.network.num_vertice; node_iter < TSO_Market.network.num_edges + 2 * TSO_Market.network.num_vertice; ++ node_iter){
+					error += pow(std::min(Problem.Solution.orig_vector(node_iter) - Problem.Boundary.ie_orig_matrix(node_iter, 0), 0.) + std::max(Problem.Solution.orig_vector(node_iter) - Problem.Boundary.ie_orig_matrix(node_iter, 1), 0.), 2.);
+				}
+				
+				// Check if objective has been improved
+				obj_temp = (1 - mu) * utility_temp.sum() - mu * error;
+				std::cout << quan_temp.transpose() << "\n";
+				std::cout << obj_temp << "\n";
+				std::cout << Problem.Solution.orig_vector.transpose() << "\n";			
+				if(obj_temp >= obj_max){
+					// If objective is improved, update values and start at the new origin
+					obj_max = obj_temp;
+					price_ID(zone_iter_0) = price_ID_temp(zone_iter_0);
+					price_ID(zone_iter_1) = price_ID_temp(zone_iter_1);
+					quan(zone_iter_0) = quan_temp(zone_iter_0);
+					quan(zone_iter_1) = quan_temp(zone_iter_1);
+					utility(zone_iter_0) = utility_temp(zone_iter_0);
+					utility(zone_iter_1) = utility_temp(zone_iter_1);
+					break_flag = 0;
+					std::cout << "Objective updated\n\n";
+					break;			
+				}
+				else{
+					// If objective not improved, return to original values
+					price_ID_temp(zone_iter_0) = price_ID(zone_iter_0);
+					price_ID_temp(zone_iter_1) = price_ID(zone_iter_1);
+					quan_temp(zone_iter_0) = quan(zone_iter_0);
+					quan_temp(zone_iter_1) = quan(zone_iter_1);
+					utility_temp(zone_iter_0) = utility(zone_iter_0);
+					utility_temp(zone_iter_1) = utility(zone_iter_1);			
+				}											
+			}
+		}		
+	}
+
+	// Update source / sink, voltage, and power flow
+	Problem.Solution.orig_vector.segment(TSO_Market.network.num_edges, TSO_Market.network.num_vertice) = quan;
+	Problem.Solver.ldlt.compute((Problem.Constraint.eq_orig_matrix).block(TSO_Market.network.num_edges + 1, TSO_Market.network.num_edges + TSO_Market.network.num_vertice + 1, TSO_Market.network.num_vertice - 1, TSO_Market.network.num_vertice - 1));
+	Problem.Solution.orig_vector.tail(TSO_Market.network.num_vertice - 1) = Problem.Solver.ldlt.solve(Problem.Solution.orig_vector.segment(TSO_Market.network.num_edges + 1, TSO_Market.network.num_vertice - 1));
+	Problem.Solution.orig_vector.head(TSO_Market.network.num_edges) = (Problem.Constraint.eq_orig_matrix).topRightCorner(TSO_Market.network.num_edges, TSO_Market.network.num_vertice) * Problem.Solution.orig_vector.tail(TSO_Market.network.num_vertice);		
+	std::cout << Problem.Solution.orig_vector.transpose() << "\n";
 }
 
 int main(){
-	market_inform TSO_Market = TSO_Market_Set_Test_1(1);
+	market_inform TSO_Market = TSO_Market_Set_Test_2(1);
 	LP_object TSO_Problem;
 	TSO_LP_Set(TSO_Market, TSO_Problem);
 
