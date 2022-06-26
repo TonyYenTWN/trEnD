@@ -1,6 +1,24 @@
 // Source file for the complete procedure of the power market
 #include "power_market.h"
 
+void Market_Solver_Set(market_inform &Market){
+	// Initialize metric tensor solver for degree of freedoms
+	std::vector <Trip> Metric_trip;
+	Metric_trip.reserve(3 * Market.num_zone - 5);
+	for(int zone_iter = 0; zone_iter < Market.num_zone - 1; ++ zone_iter){
+		Metric_trip.push_back(Trip(zone_iter, zone_iter, 2.));
+		if(zone_iter != 0){
+			Metric_trip.push_back(Trip(zone_iter, zone_iter - 1, -1.));
+		}
+		if(zone_iter != Market.num_zone - 2){
+			Metric_trip.push_back(Trip(zone_iter, zone_iter + 1, -1.));
+		}
+	}
+	Eigen::SparseMatrix <double> Metric_matrix (Market.num_zone - 1, Market.num_zone - 1);
+	Metric_matrix.setFromTriplets(Metric_trip.begin(), Metric_trip.end());
+	Market.dof_metric.compute(Metric_matrix);
+}
+
 void Market_Initialization(market_inform &Market){
 	// Initialization of process variables
 	// Should re-initialize for every time slice

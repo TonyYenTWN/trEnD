@@ -298,6 +298,10 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 		}
 		Active_constraint_now.insert(Active_constraint_now.begin(), Active_constraint_prior.begin(), Active_constraint_prior.end());
 		Active_constraint_now.insert(Active_constraint_now.end(), Active_constraint_later.begin(), Active_constraint_later.end());
+		for(int constraint_iter = 0; constraint_iter < Active_constraint_now.size(); ++ constraint_iter){
+			std::cout << Active_constraint_now[constraint_iter].transpose() << " " << Boundary_gap.row(Active_constraint_now[constraint_iter](0)) << "\n";
+		}
+		std::cout << "\n";
 
 		// Check number of active constraints
 		// Active constraints more than dimension of free variables: the active constraints form a degenerate extreme point
@@ -403,6 +407,7 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 			#pragma omp for reduction(min: min_increment) private(current_increment)
 			for(int constraint_iter = 0; constraint_iter < Boundary_gap.rows(); ++ constraint_iter){
 				if(abs(Projected_increment(constraint_iter)) > tol){
+				//if(abs(Projected_increment(constraint_iter)) > pow(eps, 2.)){
 					current_increment = std::max(-Boundary_gap(constraint_iter, 0) / Projected_increment(constraint_iter), Boundary_gap(constraint_iter, 1) / Projected_increment(constraint_iter));
 					min_increment = std::min(current_increment, min_increment);												
 				}
@@ -428,10 +433,12 @@ void LP_optimization(LP_object &Problem, bool stepwise_obj){
 			for(int constraint_iter = 0; constraint_iter < Problem.Objective.varying_vector.size(); ++ constraint_iter){
 				if(Problem.Objective.varying_vector(constraint_iter) == 1. && abs(Projected_increment(constraint_iter)) > tol){
 					if(Boundary_gap(constraint_iter, 0) < tol){
+					//if(Boundary_gap(constraint_iter, 0) <= 0.){
 						Problem.Objective.update_coeff(constraint_iter) = -1.;
 						coeff_update_flag = 1;
 					}
 					else if(Boundary_gap(constraint_iter, 1) < tol){
+					//else if(Boundary_gap(constraint_iter, 1) <= 0.){
 						Problem.Objective.update_coeff(constraint_iter) = 1.;
 						coeff_update_flag = 1;
 					}				
