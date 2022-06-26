@@ -2,8 +2,8 @@
 #include <iostream>
 //#include <chrono>
 //#include "../../basic/LP_gpa.cpp"
-#include "../../basic/LP_gpa_fast.cpp"
-#include "../power_market.cpp"
+#include "../basic/LP_gpa_fast.cpp"
+#include "power_market.cpp"
 
 void TSO_Market_Set_Test_1(market_inform &TSO_Market, int Time){	
 	// Input parameters of TSO market
@@ -618,7 +618,7 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 			utility_temp = utility;
 		}
 		
-		if(dS > .001){
+		if(dS > .0001){
 			break_flag = 0;
 		}
 	}
@@ -636,18 +636,18 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 }
 
 int main(){
-	market_inform TSO_Market;
-	TSO_Market_Set_Test_2(TSO_Market, 1);
-	LP_object TSO_Problem;
-	TSO_LP_Set(TSO_Market, TSO_Problem);
-
-//	auto fin_node = "../../power_network/input/transmission_nodes.csv";
-//	auto fin_edge = "../../power_network/input/transmission_edges_pu_simp.csv";
-//	auto fin_pu_dc = "../../power_network/input/transmission_pu_dc.csv";
-//	market_inform TSO_Market; 
-//	TSO_Market_Set(TSO_Market, 1, fin_node, fin_edge, fin_pu_dc);
+//	market_inform TSO_Market;
+//	TSO_Market_Set_Test_2(TSO_Market, 1);
 //	LP_object TSO_Problem;
 //	TSO_LP_Set(TSO_Market, TSO_Problem);
+
+	auto fin_node = "../power_network/input/transmission_nodes.csv";
+	auto fin_edge = "../power_network/input/transmission_edges_pu_simp.csv";
+	auto fin_pu_dc = "../power_network/input/transmission_pu_dc.csv";
+	market_inform TSO_Market; 
+	TSO_Market_Set(TSO_Market, 1, fin_node, fin_edge, fin_pu_dc);
+	LP_object TSO_Problem;
+	TSO_LP_Set(TSO_Market, TSO_Problem);
 	
 	TSO_Market_Optimization(0, TSO_Market, TSO_Problem);
 }
