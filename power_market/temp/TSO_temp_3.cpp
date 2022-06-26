@@ -30,8 +30,8 @@ void TSO_Market_Set_Test_1(market_inform &TSO_Market, int Time){
 	
 	// Set voltage and power constraints at each edge
 	TSO_Market.network.voltage_constraint = Eigen::MatrixXd(TSO_Market.network.num_vertice, 2);
-	TSO_Market.network.voltage_constraint.col(0) = Eigen::VectorXd::Constant(TSO_Market.network.num_vertice, -.1);
-	TSO_Market.network.voltage_constraint.col(1) = Eigen::VectorXd::Constant(TSO_Market.network.num_vertice, .1);
+	TSO_Market.network.voltage_constraint.col(0) = Eigen::VectorXd::Constant(TSO_Market.network.num_vertice, -.2);
+	TSO_Market.network.voltage_constraint.col(1) = Eigen::VectorXd::Constant(TSO_Market.network.num_vertice, .2);
 	TSO_Market.network.power_constraint = Eigen::MatrixXd(TSO_Market.network.num_edges, 2);
 	TSO_Market.network.power_constraint.col(0) = Eigen::VectorXd::Constant(TSO_Market.network.num_edges, -50.);
 	TSO_Market.network.power_constraint.col(1) = Eigen::VectorXd::Constant(TSO_Market.network.num_edges, 50.);
@@ -41,10 +41,12 @@ void TSO_Market_Set_Test_1(market_inform &TSO_Market, int Time){
 	TSO_Market.confirmed_demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.confirmed_price = Eigen::MatrixXd(Time, TSO_Market.num_zone);
 	TSO_Market.network.confirmed_power = Eigen::MatrixXd(Time, TSO_Market.network.num_edges);
+
+	// Initialize metric tensor solver for degree of freedoms
+	Market_Solver_Set(TSO_Market);
 	
 	// For the trivial case only: initialize submitted supply and demand bids at each node
-	TSO_Market.submitted_supply = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 2, TSO_Market.num_zone);
-	TSO_Market.submitted_demand = Eigen::MatrixXd::Zero(TSO_Market.price_intervals + 2, TSO_Market.num_zone);
+	Market_Initialization(TSO_Market);
 	TSO_Market.submitted_supply(0, 0) = 10.;
 	TSO_Market.submitted_supply(0, 1) = 20.;
 	TSO_Market.submitted_supply(0, 2) = 20.;
@@ -69,7 +71,7 @@ void TSO_Market_Set_Test_1(market_inform &TSO_Market, int Time){
 void TSO_Market_Set_Test_2(market_inform &TSO_Market, int Time){
 	// Input parameters of TSO market
 	// A trivial test case with 20 nodes connected as a radial line
-	TSO_Market.num_zone = 4;
+	TSO_Market.num_zone = 1000;
 	TSO_Market.time_intervals = Time;
 	TSO_Market.price_intervals = 600;
 	TSO_Market.price_range_inflex << -500., 3000.;
@@ -167,6 +169,9 @@ void TSO_Market_Set(market_inform &TSO_Market, int Time, std::string fin_node, s
 	TSO_Market.confirmed_price = Eigen::MatrixXd(Time, TSO_Market.num_zone);
 	TSO_Market.network.confirmed_power = Eigen::MatrixXd(Time, TSO_Market.network.num_edges);
 
+	// Initialize metric tensor solver for degree of freedoms
+	Market_Solver_Set(TSO_Market);
+
 	// Trivial initialization at the nodes
 	Market_Initialization(TSO_Market);
 	TSO_Market.submitted_supply.leftCols(TSO_Market.num_zone / 2) = Eigen::MatrixXd::Constant(TSO_Market.price_intervals + 2, TSO_Market.num_zone / 2, 1.);
@@ -221,15 +226,6 @@ void TSO_LP_Set(market_inform &TSO_Market, LP_object &Problem){
 	Constraint_eq_trip.push_back(Trip(TSO_Market.network.num_vertice + TSO_Market.network.num_edges, TSO_Market.network.num_vertice + TSO_Market.network.num_edges, 1));
 	Problem.Constraint.eq_orig_matrix = Eigen::SparseMatrix <double> (Problem.Constraints_eq_num, Problem.Variables_num);
 	Problem.Constraint.eq_orig_matrix.setFromTriplets(Constraint_eq_trip.begin(), Constraint_eq_trip.end());
-	
-	// Set sparse matrix for original inequality constraints
-//	Problem.Constraint.ie_orig_matrix = Eigen::SparseMatrix <double> (Problem.Variables_num + Problem.Constraints_ie_num, Problem.Variables_num);
-//	std::vector<Trip> Constraint_ie_trip;
-//	Constraint_ie_trip.reserve((Problem.Constraints_ie_num + 1) * Problem.Variables_num);
-//	for(int var_iter = 0; var_iter < Problem.Variables_num; ++ var_iter){
-//		Constraint_ie_trip.push_back(Trip(var_iter, var_iter, 1));
-//	}
-//	Problem.Constraint.ie_orig_matrix.setFromTriplets(Constraint_ie_trip.begin(), Constraint_ie_trip.end());
 	
 	// Set initial feasible solution
 	Problem.Solution.orig_vector = Eigen::VectorXd::Zero(Problem.Variables_num);
@@ -298,24 +294,24 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 			}			
 		}
 	}
-//	std::cout << price_ID.transpose() << "\n\n";
-//	std::cout << utility_aggregated << "\n\n";
-//	std::cout << (bidded_supply_aggregated + bidded_demand_aggregated).topRows(10) << "\n\n";
-//	std::cout << (bidded_supply_aggregated + bidded_demand_aggregated).bottomRows(10) << "\n\n";
-//	std::cout << (bidded_demand_import + bidded_supply_import).bottomRows(10) << "\n\n";
 
 	// Declare variables for the main loop
 	bool break_flag = 0;
 	double tol = pow(10., -12.);
-	double eps = .5;
+	double eps = pow(10., -10.);
 	double mu = 1. - eps;
-	double dS = 1.;
+	double dS = .1;
 	double error;
 	double obj = 0.;
 	double obj_temp;
 	Eigen::VectorXi flow_dir(TSO_Market.num_zone - 1);
 	Eigen::VectorXi price_ID_temp = price_ID;
+	// Initial quantity should be randomize to avoid degeneracy
 	Eigen::VectorXd quan = Eigen::VectorXd::Zero(TSO_Market.num_zone);
+	for(int zone_iter = 0; zone_iter < TSO_Market.num_zone; ++ zone_iter){
+		quan(zone_iter) = (std::rand() % 100 - 50) * eps;
+	}
+	quan -= Eigen::VectorXd::Constant(TSO_Market.num_zone, quan.sum() / TSO_Market.num_zone);
 	Eigen::VectorXd quan_temp = quan;
 	Eigen::VectorXd utility = Eigen::VectorXd::Zero(TSO_Market.num_zone);
 	Eigen::VectorXd utility_temp = Eigen::VectorXd::Zero(TSO_Market.num_zone);
@@ -327,8 +323,8 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 	Eigen::MatrixXd Boundary_gap(Problem.Variables_num + Problem.Constraints_ie_num, 2);
 	
 	int loop_count = 0;
-	while(loop_count < 20){
-	//while(!break_flag){
+	//while(loop_count < 10000){
+	while(!break_flag){
 		std::cout << "---------------------------------------------------------------------------\n";
 		std::cout << loop_count << "\n";
 		std::cout << "---------------------------------------------------------------------------\n";
@@ -341,12 +337,12 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 			if(price_ID(zone_iter) > price_ID(zone_iter + 1)){
 				flow_dir(zone_iter) = -1;
 				std::cout << "Negative flow\n";
-				std::cout << price_ID(zone_iter) << " " << price_ID(zone_iter + 1) << "\n";
+				//std::cout << price_ID(zone_iter) << " " << price_ID(zone_iter + 1) << "\n";
 			}
 			else if(price_ID(zone_iter) < price_ID(zone_iter + 1)){
 				flow_dir(zone_iter) = 1;
 				std::cout << "Positive flow\n";
-				std::cout << price_ID(zone_iter) << " " << price_ID(zone_iter + 1) << "\n";
+				//std::cout << price_ID(zone_iter) << " " << price_ID(zone_iter + 1) << "\n";
 			}
 			else{
 				increment_dot(zone_iter) = 0;
@@ -359,7 +355,7 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 			std::cout << "Update quantity after small increase / decrease\n";
 			quan_temp(zone_iter) = quan(zone_iter) + flow_dir(zone_iter) * dS;
 			quan_temp(zone_iter + 1) = quan(zone_iter + 1) - flow_dir(zone_iter) * dS;
-			std::cout << quan_temp.transpose() << "\n";
+			//std::cout << quan_temp.transpose() << "\n";
 			
 			// Update price after small increase / decrease
 			std::cout << "Update price after small increase / decrease\n";
@@ -416,11 +412,11 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 			std::cout << "Update utility function after small increase / decrease\n";
 			if(price_ID_temp(zone_iter) == -1){
 				utility_temp(zone_iter) = utility_aggregated(0, zone_iter);
-				utility_temp(zone_iter) -= (quan_temp(zone_iter) - bidded_total_aggregated(0, zone_iter)) * TSO_Market.price_range_inflex(0);//(11 * TSO_Market.price_range_inflex(0) - 10 * TSO_Market.price_range_inflex(1));
+				utility_temp(zone_iter) -= (quan_temp(zone_iter) - bidded_total_aggregated(0, zone_iter)) * (2 * TSO_Market.price_range_inflex(0) - TSO_Market.price_range_inflex(1));
 			}
 			else if(price_ID_temp(zone_iter) == TSO_Market.price_intervals + 2){
 				utility_temp(zone_iter) = utility_aggregated(TSO_Market.price_intervals + 2, zone_iter);
-				utility_temp(zone_iter) -= (quan_temp(zone_iter) - bidded_total_aggregated(TSO_Market.price_intervals + 2, zone_iter)) * TSO_Market.price_range_inflex(1);//(11 * TSO_Market.price_range_inflex(1) - 10 * TSO_Market.price_range_inflex(0));
+				utility_temp(zone_iter) -= (quan_temp(zone_iter) - bidded_total_aggregated(TSO_Market.price_intervals + 2, zone_iter)) * (2 * TSO_Market.price_range_inflex(1) - TSO_Market.price_range_inflex(0));
 			}
 			else{
 				utility_temp(zone_iter) = (bidded_total_aggregated(price_ID_temp(zone_iter) + 1, zone_iter) - quan_temp(zone_iter)) * utility_aggregated(price_ID_temp(zone_iter), zone_iter)
@@ -429,11 +425,11 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 			}
 			if(price_ID_temp(zone_iter + 1) == -1){
 				utility_temp(zone_iter + 1) = utility_aggregated(0, zone_iter + 1);
-				utility_temp(zone_iter + 1) -= (quan_temp(zone_iter + 1) - bidded_total_aggregated(0, zone_iter + 1)) * TSO_Market.price_range_inflex(0);//(11 *  - 10 * TSO_Market.price_range_inflex(1));				
+				utility_temp(zone_iter + 1) -= (quan_temp(zone_iter + 1) - bidded_total_aggregated(0, zone_iter + 1)) * (2 * TSO_Market.price_range_inflex(0) - TSO_Market.price_range_inflex(1));				
 			}
 			else if(price_ID_temp(zone_iter + 1) == TSO_Market.price_intervals + 2){
 				utility_temp(zone_iter + 1) = utility_aggregated(TSO_Market.price_intervals + 2, zone_iter + 1);
-				utility_temp(zone_iter + 1) -= (quan_temp(zone_iter + 1) - bidded_total_aggregated(TSO_Market.price_intervals + 2, zone_iter + 1)) * TSO_Market.price_range_inflex(1);//(11 * TSO_Market.price_range_inflex(1) - 10 * TSO_Market.price_range_inflex(0));				
+				utility_temp(zone_iter + 1) -= (quan_temp(zone_iter + 1) - bidded_total_aggregated(TSO_Market.price_intervals + 2, zone_iter + 1)) * (2 * TSO_Market.price_range_inflex(1) - TSO_Market.price_range_inflex(0));				
 			}
 			else{
 				utility_temp(zone_iter + 1) = (bidded_total_aggregated(price_ID_temp(zone_iter + 1) + 1, zone_iter + 1) - quan_temp(zone_iter + 1)) * utility_aggregated(price_ID_temp(zone_iter + 1), zone_iter + 1)
@@ -459,11 +455,11 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 			}
 			
 			// Update objective increment for this degree of freedom
-			std::cout << "Update objective increment for this degree of freedom\n";
+			std::cout << "Update objective increment for this degree of freedom\n\n";
 			obj_temp = (1. - mu) * utility_temp.sum() - mu * error;
 			increment_dot(zone_iter) = flow_dir(zone_iter) * (obj_temp - obj);
-			std::cout << (1. - mu) * utility_temp.sum() << "\n";
-			std::cout << mu * error << "\n\n";
+			//std::cout << (1. - mu) * utility_temp.sum() << "\n";
+			//std::cout << mu * error << "\n\n";
 			
 			// Return to original values
 			quan_temp(zone_iter) = quan(zone_iter);
@@ -485,10 +481,10 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 		if(grad.norm() > tol){
 			grad /= grad.norm();
 		}
-		std::cout << increment_coeff.transpose() << "\n";
-		std::cout << grad.transpose() << "\n\n";
+		//std::cout << increment_coeff.transpose() << "\n";
+		//std::cout << grad.transpose() << "\n\n";
 		
-		//while(dS > tol){
+		while(dS > tol){
 			std::cout << "Update along gradient direction\n";
 			// Update quantity on gradient direction
 			quan_temp = quan + grad * dS;
@@ -549,11 +545,11 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 				std::cout << "Update utility function after small increase / decrease\n";
 				if(price_ID_temp(zone_iter) == -1){
 					utility_temp(zone_iter) = utility_aggregated(0, zone_iter);
-					utility_temp(zone_iter) -= (quan_temp(zone_iter) - bidded_total_aggregated(0, zone_iter)) * TSO_Market.price_range_inflex(0);//(11 * TSO_Market.price_range_inflex(0) - 10 * TSO_Market.price_range_inflex(1));
+					utility_temp(zone_iter) -= (quan_temp(zone_iter) - bidded_total_aggregated(0, zone_iter)) * (2 * TSO_Market.price_range_inflex(0) - TSO_Market.price_range_inflex(1));
 				}
 				else if(price_ID_temp(zone_iter) == TSO_Market.price_intervals + 2){
 					utility_temp(zone_iter) = utility_aggregated(TSO_Market.price_intervals + 2, zone_iter);
-					utility_temp(zone_iter) -= (quan_temp(zone_iter) - bidded_total_aggregated(TSO_Market.price_intervals + 2, zone_iter)) * TSO_Market.price_range_inflex(1);//(11 * TSO_Market.price_range_inflex(1) - 10 * TSO_Market.price_range_inflex(0));
+					utility_temp(zone_iter) -= (quan_temp(zone_iter) - bidded_total_aggregated(TSO_Market.price_intervals + 2, zone_iter)) * (2 * TSO_Market.price_range_inflex(1) - TSO_Market.price_range_inflex(0));
 				}
 				else{
 					utility_temp(zone_iter) = (bidded_total_aggregated(price_ID_temp(zone_iter) + 1, zone_iter) - quan_temp(zone_iter)) * utility_aggregated(price_ID_temp(zone_iter), zone_iter)
@@ -562,11 +558,11 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 				}
 				if(price_ID_temp(zone_iter + 1) == -1){
 					utility_temp(zone_iter + 1) = utility_aggregated(0, zone_iter + 1);
-					utility_temp(zone_iter + 1) -= (quan_temp(zone_iter + 1) - bidded_total_aggregated(0, zone_iter + 1)) * TSO_Market.price_range_inflex(0);//(11 * TSO_Market.price_range_inflex(0) - 10 * TSO_Market.price_range_inflex(1));				
+					utility_temp(zone_iter + 1) -= (quan_temp(zone_iter + 1) - bidded_total_aggregated(0, zone_iter + 1)) * (2 * TSO_Market.price_range_inflex(0) - TSO_Market.price_range_inflex(1));				
 				}
 				else if(price_ID_temp(zone_iter + 1) == TSO_Market.price_intervals + 2){
 					utility_temp(zone_iter + 1) = utility_aggregated(TSO_Market.price_intervals + 2, zone_iter + 1);
-					utility_temp(zone_iter + 1) -= (quan_temp(zone_iter + 1) - bidded_total_aggregated(TSO_Market.price_intervals + 2, zone_iter + 1)) * TSO_Market.price_range_inflex(1);//(11 * TSO_Market.price_range_inflex(1) - 10 * TSO_Market.price_range_inflex(0));				
+					utility_temp(zone_iter + 1) -= (quan_temp(zone_iter + 1) - bidded_total_aggregated(TSO_Market.price_intervals + 2, zone_iter + 1)) * (2 * TSO_Market.price_range_inflex(1) - TSO_Market.price_range_inflex(0));				
 				}
 				else{
 					utility_temp(zone_iter + 1) = (bidded_total_aggregated(price_ID_temp(zone_iter + 1) + 1, zone_iter + 1) - quan_temp(zone_iter + 1)) * utility_aggregated(price_ID_temp(zone_iter + 1), zone_iter + 1)
@@ -597,31 +593,32 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 			obj_temp = (1. - mu) * utility_temp.sum() - mu * error;
 			
 			// Check if objective function is actually improved
-			std::cout << "Check if objective function is actually improved\n";
+			std::cout << "Check if objective function is actually improved\n\n";
 			if(obj_temp >= obj){
 				quan = quan_temp;
 				price_ID = price_ID_temp;
 				utility = utility_temp;
 				obj = obj_temp;
-				std::cout << "Objective function updated\n";
-				std::cout << price_ID.transpose() << "\n";
-				std::cout << quan.transpose() << "\n";
-				std::cout << obj << "\n\n";
-				//break;
+				//std::cout << "Objective function updated\n";
+				//std::cout << price_ID.transpose() << "\n";
+				//std::cout << quan.transpose() << "\n";
+				//std::cout << obj << "\n\n";
+				break;
 			}
 			else{
-				//dS /= 2.;
-				std::cout << "Objective function not updated\n";
-				std::cout << quan_temp.transpose() << "\n";
-				std::cout << quan.transpose() << "\n";
-				std::cout << obj_temp << "\n\n";
+				dS /= 2.;
+				//std::cout << "Objective function not updated\n";
+				//std::cout << quan_temp.transpose() << "\n";
+				//std::cout << quan.transpose() << "\n";
+				//std::cout << obj_temp << "\n\n";
+				//std::cout << dS << "\n\n";
 				
 				// Return to original values
 				quan_temp = quan;		
 				price_ID_temp = price_ID;
 				utility_temp = utility;
 			}			
-		//}
+		}
 		
 		if(dS > tol){
 			break_flag = 0;
@@ -629,24 +626,28 @@ void TSO_Market_Optimization(int tick, market_inform &TSO_Market, LP_object &Pro
 	}
 
 	// Update final source / sink, voltage, and power flow
-	std::cout << "Update final source / sink, voltage, and power flow\n";
+	//std::cout << "Update final source / sink, voltage, and power flow\n";
 	Problem.Solution.orig_vector.segment(TSO_Market.network.num_edges, TSO_Market.network.num_vertice) = quan;
 	Problem.Solution.orig_vector.tail(TSO_Market.network.num_vertice - 1) = Problem.Solver.ldlt.solve(Problem.Solution.orig_vector.segment(TSO_Market.network.num_edges + 1, TSO_Market.network.num_vertice - 1));
 	Problem.Solution.orig_vector.head(TSO_Market.network.num_edges) = (Problem.Constraint.eq_orig_matrix).topRightCorner(TSO_Market.network.num_edges, TSO_Market.network.num_vertice) * Problem.Solution.orig_vector.tail(TSO_Market.network.num_vertice);		
 	std::cout << Problem.Solution.orig_vector.segment(TSO_Market.network.num_edges, TSO_Market.network.num_vertice).transpose() << "\n\n";
-	//std::cout << Problem.Solution.orig_vector.transpose() << "\n\n";
+	std::cout << Problem.Solution.orig_vector.transpose() << "\n\n";
+	std::cout << quan.minCoeff() << " " << quan.maxCoeff() << "\n";
+	std::cout << (Problem.Solution.orig_vector.tail(TSO_Market.network.num_vertice - 1)).minCoeff() << " " << (Problem.Solution.orig_vector.tail(TSO_Market.network.num_vertice - 1)).maxCoeff() << "\n";
+	std::cout << (Problem.Solution.orig_vector.head(TSO_Market.network.num_edges)).minCoeff() << " " << (Problem.Solution.orig_vector.head(TSO_Market.network.num_edges)).maxCoeff() << "\n";
 }
 
 int main(){
 	market_inform TSO_Market;
-	TSO_Market_Set_Test_2(TSO_Market, 1);
+	TSO_Market_Set_Test_1(TSO_Market, 1);
 	LP_object TSO_Problem;
 	TSO_LP_Set(TSO_Market, TSO_Problem);
 
-//	auto fin_node = "../power_network/input/transmission_nodes.csv";
-//	auto fin_edge = "../power_network/input/transmission_edges_pu_simp.csv";
-//	auto fin_pu_dc = "../power_network/input/transmission_pu_dc.csv";
-//	auto TSO_Market = TSO_Market_Set(1, fin_node, fin_edge, fin_pu_dc);
+//	auto fin_node = "../../power_network/input/transmission_nodes.csv";
+//	auto fin_edge = "../../power_network/input/transmission_edges_pu_simp.csv";
+//	auto fin_pu_dc = "../../power_network/input/transmission_pu_dc.csv";
+//	market_inform TSO_Market; 
+//	TSO_Market_Set(TSO_Market, 1, fin_node, fin_edge, fin_pu_dc);
 //	LP_object TSO_Problem;
 //	TSO_LP_Set(TSO_Market, TSO_Problem);
 	
