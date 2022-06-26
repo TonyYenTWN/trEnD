@@ -4,9 +4,7 @@
 #include "power_market.h"
 #include "power_market.cpp"
 
-market_inform International_Market_Set(int Time, std::string fin_name_moc, std::string fin_name_demand){
-	market_inform International_Market {};
-
+void International_Market_Set(market_inform &International_Market, int Time, std::string fin_name_moc, std::string fin_name_demand){
 	// Input Parameters of international market
 	International_Market.num_zone = 13;
 	International_Market.cross_border_zone_start = 5;
@@ -49,8 +47,6 @@ market_inform International_Market_Set(int Time, std::string fin_name_moc, std::
 	International_Market.confirmed_demand = Eigen::MatrixXd::Zero(Time, International_Market.num_zone);
 	International_Market.confirmed_price = Eigen::MatrixXd(Time, International_Market.num_zone);
 	International_Market.network.confirmed_power = Eigen::MatrixXd(Time, International_Market.network.num_edges);
-
-	return(International_Market);
 }
 
 void International_Market_Optimization(int tick, market_inform &International_Market, bool print_result){
@@ -377,7 +373,8 @@ int main(){
 	int Time = 8760;
 	std::string fin_name_moc = "input/merit_order_curve_q_assimilated_2021.csv";
 	std::string fin_name_demand = "input/residual_load_default_forecast_2021.csv";
-	market_inform International_Market = International_Market_Set(Time, fin_name_moc, fin_name_demand);
+	market_inform International_Market;
+	International_Market_Set(International_Market, Time, fin_name_moc, fin_name_demand);
 
 	// Naive market clearing
 	for(int tick = 0; tick < 10; ++ tick){
