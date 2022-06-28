@@ -122,14 +122,14 @@ void TSO_Market_Set_Test_2(market_inform &TSO_Market, int Time){
 //	return(pu_dc_inform(v_iter, 1));
 //}
 
-void TSO_Market_Set(market_inform &TSO_Market, int Time, std::string fin_node, std::string fin_edge, std::string fin_pu_dc){
+void TSO_Market_Set(market_inform &TSO_Market, int Time, std::string fin_node, std::string fin_edge, std::string fin_pu){
 	// Read power network data
 	auto fin_node_dim = get_file_dim(fin_node);
 	auto fin_edge_dim = get_file_dim(fin_edge);
-	auto fin_pu_dc_dim = get_file_dim(fin_pu_dc);
+	auto fin_pu_dim = get_file_dim(fin_pu);
 	auto node_inform = read_file(fin_node_dim[0], fin_node_dim[1], fin_node);
 	auto edge_inform = read_file(fin_edge_dim[0], fin_edge_dim[1], fin_edge);
-	auto pu_dc_inform = read_file(fin_pu_dc_dim[0], fin_pu_dc_dim[1], fin_pu_dc);
+	auto pu_inform = read_file(fin_pu_dim[0], fin_pu_dim[1], fin_pu);
 	//double x_L = 5. * pow(10., -4.);		// Inductance per meter of transmission line
 	
 	// Input parameters of TSO market
@@ -643,9 +643,9 @@ int main(){
 
 	auto fin_node = "../power_network/input/transmission_nodes.csv";
 	auto fin_edge = "../power_network/input/transmission_edges_pu_simp.csv";
-	auto fin_pu_dc = "../power_network/input/transmission_pu_dc.csv";
+	auto fin_pu = "../power_network/input/transmission_pu.csv";
 	market_inform TSO_Market; 
-	TSO_Market_Set(TSO_Market, 1, fin_node, fin_edge, fin_pu_dc);
+	TSO_Market_Set(TSO_Market, 1, fin_node, fin_edge, fin_pu);
 	LP_object TSO_Problem;
 	TSO_LP_Set(TSO_Market, TSO_Problem);
 	
