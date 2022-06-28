@@ -8,6 +8,7 @@
 #include "../basic/rw_csv.cpp"
 
 struct points{
+	Eigen::MatrixXi coordinate_grid;
 	Eigen::VectorXi bidding_zone;
 	Eigen::VectorXi node;
 	Eigen::VectorXd population_density;
@@ -37,17 +38,22 @@ struct edges_orig{
 struct edges_simp{
 	Eigen::VectorXi from;
 	Eigen::VectorXi to;
-	Eigen::VectorXd conductance;	
+	Eigen::VectorXd conductance;	// non-dimensionalized into p.u.
 };
 
-struct plants{
-	std::string type;
+struct plants_per_tech{
 	Eigen::VectorXi node;
+	Eigen::VectorXi type;
 	Eigen::VectorXd cap;
 	Eigen::VectorXd x;
 	Eigen::VectorXd y;
 	Eigen::VectorXd lon;
 	Eigen::VectorXd lat;	
+};
+
+struct plants_all{
+	plants_per_tech hydro;
+	plants_per_tech wind;
 };
 
 struct DSO_cluster{
@@ -60,7 +66,7 @@ struct technical_parameters{
 	std::complex<double> x_trans_shunt = std::complex<double>(0., 0.);						// Shunt impedence per meter of transmission line
 	std::complex<double> x_distr_series = std::complex<double>(0., 7. * pow(10., -4.));		// Series impedence per meter of distribution line
 	std::complex<double> x_distr_shunt = std::complex<double>(0., 0.);						// Shunt impedence per meter of distribution line
-	Eigen::MatrixXd pu_inform;																// Reference values for non-dimensionalization into p.u.
+	std::complex<double> s_base = std::complex<double>(1000., 0.) * pow(3., .5);			// Reference value for non-dimensionalization of power into p.u.															// Reference values for non-dimensionalization into p.u.
 };
 
 struct network_inform{
@@ -68,8 +74,8 @@ struct network_inform{
 	nodes nodes;
 	edges_orig edges_orig;
 	edges_simp edges_simp;
-	plants plants;
-	DSO_cluster DSO_cluster;
+	plants_all plants;
+	std::vector <DSO_cluster> DSO_cluster;
 };
 
 #endif
