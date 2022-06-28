@@ -8,6 +8,7 @@
 #include "../basic/rw_csv.cpp"
 
 struct points{
+	Eigen::VectorXi bidding_zone;
 	Eigen::VectorXi node;
 	Eigen::VectorXd population_density;
 	Eigen::VectorXd x;
@@ -17,7 +18,8 @@ struct points{
 };
 
 struct nodes{
-	Eigen::VectorXi DSO;
+	Eigen::VectorXi bidding_zone;
+	Eigen::VectorXi cluster;
 	Eigen::VectorXi voltage_base;
 	Eigen::VectorXd x;
 	Eigen::VectorXd y;
@@ -25,32 +27,49 @@ struct nodes{
 	Eigen::VectorXd lat;	
 };
 
-struct edges{
-	Eigen::VectorXd from;
-	Eigen::VectorXd to;
-	Eigen::VectorXd type;
-	Eigen::VectorXd voltage_base;
+struct edges_orig{
+	Eigen::VectorXi from;
+	Eigen::VectorXi to;
+	Eigen::VectorXi voltage_base;
 	Eigen::VectorXd distance;	
+};
+
+struct edges_simp{
+	Eigen::VectorXi from;
+	Eigen::VectorXi to;
+	Eigen::VectorXd conductance;	
 };
 
 struct plants{
 	std::string type;
+	Eigen::VectorXi node;
+	Eigen::VectorXd cap;
 	Eigen::VectorXd x;
 	Eigen::VectorXd y;
 	Eigen::VectorXd lon;
 	Eigen::VectorXd lat;	
 };
 
-class network_inform{
-	public:
-		std::complex<double> x_trans_series(0, 5. * pow(10., -4.));		// Series impedence per meter of transmission line
-		std::complex<double> x_trans_shunt(0, 0);						// Shunt impedence per meter of transmission line
-		std::complex<double> x_distr_series(0, 7. * pow(10., -4.));		// Series impedence per meter of distribution line
-		std::complex<double> x_distr_shunt(0, 0);						// Shunt impedence per meter of distribution line
-		Eigen::VectorXi DSO_group;										// Which DSO group a DSO belongs to
-		Eigen::VectorXi bidding_zone; 									// Which bidding zone a DSO group belongs to
-		
-	private:
+struct DSO_cluster{
+	std::vector <int> points_ID;
+	std::vector <int> nodes_ID;
+};
+
+struct technical_parameters{
+	std::complex<double> x_trans_series = std::complex<double> (0., 5. * pow(10., -4.));	// Series impedence per meter of transmission line
+	std::complex<double> x_trans_shunt = std::complex<double>(0., 0.);						// Shunt impedence per meter of transmission line
+	std::complex<double> x_distr_series = std::complex<double>(0., 7. * pow(10., -4.));		// Series impedence per meter of distribution line
+	std::complex<double> x_distr_shunt = std::complex<double>(0., 0.);						// Shunt impedence per meter of distribution line
+	Eigen::MatrixXd pu_inform;																// Reference values for non-dimensionalization into p.u.
+};
+
+struct network_inform{
+	points points;
+	nodes nodes;
+	edges_orig edges_orig;
+	edges_simp edges_simp;
+	plants plants;
+	DSO_cluster DSO_cluster;
 };
 
 #endif
