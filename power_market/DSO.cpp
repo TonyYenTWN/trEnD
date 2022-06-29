@@ -41,13 +41,11 @@ void DSO_Markets_submitted_bid_calculation(int tick, DSO_Markets &DSO_Markets, n
 	
 	// Trivial case: demand at each point are 100% inflexible
 	int DSO_ID;
-	Eigen::VectorXi DSO_node_count = Eigen::VectorXi::Zero(DSO_Markets.markets.size());
 	for(int point_iter = 0; point_iter < Power_network_inform.points.bidding_zone.size(); ++ point_iter){
 		DSO_ID = Power_network_inform.nodes.cluster(Power_network_inform.points.node(point_iter));
-		DSO_Markets.markets[DSO_ID].submitted_demand(DSO_Markets.markets[DSO_ID].price_intervals + 1, DSO_node_count(DSO_ID))
-			= point_demand_inform(point_iter, 0) * Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area;
-		
-		DSO_node_count(DSO_ID) += 1;
+		DSO_Markets.markets[DSO_ID].submitted_demand(DSO_Markets.markets[DSO_ID].price_intervals + 1, Power_network_inform.points.in_cluster_ID(point_iter))
+			= point_demand_inform(point_iter, 0) * Power_network_inform.points.population_density(point_iter); //* Power_network_inform.points.point_area;
+			// nominal demand currently wrong in processed files, should change them and then multiply area of a point later
 	}
 }
 
