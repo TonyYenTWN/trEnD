@@ -47,6 +47,11 @@ void DSO_Markets_submitted_bid_calculation(int tick, DSO_Markets &DSO_Markets, n
 			= point_demand_inform(point_iter, 0) * Power_network_inform.points.population_density(point_iter); //* Power_network_inform.points.point_area;
 			// nominal demand currently wrong in processed files, should change them and then multiply area of a point later
 	}
+	
+	// Supply at each point (LV power plants) / node (HV power plants)
+	for(int hydro_iter = 0; hydro_iter < Power_network_inform.plants.hydro.node.size(); ++ hydro_iter){
+		DSO_ID = Power_network_inform.nodes.cluster(Power_network_inform.plants.hydro.node(hydro_iter));
+	}
 }
 
 int main(){
