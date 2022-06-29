@@ -8,6 +8,7 @@
 #include "../basic/rw_csv.h"
 
 struct points{
+	double point_area = 100.; // square km
 	Eigen::MatrixXi coordinate_grid;
 	Eigen::VectorXi bidding_zone;
 	Eigen::VectorXi node;
