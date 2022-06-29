@@ -5,7 +5,7 @@
 #define NETWORK_OBJECT
 
 #include "../basic/Basic_Definitions.h"
-#include "../basic/rw_csv.cpp"
+#include "../basic/rw_csv.h"
 
 struct points{
 	Eigen::MatrixXi coordinate_grid;

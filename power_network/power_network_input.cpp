@@ -135,21 +135,25 @@ void plant_data_input(network_inform &Power_network_inform, std::string fin_hydr
 	//std::cout << Power_network_inform.plants.wind.lat.tail(10).transpose() << "\n";
 }
 
-int main(){
-	auto fin_bz = "input/DSO_Bidding_Zone.csv";
-	auto fin_node = "input/transmission_nodes.csv";
-	auto fin_edge_orig = "input/transmission_edges.csv";
-	auto fin_edge_simp = "input/transmission_edges_pu_simp.csv";
-	auto fin_point = "input/point_info.csv";
-	auto fin_point_matrix = "input/point_matrix.csv";
-	auto fin_hydro = "input/hydro_plants.csv";
-	auto fin_wind = "input/wind_plants.csv";
+void power_network_input_process(network_inform &Power_network_inform, std::string parent_dir = "../power_network/"){
+	auto fin_bz = parent_dir + "input/DSO_Bidding_Zone.csv";
+	auto fin_node = parent_dir + "input/transmission_nodes.csv";
+	auto fin_edge_orig = parent_dir + "input/transmission_edges.csv";
+	auto fin_edge_simp = parent_dir + "input/transmission_edges_pu_simp.csv";
+	auto fin_point = parent_dir + "input/point_info.csv";
+	auto fin_point_matrix = parent_dir + "input/point_matrix.csv";
+	auto fin_hydro = parent_dir + "input/hydro_plants.csv";
+	auto fin_wind = parent_dir + "input/wind_plants.csv";
 	
 	auto fin_bz_dim = get_file_dim(fin_bz);
 	auto bz_inform = read_file(fin_bz_dim[0], fin_bz_dim[1], fin_bz);	
-	network_inform Power_network_inform;
 	
 	tranmission_data_input(Power_network_inform, bz_inform, fin_node, fin_edge_orig, fin_edge_simp);
 	points_data_input(Power_network_inform, bz_inform, fin_point, fin_point_matrix);
 	plant_data_input(Power_network_inform, fin_hydro, fin_wind);
 }
+
+//int main(){
+//	network_inform Power_network_inform;
+//	power_network_input_process(Power_network_inform);
+//};
