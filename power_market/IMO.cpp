@@ -3,20 +3,15 @@
 //#include <chrono>
 #include "power_market.h"
 #include "power_market.cpp"
+#include "../basic/rw_csv.cpp"
 
 void International_Market_Set(market_inform &International_Market, int Time, std::string fin_name_moc, std::string fin_name_demand){
 	// Input Parameters of international market
 	International_Market.num_zone = 13;
 	International_Market.cross_border_zone_start = 5;
 	International_Market.time_intervals = Time;
-	International_Market.price_intervals = 600;
 	International_Market.zone_names = {"NO1","NO2","NO3","NO4","NO5","DE-LU","DK1","FI","GB","NL","SE1","SE2","SE3"};
-	International_Market.price_range_inflex << -500, 3000;
-	International_Market.price_range_flex << -100, 500;
-	International_Market.bidded_price = Eigen::VectorXd(International_Market.price_intervals + 2);
-	International_Market.bidded_price(0) = International_Market.price_range_inflex(0);
-	International_Market.bidded_price.array().tail(1) = International_Market.price_range_inflex(1);
-	International_Market.bidded_price.array().segment(1, International_Market.price_intervals) = Eigen::VectorXd::LinSpaced(International_Market.price_intervals, International_Market.price_range_flex(0) + .5 * (International_Market.price_range_flex(1) - International_Market.price_range_flex(0)) / International_Market.price_intervals, International_Market.price_range_flex(1) - .5 * (International_Market.price_range_flex(1) - International_Market.price_range_flex(0)) / International_Market.price_intervals);
+	International_Market.set_bidded_price();
 	International_Market.network.num_vertice = International_Market.num_zone;
 	International_Market.network.num_edges = 15;
 	International_Market.network.incidence_matrix = Eigen::MatrixXi(International_Market.network.num_edges, 2);

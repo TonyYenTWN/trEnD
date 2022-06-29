@@ -66,6 +66,11 @@ void Market_clearing_nodal(int tick, market_inform &Market, Eigen::VectorXi &def
 }
 
 // ------------------------------------------------------------------------------------------------
+// Functions involving all markets
+// ------------------------------------------------------------------------------------------------
+//void Submitted_bid_calculation(market_inform &IMO_Market)
+
+// ------------------------------------------------------------------------------------------------
 // Specific functions for for flow-based markets
 // ------------------------------------------------------------------------------------------------
 void Flow_Based_Market_LP_Set(market_inform &Market, LP_object &Problem){

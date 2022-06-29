@@ -28,14 +28,22 @@ struct market_inform{
 	int num_zone;							// Can be the actual bidding zones, or just a node / spatial element
 	int cross_border_zone_start;			// Indicate the index, after whose corresponding bidding zones are on the boundary and only act by cross-border flow
 	int time_intervals;
-	int price_intervals;
+	int price_intervals = 600;
 	std::vector<std::string> zone_names;
-	Eigen::Vector2d price_range_inflex;
-	Eigen::Vector2d price_range_flex;
+	Eigen::Vector2d price_range_inflex = Eigen::Vector2d(-500., 3000.);
+	Eigen::Vector2d price_range_flex = Eigen::Vector2d(-100., 500.);
 	Eigen::VectorXd bidded_price;
 	Eigen::MatrixXd merit_order_curve;
 	Eigen::MatrixXd demand_default;			// Default demand profiles of the bidding zones; in later runs demand bids from Norway should come from lower level markets
 	Eigen::SimplicialLDLT <Eigen::SparseMatrix <double>> dof_metric;
+	
+	// Set bidded price
+	void set_bidded_price(){
+		this->bidded_price = Eigen::VectorXd(this->price_intervals + 2);
+		this->bidded_price(0) = this->price_range_inflex(0);
+		this->bidded_price.array().tail(1) = this->price_range_inflex(1);
+		this->bidded_price.segment(1, this->price_intervals) = Eigen::VectorXd::LinSpaced(this->price_intervals, this->price_range_flex(0) + .5 * (this->price_range_flex(1) - this->price_range_flex(0)) / this->price_intervals, this->price_range_flex(1) - .5 * (this->price_range_flex(1) - this->price_range_flex(0)) / this->price_intervals);		
+	}
 
 	// Process Variables
 	Eigen::MatrixXd submitted_supply;		// Supply bid submitted in the bidding zones
@@ -70,10 +78,23 @@ void Flow_Based_Market_Optimization(int, market_inform&, LP_object&);
 
 #endif
 
+// Functions for the internationally-coupled market operator
 #ifndef IMO
 #define IMO
 
 market_inform International_Market_Set(int, std::string, std::string);
 void International_Market_Optimization(int, market_inform&, bool print_result = 1);
+
+#endif
+
+// Functions for the transmission system operator
+#ifndef TSO
+#define TSO
+
+#endif
+
+// Functions for the distribution system operators
+#ifndef DSO
+#define DSO
 
 #endif
