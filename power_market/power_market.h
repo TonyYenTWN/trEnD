@@ -6,7 +6,7 @@
 
 #include "../basic/Basic_Definitions.h"
 #include "../basic/Eigen_Sparse.h"
-#include "../basic/rw_csv.cpp"
+#include "../basic/LP_gpa.h"
 
 // Power market objects
 struct network_graph{
@@ -52,12 +52,21 @@ struct market_inform{
 	network_graph network;
 };
 
+struct DSO_Markets{
+	std::vector <market_inform> markets;
+	std::vector <LP_object> problem;
+};
+
 #endif
 
+// generic functions for power markets
 #ifndef POWER_MARKET
 #define POWER_MARKET
 
 void Market_Initialization(market_inform&);
+void Market_clearing_nodal(int, market_inform&, Eigen::VectorXi&, Eigen::MatrixXd&, Eigen::MatrixXd&);
+void Flow_Based_Market_LP_Set(market_inform&, LP_object&);
+void Flow_Based_Market_Optimization(int, market_inform&, LP_object&);
 
 #endif
 
