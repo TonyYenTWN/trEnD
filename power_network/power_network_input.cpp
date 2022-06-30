@@ -25,11 +25,13 @@ void tranmission_data_input(network_inform &Power_network_inform, Eigen::MatrixX
 	Power_network_inform.nodes.bidding_zone = Eigen::VectorXi(fin_node_dim[0]);
 	Power_network_inform.nodes.cluster = Eigen::VectorXi(fin_node_dim[0]);
 	Power_network_inform.nodes.voltage_base = Eigen::VectorXi(fin_node_dim[0]);
+	Power_network_inform.nodes.in_cluster_ID = Eigen::VectorXi(fin_node_dim[0]);
 	for(int node_iter = 0; node_iter < fin_node_dim[0]; ++ node_iter){
 		Power_network_inform.nodes.bidding_zone(node_iter) = bz_inform(int(node_inform(node_iter, 0)) - 1, 1) - 1;
 		Power_network_inform.nodes.cluster(node_iter) = int(node_inform(node_iter, 1)) - 1;
 		Power_network_inform.nodes.voltage_base(node_iter) = int(node_inform(node_iter, 2));
 		Power_network_inform.DSO_cluster[Power_network_inform.nodes.cluster(node_iter)].nodes_ID.push_back(node_iter);
+		Power_network_inform.nodes.in_cluster_ID(node_iter) = Power_network_inform.DSO_cluster[Power_network_inform.nodes.cluster(node_iter)].nodes_ID.size() - 1;
 	}
 	Power_network_inform.nodes.x = node_inform.col(node_inform.cols() - 4);
 	Power_network_inform.nodes.y = node_inform.col(node_inform.cols() - 3);
@@ -77,10 +79,12 @@ void points_data_input(network_inform &Power_network_inform, Eigen::MatrixXd bz_
 	// Organize point data
 	Power_network_inform.points.bidding_zone = Eigen::VectorXi(fin_point_dim[0]);
 	Power_network_inform.points.node = Eigen::VectorXi(fin_point_dim[0]);
+	Power_network_inform.points.in_cluster_ID = Eigen::VectorXi(fin_point_dim[0]);
 	for(int point_iter = 0; point_iter < fin_point_dim[0]; ++ point_iter){
 		Power_network_inform.points.bidding_zone(point_iter) = bz_inform(int(point_inform(point_iter, 0)) - 1, 1) - 1;
 		Power_network_inform.points.node(point_iter) = int(point_inform(point_iter, 1)) - 1;
 		Power_network_inform.DSO_cluster[Power_network_inform.nodes.cluster(Power_network_inform.points.node(point_iter))].points_ID.push_back(point_iter);
+		Power_network_inform.points.in_cluster_ID(point_iter) = Power_network_inform.DSO_cluster[Power_network_inform.nodes.cluster(Power_network_inform.points.node(point_iter))].points_ID.size() - 1;
 	}
 	Power_network_inform.points.population_density = point_inform.col(2);
 	Power_network_inform.points.x = point_inform.col(point_inform.cols() - 4);

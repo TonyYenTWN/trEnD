@@ -8,10 +8,12 @@
 #include "../basic/rw_csv.h"
 
 struct points{
-	double point_area = 100.; // square km
+	double point_area = 100.; 		// square km
+	double grid_length = 10000.; 	// meters
 	Eigen::MatrixXi coordinate_grid;
 	Eigen::VectorXi bidding_zone;
 	Eigen::VectorXi node;
+	Eigen::VectorXi in_cluster_ID;
 	Eigen::VectorXd population_density;
 	Eigen::VectorXd x;
 	Eigen::VectorXd y;
@@ -22,6 +24,7 @@ struct points{
 struct nodes{
 	Eigen::VectorXi bidding_zone;
 	Eigen::VectorXi cluster;
+	Eigen::VectorXi in_cluster_ID;
 	Eigen::VectorXi voltage_base;
 	Eigen::VectorXd x;
 	Eigen::VectorXd y;
