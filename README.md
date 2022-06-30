@@ -3,8 +3,12 @@ The codes are for my PhD project and it is undergoing revision. Feel free to com
 
 The library [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page) and [Boost](https://www.boost.org/) are required to compile the codes.
 
-# File Documentation
+# Categorization Rationale of Files
+- Input files are csv files imported into the project.
+- Processed files are csv files written by the source code and will be used later in the workflow of the project.
+- Output files are csv files written by the source code as the result of the project.
 
+# Comprehensive Documentation of Folders and Files
 ## [agent_operational](https://github.com/TonyYenTWN/distribution_grid_transition_Norway/tree/main/agent_operational)
 Operational strategies of agents relevant to the distribution power network.
 
