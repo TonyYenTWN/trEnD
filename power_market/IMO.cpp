@@ -363,20 +363,20 @@ void International_Market_Output(market_inform &International_Market){
 	write_file(International_Market.confirmed_price, fout_name, International_Market.zone_names);
 }
 
-int main(){
-	// Input variables
-	int Time = 8760;
-	std::string fin_name_moc = "input/merit_order_curve_q_assimilated_2021.csv";
-	std::string fin_name_demand = "input/residual_load_default_forecast_2021.csv";
-	market_inform International_Market;
-	International_Market_Set(International_Market, Time, fin_name_moc, fin_name_demand);
-
-	// Naive market clearing
-	for(int tick = 0; tick < 10; ++ tick){
-		Market_Initialization(International_Market);
-		International_Market_Optimization(tick, International_Market, 1);
-	}
-
-	// Write csv file
-	// International_Market_Output(International_Market);
-}
+//int main(){
+//	// Input variables
+//	int Time = 8760;
+//	std::string fin_name_moc = "input/merit_order_curve_q_assimilated_2021.csv";
+//	std::string fin_name_demand = "input/residual_load_default_forecast_2021.csv";
+//	market_inform International_Market;
+//	International_Market_Set(International_Market, Time, fin_name_moc, fin_name_demand);
+//
+//	// Naive market clearing
+//	for(int tick = 0; tick < 10; ++ tick){
+//		Market_Initialization(International_Market);
+//		International_Market_Optimization(tick, International_Market, 1);
+//	}
+//
+//	// Write csv file
+//	// International_Market_Output(International_Market);
+//}
