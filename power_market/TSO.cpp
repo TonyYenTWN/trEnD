@@ -2,9 +2,9 @@
 #include <iostream>
 //#include <chrono>
 #include "../basic/LP_gpa.h"
-#include "power_market.h"
-#include "../power_network/power_network.h"
 #include "../basic/rw_csv.h"
+#include "../power_network/power_network.h"
+#include "power_market.h"
 
 // May be useful in the future (when calculating actual ac power flow)
 //double impedence_conversion(Eigen::MatrixXd pu_dc_inform, double voltage){
