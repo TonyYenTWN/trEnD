@@ -2,7 +2,7 @@
 #include <iostream>
 //#include <chrono>
 #include "power_market.h"
-#include "power_market.cpp"
+#include "power_market_func.cpp"
 #include "../basic/rw_csv.cpp"
 
 void International_Market_Set(market_inform &International_Market, int Time, std::string fin_name_moc, std::string fin_name_demand){
