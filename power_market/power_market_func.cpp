@@ -20,7 +20,7 @@ void Market_clearing_nodal(int tick, market_inform &Market, Eigen::VectorXi &def
 	for(int zone_ID = 0; zone_ID < Market.num_zone; ++ zone_ID){
 		while(price_demand_ID(zone_ID) > price_supply_ID(zone_ID)){
 			// Check if there are demand bids at current price interval
-			while(bidded_demand(price_demand_ID(zone_ID), zone_ID) == 0){
+			while(bidded_demand(price_demand_ID(zone_ID), zone_ID) == 0.){
 				if(price_demand_ID(zone_ID) > 0){
 					price_demand_ID(zone_ID) -= 1;
 				}
@@ -32,7 +32,7 @@ void Market_clearing_nodal(int tick, market_inform &Market, Eigen::VectorXi &def
 			}
 			
 			// Check if there are supply bids at current price interval
-			while(bidded_supply(price_supply_ID(zone_ID), zone_ID) == 0){
+			while(bidded_supply(price_supply_ID(zone_ID), zone_ID) == 0.){
 				if(price_supply_ID(zone_ID) < Market.bidded_price.size() - 1){
 					price_supply_ID(zone_ID) += 1;
 				}
@@ -80,6 +80,7 @@ void Submitted_bid_calculation(int tick, DSO_Markets &DSO_Markets, market_inform
 		Market_Initialization(DSO_Markets.markets[DSO_iter]);
 	}
 
+	// Declare variables for the loops
 	int bz_ID;
 	int DSO_ID;	
 	int node_ID;
@@ -88,6 +89,7 @@ void Submitted_bid_calculation(int tick, DSO_Markets &DSO_Markets, market_inform
 	int point_ID;
 	double bid_quan;
 	Eigen::VectorXd bid_vec;
+	
 	// Trivial case: demand at each point are 100% inflexible
 	for(int point_iter = 0; point_iter < Power_network_inform.points.bidding_zone.size(); ++ point_iter){
 		node_ID = Power_network_inform.points.node(point_iter);
