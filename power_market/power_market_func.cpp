@@ -222,6 +222,7 @@ void Flow_Based_Market_Optimization(int tick, market_inform &Market, LP_object &
 	// Initial market clearing within each nodes
 	Eigen::VectorXi price_ID(Market.num_zone);
 	Market_clearing_nodal(tick, Market, price_ID, bidded_supply, bidded_demand);
+	//std::cout << price_ID.transpose() << "\n\n";
 	
 	// Initialization of process variables for the main optimization loop
 	Eigen::MatrixXd bidded_supply_export = Eigen::MatrixXd::Zero(Market.price_intervals + 2, Market.num_zone);
@@ -255,10 +256,15 @@ void Flow_Based_Market_Optimization(int tick, market_inform &Market, LP_object &
 		bidded_demand_aggregated.row(price_iter) = bidded_demand_aggregated.row(price_iter - 1) + bidded_demand_import.row(price_iter - 1) + bidded_demand_export.row(price_iter - 1);
 	}
 	bidded_total_aggregated = bidded_supply_aggregated + bidded_demand_aggregated;
+	//std::cout << price_ID(0) << "\n\n";
+	//std::cout << bidded_total_aggregated.col(0).transpose() << "\n\n";
+	//std::cout << bidded_total_aggregated.row(0) << "\n\n";
+	//std::cout << bidded_total_aggregated.bottomRows(1) << "\n\n";
 	
 	// Update inequality constraints for import / export
 	Problem.Boundary.ie_orig_matrix.col(0).segment(Market.network.num_edges, Market.network.num_vertice) = bidded_total_aggregated.row(0).transpose();
 	Problem.Boundary.ie_orig_matrix.col(1).segment(Market.network.num_edges, Market.network.num_vertice) = bidded_total_aggregated.row(Market.price_intervals + 2).transpose();
+	//std::cout << Problem.Boundary.ie_orig_matrix << "\n\n";
 
 	// Aggregated utility function for each bidding zone
 	for(int zone_iter = 0; zone_iter < Market.num_zone; ++ zone_iter){	
@@ -284,8 +290,9 @@ void Flow_Based_Market_Optimization(int tick, market_inform &Market, LP_object &
 	double tol = pow(10., -12.);
 	double eps = pow(10., -10.);
 	double mu = 1. - eps;
+	//double mu = .1;
 	double dS = 10.;
-	double deficit_penalty = 100.;
+	double deficit_penalty = eps;
 	double error;
 	double obj = 0.;
 	double obj_temp;
@@ -310,9 +317,9 @@ void Flow_Based_Market_Optimization(int tick, market_inform &Market, LP_object &
 	int loop_count = 0;
 	//while(loop_count < 10000){
 	while(!break_flag){
-		//std::cout << "---------------------------------------------------------------------------\n";
-		//std::cout << loop_count << "\n";
-		//std::cout << "---------------------------------------------------------------------------\n";
+		std::cout << "---------------------------------------------------------------------------\n";
+		std::cout << loop_count << "\n";
+		std::cout << "---------------------------------------------------------------------------\n";
 		loop_count += 1;
 		break_flag = 1;
 		//std::cout << "Search all directions\n";
@@ -334,7 +341,8 @@ void Flow_Based_Market_Optimization(int tick, market_inform &Market, LP_object &
 				//std::cout << "No flow\n\n";
 				//flow_dir(zone_iter) = 0;
 				continue;
-			}		
+			}
+			//flow_dir(zone_iter) = 1;
 					
 			// Update quantity after small increase / decrease
 			//std::cout << "Update quantity after small increase / decrease\n";
@@ -434,6 +442,10 @@ void Flow_Based_Market_Optimization(int tick, market_inform &Market, LP_object &
 			for(int edge_iter = 0; edge_iter < Market.network.num_edges; ++ edge_iter){
 				error += pow(std::min(flow_temp(edge_iter) - Problem.Boundary.ie_orig_matrix(edge_iter, 0), 0.) + std::max(flow_temp(edge_iter) - Problem.Boundary.ie_orig_matrix(edge_iter, 1), 0.), 2.);
 			}
+			// Power errors
+//			for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
+//				error += pow(std::min(quan_temp(node_iter) - Problem.Boundary.ie_orig_matrix(Market.network.num_edges + node_iter, 0), 0.) + std::max(quan_temp(node_iter) - Problem.Boundary.ie_orig_matrix(Market.network.num_edges + node_iter, 1), 0.), 2.);
+//			}
 			// Voltage errors
 			for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
 				error += pow(std::min(voltage_temp(node_iter) - Problem.Boundary.ie_orig_matrix(Market.network.num_edges + Market.network.num_vertice + node_iter, 0), 0.) + std::max(voltage_temp(node_iter) - Problem.Boundary.ie_orig_matrix(Market.network.num_edges + Market.network.num_vertice + node_iter, 1), 0.), 2.);
@@ -442,7 +454,8 @@ void Flow_Based_Market_Optimization(int tick, market_inform &Market, LP_object &
 			// Update objective increment for this degree of freedom
 			//std::cout << "Update objective increment for this degree of freedom\n\n";
 			obj_temp = (1. - mu) * utility_temp.sum() - mu * error;
-			increment_dot(zone_iter) = flow_dir(zone_iter) * (obj_temp - obj);
+			increment_dot(zone_iter) = flow_dir(zone_iter) * (obj_temp - obj) * (obj_temp >= obj);
+			//increment_dot(zone_iter) = flow_dir(zone_iter) * (obj_temp - obj);// * (obj_temp >= obj);
 			//std::cout << (1. - mu) * utility_temp.sum() << "\n";
 			//std::cout << mu * error << "\n\n";
 			
@@ -456,7 +469,7 @@ void Flow_Based_Market_Optimization(int tick, market_inform &Market, LP_object &
 		}
 		
 		// Update gradient direction
-		//std::cout << "Update gradient direction\n";
+		std::cout << "Update gradient direction\n";
 		increment_coeff = Market.dof_metric.solve(increment_dot);
 		grad = Eigen::VectorXd::Zero(Market.num_zone);
 		for(int zone_iter = 0; zone_iter < Market.num_zone - 1; ++ zone_iter){
@@ -470,7 +483,7 @@ void Flow_Based_Market_Optimization(int tick, market_inform &Market, LP_object &
 		//std::cout << grad.transpose() << "\n\n";
 		
 		// Update quantity on gradient direction
-		//std::cout << "Update along gradient direction\n";
+		std::cout << "Update along gradient direction\n";
 		quan_temp = quan + grad * dS;
 		
 		// Update price after small increase / decrease
@@ -556,45 +569,49 @@ void Flow_Based_Market_Optimization(int tick, market_inform &Market, LP_object &
 		}
 		
 		// Update source / sink, voltage, and power flow
-		//std::cout << "Update source / sink, voltage, and power flow\n";
+		std::cout << "Update source / sink, voltage, and power flow\n";
 		voltage_temp.tail(Market.network.num_vertice - 1) = Problem.Solver.ldlt.solve(quan_temp.tail(Market.network.num_vertice - 1));
 		flow_temp = (Problem.Constraint.eq_orig_matrix).topRightCorner(Market.network.num_edges, Market.network.num_vertice) * voltage_temp;		
 
 		// Update errors
-		//std::cout << "Update errors\n";
+		std::cout << "Update errors\n";
 		error = 0.;
 		// Power flow errors
 		for(int edge_iter = 0; edge_iter < Market.network.num_edges; ++ edge_iter){
 			error += pow(std::min(flow_temp(edge_iter) - Problem.Boundary.ie_orig_matrix(edge_iter, 0), 0.) + std::max(flow_temp(edge_iter) - Problem.Boundary.ie_orig_matrix(edge_iter, 1), 0.), 2.);
 		}
+		// Power errors
+//		for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
+//			error += pow(std::min(quan_temp(node_iter) - Problem.Boundary.ie_orig_matrix(Market.network.num_edges + node_iter, 0), 0.) + std::max(quan_temp(node_iter) - Problem.Boundary.ie_orig_matrix(Market.network.num_edges + node_iter, 1), 0.), 2.);
+//		}
 		// Voltage errors
 		for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
 			error += pow(std::min(voltage_temp(node_iter) - Problem.Boundary.ie_orig_matrix(Market.network.num_edges + Market.network.num_vertice + node_iter, 0), 0.) + std::max(voltage_temp(node_iter) - Problem.Boundary.ie_orig_matrix(Market.network.num_edges + Market.network.num_vertice + node_iter, 1), 0.), 2.);
 		}
 		
 		// Update objective
-		//std::cout << "Update objective\n";
+		std::cout << "Update objective\n";
 		obj_temp = (1. - mu) * utility_temp.sum() - mu * error;
 		
 		// Check if objective function is actually improved
-		//std::cout << "Check if objective function is actually improved\n";
+		std::cout << "Check if objective function is actually improved\n";
 		if(obj_temp > obj){			
 			quan = quan_temp;
 			price_ID = price_ID_temp;
 			utility = utility_temp;
 			obj = obj_temp;
-			//std::cout << "Objective function updated\n";
+			std::cout << "Objective function updated\n";
 			//std::cout << price_ID.transpose() << "\n";
 			//std::cout << quan.transpose() << "\n";
-			//std::cout << obj_temp - obj << "\n\n";			
+			std::cout << obj_temp - obj << "\n\n";			
 		}
 		else{
 			dS /= 2.;
-			//std::cout << "Objective function not updated\n";
+			std::cout << "Objective function not updated\n";
 			//std::cout << quan_temp.transpose() << "\n";
 			//std::cout << quan.transpose() << "\n";
-			//std::cout << obj_temp << "\n\n";
-			//std::cout << dS << "\n\n";
+			std::cout << obj_temp << "\n\n";
+			std::cout << dS << "\n\n";
 			
 			// Return to original values
 			quan_temp = quan;		
@@ -614,6 +631,7 @@ void Flow_Based_Market_Optimization(int tick, market_inform &Market, LP_object &
 	Problem.Solution.orig_vector.head(Market.network.num_edges) = (Problem.Constraint.eq_orig_matrix).topRightCorner(Market.network.num_edges, Market.network.num_vertice) * Problem.Solution.orig_vector.tail(Market.network.num_vertice);		
 	//std::cout << Problem.Solution.orig_vector.segment(Market.network.num_edges, Market.network.num_vertice).transpose() << "\n\n";
 	//std::cout << Problem.Solution.orig_vector.transpose() << "\n\n";
+	//std::cout << price_ID.transpose() << "\n\n";
 	std::cout << quan.minCoeff() << " " << quan.maxCoeff() << "\n";
 	std::cout << (Problem.Solution.orig_vector.tail(Market.network.num_vertice - 1)).minCoeff() << " " << (Problem.Solution.orig_vector.tail(Market.network.num_vertice - 1)).maxCoeff() << "\n";
 	std::cout << (Problem.Solution.orig_vector.head(Market.network.num_edges)).minCoeff() << " " << (Problem.Solution.orig_vector.head(Market.network.num_edges)).maxCoeff() << "\n\n";		

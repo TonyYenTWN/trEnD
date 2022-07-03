@@ -2,12 +2,7 @@
 #include <iostream>
 //#include <chrono>
 #include "../basic/LP_gpa.h"
-#include "../basic/rw_csv.cpp"
-#include "../power_network/power_network_input.cpp"
 #include "power_market.h"
-#include "power_market_func.cpp"
-#include "IMO.cpp"
-#include "TSO.cpp"
 
 void DSO_Markets_Set(DSO_Markets &DSO_Markets, network_inform &Power_network_inform, int Time){
 	DSO_Markets.markets.clear();
@@ -33,23 +28,23 @@ void DSO_Markets_Set(DSO_Markets &DSO_Markets, network_inform &Power_network_inf
 	}
 }
 
-int main(){
-	network_inform Power_network_inform;
-	power_network_input_process(Power_network_inform);
-	
-	int Time = 8760;
-	std::string fin_name_moc = "input/merit_order_curve_q_assimilated_2021.csv";
-	std::string fin_name_demand = "input/residual_load_default_forecast_2021.csv";
-	market_inform International_Market;
-	International_Market_Set(International_Market, Time, fin_name_moc, fin_name_demand);
-	
-	market_inform TSO_Market;
-	LP_object TSO_Problem; 
-	TSO_Market_Set(TSO_Market, Power_network_inform, 1);
-	Flow_Based_Market_LP_Set(TSO_Market, TSO_Problem);		
-	
-	std::string fin_point_demand = "../area_deamand/processed/nominal_mean_demand_field_10km_annual_mean.csv";
-	DSO_Markets DSO_Markets;
-	DSO_Markets_Set(DSO_Markets, Power_network_inform, 1);
-	Submitted_bid_calculation(0, DSO_Markets, TSO_Market, International_Market, Power_network_inform, fin_point_demand);
-}
+//int main(){
+//	network_inform Power_network_inform;
+//	power_network_input_process(Power_network_inform);
+//	
+//	int Time = 8760;
+//	std::string fin_name_moc = "input/merit_order_curve_q_assimilated_2021.csv";
+//	std::string fin_name_demand = "input/residual_load_default_forecast_2021.csv";
+//	market_inform International_Market;
+//	International_Market_Set(International_Market, Time, fin_name_moc, fin_name_demand);
+//	
+//	market_inform TSO_Market;
+//	LP_object TSO_Problem; 
+//	TSO_Market_Set(TSO_Market, Power_network_inform, 1);
+//	Flow_Based_Market_LP_Set(TSO_Market, TSO_Problem);		
+//	
+//	std::string fin_point_demand = "../area_deamand/processed/nominal_mean_demand_field_10km_annual_mean.csv";
+//	DSO_Markets DSO_Markets;
+//	DSO_Markets_Set(DSO_Markets, Power_network_inform, 1);
+//	Submitted_bid_calculation(0, DSO_Markets, TSO_Market, International_Market, Power_network_inform, fin_point_demand);
+//}
