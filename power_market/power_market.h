@@ -35,7 +35,7 @@ struct market_inform{
 	Eigen::VectorXd bidded_price;
 	Eigen::MatrixXd merit_order_curve;
 	Eigen::MatrixXd demand_default;			// Default demand profiles of the bidding zones; in later runs demand bids from Norway should come from lower level markets
-	Eigen::SimplicialLDLT <Eigen::SparseMatrix <double>> dof_metric;
+	Eigen::SparseQR <Eigen::SparseMatrix <double>, Eigen::COLAMDOrdering <int>> dof_metric;
 	
 	// Set bidded price
 	void set_bidded_price(){
