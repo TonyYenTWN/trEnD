@@ -125,7 +125,7 @@ void plant_data_input(network_inform &Power_network_inform, std::string fin_hydr
 		Power_network_inform.plants.hydro.node(hydro_iter) = int(hydro_inform(hydro_iter, 0)) - 1;
 		Power_network_inform.plants.hydro.type(hydro_iter) = int(hydro_inform(hydro_iter, 1)) - 1;
 	}
-	Power_network_inform.plants.hydro.cap = hydro_inform.col(3);
+	Power_network_inform.plants.hydro.cap = hydro_inform.col(3).array().abs();
 	Power_network_inform.plants.hydro.x = hydro_inform.col(hydro_inform.cols() - 4);
 	Power_network_inform.plants.hydro.y = hydro_inform.col(hydro_inform.cols() - 3);
 	Power_network_inform.plants.hydro.lon = hydro_inform.col(hydro_inform.cols() - 2);
