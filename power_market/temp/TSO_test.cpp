@@ -172,7 +172,7 @@ void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, LP_obj
 	double eps = pow(10., -10.);
 	double mu = 1. - eps;
 	//double mu = 1 - pow(10., -6.);
-	double dS = 40.;
+	double dS = 100.;
 	double obj = 0.;
 	double obj_temp;
 	Eigen::VectorXi price_ID_temp = price_ID;
@@ -863,11 +863,11 @@ void Flow_Based_Market_Optimization_Test_4(int tick, market_inform &Market, LP_o
 	// Declare variables for the main loop
 	bool divide_flag;
 	int node_ref_ID;
+	int zone_iter;
 	double tol = pow(10., -12.);
 	double eps = pow(10., -10.);
-	double mu = 1. - eps;
-	//double mu = 0.;
-	double dS = 15.;
+	double mu = 1 - eps;
+	double dS = bidded_total_aggregated.lpNorm <Eigen::Infinity> ();
 	double error;
 	double obj = 0.;
 	double obj_temp;
@@ -882,19 +882,18 @@ void Flow_Based_Market_Optimization_Test_4(int tick, market_inform &Market, LP_o
 	Eigen::VectorXd utility_temp = utility;
 	Eigen::VectorXd grad = Eigen::VectorXd::Zero(Market.num_zone);
 	
-	int loop_count = 0;
-	while(dS > .0001){
-		loop_count += 1;
-		
+	while(dS > .01 * bidded_total_aggregated.lpNorm <Eigen::Infinity> ()){
 		divide_flag = 1;
-		for(int zone_iter = 0; zone_iter < Market.num_zone; ++ zone_iter){
+		//for(int zone_iter = 0; zone_iter < Market.num_zone; ++ zone_iter){
+		for(int loop_count = 0; loop_count < 5000; ++ loop_count){
+			zone_iter = std::rand() % Market.num_zone;
 			node_ref_ID = std::rand() % Market.num_zone;
 			if(zone_iter == node_ref_ID){
 				continue;
 			}			
 			
 			for(int dir_iter = 0; dir_iter < 2; ++ dir_iter){
-				// Check if direction is plausible
+				//Check if direction is plausible
 				if(price_ID_temp(zone_iter) < price_ID_temp(zone_iter) && dir_iter == 0){
 					continue;
 				}
@@ -1030,10 +1029,10 @@ void Flow_Based_Market_Optimization_Test_4(int tick, market_inform &Market, LP_o
 			//std::cout << dS << "\n";
 		}
 	}
-	
+
 	//std::cout << "\n" << grad.transpose() << "\n\n";
-	std::cout << "\n" << obj << "\n\n";
-	std::cout << "\n" << quan.transpose() << "\n\n";
+	//std::cout << "\n" << obj << "\n\n";
+	//std::cout << "\n" << quan.transpose() << "\n\n";
 	//std::cout << "\n" << voltage.transpose() << "\n\n";	
 	//std::cout << "\n" << flow.transpose() << "\n\n";			
 }
@@ -1043,10 +1042,10 @@ int main(){
 	power_network_input_process(Power_network_inform, "../../power_network/");	
 	
 	market_inform TSO_Market;
-	TSO_Market_Set_Test_1(TSO_Market, 1);
+	TSO_Market_Set_Test_2(TSO_Market, 1);
 	LP_object TSO_Problem;
-	Flow_Based_Market_LP_Set(TSO_Market, TSO_Problem);
-	Flow_Based_Market_Optimization_Test_3(0, TSO_Market, TSO_Problem);
+//	Flow_Based_Market_LP_Set(TSO_Market, TSO_Problem);
+//	Flow_Based_Market_Optimization_Test_3(0, TSO_Market, TSO_Problem);
 
 	Flow_Based_Market_LP_Set(TSO_Market, TSO_Problem);
 	Flow_Based_Market_Optimization_Test_4(0, TSO_Market, TSO_Problem);
