@@ -869,15 +869,12 @@ void Flow_Based_Market_Optimization_Test_4(int tick, market_inform &Market, LP_o
 	double mu = 1 - eps;
 	double dS = bidded_total_aggregated.lpNorm <Eigen::Infinity> ();
 	double error;
-	double obj = 0;
+	double obj = 0.;
 	double obj_temp;
 	Eigen::VectorXi price_ID_temp = price_ID;
 	Eigen::VectorXd voltage = Eigen::VectorXd::Zero(Market.num_zone);
 	Eigen::VectorXd voltage_temp = voltage;
-	Eigen::VectorXd quan = Eigen::VectorXd::Zero(Market.num_zone);
-//	for(int zone_iter = 0; zone_iter < Market.num_zone; ++ zone_iter){
-//		quan(zone_iter) = 100. * (zone_iter < Market.num_zone / 2) - 100. * (zone_iter >= Market.num_zone / 2);
-//	}	
+	Eigen::VectorXd quan = Eigen::VectorXd::Zero(Market.num_zone);	
 	Eigen::VectorXd quan_temp = quan;	
 	Eigen::VectorXd flow = Eigen::VectorXd::Zero(Market.network.num_edges);
 	Eigen::VectorXd flow_temp = flow;
