@@ -869,12 +869,15 @@ void Flow_Based_Market_Optimization_Test_4(int tick, market_inform &Market, LP_o
 	double mu = 1 - eps;
 	double dS = bidded_total_aggregated.lpNorm <Eigen::Infinity> ();
 	double error;
-	double obj = 0.;
+	double obj = 0;
 	double obj_temp;
 	Eigen::VectorXi price_ID_temp = price_ID;
 	Eigen::VectorXd voltage = Eigen::VectorXd::Zero(Market.num_zone);
 	Eigen::VectorXd voltage_temp = voltage;
-	Eigen::VectorXd quan = Eigen::VectorXd::Zero(Market.num_zone);	
+	Eigen::VectorXd quan = Eigen::VectorXd::Zero(Market.num_zone);
+//	for(int zone_iter = 0; zone_iter < Market.num_zone; ++ zone_iter){
+//		quan(zone_iter) = 100. * (zone_iter < Market.num_zone / 2) - 100. * (zone_iter >= Market.num_zone / 2);
+//	}	
 	Eigen::VectorXd quan_temp = quan;	
 	Eigen::VectorXd flow = Eigen::VectorXd::Zero(Market.network.num_edges);
 	Eigen::VectorXd flow_temp = flow;
@@ -882,10 +885,13 @@ void Flow_Based_Market_Optimization_Test_4(int tick, market_inform &Market, LP_o
 	Eigen::VectorXd utility_temp = utility;
 	Eigen::VectorXd grad = Eigen::VectorXd::Zero(Market.num_zone);
 	
+	int loop_count = 0;
+	//while(loop_count < 1){
 	while(dS > .01 * bidded_total_aggregated.lpNorm <Eigen::Infinity> ()){
+		loop_count += 1;
 		divide_flag = 1;
 		//for(int zone_iter = 0; zone_iter < Market.num_zone; ++ zone_iter){
-		for(int loop_count = 0; loop_count < 5000; ++ loop_count){
+		for(int rand_draw = 0; rand_draw < 5000; ++ rand_draw){
 			zone_iter = std::rand() % Market.num_zone;
 			node_ref_ID = std::rand() % Market.num_zone;
 			if(zone_iter == node_ref_ID){
@@ -894,12 +900,12 @@ void Flow_Based_Market_Optimization_Test_4(int tick, market_inform &Market, LP_o
 			
 			for(int dir_iter = 0; dir_iter < 2; ++ dir_iter){
 				//Check if direction is plausible
-				if(price_ID_temp(zone_iter) < price_ID_temp(zone_iter) && dir_iter == 0){
-					continue;
-				}
-				else if(price_ID_temp(zone_iter) > price_ID_temp(zone_iter) && dir_iter == 1){
-					continue;
-				}
+//				if(price_ID_temp(zone_iter) < price_ID_temp(zone_iter) && dir_iter == 0){
+//					continue;
+//				}
+//				else if(price_ID_temp(zone_iter) > price_ID_temp(zone_iter) && dir_iter == 1){
+//					continue;
+//				}
 				
 				// Update quantity after small increase / decrease
 				quan_temp(zone_iter) += 2 * (dir_iter - .5) * dS;
@@ -998,15 +1004,19 @@ void Flow_Based_Market_Optimization_Test_4(int tick, market_inform &Market, LP_o
 				
 				// Calculate objective 
 				obj_temp = (1. - mu) * utility_temp.sum() - mu * error;
+				//std::cout << zone_iter << " " << node_ref_ID << " " << obj_temp << "\n";
 				
 				// Check if objective should be updated
 				if(obj_temp > obj){
 					// Update if objective has been improved
-					quan = quan_temp;
+					quan(zone_iter) = quan_temp(zone_iter);
+					quan(node_ref_ID) = quan_temp(node_ref_ID);
 					voltage = voltage_temp;
 					flow = flow_temp;
-					price_ID = price_ID_temp;
-					utility = utility_temp;
+					price_ID(zone_iter) = price_ID_temp(zone_iter);
+					price_ID(node_ref_ID) = price_ID_temp(node_ref_ID);
+					utility(zone_iter) = utility_temp(zone_iter);
+					utility(node_ref_ID) = utility_temp(node_ref_ID);
 					obj = obj_temp;	
 					divide_flag = 0;
 					break;
@@ -1032,8 +1042,8 @@ void Flow_Based_Market_Optimization_Test_4(int tick, market_inform &Market, LP_o
 
 	//std::cout << "\n" << grad.transpose() << "\n\n";
 	//std::cout << "\n" << obj << "\n\n";
-	//std::cout << "\n" << quan.transpose() << "\n\n";
-	//std::cout << "\n" << voltage.transpose() << "\n\n";	
+	std::cout << "\n" << quan.transpose() << "\n\n";
+	//std::cout << "\n" << voltage.transpose() << "\n\n";
 	//std::cout << "\n" << flow.transpose() << "\n\n";			
 }
 
