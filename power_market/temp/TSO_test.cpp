@@ -99,8 +99,8 @@ void TSO_Market_Set_Test_2(market_inform &TSO_Market, int Time){
 	
 	// For the trivial case only: initialize submitted supply and demand bids at each node
 	Market_Initialization(TSO_Market);
-	TSO_Market.submitted_supply.leftCols(TSO_Market.num_zone / 2) = Eigen::MatrixXd::Constant(TSO_Market.price_intervals + 2, TSO_Market.num_zone / 2, 1.);
-	TSO_Market.submitted_demand.rightCols(TSO_Market.num_zone / 2) = Eigen::MatrixXd::Constant(TSO_Market.price_intervals + 2, TSO_Market.num_zone / 2, 1.);
+	TSO_Market.submitted_supply.leftCols(TSO_Market.num_zone / 2 - 1) = Eigen::MatrixXd::Constant(TSO_Market.price_intervals + 2, TSO_Market.num_zone / 2, 1.);
+	TSO_Market.submitted_demand.rightCols(TSO_Market.num_zone / 2 - 1) = Eigen::MatrixXd::Constant(TSO_Market.price_intervals + 2, TSO_Market.num_zone / 2, 1.);
 }
 
 void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, LP_object &Problem){
@@ -791,7 +791,7 @@ void Flow_Based_Market_Optimization_Test_3(int tick, market_inform &Market, LP_o
 	std::cout << "\n" << obj << "\n\n";
 	//std::cout << "\n" << grad.transpose() << "\n\n";
 	std::cout << "\n" << quan.transpose() << "\n\n";
-	//std::cout << "\n" << voltage.transpose() << "\n\n";	
+	//std::cout << "\n" << voltage.transpose() << "\n\n";
 	//std::cout << "\n" << flow.transpose() << "\n\n";
 }
 
@@ -859,190 +859,188 @@ void Flow_Based_Market_Optimization_Test_4(int tick, market_inform &Market, LP_o
 			}			
 		}
 	}
+
+	// Find nodes with no power source / sink
+	std::vector <int> Non_zero;
+	Non_zero.reserve(Market.num_zone);
+	for(int zone_iter = 0; zone_iter < Market.num_zone; ++ zone_iter){
+		if(abs(bidded_total_aggregated(0, zone_iter) - bidded_total_aggregated(Market.price_intervals + 2, zone_iter)) > 0.){
+			Non_zero.push_back(zone_iter);
+		}
+	}
 	
-	// Declare variables for the main loop
-	bool divide_flag;
-	int node_ref_ID;
-	int zone_iter;
-	double tol = pow(10., -12.);
-	double eps = pow(10., -10.);
-	double mu = 1 - eps;
-	double dS = bidded_total_aggregated.lpNorm <Eigen::Infinity> ();
+	// Declare variables for the initial solver
+	double eps = pow(10., -12.);
+	double ratio;
 	double error;
-	double obj = 0.;
-	double obj_temp;
-	Eigen::VectorXi price_ID_temp = price_ID;
+	double utility_sum;
+	Eigen::Vector2d quan_boundary;
+	Eigen::VectorXd quan(Market.num_zone);
+	Eigen::VectorXd utility(Market.num_zone);
 	Eigen::VectorXd voltage = Eigen::VectorXd::Zero(Market.num_zone);
-	Eigen::VectorXd voltage_temp = voltage;
-	Eigen::VectorXd quan = Eigen::VectorXd::Zero(Market.num_zone);	
-	Eigen::VectorXd quan_temp = quan;	
 	Eigen::VectorXd flow = Eigen::VectorXd::Zero(Market.network.num_edges);
-	Eigen::VectorXd flow_temp = flow;
-	Eigen::VectorXd utility = Eigen::VectorXd::Zero(Market.num_zone);
+	Eigen::MatrixXd quan_interval(Market.num_zone, 2);
+	Eigen::MatrixXd utility_interval(Market.num_zone, 2);
+	
+	// Find optimal solution without voltage and power flow constraints
+	Eigen::VectorXd bidded_total_aggregated_all = bidded_total_aggregated * Eigen::VectorXd::Constant(Market.num_zone, 1.);
+	for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter){
+		if(bidded_total_aggregated_all(price_iter) <= 0 && bidded_total_aggregated_all(price_iter + 1) >= 0){
+			price_ID = Eigen::VectorXi::Constant(Market.num_zone, price_iter);
+			if(bidded_total_aggregated_all(price_iter + 1) > bidded_total_aggregated_all(price_iter)){
+				ratio = bidded_total_aggregated_all(price_iter + 1) / (bidded_total_aggregated_all(price_iter + 1) - bidded_total_aggregated_all(price_iter));				
+			}
+			else{
+				ratio = .5;
+			}
+			quan = ratio * bidded_total_aggregated.row(price_iter) + (1. - ratio) * bidded_total_aggregated.row(price_iter + 1);
+			quan_interval.col(0) = bidded_total_aggregated.row(price_iter);
+			quan_interval.col(1) = bidded_total_aggregated.row(price_iter + 1);
+			utility_interval.col(0) = utility_aggregated.row(price_iter);
+			utility_interval.col(1) = utility_aggregated.row(price_iter + 1);
+			quan_boundary << bidded_total_aggregated_all(price_iter), bidded_total_aggregated_all(price_iter + 1);
+			
+			break;
+		}
+	}
+	
+	// Find initial values for utility, voltage, and power flow
+	utility = ratio * utility_aggregated.row(price_ID(0)) + (1. - ratio) * utility_aggregated.row(price_ID(0) + 1);
+	utility_sum = utility.sum();
+	voltage.tail(Market.network.num_vertice - 1) = Problem.Solver.ldlt.solve(quan.tail(Market.network.num_vertice - 1));
+	flow = (Problem.Constraint.eq_orig_matrix).topRightCorner(Market.network.num_edges, Market.network.num_vertice) * voltage;
+	
+	// Find initial values for error and objective
+	error = 0.;
+	// Power flow errors
+	for(int edge_iter = 0; edge_iter < Market.network.num_edges; ++ edge_iter){
+		error += pow(std::min(flow(edge_iter) - Problem.Boundary.ie_orig_matrix(edge_iter, 0), 0.) + std::max(flow(edge_iter) - Problem.Boundary.ie_orig_matrix(edge_iter, 1), 0.), 2.);
+	}
+	// Voltage errors
+	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
+		error += pow(std::min(voltage(node_iter) - Problem.Boundary.ie_orig_matrix(Market.network.num_edges + Market.network.num_vertice + node_iter, 0), 0.) + std::max(voltage(node_iter) - Problem.Boundary.ie_orig_matrix(Market.network.num_edges + Market.network.num_vertice + node_iter, 1), 0.), 2.);
+	}
+	// Exit function if no constraint is violated
+	if(error == 0.){
+		// Update confirmed bids and prices
+		return;
+	}
+	
+	// Declare variables for the loop
+	int update_count = 0;
+	double ratio_temp;
+	double error_temp;
+	double utility_sum_temp = utility_sum;
+	Eigen::VectorXi price_ID_temp = price_ID;
+	Eigen::Vector2d quan_boundary_temp = quan_boundary;
+	Eigen::VectorXd quan_temp = quan;
 	Eigen::VectorXd utility_temp = utility;
-	Eigen::VectorXd grad = Eigen::VectorXd::Zero(Market.num_zone);
+	Eigen::VectorXd voltage_temp = voltage;
+	Eigen::VectorXd flow_temp = flow;
+	Eigen::MatrixXd quan_interval_temp = quan_interval;
+	Eigen::MatrixXd utility_interval_temp = utility_interval;
 	
 	int loop_count = 0;
-	//while(loop_count < 1){
-	while(dS > .01 * bidded_total_aggregated.lpNorm <Eigen::Infinity> ()){
+	while(loop_count < 2){
 		loop_count += 1;
-		divide_flag = 1;
-		//for(int zone_iter = 0; zone_iter < Market.num_zone; ++ zone_iter){
-		for(int rand_draw = 0; rand_draw < 5000; ++ rand_draw){
-			zone_iter = std::rand() % Market.num_zone;
-			node_ref_ID = std::rand() % Market.num_zone;
-			if(zone_iter == node_ref_ID){
-				continue;
-			}			
-			
+		for(int zone_iter = 0; zone_iter < Non_zero.size(); ++ zone_iter){
 			for(int dir_iter = 0; dir_iter < 2; ++ dir_iter){
-				//Check if direction is plausible
-//				if(price_ID_temp(zone_iter) < price_ID_temp(zone_iter) && dir_iter == 0){
-//					continue;
-//				}
-//				else if(price_ID_temp(zone_iter) > price_ID_temp(zone_iter) && dir_iter == 1){
-//					continue;
-//				}
+				quan_boundary_temp(0) -= bidded_total_aggregated(price_ID_temp(Non_zero[zone_iter]), Non_zero[zone_iter]);
+				quan_boundary_temp(1) -= bidded_total_aggregated(price_ID_temp(Non_zero[zone_iter]) + 1, Non_zero[zone_iter]);
+				price_ID_temp(Non_zero[zone_iter]) += 2 * dir_iter - 1;
 				
-				// Update quantity after small increase / decrease
-				quan_temp(zone_iter) += 2 * (dir_iter - .5) * dS;
-				quan_temp(node_ref_ID) -= 2 * (dir_iter - .5) * dS;
+				// Check if price_ID_temp is out of boundary
+				if(price_ID_temp(Non_zero[zone_iter]) < 0 || price_ID_temp(Non_zero[zone_iter]) > Market.price_intervals + 1){
+					// Price_temp out of boundary, return to origin value
+					price_ID_temp(Non_zero[zone_iter]) = price_ID(Non_zero[zone_iter]);
+					quan_boundary_temp = quan_boundary;
+					continue;
+				}
+				// Update price_ID_temp to non-zero quantity interval
+				if(price_ID_temp(Non_zero[zone_iter]) + 2 * dir_iter - 1 >= 0 && price_ID_temp(Non_zero[zone_iter]) + 2 * dir_iter - 1 <= Market.price_intervals + 1){
+					while(bidded_total_aggregated(price_ID_temp(Non_zero[zone_iter]), Non_zero[zone_iter]) == bidded_total_aggregated(price_ID_temp(Non_zero[zone_iter]) + 2 * dir_iter - 1, Non_zero[zone_iter])){
+						price_ID_temp(Non_zero[zone_iter]) += 2 * dir_iter - 1;
+						if(price_ID_temp(Non_zero[zone_iter]) + 2 * dir_iter - 1 < 0 || price_ID_temp(Non_zero[zone_iter]) + 2 * dir_iter - 1 > Market.price_intervals + 1){
+							break;
+						}
+					}				
+				}
 				
-				// Update price after small increase / decrease
-				if(quan_temp(zone_iter) < bidded_total_aggregated(price_ID_temp(zone_iter), zone_iter)){
-					while(quan_temp(zone_iter) < bidded_total_aggregated(price_ID_temp(zone_iter), zone_iter)){
-						if(price_ID_temp(zone_iter) == 0){
-							break;
-						}
-						price_ID_temp(zone_iter) -= 1;
-					}
+				// Update quantity and utility boundary and check if 0 is within the boundaries
+				quan_interval_temp.row(Non_zero[zone_iter]) << bidded_total_aggregated(price_ID_temp(Non_zero[zone_iter]), Non_zero[zone_iter]), bidded_total_aggregated(price_ID_temp(Non_zero[zone_iter]) + 1, Non_zero[zone_iter]);
+				utility_interval_temp.row(Non_zero[zone_iter]) << utility_aggregated(price_ID_temp(Non_zero[zone_iter]), Non_zero[zone_iter]), utility_aggregated(price_ID_temp(Non_zero[zone_iter]) + 1, Non_zero[zone_iter]);
+				quan_boundary_temp(0) += bidded_total_aggregated(price_ID_temp(Non_zero[zone_iter]), Non_zero[zone_iter]);
+				quan_boundary_temp(1) += bidded_total_aggregated(price_ID_temp(Non_zero[zone_iter]) + 1, Non_zero[zone_iter]);
+				if(quan_boundary_temp(0) > 0. || quan_boundary_temp(1) < 0.){
+					// 0 not in quantity boundary, return to origin value
+					price_ID_temp(Non_zero[zone_iter]) = price_ID(Non_zero[zone_iter]);
+					quan_interval_temp.row(Non_zero[zone_iter]) = quan_interval.row(Non_zero[zone_iter]);
+					utility_interval_temp.row(Non_zero[zone_iter]) = utility_interval.row(Non_zero[zone_iter]);
+					quan_boundary_temp = quan_boundary;
+					continue;				
 				}
-				else if(quan_temp(zone_iter) > bidded_total_aggregated(price_ID_temp(zone_iter) + 1, zone_iter)){
-					while(quan_temp(zone_iter) > bidded_total_aggregated(price_ID_temp(zone_iter) + 1, zone_iter)){
-						if(price_ID_temp(zone_iter) == Market.price_intervals + 1){
-							break;
-						}
-						price_ID_temp(zone_iter) += 1;
-					}
-				}
-				if(quan_temp(node_ref_ID) < bidded_total_aggregated(price_ID_temp(node_ref_ID), node_ref_ID)){
-					while(quan_temp(node_ref_ID) < bidded_total_aggregated(price_ID_temp(node_ref_ID), node_ref_ID)){
-						if(price_ID_temp(node_ref_ID) == 0){
-							break;
-						}
-						price_ID_temp(node_ref_ID) -= 1;
-					}
-				}
-				else if(quan_temp(node_ref_ID) > bidded_total_aggregated(price_ID_temp(node_ref_ID) + 1, node_ref_ID)){
-					while(quan_temp(node_ref_ID) > bidded_total_aggregated(price_ID_temp(node_ref_ID) + 1, node_ref_ID)){
-						if(price_ID_temp(node_ref_ID) == Market.price_intervals + 1){
-							break;
-						}
-						price_ID_temp(node_ref_ID) += 1;
-					}
-				}				
 				
-				// Update utility after small increase / decrease
-				if(quan_temp(zone_iter) < bidded_total_aggregated(0, zone_iter)){
-					utility_temp(zone_iter) = utility_aggregated(0, zone_iter);
-					utility_temp(zone_iter) -= (quan_temp(zone_iter) - bidded_total_aggregated(0, zone_iter)) * Market.price_range_inflex(0);
-				}
-				else if(quan_temp(zone_iter) > bidded_total_aggregated(Market.price_intervals + 2, zone_iter))	{
-					utility_temp(zone_iter) = utility_aggregated(Market.price_intervals + 2, zone_iter);
-					utility_temp(zone_iter) -= (quan_temp(zone_iter) - bidded_total_aggregated(Market.price_intervals + 2, zone_iter)) * Market.price_range_inflex(1);
+				// Find the correct ratio for quantities
+				if(quan_boundary_temp(1) > quan_boundary_temp(0)){
+					ratio_temp = quan_boundary_temp(1) / (quan_boundary_temp(1) - quan_boundary_temp(0));
 				}
 				else{
-					if(bidded_total_aggregated(price_ID_temp(zone_iter) + 1, zone_iter) - bidded_total_aggregated(price_ID_temp(zone_iter), zone_iter) != 0){
-						utility_temp(zone_iter) = (bidded_total_aggregated(price_ID_temp(zone_iter) + 1, zone_iter) - quan_temp(zone_iter)) * utility_aggregated(price_ID_temp(zone_iter), zone_iter)
-							+ (quan_temp(zone_iter) - bidded_total_aggregated(price_ID_temp(zone_iter), zone_iter)) * utility_aggregated(price_ID_temp(zone_iter) + 1, zone_iter);
-						utility_temp(zone_iter) /= bidded_total_aggregated(price_ID_temp(zone_iter) + 1, zone_iter) - bidded_total_aggregated(price_ID_temp(zone_iter), zone_iter);	
-					}
-					else{
-						utility_temp(zone_iter) = utility_aggregated(price_ID_temp(zone_iter), zone_iter);
-					}
-				}
-				if(quan_temp(node_ref_ID) < bidded_total_aggregated(0, node_ref_ID)){
-					utility_temp(node_ref_ID) = utility_aggregated(0, node_ref_ID);
-					utility_temp(node_ref_ID) -= (quan_temp(node_ref_ID) - bidded_total_aggregated(0, node_ref_ID)) * Market.price_range_inflex(0);
-				}
-				else if(quan_temp(node_ref_ID) > bidded_total_aggregated(Market.price_intervals + 2, node_ref_ID))	{
-					utility_temp(node_ref_ID) = utility_aggregated(Market.price_intervals + 2, node_ref_ID);
-					utility_temp(node_ref_ID) -= (quan_temp(node_ref_ID) - bidded_total_aggregated(Market.price_intervals + 2, node_ref_ID)) * Market.price_range_inflex(1);
-				}
-				else{
-					if(bidded_total_aggregated(price_ID_temp(node_ref_ID) + 1, node_ref_ID) - bidded_total_aggregated(price_ID_temp(node_ref_ID), node_ref_ID) != 0){
-						utility_temp(node_ref_ID) = (bidded_total_aggregated(price_ID_temp(node_ref_ID) + 1, node_ref_ID) - quan_temp(node_ref_ID)) * utility_aggregated(price_ID_temp(node_ref_ID), node_ref_ID)
-							+ (quan_temp(node_ref_ID) - bidded_total_aggregated(price_ID_temp(node_ref_ID), node_ref_ID)) * utility_aggregated(price_ID_temp(node_ref_ID) + 1, node_ref_ID);
-						utility_temp(node_ref_ID) /= bidded_total_aggregated(price_ID_temp(node_ref_ID) + 1, node_ref_ID) - bidded_total_aggregated(price_ID_temp(node_ref_ID), node_ref_ID);	
-					}
-					else{
-						utility_temp(node_ref_ID) = utility_aggregated(price_ID_temp(node_ref_ID), node_ref_ID);
-					}
+					ratio_temp = .5;
 				}
 				
-				// Update voltage and power flow after small increase / decrease
+				// Update the quantity and utility at each node
+				quan_temp = ratio * quan_interval_temp.col(0) + (1 - ratio) * quan_interval_temp.col(1);
+				utility_temp = ratio * utility_interval_temp.col(0) + (1 - ratio) * utility_interval_temp.col(1);
+				utility_sum_temp = utility_temp.sum();
+				
+				// Update the voltage and power flow
 				voltage_temp.tail(Market.network.num_vertice - 1) = Problem.Solver.ldlt.solve(quan_temp.tail(Market.network.num_vertice - 1));
-				flow_temp = (Problem.Constraint.eq_orig_matrix).topRightCorner(Market.network.num_edges, Market.network.num_vertice) * voltage_temp;		
-		
+				flow_temp = (Problem.Constraint.eq_orig_matrix).topRightCorner(Market.network.num_edges, Market.network.num_vertice) * voltage_temp;
+				
 				// Update errors
-				error = 0.;
+				error_temp = 0.;
 				// Power flow errors
 				for(int edge_iter = 0; edge_iter < Market.network.num_edges; ++ edge_iter){
-					error += pow(std::min(flow_temp(edge_iter) - Problem.Boundary.ie_orig_matrix(edge_iter, 0), 0.) + std::max(flow_temp(edge_iter) - Problem.Boundary.ie_orig_matrix(edge_iter, 1), 0.), 2.);
-				}
-				// Power errors
-				for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
-					error += pow(std::min(quan_temp(node_iter) - Problem.Boundary.ie_orig_matrix(Market.network.num_edges + node_iter, 0), 0.) + std::max(quan_temp(node_iter) - Problem.Boundary.ie_orig_matrix(Market.network.num_edges + node_iter, 1), 0.), 2.);
+					error_temp += pow(std::min(flow_temp(edge_iter) - Problem.Boundary.ie_orig_matrix(edge_iter, 0), 0.) + std::max(flow_temp(edge_iter) - Problem.Boundary.ie_orig_matrix(edge_iter, 1), 0.), 2.);
 				}
 				// Voltage errors
 				for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
-					error += pow(std::min(voltage_temp(node_iter) - Problem.Boundary.ie_orig_matrix(Market.network.num_edges + Market.network.num_vertice + node_iter, 0), 0.) + std::max(voltage_temp(node_iter) - Problem.Boundary.ie_orig_matrix(Market.network.num_edges + Market.network.num_vertice + node_iter, 1), 0.), 2.);
+					error_temp += pow(std::min(voltage_temp(node_iter) - Problem.Boundary.ie_orig_matrix(Market.network.num_edges + Market.network.num_vertice + node_iter, 0), 0.) + std::max(voltage_temp(node_iter) - Problem.Boundary.ie_orig_matrix(Market.network.num_edges + Market.network.num_vertice + node_iter, 1), 0.), 2.);
 				}
 				
-				// Calculate objective 
-				obj_temp = (1. - mu) * utility_temp.sum() - mu * error;
-				//std::cout << zone_iter << " " << node_ref_ID << " " << obj_temp << "\n";
-				
-				// Check if objective should be updated
-				if(obj_temp > obj){
-					// Update if objective has been improved
-					quan(zone_iter) = quan_temp(zone_iter);
-					quan(node_ref_ID) = quan_temp(node_ref_ID);
+				// Check if direction is plausible
+				if(error_temp < error && utility_sum_temp < utility_sum){
+					// Update solution if plausible
+					price_ID(Non_zero[zone_iter]) = price_ID_temp(Non_zero[zone_iter]);
+					quan_interval.row(Non_zero[zone_iter]) = quan_interval_temp.row(Non_zero[zone_iter]);
+					utility_interval.row(Non_zero[zone_iter]) = utility_interval_temp.row(Non_zero[zone_iter]);
+					ratio = ratio_temp;
+					error = error_temp;
+					quan_boundary = quan_boundary_temp;
+					quan = quan_temp;				
+					utility_sum = utility_sum_temp;
+					utility = utility_temp;			
 					voltage = voltage_temp;
 					flow = flow_temp;
-					price_ID(zone_iter) = price_ID_temp(zone_iter);
-					price_ID(node_ref_ID) = price_ID_temp(node_ref_ID);
-					utility(zone_iter) = utility_temp(zone_iter);
-					utility(node_ref_ID) = utility_temp(node_ref_ID);
-					obj = obj_temp;	
-					divide_flag = 0;
-					break;
+					break;								
 				}
 				else{
-					// Return to origin
-					quan_temp(zone_iter) = quan(zone_iter);
-					quan_temp(node_ref_ID) = quan(node_ref_ID);
-					price_ID_temp(zone_iter) = price_ID(zone_iter);
-					price_ID_temp(node_ref_ID) = price_ID(node_ref_ID);
-					utility_temp(zone_iter) = utility(zone_iter);
-					utility_temp(node_ref_ID) = utility(node_ref_ID);					
-				}																					
-			}	
+					// Return to original value
+					price_ID_temp(Non_zero[zone_iter]) = price_ID(Non_zero[zone_iter]);
+					quan_interval_temp.row(Non_zero[zone_iter]) = quan_interval.row(Non_zero[zone_iter]);
+					utility_interval_temp.row(Non_zero[zone_iter]) = utility_interval.row(Non_zero[zone_iter]);
+					quan_boundary_temp = quan_boundary;
+					quan_temp = quan;
+					utility_temp = utility;
+				}	
+			}
 		}		
-		
-		// Check if increment should be smaller
-		if(divide_flag){
-			dS /= 2.;
-			//std::cout << dS << "\n";
-		}
 	}
-
-	//std::cout << "\n" << grad.transpose() << "\n\n";
-	//std::cout << "\n" << obj << "\n\n";
-	std::cout << "\n" << quan.transpose() << "\n\n";
-	//std::cout << "\n" << voltage.transpose() << "\n\n";
-	//std::cout << "\n" << flow.transpose() << "\n\n";			
+	
+	std::cout << quan.transpose() << "\n\n";
+	std::cout << price_ID.transpose() << "\n\n";	
 }
+
 
 int main(){
 	network_inform Power_network_inform;
@@ -1052,7 +1050,7 @@ int main(){
 	TSO_Market_Set_Test_2(TSO_Market, 1);
 	LP_object TSO_Problem;
 //	Flow_Based_Market_LP_Set(TSO_Market, TSO_Problem);
-//	Flow_Based_Market_Optimization_Test_3(0, TSO_Market, TSO_Problem);
+//	Flow_Based_Market_Optimization(0, TSO_Market, TSO_Problem);
 
 	Flow_Based_Market_LP_Set(TSO_Market, TSO_Problem);
 	Flow_Based_Market_Optimization_Test_4(0, TSO_Market, TSO_Problem);
