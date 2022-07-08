@@ -180,11 +180,12 @@ void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, LP_obj
 	Problem.Solver.qr.compute(Problem.Constraint.eq_orig_matrix * Problem.Constraint.eq_orig_matrix.transpose());
 
 	// Declare variables for the main loop
-	bool infeasbile_flag = 0;
-	bool break_flag = 0;
+	bool infeasbile_flag;
+	bool break_flag;
+	int loop_count;
 	double tol = pow(10., -12.);
 	double eps = pow(10., -6.);
-	double mu = 1. - eps;
+	double mu = 1.;
 	double dS_max = 100.;
 	double dS;
 	double obj = -std::numeric_limits<double>::max();
@@ -216,143 +217,164 @@ void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, LP_obj
 	}
 	
 	// Increase a liitle bit of solution so it stays in the interior
-	Problem.Solution.orig_vector.segment(Market.network.num_edges, Market.network.num_vertice) += eps * (sol_temp - Problem.Solution.orig_vector).segment(Market.network.num_edges, Market.network.num_vertice);
-	Problem.Solution.orig_vector.tail(Market.network.num_vertice - 1) = Problem.Solver.ldlt.solve(Problem.Solution.orig_vector.segment(Market.network.num_edges + 1, Market.network.num_vertice - 1));
-	Problem.Solution.orig_vector.head(Market.network.num_edges) = (Problem.Constraint.eq_orig_matrix).topRightCorner(Market.network.num_edges, Market.network.num_vertice) * Problem.Solution.orig_vector.tail(Market.network.num_vertice);
+	infeasbile_flag = 1;
+	ratio = .5;
+	Problem.Solution.orig_vector.segment(Market.network.num_edges, Market.network.num_vertice) = 2 * eps * sol_temp.segment(Market.network.num_edges, Market.network.num_vertice);
 	sol_temp = Problem.Solution.orig_vector;
-	
-	// Calculate initial objective function
-	bar = 0.;
-	for(int constraint_iter = 0; constraint_iter < Problem.Variables_num; ++ constraint_iter){
-		if(sol_temp(constraint_iter) <= Problem.Boundary.ie_orig_matrix(constraint_iter, 0) || sol_temp(constraint_iter) >= Problem.Boundary.ie_orig_matrix(constraint_iter, 1)){
-			infeasbile_flag = 1;
-			break;
+	while(infeasbile_flag){
+		Problem.Solution.orig_vector.segment(Market.network.num_edges, Market.network.num_vertice) = ratio * sol_temp.segment(Market.network.num_edges, Market.network.num_vertice);
+		Problem.Solution.orig_vector.tail(Market.network.num_vertice - 1) = Problem.Solver.ldlt.solve(Problem.Solution.orig_vector.segment(Market.network.num_edges + 1, Market.network.num_vertice - 1));
+		Problem.Solution.orig_vector.head(Market.network.num_edges) = (Problem.Constraint.eq_orig_matrix).topRightCorner(Market.network.num_edges, Market.network.num_vertice) * Problem.Solution.orig_vector.tail(Market.network.num_vertice);
+		sol_temp = Problem.Solution.orig_vector;
+		
+		// Calculate initial objective function
+		bar = 0.;
+		infeasbile_flag = 0;
+		for(int constraint_iter = 0; constraint_iter < Problem.Variables_num; ++ constraint_iter){
+			if(sol_temp(constraint_iter) <= Problem.Boundary.ie_orig_matrix(constraint_iter, 0) || sol_temp(constraint_iter) >= Problem.Boundary.ie_orig_matrix(constraint_iter, 1)){
+				infeasbile_flag = 1;
+				break;
+			}
+			bar += std::log(sol_temp(constraint_iter) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0)) + std::log(Problem.Boundary.ie_orig_matrix(constraint_iter, 1) - sol_temp(constraint_iter));
+			bar -= 2 * std::log(Problem.Boundary.ie_orig_matrix(constraint_iter, 1) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0));
 		}
-		bar += std::log(sol_temp(constraint_iter) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0)) + std::log(Problem.Boundary.ie_orig_matrix(constraint_iter, 1) - sol_temp(constraint_iter));
-		bar -= 2 * std::log(Problem.Boundary.ie_orig_matrix(constraint_iter, 1) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0));
+		
+		// Check if increment is in the interior
+		if(!infeasbile_flag){
+			// Update objective
+			obj = bar;
+			break;
+		}		
 	}	
 	
 	// Main loop
-	int loop_count = 0;
-	//while(loop_count < 1){
-	while(!break_flag){
-		break_flag = 1;
-		loop_count += 1;
-		std::cout << "---------------------------------------------------------------------------\n";
-		std::cout << loop_count << "\n";
-		std::cout << "---------------------------------------------------------------------------\n";		
-		
-//		Indicator_trip.clear();
-//		Indicator_trip.reserve(Problem.Variables_num);
-		grad = Eigen::VectorXd::Zero(Problem.Variables_num);
-		sol_temp = Problem.Solution.orig_vector;
-		for(int constraint_iter = 0; constraint_iter < Problem.Variables_num; ++ constraint_iter){
-			// Update objective function and gradient
-			if(constraint_iter >= Market.network.num_edges && constraint_iter < Market.network.num_edges + Market.network.num_vertice){
-				Problem.Objective.orig_vector(constraint_iter) = -Market.bidded_price(price_ID(constraint_iter - Market.network.num_edges));
-				grad(constraint_iter) = (1. - mu) * Problem.Objective.orig_vector(constraint_iter);
-			}
+	while(mu > eps){
+		loop_count = 0;
+		break_flag = 0;
+		while(!break_flag){
+			break_flag = 1;
+			loop_count += 1;
+			//std::cout << "---------------------------------------------------------------------------\n";
+			//std::cout << loop_count << "\n";
+			//std::cout << "---------------------------------------------------------------------------\n";		
 			
-			// Calculate the error and examine whether boundary is breached
-			if(loop_count > 1){
-				grad(constraint_iter) -= 1. / (sol_temp(constraint_iter) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0)) - 1. / (sol_temp(constraint_iter) - Problem.Boundary.ie_orig_matrix(constraint_iter, 1));
-				grad(constraint_iter) *= mu / (Problem.Boundary.ie_orig_matrix(constraint_iter, 1) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0));							
-			}
-		}
-		
-		// Find the projected gradient and update the solution
-		grad -= Problem.Constraint.eq_orig_matrix.transpose() * Problem.Solver.qr.solve(Problem.Constraint.eq_orig_matrix * grad);
-		if(grad.norm() > tol){
-			grad /= grad.norm();
-		}
-		else{
-			break;
-		}
-		
-		// Update the solution in a loop
-		if(loop_count > 1){
-			// Compute psuedo 2nd derivative of objective from prior information
-		}
-		else{
-			dS = dS_max;
-		}
-		
-		while(dS > .001 * dS_max){
-			sol_temp = Problem.Solution.orig_vector + grad * dS;
-			
-			// Update temporary price and utility of each node
-			for(int zone_iter = 0; zone_iter < Market.num_zone; ++ zone_iter){
-				// Price
-				if(sol_temp(Market.network.num_edges + zone_iter) < bidded_total_aggregated(price_ID_temp(zone_iter), zone_iter)){
-					while(sol_temp(Market.network.num_edges + zone_iter) < bidded_total_aggregated(price_ID_temp(zone_iter), zone_iter)){				
-						if(price_ID_temp(zone_iter) == 0){
-							break;
-						}				
-						price_ID_temp(zone_iter) -= 1;				
-					}
-				}
-				else if(sol_temp(Market.network.num_edges + zone_iter) > bidded_total_aggregated(price_ID_temp(zone_iter), zone_iter)){
-					while(sol_temp(Market.network.num_edges + zone_iter) > bidded_total_aggregated(price_ID_temp(zone_iter), zone_iter)){
-						if(price_ID_temp(zone_iter) == Market.price_intervals + 1){
-							break;
-						}				
-						price_ID_temp(zone_iter) += 1;			
-					}
+			grad = Eigen::VectorXd::Zero(Problem.Variables_num);
+			sol_temp = Problem.Solution.orig_vector;
+			for(int constraint_iter = 0; constraint_iter < Problem.Variables_num; ++ constraint_iter){
+				// Calculate the error and examine whether boundary is breached
+				//if(loop_count > 1){
+					grad(constraint_iter) = 1. / (sol_temp(constraint_iter) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0)) - 1. / (sol_temp(constraint_iter) - Problem.Boundary.ie_orig_matrix(constraint_iter, 1));
+					grad(constraint_iter) *= -mu / (Problem.Boundary.ie_orig_matrix(constraint_iter, 1) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0));							
+				//}			
+				
+				// Update objective function and gradient
+				if(constraint_iter >= Market.network.num_edges && constraint_iter < Market.network.num_edges + Market.network.num_vertice){
+					Problem.Objective.orig_vector(constraint_iter) = -Market.bidded_price(price_ID(constraint_iter - Market.network.num_edges));
+					grad(constraint_iter) += (1. - mu) * Problem.Objective.orig_vector(constraint_iter);
 				}
 				
-				// Utility
-				if(sol_temp(Market.network.num_edges + zone_iter) > Problem.Boundary.ie_orig_matrix(Market.network.num_edges + zone_iter, 1)){
-					utility_temp(zone_iter) = utility_aggregated(Market.price_intervals + 2, zone_iter);
-					utility_temp(zone_iter) -= (sol_temp(Market.network.num_edges + zone_iter) - bidded_total_aggregated(Market.price_intervals + 2, zone_iter)) * Market.price_range_inflex(1);
-				}
-				else if(sol_temp(Market.network.num_edges + zone_iter) < Problem.Boundary.ie_orig_matrix(Market.network.num_edges + zone_iter, 0)){
-					utility_temp(zone_iter) = utility_aggregated(0, zone_iter);
-					utility_temp(zone_iter) -= (sol_temp(Market.network.num_edges + zone_iter) - bidded_total_aggregated(0, zone_iter)) * Market.price_range_inflex(0);
-				}
-				else{
-					utility_temp(zone_iter) = (bidded_total_aggregated(price_ID_temp(zone_iter) + 1, zone_iter) - sol_temp(Market.network.num_edges + zone_iter)) * utility_aggregated(price_ID_temp(zone_iter), zone_iter)
-						+ (sol_temp(Market.network.num_edges + zone_iter) - bidded_total_aggregated(price_ID_temp(zone_iter), zone_iter)) * utility_aggregated(price_ID_temp(zone_iter) + 1, zone_iter);
-					if(bidded_total_aggregated(price_ID_temp(zone_iter) + 1, zone_iter) - bidded_total_aggregated(price_ID_temp(zone_iter), zone_iter) != 0){
-						utility_temp(zone_iter) /= bidded_total_aggregated(price_ID_temp(zone_iter) + 1, zone_iter) - bidded_total_aggregated(price_ID_temp(zone_iter), zone_iter);
-					}	
-				}	
 			}
 			
-			// Examine whether boundary is breached and update log barrier function
-			bar = 0.;
-			infeasbile_flag = 0;
-			for(int constraint_iter = 0; constraint_iter < Problem.Variables_num; ++ constraint_iter){
-				if(sol_temp(constraint_iter) <= Problem.Boundary.ie_orig_matrix(constraint_iter, 0) || sol_temp(constraint_iter) >= Problem.Boundary.ie_orig_matrix(constraint_iter, 1)){
-					infeasbile_flag = 1;
-					break;
-				}
-				bar += std::log(sol_temp(constraint_iter) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0)) + std::log(Problem.Boundary.ie_orig_matrix(constraint_iter, 1) - sol_temp(constraint_iter));
-				bar -= 2 * std::log(Problem.Boundary.ie_orig_matrix(constraint_iter, 1) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0));
-			}
-			
-			// Check current objective function
-			obj_temp = (1. - mu) * utility_temp.sum() + mu * bar;
-			
-			// Update direction if feasible
-			if(!infeasbile_flag && obj_temp > obj){
-				// Update solution
-				Problem.Solution.orig_vector = sol_temp;
-				price_ID = price_ID_temp;
-				utility = utility_temp;
-				obj = obj_temp;
-				break_flag = 0;
-				break;
+			// Find the projected gradient and update the solution
+			grad -= Problem.Constraint.eq_orig_matrix.transpose() * Problem.Solver.qr.solve(Problem.Constraint.eq_orig_matrix * grad);
+			if(grad.norm() > tol){
+				grad /= grad.norm();
 			}
 			else{
-				dS /= 2.;
-				sol_temp = Problem.Solution.orig_vector;
-				price_ID_temp = price_ID;
-				utility_temp = utility;
-			}			
-		}
+				break;
+			}
+			
+			// Update the solution in a loop
+	//		if(loop_count > 1){
+	//			// Compute psuedo 2nd derivative of objective from prior information
+	//		}
+	//		else{
+	//			dS = dS_max;
+	//		}
+			dS = dS_max;
+			
+			while(dS > pow(mu, .5) * dS_max){
+				sol_temp = Problem.Solution.orig_vector + grad * dS;
+				
+				// Update temporary price and utility of each node
+				for(int zone_iter = 0; zone_iter < Market.num_zone; ++ zone_iter){
+					// Price
+					if(sol_temp(Market.network.num_edges + zone_iter) < bidded_total_aggregated(price_ID_temp(zone_iter), zone_iter)){
+						while(sol_temp(Market.network.num_edges + zone_iter) < bidded_total_aggregated(price_ID_temp(zone_iter), zone_iter)){				
+							if(price_ID_temp(zone_iter) == 0){
+								break;
+							}				
+							price_ID_temp(zone_iter) -= 1;				
+						}
+					}
+					else if(sol_temp(Market.network.num_edges + zone_iter) > bidded_total_aggregated(price_ID_temp(zone_iter), zone_iter)){
+						while(sol_temp(Market.network.num_edges + zone_iter) > bidded_total_aggregated(price_ID_temp(zone_iter), zone_iter)){
+							if(price_ID_temp(zone_iter) == Market.price_intervals + 1){
+								break;
+							}				
+							price_ID_temp(zone_iter) += 1;			
+						}
+					}
+					
+					// Utility
+					if(sol_temp(Market.network.num_edges + zone_iter) > Problem.Boundary.ie_orig_matrix(Market.network.num_edges + zone_iter, 1)){
+						utility_temp(zone_iter) = utility_aggregated(Market.price_intervals + 2, zone_iter);
+						utility_temp(zone_iter) -= (sol_temp(Market.network.num_edges + zone_iter) - bidded_total_aggregated(Market.price_intervals + 2, zone_iter)) * Market.price_range_inflex(1);
+					}
+					else if(sol_temp(Market.network.num_edges + zone_iter) < Problem.Boundary.ie_orig_matrix(Market.network.num_edges + zone_iter, 0)){
+						utility_temp(zone_iter) = utility_aggregated(0, zone_iter);
+						utility_temp(zone_iter) -= (sol_temp(Market.network.num_edges + zone_iter) - bidded_total_aggregated(0, zone_iter)) * Market.price_range_inflex(0);
+					}
+					else{
+						utility_temp(zone_iter) = (bidded_total_aggregated(price_ID_temp(zone_iter) + 1, zone_iter) - sol_temp(Market.network.num_edges + zone_iter)) * utility_aggregated(price_ID_temp(zone_iter), zone_iter)
+							+ (sol_temp(Market.network.num_edges + zone_iter) - bidded_total_aggregated(price_ID_temp(zone_iter), zone_iter)) * utility_aggregated(price_ID_temp(zone_iter) + 1, zone_iter);
+						if(bidded_total_aggregated(price_ID_temp(zone_iter) + 1, zone_iter) - bidded_total_aggregated(price_ID_temp(zone_iter), zone_iter) != 0){
+							utility_temp(zone_iter) /= bidded_total_aggregated(price_ID_temp(zone_iter) + 1, zone_iter) - bidded_total_aggregated(price_ID_temp(zone_iter), zone_iter);
+						}	
+					}	
+				}
+				
+				// Examine whether boundary is breached and update log barrier function
+				bar = 0.;
+				infeasbile_flag = 0;
+				for(int constraint_iter = 0; constraint_iter < Problem.Variables_num; ++ constraint_iter){
+					if(sol_temp(constraint_iter) <= Problem.Boundary.ie_orig_matrix(constraint_iter, 0) || sol_temp(constraint_iter) >= Problem.Boundary.ie_orig_matrix(constraint_iter, 1)){
+						infeasbile_flag = 1;
+						break;
+					}
+					bar += std::log(sol_temp(constraint_iter) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0)) + std::log(Problem.Boundary.ie_orig_matrix(constraint_iter, 1) - sol_temp(constraint_iter));
+					bar -= 2 * std::log(Problem.Boundary.ie_orig_matrix(constraint_iter, 1) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0));
+				}
+				
+				// Check current objective function
+				obj_temp = (1. - mu) * utility_temp.sum() + mu * bar;
+				
+				// Update direction if feasible
+				if(!infeasbile_flag && obj_temp > obj){
+					// Update solution
+					Problem.Solution.orig_vector = sol_temp;
+					price_ID = price_ID_temp;
+					utility = utility_temp;
+					obj = obj_temp;
+					break_flag = 0;
+					break;
+				}
+				else{
+					dS /= 2.;
+					sol_temp = Problem.Solution.orig_vector;
+					price_ID_temp = price_ID;
+					utility_temp = utility;
+					infeasbile_flag = 0;
+				}			
+			}
+		}		
+		// Update scale factor and objective
+		mu /= 2.;
+		obj = (1. - mu) * utility.sum() + mu * bar;
 	}
 	
 	std::cout << Problem.Solution.orig_vector.segment(Market.network.num_edges, Market.network.num_vertice).transpose() << "\n\n";
+	std::cout << .5 * Problem.Solution.orig_vector.segment(Market.network.num_edges, Market.network.num_vertice).array().abs().sum() << "\n\n";
 	//std::cout << Problem.Solution.orig_vector.segment(Market.network.num_edges, Market.network.num_vertice).minCoeff() << " " << Problem.Solution.orig_vector.segment(Market.network.num_edges, Market.network.num_vertice).maxCoeff() << "\n\n";
 	//std::cout << grad.segment(Market.network.num_edges, Market.network.num_vertice).transpose() << "\n\n";	
 }
