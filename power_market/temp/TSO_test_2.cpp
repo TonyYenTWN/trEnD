@@ -184,13 +184,15 @@ void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, LP_obj
 	bool break_flag;
 	int loop_count;
 	double tol = pow(10., -12.);
-	double eps = pow(10., -6.);
-	double mu = 1.;
+	double eps = pow(10., -10.);
+	double mu = eps;
 	double dS_max = 100.;
 	double dS;
-	double obj = -std::numeric_limits<double>::max();
+	double obj;
 	double obj_temp;
 	double bar;
+	double bar_temp;
+	double price_penalty = 1000.;
 	Eigen::VectorXi price_ID_temp = price_ID;
 	Eigen::VectorXd utility = Eigen::VectorXd::Zero(Market.num_zone);
 	Eigen::VectorXd utility_temp = utility;
@@ -219,7 +221,7 @@ void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, LP_obj
 	// Increase a liitle bit of solution so it stays in the interior
 	infeasbile_flag = 1;
 	ratio = .5;
-	Problem.Solution.orig_vector.segment(Market.network.num_edges, Market.network.num_vertice) = 2 * eps * sol_temp.segment(Market.network.num_edges, Market.network.num_vertice);
+	Problem.Solution.orig_vector.segment(Market.network.num_edges, Market.network.num_vertice) = 2. * sol_temp.segment(Market.network.num_edges, Market.network.num_vertice);
 	sol_temp = Problem.Solution.orig_vector;
 	while(infeasbile_flag){
 		Problem.Solution.orig_vector.segment(Market.network.num_edges, Market.network.num_vertice) = ratio * sol_temp.segment(Market.network.num_edges, Market.network.num_vertice);
@@ -231,12 +233,14 @@ void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, LP_obj
 		bar = 0.;
 		infeasbile_flag = 0;
 		for(int constraint_iter = 0; constraint_iter < Problem.Variables_num; ++ constraint_iter){
-			if(sol_temp(constraint_iter) <= Problem.Boundary.ie_orig_matrix(constraint_iter, 0) || sol_temp(constraint_iter) >= Problem.Boundary.ie_orig_matrix(constraint_iter, 1)){
-				infeasbile_flag = 1;
-				break;
+			if(constraint_iter < Market.network.num_edges || constraint_iter >= Market.network.num_edges + Market.network.num_vertice){
+				if(sol_temp(constraint_iter) <= Problem.Boundary.ie_orig_matrix(constraint_iter, 0) || sol_temp(constraint_iter) >= Problem.Boundary.ie_orig_matrix(constraint_iter, 1)){
+					infeasbile_flag = 1;
+					break;
+				}
+				bar += std::log(sol_temp(constraint_iter) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0)) + std::log(Problem.Boundary.ie_orig_matrix(constraint_iter, 1) - sol_temp(constraint_iter));
+				bar -= 2 * std::log(Problem.Boundary.ie_orig_matrix(constraint_iter, 1) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0));				
 			}
-			bar += std::log(sol_temp(constraint_iter) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0)) + std::log(Problem.Boundary.ie_orig_matrix(constraint_iter, 1) - sol_temp(constraint_iter));
-			bar -= 2 * std::log(Problem.Boundary.ie_orig_matrix(constraint_iter, 1) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0));
 		}
 		
 		// Check if increment is in the interior
@@ -248,7 +252,8 @@ void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, LP_obj
 	}	
 	
 	// Main loop
-	while(mu > eps){
+	//while(mu > eps){
+	while(mu > eps * .0001){
 		loop_count = 0;
 		break_flag = 0;
 		while(!break_flag){
@@ -259,17 +264,17 @@ void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, LP_obj
 			//std::cout << "---------------------------------------------------------------------------\n";		
 			
 			grad = Eigen::VectorXd::Zero(Problem.Variables_num);
-			sol_temp = Problem.Solution.orig_vector;
 			for(int constraint_iter = 0; constraint_iter < Problem.Variables_num; ++ constraint_iter){
-				// Calculate the error and examine whether boundary is breached
-				//if(loop_count > 1){
+				if(constraint_iter < Market.network.num_edges || constraint_iter >= Market.network.num_edges + Market.network.num_vertice){
+					// Calculate the error and examine whether boundary is breached
 					grad(constraint_iter) = 1. / (sol_temp(constraint_iter) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0)) - 1. / (sol_temp(constraint_iter) - Problem.Boundary.ie_orig_matrix(constraint_iter, 1));
-					grad(constraint_iter) *= -mu / (Problem.Boundary.ie_orig_matrix(constraint_iter, 1) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0));							
-				//}			
-				
-				// Update objective function and gradient
-				if(constraint_iter >= Market.network.num_edges && constraint_iter < Market.network.num_edges + Market.network.num_vertice){
+					grad(constraint_iter) *= mu / (Problem.Boundary.ie_orig_matrix(constraint_iter, 1) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0));				
+				}
+				else{
+					// Update objective function and gradient
 					Problem.Objective.orig_vector(constraint_iter) = -Market.bidded_price(price_ID(constraint_iter - Market.network.num_edges));
+					Problem.Objective.orig_vector(constraint_iter) += price_penalty * (sol_temp(constraint_iter) < Problem.Boundary.ie_orig_matrix(constraint_iter, 0));
+					Problem.Objective.orig_vector(constraint_iter) -= price_penalty * (sol_temp(constraint_iter) > Problem.Boundary.ie_orig_matrix(constraint_iter, 1));
 					grad(constraint_iter) += (1. - mu) * Problem.Objective.orig_vector(constraint_iter);
 				}
 				
@@ -283,6 +288,7 @@ void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, LP_obj
 			else{
 				break;
 			}
+			//std::cout << grad.segment(Market.network.num_edges, Market.network.num_vertice).transpose() << "\n\n";
 			
 			// Update the solution in a loop
 	//		if(loop_count > 1){
@@ -292,8 +298,7 @@ void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, LP_obj
 	//			dS = dS_max;
 	//		}
 			dS = dS_max;
-			
-			while(dS > pow(mu, .5) * dS_max){
+			while(dS >= pow(mu, .5) * eps){
 				sol_temp = Problem.Solution.orig_vector + grad * dS;
 				
 				// Update temporary price and utility of each node
@@ -335,27 +340,41 @@ void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, LP_obj
 				}
 				
 				// Examine whether boundary is breached and update log barrier function
-				bar = 0.;
+				bar_temp = 0.;
 				infeasbile_flag = 0;
-				for(int constraint_iter = 0; constraint_iter < Problem.Variables_num; ++ constraint_iter){
+				//Power flow
+				for(int constraint_iter = 0; constraint_iter < Market.network.num_edges; ++ constraint_iter){
 					if(sol_temp(constraint_iter) <= Problem.Boundary.ie_orig_matrix(constraint_iter, 0) || sol_temp(constraint_iter) >= Problem.Boundary.ie_orig_matrix(constraint_iter, 1)){
 						infeasbile_flag = 1;
 						break;
 					}
-					bar += std::log(sol_temp(constraint_iter) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0)) + std::log(Problem.Boundary.ie_orig_matrix(constraint_iter, 1) - sol_temp(constraint_iter));
-					bar -= 2 * std::log(Problem.Boundary.ie_orig_matrix(constraint_iter, 1) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0));
+					bar_temp += std::log(sol_temp(constraint_iter) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0)) + std::log(Problem.Boundary.ie_orig_matrix(constraint_iter, 1) - sol_temp(constraint_iter));
+					bar_temp -= 2 * std::log(Problem.Boundary.ie_orig_matrix(constraint_iter, 1) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0));
 				}
+				//Voltage
+				for(int constraint_iter = Market.network.num_edges + Market.network.num_vertice; constraint_iter < Problem.Variables_num; ++ constraint_iter){
+					if(sol_temp(constraint_iter) <= Problem.Boundary.ie_orig_matrix(constraint_iter, 0) || sol_temp(constraint_iter) >= Problem.Boundary.ie_orig_matrix(constraint_iter, 1)){
+						infeasbile_flag = 1;
+						break;
+					}
+					bar_temp += std::log(sol_temp(constraint_iter) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0)) + std::log(Problem.Boundary.ie_orig_matrix(constraint_iter, 1) - sol_temp(constraint_iter));
+					bar_temp -= 2 * std::log(Problem.Boundary.ie_orig_matrix(constraint_iter, 1) - Problem.Boundary.ie_orig_matrix(constraint_iter, 0));
+				}				
+				//std::cout << infeasbile_flag << "\n";
+				//std::cout << mu << " " << dS << " " << infeasbile_flag << "\n";
 				
 				// Check current objective function
-				obj_temp = (1. - mu) * utility_temp.sum() + mu * bar;
+				obj_temp = (1. - mu) * utility_temp.sum() + mu * bar_temp;
 				
 				// Update direction if feasible
 				if(!infeasbile_flag && obj_temp > obj){
 					// Update solution
+					sol_temp = Problem.Solution.orig_vector + grad * dS;
 					Problem.Solution.orig_vector = sol_temp;
 					price_ID = price_ID_temp;
 					utility = utility_temp;
 					obj = obj_temp;
+					bar = bar_temp;
 					break_flag = 0;
 					break;
 				}
@@ -374,9 +393,10 @@ void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, LP_obj
 	}
 	
 	std::cout << Problem.Solution.orig_vector.segment(Market.network.num_edges, Market.network.num_vertice).transpose() << "\n\n";
-	std::cout << .5 * Problem.Solution.orig_vector.segment(Market.network.num_edges, Market.network.num_vertice).array().abs().sum() << "\n\n";
-	//std::cout << Problem.Solution.orig_vector.segment(Market.network.num_edges, Market.network.num_vertice).minCoeff() << " " << Problem.Solution.orig_vector.segment(Market.network.num_edges, Market.network.num_vertice).maxCoeff() << "\n\n";
-	//std::cout << grad.segment(Market.network.num_edges, Market.network.num_vertice).transpose() << "\n\n";	
+	//std::cout << .5 * Problem.Solution.orig_vector.segment(Market.network.num_edges, Market.network.num_vertice).array().abs().sum() << " " << utility.sum() << "\n";
+	//std::cout << Problem.Solution.orig_vector.segment(Market.network.num_edges, Market.network.num_vertice).minCoeff() << " " << Problem.Solution.orig_vector.segment(Market.network.num_edges, Market.network.num_vertice).maxCoeff() << "\n";
+	//std::cout << Problem.Solution.orig_vector.tail(Market.network.num_vertice).minCoeff() << " " << Problem.Solution.orig_vector.tail(Market.network.num_vertice).maxCoeff() << "\n";
+	//std::cout << Problem.Solution.orig_vector.head(Market.network.num_edges).minCoeff() << " " << Problem.Solution.orig_vector.head(Market.network.num_edges).maxCoeff() << "\n\n";	
 }
 
 
