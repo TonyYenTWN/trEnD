@@ -18,7 +18,7 @@ struct LP_constraint{
 	Eigen::SparseMatrix <double> ie_orig_matrix;		// Coefficients for original inequality constraints
 	Eigen::SparseMatrix <double> ie_reduced_matrix;		// Coefficients for reduced inequality constraints
 	Eigen::SparseMatrix <double> permutation_matrix; 	// Record of permutation order
-	Eigen::SparseMatrix <double> ie_reduced_cov_matrix;	// Dot product of reduced inequality constraints		
+	Eigen::SparseMatrix <double> ie_reduced_cov_matrix;	// Dot product of reduced inequality constraints
 };
 
 // Boundary object
