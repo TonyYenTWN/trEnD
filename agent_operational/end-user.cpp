@@ -2,7 +2,8 @@
 #include <iostream>
 //#include <chrono>
 #include "../basic/Basic_Definitions.h"
-#include "../basic/LP_GPA.cpp"
+//#include "../basic/LP_gpa.cpp"
+#include "../basic/LP_gpa_fast.cpp"
 
 struct end_user_decision{
 	bool dynamic_tariff;
@@ -189,7 +190,7 @@ void storage_schedule_LP(Eigen::VectorXd subscept_tariff, storage_inform &result
 	else if (soc_final < result.soc_ini){
 		Problem.Solution.orig_vector.segment(subscept_tariff.size(), subscept_tariff.size()) = Eigen::VectorXd::Constant(subscept_tariff.size(), (result.soc_ini - soc_final) / subscept_tariff.size());
 	}
-	std::cout << std::fixed << std::setprecision(3) << Problem.Solution.orig_vector.transpose() << "\n\n";
+	//std::cout << std::fixed << std::setprecision(3) << Problem.Solution.orig_vector.transpose() << "\n\n";
 	
 	// Solve the LP and store the output schedule
 	// Solution is degenerate; need to minimize energy loss due to efficiency by minimizing total amount of dc or ch
@@ -339,12 +340,12 @@ void EV_schedule(Eigen::VectorXd subscept_tariff, EV_inform &result){
 
 int main(){
 	// Test case Initialization
-	Eigen::VectorXd subscept_tariff(9);
-	subscept_tariff << 1., 3., 2., 0., .1, .5, 4., 6., 8.;
+	Eigen::VectorXd subscept_tariff(24);
+	subscept_tariff << 1., 3., 2., 0., .1, .5, 4., 6., 8., 3., 2., 0., 1., 3., 2., 0., .1, .5, 4., 6., 8., 3., 2., 0.;
 	sorted_vector sorted_tariff = sort(subscept_tariff);
 	end_user_operation test_user;
 	test_user.normalized_default_demand_profile = Eigen::VectorXd(subscept_tariff.size());
-	test_user.normalized_default_demand_profile << 1, 1.2, .8, .5, .9, 2., 3., 2.5, 1.;
+	test_user.normalized_default_demand_profile << 1, 1.2, .8, .5, .9, 2., 3., 2.5, 1., 3., 2.5, 1., 1, 1.2, .8, .5, .9, 2., 3., 2.5, 1., 3., 2.5, 1.;
 	
 	// Smart appliance test
 	test_user.smart_appliance.scale = .2;
@@ -359,19 +360,19 @@ int main(){
 	test_user.BESS.soc_ini = 2.;
 	test_user.BESS.soc_final = 2.;
 	storage_schedule_naive(sorted_tariff, test_user.BESS);
-	//std::cout << test_user.BESS.normalized_scheduled_capacity_profile.transpose() << "\n" << std::endl;
-	//storage_schedule_LP(subscept_tariff, test_user.BESS, 1);
-	//std::cout << test_user.BESS.normalized_scheduled_capacity_profile.transpose() << "\n\n";
+	std::cout << test_user.BESS.normalized_scheduled_capacity_profile.transpose() << "\n" << std::endl;
+	storage_schedule_LP(subscept_tariff, test_user.BESS, 1);
+	std::cout << test_user.BESS.normalized_scheduled_capacity_profile.transpose() << "\n\n";
 	
 	// EV test
 	test_user.EV.energy_demand = 1.;
 	test_user.EV.BESS = test_user.BESS;
 	test_user.EV.usage_default_period = Eigen::VectorXi::Zero(subscept_tariff.size());
-	test_user.EV.usage_default_period(3) = 1;
 	test_user.EV.usage_default_period(6) = 1;
+	test_user.EV.usage_default_period(17) = 1;
 	test_user.EV.house_default_period = Eigen::VectorXi::Zero(subscept_tariff.size());
-	test_user.EV.house_default_period.head(3) << 1, 1, 1;
-	test_user.EV.house_default_period.tail(3) << 1, 1, 1;
+	test_user.EV.house_default_period.head(6) << 1, 1, 1, 1, 1, 1;
+	test_user.EV.house_default_period.tail(6) << 1, 1, 1, 1, 1, 1;
 	EV_schedule(subscept_tariff, test_user.EV);
 	std::cout << test_user.EV.BESS.normalized_scheduled_capacity_profile.transpose() << "\n";
 }
