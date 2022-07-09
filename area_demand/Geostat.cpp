@@ -31,6 +31,7 @@ Eigen::Vector2d uv_transform(Eigen::Vector3d xyz){
 
 double geodist(Eigen::Vector2d P_1, Eigen::Vector2d P_2){
 	
+	double pi = boost::math::constants::pi<double>();
 	Eigen::Vector2d s_1 = P_1;
 	Eigen::Vector2d s_2 = P_2;
 	s_1(1) = pi / 2 - P_1(1);

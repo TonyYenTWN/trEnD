@@ -29,6 +29,7 @@ int main(){
 	// Compute distance of the spatial points, and the corresponding covariance matrix of the random variable
 	Eigen::MatrixXd Distance_Points(num_row, num_row);
 	Eigen::MatrixXd Covariance_Points(num_row, num_row);
+	double pi = boost::math::constants::pi<double>();
 	
 	#pragma omp parallel
 	{

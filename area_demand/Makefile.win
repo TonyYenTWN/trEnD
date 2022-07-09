@@ -6,12 +6,12 @@ CC       = gcc.exe
 WINDRES  = windres.exe
 OBJ      = area_demand.o Geostat.o ../basic/rw_csv.o
 LINKOBJ  = area_demand.o Geostat.o ../basic/rw_csv.o
-LIBS     = -L"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib" -L"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/lib" -fopenmp -fopenmp -pg
+LIBS     = -L"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib" -L"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/lib" -static-libgcc -fopenmp -fopenmp -pg
 INCS     = -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include"
-CXXINCS  = -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include/c++" -I"D:/Programs/C++/tools/eigen-3.4.0" -I"D:/Programs/C++/tools/boost_1_78_0"
+CXXINCS  = -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include/c++" -I"D:/Programs/C++/tools/boost_1_78_0" -I"D:/Programs/C++/tools/eigen-3.4.0"
 BIN      = area_demand.exe
-CXXFLAGS = $(CXXINCS) -pg -fopenmp -mfma -DNDEBUG -O3 -Wall -s
-CFLAGS   = $(INCS) -pg -fopenmp -mfma -DNDEBUG -O3 -Wall -s
+CXXFLAGS = $(CXXINCS) -pg -fopenmp -mfma -DNDEBUG -O3 -s -std=c++1z
+CFLAGS   = $(INCS) -pg -fopenmp -mfma -DNDEBUG -O3 -s -std=c++1z
 DEL      = C:\Program Files (x86)\Embarcadero\Dev-Cpp\DevCpp.exe INTERNAL_DEL
 
 .PHONY: all all-before all-after clean clean-custom
