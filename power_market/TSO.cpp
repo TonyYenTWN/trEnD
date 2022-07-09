@@ -43,22 +43,4 @@ void TSO_Market_Set(market_inform &TSO_Market, network_inform &Power_network_inf
 	TSO_Market.confirmed_demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.confirmed_price = Eigen::MatrixXd(Time, TSO_Market.num_zone);
 	TSO_Market.network.confirmed_power = Eigen::MatrixXd(Time, TSO_Market.network.num_edges);
-
-//	// Trivial initialization at the nodes
-//	Market_Initialization(TSO_Market);
-//	TSO_Market.submitted_supply.leftCols(TSO_Market.num_zone / 2) = Eigen::MatrixXd::Constant(TSO_Market.price_intervals + 2, TSO_Market.num_zone / 2, 1.);
-//	TSO_Market.submitted_demand.leftCols(TSO_Market.num_zone / 2) = Eigen::MatrixXd::Constant(TSO_Market.price_intervals + 2, TSO_Market.num_zone / 2, 2.);
-//	TSO_Market.submitted_demand.rightCols(TSO_Market.num_zone / 2) = Eigen::MatrixXd::Constant(TSO_Market.price_intervals + 2, TSO_Market.num_zone / 2, 1.);
-//	TSO_Market.submitted_supply.rightCols(TSO_Market.num_zone / 2) = Eigen::MatrixXd::Constant(TSO_Market.price_intervals + 2, TSO_Market.num_zone / 2, 2.);
 }
-
-//int main(){
-//	network_inform Power_network_inform;
-//	power_network_input_process(Power_network_inform);
-//	
-//	market_inform TSO_Market;
-//	LP_object TSO_Problem; 
-//	TSO_Market_Set(TSO_Market, Power_network_inform, 1);
-//	Flow_Based_Market_LP_Set(TSO_Market, TSO_Problem);
-//	Flow_Based_Market_Optimization(0, TSO_Market, TSO_Problem);
-//}

@@ -41,5 +41,5 @@ int main(){
 	// Ideal market clearing in IMO
 	
 	// Re-dispatch in TSO
-	Flow_Based_Market_Optimization(0, TSO_Market, TSO_Problem);
+	Flow_Based_Market_Optimization_2(0, TSO_Market, TSO_Problem);
 }
