@@ -146,7 +146,7 @@ void plant_data_input(network_inform &Power_network_inform, std::string fin_hydr
 	//std::cout << Power_network_inform.plants.wind.lat.tail(10).transpose() << "\n";
 }
 
-void power_network_input_process(network_inform &Power_network_inform, std::string parent_dir = "../power_network/"){
+void power_network_input_process(network_inform &Power_network_inform, std::string parent_dir){
 	auto fin_bz = parent_dir + "input/DSO_Bidding_Zone.csv";
 	auto fin_node = parent_dir + "input/transmission_nodes.csv";
 	auto fin_edge_orig = parent_dir + "input/transmission_edges.csv";

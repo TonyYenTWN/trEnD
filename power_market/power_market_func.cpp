@@ -1,4 +1,6 @@
 // Source file for the functions of the power market
+//#include "../basic/alglib/optimization.h"
+//#include "../power_network/power_network.h"
 #include "power_market.h"
 
 // ------------------------------------------------------------------------------------------------
@@ -137,85 +139,44 @@ void Submitted_bid_calculation(int tick, DSO_Markets &DSO_Markets, market_inform
 // ------------------------------------------------------------------------------------------------
 // Specific functions for for flow-based markets
 // ------------------------------------------------------------------------------------------------
-void Flow_Based_Market_LP_Set(market_inform &Market, LP_object &Problem){
+void Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlpstate &Problem){
 	// LP Solver initialization for flow-based market optimization
 	// Warm-up once and reuse for the rest of time slices
+	// Variables are sorted as {V}, {S}, {S}_0, {S}_1, {S}_2, ...
+	// {S}_i is the set of source / sink at node #i at different price levels
 	
-	// -----------------------------------------------------------------------------------
-	// Set Flow-based market object
-	// -----------------------------------------------------------------------------------
-	// Initialize metric tensor solver for moving around the degree of freedoms
-	std::vector <Trip> Metric_trip;
-	Metric_trip.reserve(3 * Market.num_zone - 5);
-	for(int zone_iter = 0; zone_iter < Market.num_zone - 1; ++ zone_iter){
-		Metric_trip.push_back(Trip(zone_iter, zone_iter, 2.));
-		if(zone_iter != 0){
-			Metric_trip.push_back(Trip(zone_iter, zone_iter - 1, -1.));
-		}
-		if(zone_iter != Market.num_zone - 2){
-			Metric_trip.push_back(Trip(zone_iter, zone_iter + 1, -1.));
-		}
-	}
-	Eigen::SparseMatrix <double> Metric_matrix (Market.num_zone - 1, Market.num_zone - 1);
-	Metric_matrix.setFromTriplets(Metric_trip.begin(), Metric_trip.end());
-	Market.dof_metric.compute(Metric_matrix);
-
-	// -----------------------------------------------------------------------------------
-	// Set LP problem object
-	// -----------------------------------------------------------------------------------
-	// Set dimension of the problem
-	Problem.Constraints_eq_num = Market.network.num_edges + Market.network.num_vertice + 1;
-	Problem.Constraints_ie_num = 0;
-	Problem.Variables_num = Market.network.num_edges + 2 * Market.network.num_vertice;
-
-	// Set objective vector
-	// Since submitted bids not yet updated, will set to 0
-	// The variables are ordered as {{I}, {S}, {V}}
-	Problem.Objective.orig_vector = Eigen::VectorXd::Zero(Problem.Variables_num);
-	//Problem.Objective.varying_vector = Eigen::VectorXd::Zero(Problem.Variables_num);
-	//Problem.Objective.varying_vector.segment(Market.network.num_edges, Market.network.num_vertice) = Eigen::VectorXd::Ones(Market.network.num_vertice);
-
-	// Set boudary values for equality and inequality constraints 
-	// Since submitted bids not yet updated, inequality constraints for {S} will be initialized as 0
-	Problem.Boundary.eq_vector = Eigen::VectorXd::Zero(Problem.Constraints_eq_num);
-	Problem.Boundary.ie_orig_matrix = Eigen::MatrixXd::Zero(Problem.Variables_num + Problem.Constraints_ie_num, 2);
-	Problem.Boundary.ie_orig_matrix.topRows(Market.network.num_edges) = Market.network.power_constraint;
-	Problem.Boundary.ie_orig_matrix.bottomRows(Market.network.num_vertice) = Market.network.voltage_constraint;
-	
-	// Set sparse matrix for equality constraints
+	// Construct node admittance matrix
+	std::vector <Trip> Y_n_trip;
+	Y_n_trip.reserve(2 * Market.network.num_edges + Market.network.num_vertice);
+	Eigen::SparseMatrix <double, Eigen::RowMajor> Y_n(Market.network.num_vertice, Market.network.num_vertice);
 	Eigen::VectorXd Y_n_diag = Eigen::VectorXd::Zero(Market.network.num_vertice);
-	std::vector<Trip> Constraint_eq_trip;
-	Constraint_eq_trip.reserve(pow(Market.network.num_edges, 2) + Market.network.num_edges + 2 * Market.network.num_vertice);
+	Eigen::VectorXpd Connection_num = Eigen::VectorXpd::Ones(Market.network.num_vertice);
 	for(int edge_iter = 0; edge_iter < Market.network.num_edges; ++ edge_iter){
 		// Equality constraints of voltage at the nodes, off-diagonal terms
-		Constraint_eq_trip.push_back(Trip(Market.network.num_edges + Market.network.incidence_matrix(edge_iter, 0), Market.network.num_edges + Market.network.num_vertice + Market.network.incidence_matrix(edge_iter, 1), -Market.network.admittance_vector(edge_iter)));
-		Constraint_eq_trip.push_back(Trip(Market.network.num_edges + Market.network.incidence_matrix(edge_iter, 1), Market.network.num_edges + Market.network.num_vertice + Market.network.incidence_matrix(edge_iter, 0), -Market.network.admittance_vector(edge_iter)));
+		Y_n_trip.push_back(Trip(Market.network.incidence_matrix(edge_iter, 0), Market.network.incidence_matrix(edge_iter, 1), -Market.network.admittance_vector(edge_iter)));
+		Y_n_trip.push_back(Trip(Market.network.incidence_matrix(edge_iter, 1), Market.network.incidence_matrix(edge_iter, 0), -Market.network.admittance_vector(edge_iter)));
+		Connection_num(Market.network.incidence_matrix(edge_iter, 0)) += 1;
+		Connection_num(Market.network.incidence_matrix(edge_iter, 1)) += 1;
+		
+		// Equality constraints of voltage at the nodes, diagonal terms
 		Y_n_diag(Market.network.incidence_matrix(edge_iter, 0)) += Market.network.admittance_vector(edge_iter);
 		Y_n_diag(Market.network.incidence_matrix(edge_iter, 1)) += Market.network.admittance_vector(edge_iter);
-		
-		// Equality constraints of power flows at the edges
-		Constraint_eq_trip.push_back(Trip(edge_iter, Market.network.num_edges + Market.network.num_vertice + Market.network.incidence_matrix(edge_iter, 0), Market.network.admittance_vector(edge_iter)));
-		Constraint_eq_trip.push_back(Trip(edge_iter, Market.network.num_edges + Market.network.num_vertice + Market.network.incidence_matrix(edge_iter, 1), -Market.network.admittance_vector(edge_iter)));
-		Constraint_eq_trip.push_back(Trip(edge_iter, edge_iter, -1));	
 	}
 	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
-		// Equality constraints of voltage at the nodes, diagonal terms
-		Constraint_eq_trip.push_back(Trip(Market.network.num_edges + node_iter, Market.network.num_edges + Market.network.num_vertice + node_iter, Y_n_diag(node_iter)));
-		Constraint_eq_trip.push_back(Trip(Market.network.num_edges + node_iter, Market.network.num_edges + node_iter, -1));
+		// Equality constraints of voltage at the nodes, summed diagonal terms
+		Y_n_trip.push_back(Trip(node_iter, node_iter, Y_n_diag(node_iter)));
 	}
-	// Equality constraint for the reference bus
-	Constraint_eq_trip.push_back(Trip(Market.network.num_vertice + Market.network.num_edges, Market.network.num_vertice + Market.network.num_edges, 1));
-	Problem.Constraint.eq_orig_matrix = Eigen::SparseMatrix <double> (Problem.Constraints_eq_num, Problem.Variables_num);
-	Problem.Constraint.eq_orig_matrix.setFromTriplets(Constraint_eq_trip.begin(), Constraint_eq_trip.end());
-	//Problem.Solver.qr.compute(Problem.Constraint.eq_orig_matrix * Problem.Constraint.eq_orig_matrix.transpose());
-	
-	// Set initial feasible solution
-	Problem.Solution.orig_vector = Eigen::VectorXd::Zero(Problem.Variables_num);
-	
-	// Initialize ldlt solver from source / sink to voltage
-	Problem.Solver.ldlt.compute((Problem.Constraint.eq_orig_matrix).block(Market.network.num_edges + 1, Market.network.num_edges + Market.network.num_vertice + 1, Market.network.num_vertice - 1, Market.network.num_vertice - 1));		
+	Y_n.setFromTriplets(Y_n_trip.begin(), Y_n_trip.end());
+
+	// Generate sparse matrix for general constraints of voltage equality, power flow, and source / sink summation
+	Eigen::VectorXpd non_zero_num(2 * Market.network.num_vertice + Market.network.num_edges + 1);
+	non_zero_num << Connection_num + Eigen::VectorXpd::Ones(Market.network.num_vertice), Eigen::VectorXpd::Constant(Market.network.num_edges, 2), Eigen::VectorXpd::Constant(Market.network.num_vertice, Market.price_intervals + 3), 1;
+	alglib::integer_1d_array row_sizes_general;
+	row_sizes_general.setcontent(non_zero_num.size(), non_zero_num.data());
+	alglib::sparsematrix constraint_general;
+	alglib::sparsecreatecrs(non_zero_num.size(), Market.network.num_vertice * (Market.price_intervals + 4), row_sizes_general, constraint_general);
 }
 
-void Flow_Based_Market_Optimization(int tick, market_inform &Market, LP_object &Problem){
+void Flow_Based_Market_Optimization(int tick, market_inform &Market){
 
 }

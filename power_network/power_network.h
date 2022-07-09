@@ -7,6 +7,7 @@
 #include "../basic/Basic_Definitions.h"
 #include "../basic/rw_csv.h"
 
+// Power network objects
 struct points{
 	double point_area = 100.; 		// square km
 	double grid_length = 10000.; 	// meters
@@ -81,5 +82,11 @@ struct network_inform{
 	plants_all plants;
 	std::vector <DSO_cluster> DSO_cluster;
 };
+
+// Functions for reading the files
+void tranmission_data_input(network_inform&, Eigen::MatrixXd, std::string, std::string, std::string);
+void points_data_input(network_inform&, Eigen::MatrixXd, std::string, std::string);
+void plant_data_input(network_inform&, std::string, std::string);
+void power_network_input_process(network_inform&, std::string parent_dir = "../power_network/");
 
 #endif

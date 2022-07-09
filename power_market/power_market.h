@@ -6,7 +6,9 @@
 
 #include "../basic/Basic_Definitions.h"
 #include "../basic/Eigen_Sparse.h"
-#include "../basic/LP_gpa.h"
+//#include "../basic/LP_gpa.h"
+#include "../basic/alglib/optimization.h"
+#include "../power_network/power_network.h"
 
 // Power market objects
 struct network_graph{
@@ -35,7 +37,6 @@ struct market_inform{
 	Eigen::VectorXd bidded_price;
 	Eigen::MatrixXd merit_order_curve;
 	Eigen::MatrixXd demand_default;			// Default demand profiles of the bidding zones; in later runs demand bids from Norway should come from lower level markets
-	Eigen::SparseQR <Eigen::SparseMatrix <double>, Eigen::COLAMDOrdering <int>> dof_metric;
 	
 	// Set bidded price
 	void set_bidded_price(){
@@ -62,7 +63,7 @@ struct market_inform{
 
 struct DSO_Markets{
 	std::vector <market_inform> markets;
-	std::vector <LP_object> problem;
+	//std::vector <LP_object> problem;
 };
 
 #endif
@@ -73,8 +74,8 @@ struct DSO_Markets{
 
 void Market_Initialization(market_inform&);
 void Market_clearing_nodal(int, market_inform&, Eigen::VectorXi&, Eigen::MatrixXd&, Eigen::MatrixXd&);
-void Flow_Based_Market_LP_Set(market_inform&, LP_object&);
-void Flow_Based_Market_Optimization(int, market_inform&, LP_object&);
+void Flow_Based_Market_LP_Set(market_inform&, alglib::minlpstate&);
+void Flow_Based_Market_Optimization(int, market_inform&);
 
 #endif
 
