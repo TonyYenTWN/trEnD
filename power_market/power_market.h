@@ -6,7 +6,6 @@
 
 #include "../basic/Basic_Definitions.h"
 #include "../basic/Eigen_Sparse.h"
-//#include "../basic/LP_gpa.h"
 #include "../basic/alglib/optimization.h"
 #include "../power_network/power_network.h"
 

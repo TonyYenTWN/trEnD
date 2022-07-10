@@ -3,6 +3,7 @@
 //#include "../power_network/power_network.h"
 #include "power_market.h"
 
+
 // ------------------------------------------------------------------------------------------------
 // Generic functions for all market types
 // ------------------------------------------------------------------------------------------------
@@ -143,9 +144,8 @@ void Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlpstate &Problem
 	// -------------------------------------------------------------------------------
 	// LP Solver initialization for flow-based market optimization
 	// Warm-up once and reuse for the rest of time slices
-	// Variables are sorted as {V}, {S}, {S}_0, {S}_1, {S}_2, ...
+	// Variables are sorted as {V}, {S}, {S}_0, {S}_1, {S}_2, ..., {I}
 	// {S}_i is the set of source / sink at node #i at different price levels
-	// Should change to {V}, {S}, {S}_0, {S}_1, {S}_2, ..., {I}
 	// -------------------------------------------------------------------------------
 
 	// -------------------------------------------------------------------------------
@@ -194,12 +194,12 @@ void Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlpstate &Problem
 	// Rows for voltage - power flow equalities
 	for(int edge_iter = 0; edge_iter < Market.network.num_edges; ++ edge_iter){
 		if(Market.network.incidence_matrix(edge_iter, 0) < Market.network.incidence_matrix(edge_iter, 1)){
-			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence_matrix(edge_iter, 0), 1.);
-			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence_matrix(edge_iter, 1), -1.);
+			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence_matrix(edge_iter, 0), Market.network.admittance_vector(edge_iter));
+			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence_matrix(edge_iter, 1), -Market.network.admittance_vector(edge_iter));
 		}
 		else{
-			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence_matrix(edge_iter, 1), -1.);
-			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence_matrix(edge_iter, 0), 1.);						
+			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence_matrix(edge_iter, 1), -Market.network.admittance_vector(edge_iter));
+			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence_matrix(edge_iter, 0), Market.network.admittance_vector(edge_iter));						
 		}
 		alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.num_vertice * (Market.price_intervals + 4) + edge_iter, -1.);
 	}
@@ -222,7 +222,7 @@ void Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlpstate &Problem
 	alglib::sparseset(constraint_general, non_zero_num.size() - 1, 0, 1.);
 	
 //	// Check if the sparse matrix is correct
-//	std::cout << Y_n << "\n\n";
+	std::cout << Y_n << "\n\n";
 //	double value;
 //	for(int row_iter = 0; row_iter < non_zero_num.size(); ++ row_iter){
 //		for(int col_iter = 0; col_iter < 2 * Y_n.cols() + 3; ++ col_iter){
@@ -294,7 +294,7 @@ void Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlpstate &Problem
 	alglib::minlpsetlc2(Problem, constraint_general, lb_general, ub_general, constrant_num);
 	alglib::minlpsetscale(Problem, scale);
 	//alglib::minlpsetalgoipm(Problem);
-	alglib::minlpsetalgodss(Problem, 0.);
+	alglib::minlpsetalgodss(Problem, 0);
 }
 
 void Flow_Based_Market_Optimization(int tick, market_inform &Market, alglib::minlpstate &Problem){
@@ -328,6 +328,7 @@ void Flow_Based_Market_Optimization(int tick, market_inform &Market, alglib::min
 	alglib::minlpreport rep;
 	alglib::minlpoptimize(Problem);
 	alglib::minlpresults(Problem, sol, rep);
+	//std::cout << rep.stats[0] << "\n\n";
 	
 	// -------------------------------------------------------------------------------
 	// Store the solution
