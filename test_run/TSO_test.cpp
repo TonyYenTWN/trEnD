@@ -296,8 +296,6 @@ void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, alglib
 	double tol = 1E-12;
 	alglib::real_1d_array sol;
 	alglib::minlpreport rep;
-	Eigen::VectorXd sol_prev = Eigen::VectorXd::Zero(variable_num);
-	Eigen::VectorXi rep_stats_prev = Eigen::VectorXi::Zero(variable_num);
 	
 	// Solve the problem for the 1st time
 	alglib::minlpoptimize(Problem);
@@ -364,33 +362,24 @@ void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, alglib
 		alglib::minlpresults(Problem, sol, rep);
 		
 		// Check if solution cannot be improved
-		for(int var_iter = 0; var_iter < variable_num; ++ var_iter){	
-			// Update solution if changed
-			if(sol_prev(var_iter) != sol[var_iter]){
-				stop_flag = 0;
-				sol_prev(var_iter) = sol[var_iter];
-			}
-			
-			// Update status if changed
-			if(rep_stats_prev(var_iter) != rep.stats[var_iter]){
-				stop_flag = 0;
-				rep_stats_prev(var_iter) = rep.stats[var_iter];
-			}		
+		for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
+			row_ID = Market.network.num_vertice + node_iter;
+			stop_flag *= 1 - (sol[row_ID] * rep.stats[row_ID] > 0);
 		}
 		
-//		std::cout << std::fixed;
-//		std::cout << "Loop:\t" << loop_count << "\t";
-//		for(int var_iter = 0; var_iter < variable_num; ++ var_iter){
-//			std::cout << std::setprecision(9) << sol[var_iter] << "\t";
-//		}
-//		std::cout << "\n";
-//		std::cout << "Stop:\t" << stop_flag << "\t";
-//		for(int var_iter = 0; var_iter < variable_num; ++ var_iter){
-//			std::cout << std::setprecision(9) << double(rep.stats[var_iter]) << "\t";
-//		}
-//		std::cout << "\n\n";
+		std::cout << std::fixed;
+		std::cout << "Loop:\t" << loop_count << "\t";
+		for(int var_iter = 0; var_iter < variable_num; ++ var_iter){
+			std::cout << std::setprecision(9) << sol[var_iter] << "\t";
+		}
+		std::cout << "\n";
+		std::cout << "Stop:\t" << stop_flag << "\t";
+		for(int var_iter = 0; var_iter < variable_num; ++ var_iter){
+			std::cout << std::setprecision(9) << double(rep.stats[var_iter]) << "\t";
+		}
+		std::cout << "\n\n";
 	}
-//	std::cout << "\n";
+	std::cout << "\n";
 	
 	// Update confirmed prices and bids
 	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
