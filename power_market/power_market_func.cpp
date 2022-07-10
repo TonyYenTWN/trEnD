@@ -145,7 +145,7 @@ void Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlpstate &Problem
 	// Warm-up once and reuse for the rest of time slices
 	// Variables are sorted as {V}, {S}, {S}_0, {S}_1, {S}_2, ...
 	// {S}_i is the set of source / sink at node #i at different price levels
-	// Should change to {V}, {S}, {I}, {S}_0, {S}_1, {S}_2, ...
+	// Should change to {V}, {S}, {S}_0, {S}_1, {S}_2, ..., {I}
 	// -------------------------------------------------------------------------------
 
 	// -------------------------------------------------------------------------------
@@ -175,12 +175,14 @@ void Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlpstate &Problem
 	Y_n.setFromTriplets(Y_n_trip.begin(), Y_n_trip.end());
 
 	// Generate sparse matrix for general (equality) constraints of voltage, power flow, and source / sink summation
-	Eigen::VectorXpd non_zero_num(2 * Market.network.num_vertice + Market.network.num_edges + 1);
-	non_zero_num << Connection_num + Eigen::VectorXpd::Ones(Market.network.num_vertice), Eigen::VectorXpd::Constant(Market.network.num_edges, 2), Eigen::VectorXpd::Constant(Market.network.num_vertice, Market.price_intervals + 3), 1;
+	int constrant_num = 2 * Market.network.num_vertice + Market.network.num_edges + 1;
+	int variable_num = Market.network.num_vertice * (Market.price_intervals + 4) + Market.network.num_edges;	
+	Eigen::VectorXpd non_zero_num(constrant_num);
+	non_zero_num << Connection_num + Eigen::VectorXpd::Ones(Market.network.num_vertice), Eigen::VectorXpd::Constant(Market.network.num_edges, 3), Eigen::VectorXpd::Constant(Market.network.num_vertice, Market.price_intervals + 3), 1;
 	alglib::integer_1d_array row_sizes_general;
 	row_sizes_general.setcontent(non_zero_num.size(), non_zero_num.data());
 	alglib::sparsematrix constraint_general;
-	alglib::sparsecreatecrs(non_zero_num.size(), Market.network.num_vertice * (Market.price_intervals + 4), row_sizes_general, constraint_general);
+	alglib::sparsecreatecrs(constrant_num, variable_num, row_sizes_general, constraint_general);
 	// Rows for voltage - source / sink equalities
 	for(int row_iter = 0; row_iter < Y_n.outerSize(); ++ row_iter){
 		for(Eigen::SparseMatrix<double, Eigen::RowMajor>::InnerIterator inner_iter(Y_n, row_iter); inner_iter; ++ inner_iter){
@@ -199,6 +201,7 @@ void Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlpstate &Problem
 			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence_matrix(edge_iter, 1), -1.);
 			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence_matrix(edge_iter, 0), 1.);						
 		}
+		alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.num_vertice * (Market.price_intervals + 4) + edge_iter, -1.);
 	}
 	
 	// Rows for source / sink summation at each node
@@ -226,6 +229,11 @@ void Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlpstate &Problem
 //			value = sparseget(constraint_general, row_iter, col_iter);
 //			std::cout << value << "\t";
 //		}
+//		std::cout << "\t";
+//		for(int col_iter = Market.network.num_vertice * (Market.price_intervals + 4); col_iter < Market.network.num_vertice * (Market.price_intervals + 4) + 3; ++ col_iter){
+//			value = sparseget(constraint_general, row_iter, col_iter);
+//			std::cout << value << "\t";			
+//		}
 //		std::cout << "\n";
 //	}
 
@@ -233,9 +241,8 @@ void Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlpstate &Problem
 	// Set bounds for general and box constraints
 	// -------------------------------------------------------------------------------
 	int row_start;
-	Eigen::MatrixXd bound_general = Eigen::MatrixXd::Zero(2 * Market.network.num_vertice + Market.network.num_edges + 1, 2);
-	bound_general.middleRows(Market.network.num_vertice, Market.network.num_edges) = Market.network.power_constraint;
-	Eigen::MatrixXd bound_box(Market.network.num_vertice * (Market.price_intervals + 4), 2);
+	Eigen::MatrixXd bound_general = Eigen::MatrixXd::Zero(constrant_num, 2);
+	Eigen::MatrixXd bound_box(variable_num, 2);
 	bound_box.topRows(Market.network.num_vertice) = Market.network.voltage_constraint;
 	bound_box.middleRows(Market.network.num_vertice, Market.network.num_vertice).col(0) = Eigen::VectorXd::Constant(Market.network.num_vertice, -std::numeric_limits<double>::infinity());
 	bound_box.middleRows(Market.network.num_vertice, Market.network.num_vertice).col(1) = Eigen::VectorXd::Constant(Market.network.num_vertice, std::numeric_limits<double>::infinity());
@@ -244,6 +251,7 @@ void Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlpstate &Problem
 		bound_box.middleRows(row_start, Market.price_intervals + 2).col(0) = -Market.submitted_demand.col(node_iter);
 		bound_box.middleRows(row_start, Market.price_intervals + 2).col(1) = Market.submitted_supply.col(node_iter);
 	}
+	bound_box.bottomRows(Market.network.num_edges) = Market.network.power_constraint;
 	
 	// Bounds of general constraints
 	alglib::real_1d_array lb_general;
@@ -260,15 +268,16 @@ void Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlpstate &Problem
 	// -------------------------------------------------------------------------------
 	// Set scale of variables
 	// -------------------------------------------------------------------------------
-	Eigen::VectorXd scale_vec = Eigen::VectorXd::Ones(Market.network.num_vertice * (Market.price_intervals + 4));
+	Eigen::VectorXd scale_vec = Eigen::VectorXd::Ones(variable_num);
 	scale_vec.head(Market.network.num_vertice) = bound_box.col(1).head(Market.network.num_vertice) - bound_box.col(0).head(Market.network.num_vertice);
+	scale_vec.tail(Market.network.num_edges) = bound_box.col(1).tail(Market.network.num_edges) - bound_box.col(0).tail(Market.network.num_edges);
 	alglib::real_1d_array scale;
 	scale.setcontent(scale_vec.size(), scale_vec.data());
 	
 	// -------------------------------------------------------------------------------
 	// Set objective coefficients of variables
 	// -------------------------------------------------------------------------------
-	Eigen::VectorXd obj_vec = Eigen::VectorXd::Zero(Market.network.num_vertice * (Market.price_intervals + 4));
+	Eigen::VectorXd obj_vec = Eigen::VectorXd::Zero(variable_num);
 	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
 		row_start = 2 * Market.network.num_vertice + node_iter * (Market.price_intervals + 2);
 		obj_vec.segment(row_start, Market.price_intervals + 2) = Market.bidded_price;  
@@ -279,12 +288,12 @@ void Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlpstate &Problem
 	// -------------------------------------------------------------------------------
 	// Set the LP problem object
 	// -------------------------------------------------------------------------------
-	alglib::minlpcreate(Market.network.num_vertice * (Market.price_intervals + 4), Problem);
+	alglib::minlpcreate(variable_num, Problem);
 	alglib::minlpsetcost(Problem, obj_coeff);
 	alglib::minlpsetbc(Problem, lb_box, ub_box);
-	alglib::minlpsetlc2(Problem, constraint_general, lb_general, ub_general, bound_general.rows());
+	alglib::minlpsetlc2(Problem, constraint_general, lb_general, ub_general, constrant_num);
 	alglib::minlpsetscale(Problem, scale);
-	alglib::minlpsetalgoipm(Problem);	
+	alglib::minlpsetalgoipm(Problem);
 }
 
 void Flow_Based_Market_Optimization(int tick, market_inform &Market, alglib::minlpstate &Problem){
@@ -292,7 +301,8 @@ void Flow_Based_Market_Optimization(int tick, market_inform &Market, alglib::min
 	// Update bounds for box constraints
 	// -------------------------------------------------------------------------------
 	int row_start;
-	Eigen::MatrixXd bound_box(Market.network.num_vertice * (Market.price_intervals + 4), 2);
+	int variable_num = Market.network.num_vertice * (Market.price_intervals + 4) + Market.network.num_edges;
+	Eigen::MatrixXd bound_box(variable_num, 2);
 	bound_box.topRows(Market.network.num_vertice) = Market.network.voltage_constraint;
 	bound_box.middleRows(Market.network.num_vertice, Market.network.num_vertice).col(0) = Eigen::VectorXd::Constant(Market.network.num_vertice, -std::numeric_limits<double>::infinity());
 	bound_box.middleRows(Market.network.num_vertice, Market.network.num_vertice).col(1) = Eigen::VectorXd::Constant(Market.network.num_vertice, std::numeric_limits<double>::infinity());
@@ -301,6 +311,7 @@ void Flow_Based_Market_Optimization(int tick, market_inform &Market, alglib::min
 		bound_box.middleRows(row_start, Market.price_intervals + 2).col(0) = -Market.submitted_demand.col(node_iter);
 		bound_box.middleRows(row_start, Market.price_intervals + 2).col(1) = Market.submitted_supply.col(node_iter);
 	}
+	bound_box.bottomRows(Market.network.num_edges) = Market.network.power_constraint;
 	
 	// Bounds of box constraints
 	alglib::real_1d_array lb_box;
