@@ -2,8 +2,8 @@
 #include <iostream>
 #include <iomanip>
 //#include <chrono>
-#include "../basic/alglib/optimization.h"
 #include "../basic/rw_csv.cpp"
+#include "../basic/alglib/optimization.h"
 #include "../power_network/power_network.h"
 #include "../power_market/power_market.h"
 //#include "../power_network/power_network_input.cpp"
@@ -63,6 +63,8 @@ void TSO_Market_Set_Test_1(market_inform &TSO_Market, int Time){
 	//S = {15, 35, 45}; D = {35, 22.5, 10}
 }
 
+
+
 void TSO_Market_Set_Test_2(market_inform &TSO_Market, int Time){
 	// Input parameters of TSO market
 	// A trivial test case with 20 nodes connected as a radial line
@@ -110,9 +112,9 @@ int main(){
 	power_network_input_process(Power_network_inform, "../power_network/");	
 	
 	market_inform TSO_Market;
-	TSO_Market_Set_Test_1(TSO_Market, 1);
+	TSO_Market_Set_Test_2(TSO_Market, 1);
 	alglib::minlpstate TSO_Problem;
 
 	Flow_Based_Market_LP_Set(TSO_Market, TSO_Problem);
-	//Flow_Based_Market_Optimization(0, TSO_Market, TSO_Problem);
+	Flow_Based_Market_Optimization(0, TSO_Market, TSO_Problem);
 }
