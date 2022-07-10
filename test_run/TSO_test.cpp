@@ -64,7 +64,7 @@ void TSO_Market_Set_Test_1(market_inform &TSO_Market, int Time){
 void TSO_Market_Set_Test_2(market_inform &TSO_Market, int Time){
 	// Input parameters of TSO market
 	// A trivial test case with 20 nodes connected as a radial line
-	TSO_Market.num_zone = 2;
+	TSO_Market.num_zone = 20;
 	TSO_Market.time_intervals = Time;
 	TSO_Market.price_intervals = 600;
 	TSO_Market.price_range_inflex << -500., 3000.;
@@ -254,6 +254,25 @@ void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, alglib
 	}
 	bidded_total_aggregated = bidded_supply_aggregated + bidded_demand_aggregated;
 
+	// Aggregated utility function for each bidding zone
+	for(int zone_iter = 0; zone_iter < Market.num_zone; ++ zone_iter){	
+		// Demand
+		utility_aggregated(price_ID(zone_iter), zone_iter) = (bidded_demand_import(price_ID(zone_iter), zone_iter) + bidded_supply_import(price_ID(zone_iter), zone_iter)) * Market.bidded_price(price_ID(zone_iter));
+		if(price_ID(zone_iter) > 0){
+			for(int price_iter = price_ID(zone_iter) - 1; price_iter >= 0; -- price_iter){
+				utility_aggregated(price_iter, zone_iter) = utility_aggregated(price_iter + 1, zone_iter) + (bidded_demand_import(price_iter, zone_iter) + bidded_supply_import(price_iter, zone_iter)) * Market.bidded_price(price_iter);
+			}
+		}
+		
+		// Supply
+		utility_aggregated(price_ID(zone_iter) + 1, zone_iter) = -(bidded_demand_export(price_ID(zone_iter), zone_iter) + bidded_supply_export(price_ID(zone_iter), zone_iter)) * Market.bidded_price(price_ID(zone_iter));
+		if(price_ID(zone_iter) < Market.price_intervals){
+			for(int price_iter = price_ID(zone_iter) + 2; price_iter < Market.price_intervals + 3; ++ price_iter){
+				utility_aggregated(price_iter, zone_iter) = utility_aggregated(price_iter - 1, zone_iter) - (bidded_demand_export(price_iter - 1, zone_iter) + bidded_supply_export(price_iter - 1, zone_iter)) * Market.bidded_price(price_iter - 1);
+			}			
+		}
+	}
+
 	// -------------------------------------------------------------------------------
 	// Initilize source / sink bounds with isolated market clearing prices
 	// -------------------------------------------------------------------------------
@@ -291,9 +310,13 @@ void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, alglib
 	// Main loop for iterative solver
 	// -------------------------------------------------------------------------------	
 	// Declare variables for the loop
-	bool stop_flag = 0;
-	//double error;	
 	double tol = 1E-12;
+	double obj = 0.;
+	double obj_prev = obj;
+	double ratio;
+	Eigen::VectorXi price_ID_prev = price_ID;
+	Eigen::VectorXd quan = Eigen::VectorXd::Zero(Market.network.num_vertice);
+	Eigen::VectorXd quan_prev = quan;
 	alglib::real_1d_array sol;
 	alglib::minlpreport rep;
 	
@@ -301,23 +324,9 @@ void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, alglib
 	alglib::minlpoptimize(Problem);
 	alglib::minlpresults(Problem, sol, rep);
 
-	int loop_count = 0;
-//	std::cout << std::fixed;
-//	std::cout << "Loop:\t" << loop_count << "\t";
-//	for(int var_iter = 0; var_iter < variable_num; ++ var_iter){
-//		std::cout << std::setprecision(9) << sol[var_iter] << "\t";
-//	}
-//	std::cout << "\n";
-//	std::cout << "Stop:\t" << stop_flag << "\t";
-//	for(int var_iter = 0; var_iter < variable_num; ++ var_iter){
-//		std::cout << std::setprecision(9) << double(rep.stats[var_iter]) << "\t";
-//	}
-//	std::cout << "\n\n";
-		
-	while(!stop_flag){
-	//while(loop_count < 300){
+	int loop_count = 0;	
+	while(loop_count < 300){
 		loop_count += 1;
-		stop_flag = 1;
 		
 		// Update price at each node
 		for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
@@ -361,35 +370,54 @@ void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, alglib
 		alglib::minlpoptimize(Problem);
 		alglib::minlpresults(Problem, sol, rep);
 		
-		// Check if solution cannot be improved
+		// Check whether solution has been improved
+		obj = 0.;
 		for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
 			row_ID = Market.network.num_vertice + node_iter;
-			stop_flag *= 1 - (sol[row_ID] * rep.stats[row_ID] > 0);
+			quan(node_iter) = sol[row_ID];
+			if(bidded_total_aggregated(price_ID(node_iter), node_iter) == bidded_total_aggregated(price_ID(node_iter) + 1, node_iter)){
+				ratio = .5;
+			}
+			else{
+				ratio = bidded_total_aggregated(price_ID(node_iter) + 1, node_iter) - sol[row_ID];
+				ratio /= bidded_total_aggregated(price_ID(node_iter) + 1, node_iter) - bidded_total_aggregated(price_ID(node_iter), node_iter);
+			}
+			obj += ratio * utility_aggregated(price_ID(node_iter), node_iter) + (1 - ratio) * utility_aggregated(price_ID(node_iter) + 1, node_iter);
+		}
+		obj *= -1;
+		
+		if(obj <= obj_prev){
+			obj_prev = obj;
+			quan_prev = quan;
+			price_ID_prev = price_ID;
+		}
+		else{
+			obj = obj_prev;
+			quan = quan_prev;
+			price_ID = price_ID_prev;
+			break;
 		}
 		
-		std::cout << std::fixed;
-		std::cout << "Loop:\t" << loop_count << "\t";
-		for(int var_iter = 0; var_iter < variable_num; ++ var_iter){
-			std::cout << std::setprecision(9) << sol[var_iter] << "\t";
-		}
-		std::cout << "\n";
-		std::cout << "Stop:\t" << stop_flag << "\t";
-		for(int var_iter = 0; var_iter < variable_num; ++ var_iter){
-			std::cout << std::setprecision(9) << double(rep.stats[var_iter]) << "\t";
-		}
-		std::cout << "\n\n";
+//		std::cout << std::fixed;
+//		std::cout << "Loop:\t" << loop_count << "\t";
+//		for(int var_iter = 0; var_iter < variable_num; ++ var_iter){
+//			if(var_iter >= Market.network.num_vertice && var_iter < 2 * Market.network.num_vertice){
+//				std::cout << std::setprecision(0) << sol[var_iter] << "\t";
+//			}
+//		}
+//		std::cout << "\nObj:\t" << obj << "\t";
+//		for(int var_iter = 0; var_iter < variable_num; ++ var_iter){
+//			if(var_iter >= Market.network.num_vertice && var_iter < 2 * Market.network.num_vertice){
+//				std::cout << std::setprecision(0) << double(rep.stats[var_iter]) << "\t";
+//			}
+//		}
+//		std::cout << "\n\n";
 	}
-	std::cout << "\n";
+//	std::cout << "\n";
 	
 	// Update confirmed prices and bids
-	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
-		std::cout << sol[node_iter] << "\t";
-	}	
-	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
-		row_ID = Market.network.num_vertice + node_iter;
-		std::cout << sol[row_ID] << "\t";
-	}
-	std::cout << "\n";
+	//std::cout << price_ID.transpose() << "\n";
+	std::cout << quan.transpose() << "\n\n";
 }
 
 int main(){
