@@ -64,7 +64,7 @@ void TSO_Market_Set_Test_1(market_inform &TSO_Market, int Time){
 void TSO_Market_Set_Test_2(market_inform &TSO_Market, int Time){
 	// Input parameters of TSO market
 	// A trivial test case with 20 nodes connected as a radial line
-	TSO_Market.num_zone = 20;
+	TSO_Market.num_zone = 2;
 	TSO_Market.time_intervals = Time;
 	TSO_Market.price_intervals = 600;
 	TSO_Market.price_range_inflex << -500., 3000.;
@@ -99,8 +99,8 @@ void TSO_Market_Set_Test_2(market_inform &TSO_Market, int Time){
 	
 	// For the trivial case only: initialize submitted supply and demand bids at each node
 	Market_Initialization(TSO_Market);
-	TSO_Market.submitted_supply.leftCols(TSO_Market.num_zone / 2 - 1) = Eigen::MatrixXd::Constant(TSO_Market.price_intervals + 2, TSO_Market.num_zone / 2, 1.);
-	TSO_Market.submitted_demand.rightCols(TSO_Market.num_zone / 2 - 1) = Eigen::MatrixXd::Constant(TSO_Market.price_intervals + 2, TSO_Market.num_zone / 2, 1.);
+	TSO_Market.submitted_supply.leftCols(TSO_Market.num_zone / 2) = Eigen::MatrixXd::Constant(TSO_Market.price_intervals + 2, TSO_Market.num_zone / 2, 1.);
+	TSO_Market.submitted_demand.rightCols(TSO_Market.num_zone / 2) = Eigen::MatrixXd::Constant(TSO_Market.price_intervals + 2, TSO_Market.num_zone / 2, 1.);
 }
 
 void Flow_Based_Market_LP_Set_Test(market_inform &Market, alglib::minlpstate &Problem){
@@ -156,12 +156,12 @@ void Flow_Based_Market_LP_Set_Test(market_inform &Market, alglib::minlpstate &Pr
 	// Rows for voltage - power flow equalities
 	for(int edge_iter = 0; edge_iter < Market.network.num_edges; ++ edge_iter){
 		if(Market.network.incidence_matrix(edge_iter, 0) < Market.network.incidence_matrix(edge_iter, 1)){
-			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence_matrix(edge_iter, 0), 1.);
-			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence_matrix(edge_iter, 1), -1.);
+			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence_matrix(edge_iter, 0), Market.network.admittance_vector(edge_iter));
+			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence_matrix(edge_iter, 1), -Market.network.admittance_vector(edge_iter));
 		}
 		else{
-			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence_matrix(edge_iter, 1), -1.);
-			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence_matrix(edge_iter, 0), 1.);						
+			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence_matrix(edge_iter, 1), -Market.network.admittance_vector(edge_iter));
+			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence_matrix(edge_iter, 0), Market.network.admittance_vector(edge_iter));						
 		}
 		alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, 2 * Market.network.num_vertice + edge_iter, -1.);
 	}
@@ -190,12 +190,22 @@ void Flow_Based_Market_LP_Set_Test(market_inform &Market, alglib::minlpstate &Pr
 	alglib::real_1d_array ub_general;
 	lb_general.setcontent(bound_general.rows(), bound_general.col(0).data());
 	ub_general.setcontent(bound_general.rows(), bound_general.col(1).data());		
+
+	// -------------------------------------------------------------------------------
+	// Set scale of variables
+	// -------------------------------------------------------------------------------
+	Eigen::VectorXd scale_vec = Eigen::VectorXd::Ones(variable_num);
+	scale_vec.head(Market.network.num_vertice) = Market.network.voltage_constraint.col(1) - Market.network.voltage_constraint.col(0);
+	scale_vec.tail(Market.network.num_edges) = Market.network.power_constraint.col(1) - Market.network.power_constraint.col(0);
+	alglib::real_1d_array scale;
+	scale.setcontent(scale_vec.size(), scale_vec.data());
 	
 	// -------------------------------------------------------------------------------
 	// Set the LP problem object
 	// -------------------------------------------------------------------------------
 	alglib::minlpcreate(variable_num, Problem);
 	alglib::minlpsetlc2(Problem, constraint_general, lb_general, ub_general, constrant_num);
+	alglib::minlpsetscale(Problem, scale);
 	//alglib::minlpsetalgoipm(Problem);
 	alglib::minlpsetalgodss(Problem, 0);
 }
@@ -245,21 +255,10 @@ void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, alglib
 	bidded_total_aggregated = bidded_supply_aggregated + bidded_demand_aggregated;
 
 	// -------------------------------------------------------------------------------
-	// Set scale of variables
-	// -------------------------------------------------------------------------------
-	int variable_num = 2 * Market.network.num_vertice + Market.network.num_edges;
-	Eigen::VectorXd scale_vec(variable_num);
-	scale_vec.head(Market.network.num_vertice) = Market.network.voltage_constraint.col(1) - Market.network.voltage_constraint.col(0);
-	scale_vec.segment(Market.network.num_vertice, Market.network.num_vertice) = (bidded_total_aggregated.bottomRows(1) - bidded_total_aggregated.bottomRows(0)).transpose();
-	scale_vec.tail(Market.network.num_edges) = Market.network.power_constraint.col(1) - Market.network.power_constraint.col(0);
-	alglib::real_1d_array scale;
-	scale.setcontent(scale_vec.size(), scale_vec.data());
-	alglib::minlpsetscale(Problem, scale);
-
-	// -------------------------------------------------------------------------------
 	// Initilize source / sink bounds with isolated market clearing prices
 	// -------------------------------------------------------------------------------
 	int row_ID;
+	int variable_num = 2 * Market.network.num_vertice + Market.network.num_edges;
 	Eigen::MatrixXd bound_box(variable_num, 2);
 	bound_box.topRows(Market.network.num_vertice) = Market.network.voltage_constraint;
 	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
@@ -293,19 +292,34 @@ void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, alglib
 	// -------------------------------------------------------------------------------	
 	// Declare variables for the loop
 	bool stop_flag = 0;
-	double error;
+	//double error;	
 	double tol = 1E-12;
 	alglib::real_1d_array sol;
-	alglib::real_1d_array sol_prev;
 	alglib::minlpreport rep;
+	Eigen::VectorXd sol_prev = Eigen::VectorXd::Zero(variable_num);
+	Eigen::VectorXi rep_stats_prev = Eigen::VectorXi::Zero(variable_num);
 	
 	// Solve the problem for the 1st time
 	alglib::minlpoptimize(Problem);
 	alglib::minlpresults(Problem, sol, rep);
 
+	int loop_count = 0;
+//	std::cout << std::fixed;
+//	std::cout << "Loop:\t" << loop_count << "\t";
+//	for(int var_iter = 0; var_iter < variable_num; ++ var_iter){
+//		std::cout << std::setprecision(9) << sol[var_iter] << "\t";
+//	}
+//	std::cout << "\n";
+//	std::cout << "Stop:\t" << stop_flag << "\t";
+//	for(int var_iter = 0; var_iter < variable_num; ++ var_iter){
+//		std::cout << std::setprecision(9) << double(rep.stats[var_iter]) << "\t";
+//	}
+//	std::cout << "\n\n";
+		
 	while(!stop_flag){
+	//while(loop_count < 300){
+		loop_count += 1;
 		stop_flag = 1;
-		sol_prev = sol;
 		
 		// Update price at each node
 		for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
@@ -325,8 +339,6 @@ void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, alglib
 				
 				// Update objective coefficient at the node
 				obj_coeff[row_ID] = Market.bidded_price(price_ID(node_iter));
-				
-				stop_flag = 0;
 			}
 			else if(rep.stats[row_ID] < 0){
 				// Decrease the price at the node if possible
@@ -342,9 +354,7 @@ void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, alglib
 				minlpsetbci(Problem, row_ID, bidded_total_aggregated(price_ID(node_iter), node_iter), bidded_total_aggregated(price_ID(node_iter) + 1, node_iter));
 				
 				// Update objective coefficient at the node
-				obj_coeff[row_ID] = Market.bidded_price(price_ID(node_iter));
-				
-				stop_flag = 0;								
+				obj_coeff[row_ID] = Market.bidded_price(price_ID(node_iter));								
 			}
 		}
 		
@@ -352,19 +362,40 @@ void Flow_Based_Market_Optimization_Test(int tick, market_inform &Market, alglib
 		alglib::minlpsetcost(Problem, obj_coeff);
 		alglib::minlpoptimize(Problem);
 		alglib::minlpresults(Problem, sol, rep);
-		//std::cout << sol[3] << "\t" << sol[4] << "\t" << sol[5] << "\n\n";
 		
-		// Check if solution changes
-		error = 0.;
-		for(int var_iter; var_iter < variable_num; ++ var_iter){
-			error += pow(sol[var_iter] - sol_prev[var_iter], 2.);
+		// Check if solution cannot be improved
+		for(int var_iter = 0; var_iter < variable_num; ++ var_iter){	
+			// Update solution if changed
+			if(sol_prev(var_iter) != sol[var_iter]){
+				stop_flag = 0;
+				sol_prev(var_iter) = sol[var_iter];
+			}
+			
+			// Update status if changed
+			if(rep_stats_prev(var_iter) != rep.stats[var_iter]){
+				stop_flag = 0;
+				rep_stats_prev(var_iter) = rep.stats[var_iter];
+			}		
 		}
-		if(!stop_flag){
-			stop_flag = (error < tol);
-		}		
+		
+//		std::cout << std::fixed;
+//		std::cout << "Loop:\t" << loop_count << "\t";
+//		for(int var_iter = 0; var_iter < variable_num; ++ var_iter){
+//			std::cout << std::setprecision(9) << sol[var_iter] << "\t";
+//		}
+//		std::cout << "\n";
+//		std::cout << "Stop:\t" << stop_flag << "\t";
+//		for(int var_iter = 0; var_iter < variable_num; ++ var_iter){
+//			std::cout << std::setprecision(9) << double(rep.stats[var_iter]) << "\t";
+//		}
+//		std::cout << "\n\n";
 	}
+//	std::cout << "\n";
 	
 	// Update confirmed prices and bids
+	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
+		std::cout << sol[node_iter] << "\t";
+	}	
 	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
 		row_ID = Market.network.num_vertice + node_iter;
 		std::cout << sol[row_ID] << "\t";
@@ -377,15 +408,17 @@ int main(){
 	power_network_input_process(Power_network_inform, "../power_network/");	
 	
 	market_inform TSO_Market;
-	TSO_Market_Set_Test_1(TSO_Market, 1);
+	TSO_Market_Set_Test_2(TSO_Market, 1);
 	alglib::minlpstate TSO_Problem;
 
 	auto start = std::chrono::high_resolution_clock::now();
+	//Flow_Based_Market_LP_Set(TSO_Market, TSO_Problem);
 	Flow_Based_Market_LP_Set_Test(TSO_Market, TSO_Problem);
 	auto stop = std::chrono::high_resolution_clock::now();
 	auto duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
 	std::cout << "Set time: " << duration.count() << " microseconds" << "\n\n";
 	start = std::chrono::high_resolution_clock::now();
+	//Flow_Based_Market_Optimization(0, TSO_Market, TSO_Problem);
 	Flow_Based_Market_Optimization_Test(0, TSO_Market, TSO_Problem);
 	stop = std::chrono::high_resolution_clock::now();
 	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
