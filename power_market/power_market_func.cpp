@@ -293,7 +293,8 @@ void Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlpstate &Problem
 	alglib::minlpsetbc(Problem, lb_box, ub_box);
 	alglib::minlpsetlc2(Problem, constraint_general, lb_general, ub_general, constrant_num);
 	alglib::minlpsetscale(Problem, scale);
-	alglib::minlpsetalgoipm(Problem);
+	//alglib::minlpsetalgoipm(Problem);
+	alglib::minlpsetalgodss(Problem, 0.);
 }
 
 void Flow_Based_Market_Optimization(int tick, market_inform &Market, alglib::minlpstate &Problem){
@@ -330,7 +331,8 @@ void Flow_Based_Market_Optimization(int tick, market_inform &Market, alglib::min
 	
 	// -------------------------------------------------------------------------------
 	// Store the solution
-	// -------------------------------------------------------------------------------	
+	// -------------------------------------------------------------------------------
 	Eigen::Map <Eigen::VectorXd> sol_vec(sol.getcontent(), bound_box.rows());
-	std::cout << sol_vec.head(6).transpose() << "\n\n";
+	std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).transpose() << "\n\n";
+	//std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).array().abs().sum() << "\n\n";
 }

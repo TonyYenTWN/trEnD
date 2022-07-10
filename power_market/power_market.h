@@ -75,7 +75,7 @@ struct DSO_Markets{
 void Market_Initialization(market_inform&);
 void Market_clearing_nodal(int, market_inform&, Eigen::VectorXi&, Eigen::MatrixXd&, Eigen::MatrixXd&);
 void Flow_Based_Market_LP_Set(market_inform&, alglib::minlpstate&);
-void Flow_Based_Market_Optimization(int, market_inform&);
+void Flow_Based_Market_Optimization(int, market_inform&, alglib::minlpstate&);
 
 #endif
 

@@ -1,7 +1,7 @@
 // Source file for the main procedure of the power market clearing
 #include <iostream>
 //#include <chrono>
-#include "../basic/LP_gpa.h"
+//#include "../basic/LP_gpa.h"
 #include "../basic/rw_csv.cpp"
 #include "../power_network/power_network_input.cpp"
 #include "power_market.h"
