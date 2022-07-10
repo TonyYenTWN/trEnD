@@ -36,6 +36,9 @@ void International_Market_Set(market_inform &International_Market, int Time, std
 	num_col = International_Market.num_zone + 1;
 	International_Market.demand_default = read_file(num_row, num_col, fin_name_demand).rightCols(International_Market.num_zone);
 
+	// Initialization of process variables
+	Market_Initialization(International_Market);
+
 	// Initialization of output variables
 	International_Market.confirmed_supply = Eigen::MatrixXd::Zero(Time, International_Market.num_zone);
 	International_Market.confirmed_demand = Eigen::MatrixXd::Zero(Time, International_Market.num_zone);

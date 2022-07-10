@@ -38,6 +38,9 @@ void TSO_Market_Set(market_inform &TSO_Market, network_inform &Power_network_inf
 	TSO_Market.network.power_constraint.col(0) = Eigen::VectorXd::Constant(TSO_Market.network.num_edges, -5.);
 	TSO_Market.network.power_constraint.col(1) = Eigen::VectorXd::Constant(TSO_Market.network.num_edges, 5.);
 
+	// Initialization of process variables
+	Market_Initialization(TSO_Market);
+	
 	// Initialization of output variables
 	TSO_Market.confirmed_supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.confirmed_demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);

@@ -20,6 +20,9 @@ void DSO_Markets_Set(DSO_Markets &DSO_Markets, network_inform &Power_network_inf
 		DSO_Markets.markets[DSO_iter].network.num_vertice = DSO_Markets.markets[DSO_iter].num_zone;
 		DSO_Markets.markets[DSO_iter].network.num_edges = DSO_Markets.markets[DSO_iter].num_zone * (DSO_Markets.markets[DSO_iter].num_zone - 1) / 2;
 		
+		// Initialization of process variables
+		Market_Initialization(DSO_Markets.markets[DSO_iter]);		
+		
 		// Initialization of output variables
 		DSO_Markets.markets[DSO_iter].confirmed_supply = Eigen::MatrixXd::Zero(Time, DSO_Markets.markets[DSO_iter].num_zone);
 		DSO_Markets.markets[DSO_iter].confirmed_demand = Eigen::MatrixXd::Zero(Time, DSO_Markets.markets[DSO_iter].num_zone);
