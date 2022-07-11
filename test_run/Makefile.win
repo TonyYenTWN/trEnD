@@ -4,8 +4,8 @@
 CPP      = g++.exe
 CC       = gcc.exe
 WINDRES  = windres.exe
-OBJ      = TSO_test.o ../basic/alglib/alglibinternal.o ../basic/alglib/alglibmisc.o ../basic/alglib/ap.o ../basic/alglib/kernels_fma.o ../basic/alglib/linalg.o ../basic/alglib/optimization.o ../basic/alglib/solvers.o ../power_market/power_market_func.o ../power_network/power_network_input.o ../basic/alglib/kernels_avx2.o
-LINKOBJ  = TSO_test.o ../basic/alglib/alglibinternal.o ../basic/alglib/alglibmisc.o ../basic/alglib/ap.o ../basic/alglib/kernels_fma.o ../basic/alglib/linalg.o ../basic/alglib/optimization.o ../basic/alglib/solvers.o ../power_market/power_market_func.o ../power_network/power_network_input.o ../basic/alglib/kernels_avx2.o
+OBJ      = ../basic/alglib/alglibinternal.o ../basic/alglib/alglibmisc.o ../basic/alglib/ap.o ../basic/alglib/kernels_fma.o ../basic/alglib/linalg.o ../basic/alglib/optimization.o ../basic/alglib/solvers.o ../power_market/power_market_func.o ../power_network/power_network_input.o ../basic/alglib/kernels_avx2.o ../power_market/DSO.o ../power_market/IMO.o ../power_market/power_market_proc.o ../power_market/TSO.o ../basic/rw_csv.o
+LINKOBJ  = ../basic/alglib/alglibinternal.o ../basic/alglib/alglibmisc.o ../basic/alglib/ap.o ../basic/alglib/kernels_fma.o ../basic/alglib/linalg.o ../basic/alglib/optimization.o ../basic/alglib/solvers.o ../power_market/power_market_func.o ../power_network/power_network_input.o ../basic/alglib/kernels_avx2.o ../power_market/DSO.o ../power_market/IMO.o ../power_market/power_market_proc.o ../power_market/TSO.o ../basic/rw_csv.o
 LIBS     = -L"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib" -L"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/lib" -static-libgcc -fopenmp
 INCS     = -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include"
 CXXINCS  = -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/x86_64-w64-mingw32/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include" -I"C:/Program Files (x86)/Embarcadero/Dev-Cpp/TDM-GCC-64/lib/gcc/x86_64-w64-mingw32/9.2.0/include/c++" -I"D:/Programs/C++/tools/boost_1_78_0" -I"D:/Programs/C++/tools/eigen-3.4.0"
@@ -23,9 +23,6 @@ clean: clean-custom
 
 $(BIN): $(OBJ)
 	$(CPP) $(LINKOBJ) -o $(BIN) $(LIBS)
-
-TSO_test.o: TSO_test.cpp
-	$(CPP) -c TSO_test.cpp -o TSO_test.o $(CXXFLAGS)
 
 ../basic/alglib/alglibinternal.o: ../basic/alglib/alglibinternal.cpp
 	$(CPP) -c ../basic/alglib/alglibinternal.cpp -o ../basic/alglib/alglibinternal.o $(CXXFLAGS)
@@ -56,3 +53,18 @@ TSO_test.o: TSO_test.cpp
 
 ../basic/alglib/kernels_avx2.o: ../basic/alglib/kernels_avx2.cpp
 	$(CPP) -c ../basic/alglib/kernels_avx2.cpp -o ../basic/alglib/kernels_avx2.o $(CXXFLAGS)
+
+../power_market/DSO.o: ../power_market/DSO.cpp
+	$(CPP) -c ../power_market/DSO.cpp -o ../power_market/DSO.o $(CXXFLAGS)
+
+../power_market/IMO.o: ../power_market/IMO.cpp
+	$(CPP) -c ../power_market/IMO.cpp -o ../power_market/IMO.o $(CXXFLAGS)
+
+../power_market/power_market_proc.o: ../power_market/power_market_proc.cpp
+	$(CPP) -c ../power_market/power_market_proc.cpp -o ../power_market/power_market_proc.o $(CXXFLAGS)
+
+../power_market/TSO.o: ../power_market/TSO.cpp
+	$(CPP) -c ../power_market/TSO.cpp -o ../power_market/TSO.o $(CXXFLAGS)
+
+../basic/rw_csv.o: ../basic/rw_csv.cpp
+	$(CPP) -c ../basic/rw_csv.cpp -o ../basic/rw_csv.o $(CXXFLAGS)
