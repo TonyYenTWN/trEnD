@@ -2,7 +2,7 @@
 #include <iostream>
 #include <iomanip>
 #include <chrono>
-#include "../basic/rw_csv.cpp"
+#include "../basic/rw_csv.h"
 #include "../basic/alglib/optimization.h"
 #include "../power_network/power_network.h"
 #include "../power_market/power_market.h"
@@ -12,13 +12,7 @@ void TSO_Market_Set_Test_1(market_inform &TSO_Market, int Time){
 	// A trivial test case with 3 nodes, the first bus being the reference connecting to the remaining 2
 	TSO_Market.num_zone = 3;
 	TSO_Market.time_intervals = Time;
-	TSO_Market.price_intervals = 600;
-	TSO_Market.price_range_inflex << -500., 3000.;
-	TSO_Market.price_range_flex << -100., 500.;
-	TSO_Market.bidded_price = Eigen::VectorXd(TSO_Market.price_intervals + 2);
-	TSO_Market.bidded_price(0) = TSO_Market.price_range_inflex(0);
-	TSO_Market.bidded_price.array().tail(1) = TSO_Market.price_range_inflex(1);
-	TSO_Market.bidded_price.array().segment(1, TSO_Market.price_intervals) = Eigen::VectorXd::LinSpaced(TSO_Market.price_intervals, TSO_Market.price_range_flex(0) + .5 * (TSO_Market.price_range_flex(1) - TSO_Market.price_range_flex(0)) / TSO_Market.price_intervals, TSO_Market.price_range_flex(1) - .5 * (TSO_Market.price_range_flex(1) - TSO_Market.price_range_flex(0)) / TSO_Market.price_intervals);
+	TSO_Market.set_bidded_price();
 	
 	// Set compact node admittance matrix Y_n
 	TSO_Market.network.num_vertice = TSO_Market.num_zone;
@@ -64,15 +58,9 @@ void TSO_Market_Set_Test_1(market_inform &TSO_Market, int Time){
 void TSO_Market_Set_Test_2(market_inform &TSO_Market, int Time){
 	// Input parameters of TSO market
 	// A trivial test case with 20 nodes connected as a radial line
-	TSO_Market.num_zone = 400;
+	TSO_Market.num_zone = 2;
 	TSO_Market.time_intervals = Time;
-	TSO_Market.price_intervals = 600;
-	TSO_Market.price_range_inflex << -500., 3000.;
-	TSO_Market.price_range_flex << -100., 500.;
-	TSO_Market.bidded_price = Eigen::VectorXd(TSO_Market.price_intervals + 2);
-	TSO_Market.bidded_price(0) = TSO_Market.price_range_inflex(0);
-	TSO_Market.bidded_price.array().tail(1) = TSO_Market.price_range_inflex(1);
-	TSO_Market.bidded_price.array().segment(1, TSO_Market.price_intervals) = Eigen::VectorXd::LinSpaced(TSO_Market.price_intervals, TSO_Market.price_range_flex(0) + .5 * (TSO_Market.price_range_flex(1) - TSO_Market.price_range_flex(0)) / TSO_Market.price_intervals, TSO_Market.price_range_flex(1) - .5 * (TSO_Market.price_range_flex(1) - TSO_Market.price_range_flex(0)) / TSO_Market.price_intervals);
+	TSO_Market.set_bidded_price();
 	
 	// Set node admittance matrix Y_n
 	TSO_Market.network.num_vertice = TSO_Market.num_zone;
@@ -123,4 +111,20 @@ int main(){
 	stop = std::chrono::high_resolution_clock::now();
 	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
 	std::cout << "Optimization time: " << duration.count() << " microseconds" << "\n\n";
+	
+	// Check issues of memory allocation 
+	TSO_Market_Set_Test_1(TSO_Market, 1);
+
+	start = std::chrono::high_resolution_clock::now();
+	Flow_Based_Market_LP_Set(TSO_Market, TSO_Problem);
+	//Flow_Based_Market_LP_Set_Test(TSO_Market, TSO_Problem);
+	stop = std::chrono::high_resolution_clock::now();
+	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
+	std::cout << "Set time: " << duration.count() << " microseconds" << "\n\n";
+	start = std::chrono::high_resolution_clock::now();
+	Flow_Based_Market_Optimization(0, TSO_Market, TSO_Problem);
+	//Flow_Based_Market_Optimization_Test(0, TSO_Market, TSO_Problem);
+	stop = std::chrono::high_resolution_clock::now();
+	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
+	std::cout << "Optimization time: " << duration.count() << " microseconds" << "\n\n";	
 }
