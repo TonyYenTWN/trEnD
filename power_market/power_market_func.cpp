@@ -293,7 +293,7 @@ void Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlpstate &Problem
 	alglib::minlpsetlc2(Problem, constraint_general, lb_general, ub_general, constrant_num);
 	alglib::minlpsetscale(Problem, scale);
 	//alglib::minlpsetalgoipm(Problem);
-	alglib::minlpsetalgodss(Problem, 0);
+	alglib::minlpsetalgodss(Problem, 0.);
 }
 
 void Flow_Based_Market_Optimization(int tick, market_inform &Market, alglib::minlpstate &Problem){
@@ -327,14 +327,21 @@ void Flow_Based_Market_Optimization(int tick, market_inform &Market, alglib::min
 	alglib::minlpreport rep;
 	alglib::minlpoptimize(Problem);
 	alglib::minlpresults(Problem, sol, rep);
-	//std::cout << rep.stats[0] << "\n\n";
 	
 	// -------------------------------------------------------------------------------
 	// Store the solution
 	// -------------------------------------------------------------------------------
-	Eigen::Map <Eigen::VectorXd> sol_vec(sol.getcontent(), bound_box.rows());
+	Eigen::VectorXd sol_vec = Eigen::Map <Eigen::VectorXd> (sol.getcontent(), bound_box.rows()); 
+	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
+		row_start = 2 * Market.network.num_vertice + node_iter * (Market.price_intervals + 2);
+		Market.confirmed_supply(tick, node_iter) = (sol_vec.segment(row_start, Market.price_intervals + 2).array().max(0)).sum();
+		Market.confirmed_demand(tick, node_iter) = -(sol_vec.segment(row_start, Market.price_intervals + 2).array().min(0)).sum();
+		Market.confirmed_price(tick, node_iter) = Market.bidded_price(0) + rep.lagbc[row_start];
+	}
+	std::cout << Market.confirmed_price.row(tick) << "\n\n";
+	
 	//std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).transpose() << "\n\n";
-	std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).array().abs().sum() << "\n";
-	std::cout << sol_vec.head(Market.network.num_vertice).minCoeff() << " " << sol_vec.head(Market.network.num_vertice).maxCoeff()  << "\n";
-	std::cout << sol_vec.tail(Market.network.num_edges).minCoeff() << " " << sol_vec.tail(Market.network.num_edges).maxCoeff() << "\n\n";
+	//std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).array().abs().sum() << "\n";
+	//std::cout << sol_vec.head(Market.network.num_vertice).minCoeff() << " " << sol_vec.head(Market.network.num_vertice).maxCoeff()  << "\n";
+	//std::cout << sol_vec.tail(Market.network.num_edges).minCoeff() << " " << sol_vec.tail(Market.network.num_edges).maxCoeff() << "\n\n";
 }
