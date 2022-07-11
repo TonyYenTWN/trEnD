@@ -3,7 +3,6 @@
 //#include "../power_network/power_network.h"
 #include "power_market.h"
 
-
 // ------------------------------------------------------------------------------------------------
 // Generic functions for all market types
 // ------------------------------------------------------------------------------------------------
@@ -222,7 +221,7 @@ void Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlpstate &Problem
 	alglib::sparseset(constraint_general, non_zero_num.size() - 1, 0, 1.);
 	
 //	// Check if the sparse matrix is correct
-	std::cout << Y_n << "\n\n";
+//	std::cout << Y_n << "\n\n";
 //	double value;
 //	for(int row_iter = 0; row_iter < non_zero_num.size(); ++ row_iter){
 //		for(int col_iter = 0; col_iter < 2 * Y_n.cols() + 3; ++ col_iter){
@@ -230,9 +229,9 @@ void Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlpstate &Problem
 //			std::cout << value << "\t";
 //		}
 //		std::cout << "\t";
-//		for(int col_iter = Market.network.num_vertice * (Market.price_intervals + 4); col_iter < Market.network.num_vertice * (Market.price_intervals + 4) + 3; ++ col_iter){
+//		for(int col_iter = Market.network.num_vertice * (Market.price_intervals + 4); col_iter < Market.network.num_vertice * (Market.price_intervals + 4) + 1; ++ col_iter){
 //			value = sparseget(constraint_general, row_iter, col_iter);
-//			std::cout << value << "\t";			
+//			std::cout << value << "\t";
 //		}
 //		std::cout << "\n";
 //	}
@@ -334,6 +333,8 @@ void Flow_Based_Market_Optimization(int tick, market_inform &Market, alglib::min
 	// Store the solution
 	// -------------------------------------------------------------------------------
 	Eigen::Map <Eigen::VectorXd> sol_vec(sol.getcontent(), bound_box.rows());
-	std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).transpose() << "\n\n";
-	//std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).array().abs().sum() << "\n\n";
+	//std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).transpose() << "\n\n";
+	std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).array().abs().sum() << "\n";
+	std::cout << sol_vec.head(Market.network.num_vertice).minCoeff() << " " << sol_vec.head(Market.network.num_vertice).maxCoeff()  << "\n";
+	std::cout << sol_vec.tail(Market.network.num_edges).minCoeff() << " " << sol_vec.tail(Market.network.num_edges).maxCoeff() << "\n\n";
 }

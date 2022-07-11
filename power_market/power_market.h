@@ -73,6 +73,7 @@ struct DSO_Markets{
 
 void Market_Initialization(market_inform&);
 void Market_clearing_nodal(int, market_inform&, Eigen::VectorXi&, Eigen::MatrixXd&, Eigen::MatrixXd&);
+void Submitted_bid_calculation(int, DSO_Markets&, market_inform&, market_inform&, network_inform&, std::string);
 void Flow_Based_Market_LP_Set(market_inform&, alglib::minlpstate&);
 void Flow_Based_Market_Optimization(int, market_inform&, alglib::minlpstate&);
 
@@ -82,8 +83,9 @@ void Flow_Based_Market_Optimization(int, market_inform&, alglib::minlpstate&);
 #ifndef IMO
 #define IMO
 
-market_inform International_Market_Set(int, std::string, std::string);
+void International_Market_Set(market_inform&, int, std::string, std::string);
 void International_Market_Optimization(int, market_inform&, bool print_result = 1);
+void International_Market_Output(market_inform&);
 
 #endif
 
@@ -91,10 +93,14 @@ void International_Market_Optimization(int, market_inform&, bool print_result = 
 #ifndef TSO
 #define TSO
 
+void TSO_Market_Set(market_inform&, network_inform&, int);
+
 #endif
 
 // Functions for the distribution system operators
 #ifndef DSO
 #define DSO
+
+void DSO_Markets_Set(DSO_Markets&, network_inform&, int);
 
 #endif

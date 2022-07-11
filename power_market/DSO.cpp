@@ -1,7 +1,7 @@
 // Source file for dispatch filtering of DSOs in Norway
 #include <iostream>
 //#include <chrono>
-#include "../basic/LP_gpa.h"
+//#include "../basic/LP_gpa.h"
 #include "power_market.h"
 
 void DSO_Markets_Set(DSO_Markets &DSO_Markets, network_inform &Power_network_inform, int Time){

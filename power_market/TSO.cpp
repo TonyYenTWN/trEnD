@@ -1,7 +1,7 @@
 // Source file for re-dispatch and tertiary control reserve market clearing of TSO in Norway
 #include <iostream>
 //#include <chrono>
-#include "../basic/LP_gpa.h"
+//#include "../basic/LP_gpa.h"
 #include "../basic/rw_csv.h"
 #include "../power_network/power_network.h"
 #include "power_market.h"
@@ -17,6 +17,8 @@
 //}
 
 void TSO_Market_Set(market_inform &TSO_Market, network_inform &Power_network_inform, int Time){
+	double pi = boost::math::constants::pi<double>();
+	
 	// Input parameters of TSO market
 	TSO_Market.num_zone = Power_network_inform.nodes.bidding_zone.size();
 	TSO_Market.time_intervals = Time;

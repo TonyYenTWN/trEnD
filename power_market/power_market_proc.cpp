@@ -2,13 +2,10 @@
 #include <iostream>
 //#include <chrono>
 //#include "../basic/LP_gpa.h"
-#include "../basic/rw_csv.cpp"
-#include "../power_network/power_network_input.cpp"
+#include "../basic/rw_csv.h"
+#include "../basic/alglib/optimization.h"
+#include "../power_network/power_network.h"
 #include "power_market.h"
-#include "power_market_func.cpp"
-#include "IMO.cpp"
-#include "TSO.cpp"
-#include "DSO.cpp"
 
 int main(){
 	// Initialization of power network information
@@ -24,7 +21,7 @@ int main(){
 	
 	// Initialization of the TSO
 	market_inform TSO_Market;
-	LP_object TSO_Problem; 
+	alglib::minlpstate TSO_Problem; 
 	TSO_Market_Set(TSO_Market, Power_network_inform, 1);
 	Flow_Based_Market_LP_Set(TSO_Market, TSO_Problem);		
 	
@@ -41,5 +38,5 @@ int main(){
 	// Ideal market clearing in IMO
 	
 	// Re-dispatch in TSO
-	Flow_Based_Market_Optimization_2(0, TSO_Market, TSO_Problem);
+	Flow_Based_Market_Optimization(0, TSO_Market, TSO_Problem);
 }
