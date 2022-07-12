@@ -45,3 +45,12 @@ double geodist(Eigen::Vector2d P_1, Eigen::Vector2d P_2){
 
 	return(radius_mean * theta);
 }
+
+void point_distance(Eigen::MatrixXd &distance; Eigen::VectorXd lon, Eigen::VectorXd lat){
+	for(int row_iter = 0; row_iter < lon.size(); ++ row_iter){
+		for(int col_iter = row_iter; col_iter < lon.size(); ++ col_iter){
+			distance(row_iter, col_iter) = geodist(Eigen::Vector2d(lon(row_iter) * pi / 180., lat(row_iter) * pi / 180.), lon(col_iter) * pi / 180., lat(col_iter) * pi / 180.));
+			distance(col_iter, row_iter) = distance(row_iter, col_iter);
+		}
+	}
+}

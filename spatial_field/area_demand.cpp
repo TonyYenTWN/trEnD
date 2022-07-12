@@ -37,7 +37,7 @@ int main(){
 		for(int row_ID = 0; row_ID < num_row; ++ row_ID){
 			for(int col_ID = row_ID; col_ID < num_row; ++ col_ID){
 				if(row_ID == col_ID){
-					Distance_Points(row_ID, col_ID) = 0;
+					Distance_Points(row_ID, col_ID) = 0.;
 				}
 				else{
 					Distance_Points(row_ID, col_ID) = geodist(sample_inform.row(row_ID).tail(2) * pi / 180., sample_inform.row(col_ID).tail(2) * pi / 180.);
