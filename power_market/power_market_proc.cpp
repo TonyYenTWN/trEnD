@@ -10,6 +10,7 @@
 int main(){
 	// Initialization of power network information
 	network_inform Power_network_inform;
+	Power_network_inform.set_line_density();
 	power_network_input_process(Power_network_inform);
 	
 	// Initialization of the IMO
@@ -28,9 +29,9 @@ int main(){
 	// Initialization of the DSO
 	DSO_Markets DSO_Markets;
 	DSO_Markets_Set(DSO_Markets, Power_network_inform, 1);
-	
+
 	// Re-initialization of submitted bids
-	std::string fin_point_demand = "../area_deamand/processed/nominal_mean_demand_field_10km_annual_mean.csv";
+	std::string fin_point_demand = "../spatial_field/processed/nominal_mean_demand_field_10km_annual_mean.csv";
 	Submitted_bid_calculation(0, DSO_Markets, TSO_Market, International_Market, Power_network_inform, fin_point_demand);
 	
 	// Bid-filtering in DSOs
