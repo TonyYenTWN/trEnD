@@ -2,7 +2,7 @@
 Welcome to trEnD, a c++ based energy system model for the transition of end-users and the distribution network.
 The codes are for my PhD project and it is undergoing revision. Feel free to comment on any issues.
 
-The library [ALGLIB](https://www.alglib.net/), [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page), and [Boost](https://www.boost.org/) are required to compile the codes.
+The library [ALGLIB](https://www.alglib.net/), [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page), and [Boost](https://www.boost.org/) are used to compile the codes.
 
 # Categorization Rationale of Files
 - Input files are csv files imported into the project.
