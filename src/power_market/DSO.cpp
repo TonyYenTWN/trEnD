@@ -31,30 +31,36 @@ void DSO_Markets_Set(DSO_Markets &DSO_Markets, network_inform &Power_network_inf
 			int edge_iter = 0;
 			for(int row_iter = 0; row_iter < DSO_Markets.markets[DSO_iter].network.num_vertice - 1; ++ row_iter){
 				for(int col_iter = row_iter + 1; col_iter < DSO_Markets.markets[DSO_iter].network.num_vertice; ++ col_iter){
-						DSO_Markets.markets[DSO_iter].network.admittance_vector(edge_iter) = Power_network_inform.tech_parameters.line_density_distr / 4. / pi;
-						DSO_Markets.markets[DSO_iter].network.admittance_vector(edge_iter) /= Power_network_inform.tech_parameters.z_distr_series.imag() * 1E3;
+					DSO_Markets.markets[DSO_iter].network.admittance_vector(edge_iter) = Power_network_inform.tech_parameters.line_density_distr / 4. / pi;
+					DSO_Markets.markets[DSO_iter].network.admittance_vector(edge_iter) /= Power_network_inform.tech_parameters.z_distr_series.imag() * 1E3;
+					double distance;
 
-						if(row_iter < Power_network_inform.DSO_cluster[DSO_iter].points_ID.size() && col_iter < Power_network_inform.DSO_cluster[DSO_iter].points_ID.size()){
-							int point_ID_1 = Power_network_inform.DSO_cluster[DSO_iter].points_ID[row_iter];
-							int point_ID_2 = Power_network_inform.DSO_cluster[DSO_iter].points_ID[col_iter];
-							DSO_Markets.markets[DSO_iter].network.admittance_vector(edge_iter) /= pow(Power_network_inform.points.distance(point_ID_1, point_ID_2) * 1E-3, 2. + Power_network_inform.tech_parameters.fraction_dim_distr);
+					if(row_iter < Power_network_inform.DSO_cluster[DSO_iter].points_ID.size() && col_iter < Power_network_inform.DSO_cluster[DSO_iter].points_ID.size()){
+						int point_ID_1 = Power_network_inform.DSO_cluster[DSO_iter].points_ID[row_iter];
+						int point_ID_2 = Power_network_inform.DSO_cluster[DSO_iter].points_ID[col_iter];
+						distance = Power_network_inform.points.distance(point_ID_1, point_ID_2);
+					}
+					else{
+						if(row_iter < Power_network_inform.DSO_cluster[DSO_iter].points_ID.size()){
+							int point_ID = Power_network_inform.DSO_cluster[DSO_iter].points_ID[row_iter];
+							int node_ID = Power_network_inform.DSO_cluster[DSO_iter].nodes_ID[col_iter - Power_network_inform.DSO_cluster[DSO_iter].points_ID.size()];
+							Eigen::Vector2d point_coor = Eigen::Vector2d(Power_network_inform.points.lon(point_ID), Power_network_inform.points.lat(point_ID));
+							Eigen::Vector2d node_coor = Eigen::Vector2d(Power_network_inform.nodes.lon(point_ID), Power_network_inform.nodes.lat(point_ID));
+							point_coor *= pi / 180.;
+							node_coor *= pi / 180.;
+							distance = geostat::geodist(point_coor, node_coor);
 						}
 						else{
-							if(row_iter < Power_network_inform.DSO_cluster[DSO_iter].points_ID.size()){
-								int point_ID = Power_network_inform.DSO_cluster[DSO_iter].points_ID[row_iter];
-								int node_ID = Power_network_inform.DSO_cluster[DSO_iter].nodes_ID[col_iter - Power_network_inform.DSO_cluster[DSO_iter].points_ID.size()];
-								Eigen::Vector2d point_coor = Eigen::Vector2d(Power_network_inform.points.lon(point_ID), Power_network_inform.points.lat(point_ID));
-								Eigen::Vector2d node_coor = Eigen::Vector2d(Power_network_inform.nodes.lon(point_ID), Power_network_inform.nodes.lat(point_ID));
-								point_coor *= pi / 180.;
-								node_coor *= pi / 180.;
-								double distance = geostat::geodist(point_coor, node_coor);
-								DSO_Markets.markets[DSO_iter].network.admittance_vector(edge_iter) /= pow(distance * 1E-3, 2. + Power_network_inform.tech_parameters.fraction_dim_distr);
-							}
-							else{
-
-							}
+							int node_ID_1 = Power_network_inform.DSO_cluster[DSO_iter].nodes_ID[row_iter - Power_network_inform.DSO_cluster[DSO_iter].points_ID.size()];
+							int node_ID_2 = Power_network_inform.DSO_cluster[DSO_iter].nodes_ID[col_iter - Power_network_inform.DSO_cluster[DSO_iter].points_ID.size()];
+							Eigen::Vector2d node_coor_1 = Eigen::Vector2d(Power_network_inform.points.lon(node_ID_1), Power_network_inform.points.lat(node_ID_1));
+							Eigen::Vector2d node_coor_2 = Eigen::Vector2d(Power_network_inform.nodes.lon(node_ID_2), Power_network_inform.nodes.lat(node_ID_2));
+							node_coor_1 *= pi / 180.;
+							node_coor_2 *= pi / 180.;
+							distance = geostat::geodist(node_coor_1, node_coor_2);
 						}
-					//DSO_Markets.markets[DSO_iter].network.admittance_vector(edge_iter) = Power_network_inform.points.distance();
+					}
+					DSO_Markets.markets[DSO_iter].network.admittance_vector(edge_iter) /= pow(distance * 1E-3, 2. + Power_network_inform.tech_parameters.fraction_dim_distr);
 					edge_iter += 1;
 				}
 			}
