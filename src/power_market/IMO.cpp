@@ -24,7 +24,7 @@ void International_Market_Set(market_inform &International_Market, int Time, std
 	// Read inferred merit order curve data
 	int num_row = International_Market.price_intervals + 2;
 	int num_col = International_Market.num_zone;
-	Eigen::MatrixXd merit_order_curve_q = read_file(num_row, num_col, fin_name_moc);
+	Eigen::MatrixXd merit_order_curve_q = basic::read_file(num_row, num_col, fin_name_moc);
 	Eigen::MatrixXd diff_merit_order_curve_q = merit_order_curve_q.bottomRows(num_row - 1) - merit_order_curve_q.topRows(num_row - 1);
 	International_Market.merit_order_curve = merit_order_curve_q;
 	International_Market.merit_order_curve.bottomRows(num_row - 1) = diff_merit_order_curve_q;
@@ -34,7 +34,7 @@ void International_Market_Set(market_inform &International_Market, int Time, std
 	// Read default demand data
 	num_row = International_Market.time_intervals;
 	num_col = International_Market.num_zone + 1;
-	International_Market.demand_default = read_file(num_row, num_col, fin_name_demand).rightCols(International_Market.num_zone);
+	International_Market.demand_default = basic::read_file(num_row, num_col, fin_name_demand).rightCols(International_Market.num_zone);
 
 	// Initialization of process variables
 	Market_Initialization(International_Market);
@@ -362,7 +362,7 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 
 void International_Market_Output(market_inform &International_Market){
 	std::string fout_name = "output/IMO_confirmed_price.csv";
-	write_file(International_Market.confirmed_price, fout_name, International_Market.zone_names);
+	basic::write_file(International_Market.confirmed_price, fout_name, International_Market.zone_names);
 }
 
 //int main(){

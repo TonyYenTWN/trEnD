@@ -4,7 +4,8 @@
 #ifndef NETWORK_OBJECT
 #define NETWORK_OBJECT
 
-#include "src/basic/Basic_Definitions.h"
+#include "src/basic/basic_definitions.h"
+#include "src/basic/eigen_sparse.h"
 #include "src/basic/rw_csv.h"
 
 // Power network objects
@@ -13,7 +14,7 @@ struct points{
 	double grid_length = 10000.; 	// meters
 	Eigen::MatrixXi coordinate_grid;
 	Eigen::MatrixXd distance;
-	Eigen::MatrixXd covariance;
+	Eigen::SparseMatrix <double> covariance;
 	Eigen::VectorXi bidding_zone;
 	Eigen::VectorXi node;
 	Eigen::VectorXi in_cluster_ID;
@@ -75,10 +76,10 @@ struct technical_parameters{
 	double line_density_distr;
 	double fraction_dim_distr = 1.5;
 
-	std::complex<double> x_trans_series = std::complex<double> (0., 5. * pow(10., -4.));	// Series impedence per meter of transmission line
-	std::complex<double> x_trans_shunt = std::complex<double> (0., 0.);						// Shunt impedence per meter of transmission line
-	std::complex<double> x_distr_series = std::complex<double> (0., 7. * pow(10., -4.));	// Series impedence per meter of distribution line
-	std::complex<double> x_distr_shunt = std::complex<double> (0., 0.);						// Shunt impedence per meter of distribution line
+	std::complex<double> z_trans_series = std::complex<double> (0., 5. * pow(10., -4.));	// Series impedence per meter of transmission line
+	std::complex<double> z_trans_shunt = std::complex<double> (0., 0.);							// Shunt impedence per meter of transmission line
+	std::complex<double> z_distr_series = std::complex<double> (0., 7. * pow(10., -4.));	// Series impedence per meter of distribution line
+	std::complex<double> z_distr_shunt = std::complex<double> (0., 0.);							// Shunt impedence per meter of distribution line
 	std::complex<double> s_base = std::complex<double> (1000., 0.) * pow(3., .5);			// Reference value for non-dimensionalization of power into p.u.															// Reference values for non-dimensionalization into p.u.
 };
 
@@ -93,7 +94,7 @@ struct network_inform{
 
 	// Set line density of distribution networks
 	void set_line_density(){
-		this->tech_parameters.line_density_distr = (double) this->tech_parameters.line_num_distr / (double) this->points.bidding_zone.size();
+		this->tech_parameters.line_density_distr = (double) this->tech_parameters.line_num_distr / (double) this->points.bidding_zone.size() / this->points.point_area;
 	}
 };
 

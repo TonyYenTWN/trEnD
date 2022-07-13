@@ -3,15 +3,15 @@
 //#include <chrono>
 //#include "../basic/LP_gpa.h"
 #include "basic/rw_csv.h"
-#include "basic/alglib/optimization.h"
+#include "alglib/optimization.h"
 #include "power_network/power_network.h"
 #include "power_market/power_market.h"
 
 int main(){
 	// Initialization of power network information
 	network_inform Power_network_inform;
-	Power_network_inform.set_line_density();
 	power_network_input_process(Power_network_inform, "csv/input/power_network/");
+	Power_network_inform.set_line_density();
 
 	// Initialization of the IMO
 	int Time = 8760;

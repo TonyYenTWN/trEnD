@@ -4,9 +4,9 @@
 #ifndef MARKET_OBJECT
 #define MARKET_OBJECT
 
-#include "src/basic/Basic_Definitions.h"
-#include "src/basic/Eigen_Sparse.h"
-#include "src/basic/alglib/optimization.h"
+#include "src/alglib/optimization.h"
+#include "src/basic/basic_definitions.h"
+#include "src/basic/eigen_sparse.h"
 #include "src/power_network/power_network.h"
 
 // Power market objects

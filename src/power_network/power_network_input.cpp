@@ -1,17 +1,17 @@
 // Source file for power network data input and process
 #include <iostream>
-#include "src/spatial_field/Geostat.h"
+#include "src/spatial_field/geostat.h"
 #include "power_network.h"
 
 // Must read transmission data before points (DSO cluster initialize here)
 void tranmission_data_input(network_inform &Power_network_inform, Eigen::MatrixXd bz_inform, std::string fin_node, std::string fin_edge_orig, std::string fin_edge_simp){
 	// Read power network data
-	auto fin_node_dim = get_file_dim(fin_node);
-	auto fin_edge_orig_dim = get_file_dim(fin_edge_orig);
-	auto fin_edge_simp_dim = get_file_dim(fin_edge_simp);
-	auto node_inform = read_file(fin_node_dim[0], fin_node_dim[1], fin_node);
-	auto edge_orig_inform = read_file(fin_edge_orig_dim[0], fin_edge_orig_dim[1], fin_edge_orig);
-	auto edge_simp_inform = read_file(fin_edge_simp_dim[0], fin_edge_simp_dim[1], fin_edge_simp);
+	auto fin_node_dim = basic::get_file_dim(fin_node);
+	auto fin_edge_orig_dim = basic::get_file_dim(fin_edge_orig);
+	auto fin_edge_simp_dim = basic::get_file_dim(fin_edge_simp);
+	auto node_inform = basic::read_file(fin_node_dim[0], fin_node_dim[1], fin_node);
+	auto edge_orig_inform = basic::read_file(fin_edge_orig_dim[0], fin_edge_orig_dim[1], fin_edge_orig);
+	auto edge_simp_inform = basic::read_file(fin_edge_simp_dim[0], fin_edge_simp_dim[1], fin_edge_simp);
 
 	// Initialize node ID for DSO-Clusters
 	int cluster_num = int(node_inform.col(1).maxCoeff());
@@ -66,10 +66,10 @@ void tranmission_data_input(network_inform &Power_network_inform, Eigen::MatrixX
 
 void points_data_input(network_inform &Power_network_inform, Eigen::MatrixXd bz_inform, std::string fin_point, std::string fin_point_matrix){
 	// Read point data
-	auto fin_point_dim = get_file_dim(fin_point);
-	auto fin_point_matrix_dim = get_file_dim(fin_point_matrix);
-	auto point_inform = read_file(fin_point_dim[0], fin_point_dim[1], fin_point);
-	auto point_matrix = read_file(fin_point_matrix_dim[0], fin_point_matrix_dim[1], fin_point_matrix);
+	auto fin_point_dim = basic::get_file_dim(fin_point);
+	auto fin_point_matrix_dim = basic::get_file_dim(fin_point_matrix);
+	auto point_inform = basic::read_file(fin_point_dim[0], fin_point_dim[1], fin_point);
+	auto point_matrix = basic::read_file(fin_point_matrix_dim[0], fin_point_matrix_dim[1], fin_point_matrix);
 
 	// Initialize point ID for DSO-Clusters
 	for(int cluster_iter = 0; cluster_iter < Power_network_inform.DSO_cluster.size(); ++ cluster_iter){
@@ -111,17 +111,16 @@ void points_data_input(network_inform &Power_network_inform, Eigen::MatrixXd bz_
 	}
 
 	// Calculate distance matrix
-	Power_network_inform.points.distance = Eigen::MatrixXd::Zero(fin_point_dim[0], fin_point_dim[0]);
-	Power_network_inform.points.covariance = Eigen::MatrixXd::Ones(fin_point_dim[0], fin_point_dim[0]);
-	point_distance_cov(Power_network_inform.points, 10.);
+	geostat::point_distance_cov(Power_network_inform.points, 10.);
+	//std::cout << Power_network_inform.points.distance.bottomRightCorner(5, 5) << "\n\n";
 }
 
 void plant_data_input(network_inform &Power_network_inform, std::string fin_hydro, std::string fin_wind){
 	// Read plant data
-	auto fin_hydro_dim = get_file_dim(fin_hydro);
-	auto fin_wind_dim = get_file_dim(fin_wind);
-	auto hydro_inform = read_file(fin_hydro_dim[0], fin_hydro_dim[1], fin_hydro);
-	auto wind_inform = read_file(fin_wind_dim[0], fin_wind_dim[1], fin_wind);
+	auto fin_hydro_dim = basic::get_file_dim(fin_hydro);
+	auto fin_wind_dim = basic::get_file_dim(fin_wind);
+	auto hydro_inform = basic::read_file(fin_hydro_dim[0], fin_hydro_dim[1], fin_hydro);
+	auto wind_inform = basic::read_file(fin_wind_dim[0], fin_wind_dim[1], fin_wind);
 
 	// Organize hydro power plant data
 	Power_network_inform.plants.hydro.node = Eigen::VectorXi(fin_hydro_dim[0]);
@@ -161,8 +160,8 @@ void power_network_input_process(network_inform &Power_network_inform, std::stri
 	auto fin_hydro = parent_dir + "hydro_plants.csv";
 	auto fin_wind = parent_dir + "wind_plants.csv";
 
-	auto fin_bz_dim = get_file_dim(fin_bz);
-	auto bz_inform = read_file(fin_bz_dim[0], fin_bz_dim[1], fin_bz);
+	auto fin_bz_dim = basic::get_file_dim(fin_bz);
+	auto bz_inform = basic::read_file(fin_bz_dim[0], fin_bz_dim[1], fin_bz);
 
 	tranmission_data_input(Power_network_inform, bz_inform, fin_node, fin_edge_orig, fin_edge_simp);
 	points_data_input(Power_network_inform, bz_inform, fin_point, fin_point_matrix);

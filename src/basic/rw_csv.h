@@ -8,10 +8,12 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include "src/basic/Basic_Definitions.h"
+#include "src/basic/basic_definitions.h"
 
-std::vector <int> get_file_dim(std::string);
-Eigen::MatrixXd read_file(int, int, std::string);
-void write_file(Eigen::MatrixXd, std::string, std::vector<std::string>);
+namespace basic{
+	std::vector <int> get_file_dim(std::string);
+	Eigen::MatrixXd read_file(int, int, std::string);
+	void write_file(Eigen::MatrixXd, std::string, std::vector<std::string>);
+}
 
 #endif
