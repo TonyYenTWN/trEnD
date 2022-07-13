@@ -1,5 +1,6 @@
 // Source file for power network data input and process
 #include <iostream>
+#include "../spatial_field/Geostat.h"
 #include "power_network.h"
 
 // Must read transmission data before points (DSO cluster initialize here)
@@ -108,7 +109,11 @@ void points_data_input(network_inform &Power_network_inform, Eigen::MatrixXd bz_
 			Power_network_inform.points.coordinate_grid(x_coor_iter, y_coor_iter) = std::max(int(point_matrix(x_coor_iter, y_coor_iter)), 0) - 1;
 		}
 	}
-	//std::cout << Power_network_inform.points.coordinate_grid.topLeftCorner(10, 10) << "\n";
+	
+	// Calculate distance matrix
+	Power_network_inform.points.distance = Eigen::MatrixXd::Zero(fin_point_dim[0], fin_point_dim[0]);
+	Power_network_inform.points.covariance = Eigen::MatrixXd::Ones(fin_point_dim[0], fin_point_dim[0]);
+	point_distance_cov(Power_network_inform.points, 10.);
 }
 
 void plant_data_input(network_inform &Power_network_inform, std::string fin_hydro, std::string fin_wind){

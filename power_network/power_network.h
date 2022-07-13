@@ -13,6 +13,7 @@ struct points{
 	double grid_length = 10000.; 	// meters
 	Eigen::MatrixXi coordinate_grid;
 	Eigen::MatrixXd distance;
+	Eigen::MatrixXd covariance;
 	Eigen::VectorXi bidding_zone;
 	Eigen::VectorXi node;
 	Eigen::VectorXi in_cluster_ID;
@@ -72,6 +73,7 @@ struct technical_parameters{
 	int voltage_cutoff_distr = 20; 
 	int line_num_distr = 124245;
 	double line_density_distr;
+	double fraction_dim_distr = 1.5;
 	
 	std::complex<double> x_trans_series = std::complex<double> (0., 5. * pow(10., -4.));	// Series impedence per meter of transmission line
 	std::complex<double> x_trans_shunt = std::complex<double> (0., 0.);						// Shunt impedence per meter of transmission line
@@ -92,7 +94,7 @@ struct network_inform{
 	// Set line density of distribution networks
 	void set_line_density(){
 		this->tech_parameters.line_density_distr = (double) this->tech_parameters.line_num_distr / (double) this->points.bidding_zone.size();
-	}	
+	}
 };
 
 // Functions for reading the files

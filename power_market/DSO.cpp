@@ -19,6 +19,17 @@ void DSO_Markets_Set(DSO_Markets &DSO_Markets, network_inform &Power_network_inf
 		// Use fractional Laplacian here
 		DSO_Markets.markets[DSO_iter].network.num_vertice = DSO_Markets.markets[DSO_iter].num_zone;
 		DSO_Markets.markets[DSO_iter].network.num_edges = DSO_Markets.markets[DSO_iter].num_zone * (DSO_Markets.markets[DSO_iter].num_zone - 1) / 2;
+		DSO_Markets.markets[DSO_iter].network.admittance_vector(DSO_Markets.markets[DSO_iter].network.num_edges);
+		int edge_iter = 0;
+		int point_ID_1;
+		int point_ID_2;
+		for(int row_iter = 0; row_iter < DSO_Markets.markets[DSO_iter].network.num_vertice - 1; ++ row_iter){
+			for(int col_iter = row_iter + 1; col_iter < DSO_Markets.markets[DSO_iter].network.num_vertice; ++ col_iter){
+				//point_ID_1 = Power_network_inform.DSO_cluster[DSO_iter].points_ID
+				//DSO_Markets.markets[DSO_iter].network.admittance_vector(edge_iter) = Power_network_inform.points.distance();
+				edge_iter += 1;
+			}
+		}
 		
 		// Initialization of process variables
 		Market_Initialization(DSO_Markets.markets[DSO_iter]);		
