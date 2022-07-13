@@ -5,6 +5,7 @@
 #define GEOSTAT
 
 #include "../basic/Basic_Definitions.h"
+#include "../power_network/power_network.h"
 
 // Constants of Earth Spheroid
 class Earth_Constant{
@@ -16,8 +17,9 @@ class Earth_Constant{
 };
 
 // Functions for calculation of the geodestic
-Eigen::Vector3d xyz_transform(Eigen::Vector2d);
-Eigen::Vector2d uv_transform(Eigen::Vector3d);
-double geodist(Eigen::Vector2d, Eigen::Vector2d);
+inline Eigen::Vector3d xyz_transform(Eigen::Vector2d);
+inline Eigen::Vector2d uv_transform(Eigen::Vector3d);
+inline double geodist(Eigen::Vector2d, Eigen::Vector2d);
+void point_distance_cov(points&, double);
 
 #endif

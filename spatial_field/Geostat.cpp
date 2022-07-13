@@ -1,11 +1,8 @@
 // Geostat functions
 #include "Geostat.h"
 
-// Constants of Earth Spheroid
-Earth_Constant Geostat_constants;
-
 // Function definition
-Eigen::Vector3d xyz_transform(Eigen::Vector2d uv){
+inline Eigen::Vector3d xyz_transform(Eigen::Vector2d uv){
 	//	x = cos(u) * sin(v)
 	//	y = sin(u) * sin(v)
 	//	z = cos(v)
@@ -18,7 +15,7 @@ Eigen::Vector3d xyz_transform(Eigen::Vector2d uv){
 	return xyz;
 }
 
-Eigen::Vector2d uv_transform(Eigen::Vector3d xyz){
+inline Eigen::Vector2d uv_transform(Eigen::Vector3d xyz){
 	// u = atan2(y , x) 
 	// v = acos(z)
 	
@@ -29,9 +26,11 @@ Eigen::Vector2d uv_transform(Eigen::Vector3d xyz){
 	return uv;
 }
 
-double geodist(Eigen::Vector2d P_1, Eigen::Vector2d P_2){
-	
+inline double geodist(Eigen::Vector2d P_1, Eigen::Vector2d P_2){
+	// Constants of Earth Spheroid
+	Earth_Constant Geostat_constants;	
 	double pi = boost::math::constants::pi<double>();
+	
 	Eigen::Vector2d s_1 = P_1;
 	Eigen::Vector2d s_2 = P_2;
 	s_1(1) = pi / 2 - P_1(1);
@@ -46,11 +45,20 @@ double geodist(Eigen::Vector2d P_1, Eigen::Vector2d P_2){
 	return(radius_mean * theta);
 }
 
-void point_distance(Eigen::MatrixXd &distance; Eigen::VectorXd lon, Eigen::VectorXd lat){
-	for(int row_iter = 0; row_iter < lon.size(); ++ row_iter){
-		for(int col_iter = row_iter; col_iter < lon.size(); ++ col_iter){
-			distance(row_iter, col_iter) = geodist(Eigen::Vector2d(lon(row_iter) * pi / 180., lat(row_iter) * pi / 180.), lon(col_iter) * pi / 180., lat(col_iter) * pi / 180.));
-			distance(col_iter, row_iter) = distance(row_iter, col_iter);
+// Find the distance and covariance between points
+void point_distance_cov(points &point, double lambda){	
+	double pi = boost::math::constants::pi<double>();
+	
+	#pragma omp parallel
+	{
+		#pragma omp for	
+		for(int row_iter = 0; row_iter < point.lon.size() - 1; ++ row_iter){
+			for(int col_iter = row_iter + 1; col_iter < point.lon.size(); ++ col_iter){
+				point.distance(row_iter, col_iter) = geodist(Eigen::Vector2d(point.lon(row_iter) * pi / 180., point.lat(row_iter) * pi / 180.), Eigen::Vector2d(point.lon(col_iter) * pi / 180., point.lat(col_iter) * pi / 180.));
+				point.distance(col_iter, row_iter) = point.distance(row_iter, col_iter);
+				point.covariance(row_iter, col_iter) = exp(-pow(point.distance(row_iter, col_iter), 1.) / point.grid_length / lambda);
+				point.covariance(col_iter, row_iter) = point.covariance(row_iter, col_iter);
+			}
 		}
 	}
 }
