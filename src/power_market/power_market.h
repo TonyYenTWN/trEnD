@@ -27,7 +27,7 @@ struct network_graph{
 struct market_inform{
 	// Input parameters
 	int num_zone;							// Can be the actual bidding zones, or just a node / spatial element
-	int cross_border_zone_start;			// Indicate the index, after whose corresponding bidding zones are on the boundary and only act by cross-border flow
+	int cross_border_zone_start;		// Indicate the index, after whose corresponding bidding zones are on the boundary and only act by cross-border flow
 	int time_intervals;
 	int price_intervals = 600;
 	std::vector<std::string> zone_names;
@@ -47,14 +47,14 @@ struct market_inform{
 
 	// Process Variables
 	Eigen::MatrixXd submitted_supply;		// Supply bid submitted in the bidding zones
-	Eigen::MatrixXd submitted_demand;		// Demand bid submitted in the bidding zones
+	Eigen::MatrixXd submitted_demand;	// Demand bid submitted in the bidding zones
 
 	// Output variables
 	Eigen::MatrixXd confirmed_supply;		// Confirmed supply quantity from MO or TSO
-	Eigen::MatrixXd confirmed_demand;		// Confirmed demand quantity from MO or TSO
-	Eigen::MatrixXd confirmed_price;		// Confirmed market clearing price from MO or TSO
-	//Eigen::MatrixXd confirmed_bid_supply; // Confirmed supply bids from DSOs forwarding to wholesale electricity market
-	//Eigen::MatrixXd confirmed_bid_demand;	// Confirmed demand bids from DSOs forwarding to wholesale electricity market
+	Eigen::MatrixXd confirmed_demand;	// Confirmed demand quantity from MO or TSO
+	Eigen::MatrixXd confirmed_price;			// Confirmed market clearing price from MO or TSO
+	Eigen::MatrixXd filtered_supply; 			// Confirmed supply bids from DSOs forwarding to wholesale electricity market
+	Eigen::MatrixXd filtered_demand;			// Confirmed demand bids from DSOs forwarding to wholesale electricity market
 
 	// Mixed Substructure
 	network_graph network;
