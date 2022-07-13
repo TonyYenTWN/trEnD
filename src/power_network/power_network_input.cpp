@@ -1,6 +1,6 @@
 // Source file for power network data input and process
 #include <iostream>
-#include "../spatial_field/Geostat.h"
+#include "src/spatial_field/Geostat.h"
 #include "power_network.h"
 
 // Must read transmission data before points (DSO cluster initialize here)
@@ -12,7 +12,7 @@ void tranmission_data_input(network_inform &Power_network_inform, Eigen::MatrixX
 	auto node_inform = read_file(fin_node_dim[0], fin_node_dim[1], fin_node);
 	auto edge_orig_inform = read_file(fin_edge_orig_dim[0], fin_edge_orig_dim[1], fin_edge_orig);
 	auto edge_simp_inform = read_file(fin_edge_simp_dim[0], fin_edge_simp_dim[1], fin_edge_simp);
-	
+
 	// Initialize node ID for DSO-Clusters
 	int cluster_num = int(node_inform.col(1).maxCoeff());
 	Power_network_inform.DSO_cluster.clear();
@@ -21,7 +21,7 @@ void tranmission_data_input(network_inform &Power_network_inform, Eigen::MatrixX
 		Power_network_inform.DSO_cluster[cluster_iter].nodes_ID.clear();
 		Power_network_inform.DSO_cluster[cluster_iter].nodes_ID.reserve(fin_node_dim[0]);
 	}
-	
+
 	// Organize node cata
 	Power_network_inform.nodes.bidding_zone = Eigen::VectorXi(fin_node_dim[0]);
 	Power_network_inform.nodes.cluster = Eigen::VectorXi(fin_node_dim[0]);
@@ -37,12 +37,12 @@ void tranmission_data_input(network_inform &Power_network_inform, Eigen::MatrixX
 	Power_network_inform.nodes.x = node_inform.col(node_inform.cols() - 4);
 	Power_network_inform.nodes.y = node_inform.col(node_inform.cols() - 3);
 	Power_network_inform.nodes.lon = node_inform.col(node_inform.cols() - 2);
-	Power_network_inform.nodes.lat = node_inform.col(node_inform.cols() - 1);	
+	Power_network_inform.nodes.lat = node_inform.col(node_inform.cols() - 1);
 //	for(int node_iter = 0; node_iter < Power_network_inform.DSO_cluster[0].nodes_ID.size(); ++ node_iter){
 //		std::cout << Power_network_inform.DSO_cluster[0].nodes_ID[node_iter] << " ";
 //	}
 //	std::cout << "\n\n";
-	
+
 	// Organize original edge data
 	Power_network_inform.edges_orig.from = Eigen::VectorXi(fin_edge_orig_dim[0]);
 	Power_network_inform.edges_orig.to = Eigen::VectorXi(fin_edge_orig_dim[0]);
@@ -53,7 +53,7 @@ void tranmission_data_input(network_inform &Power_network_inform, Eigen::MatrixX
 		Power_network_inform.edges_orig.voltage_base(edge_iter) = int(edge_orig_inform(edge_iter, 4));
 	}
 	Power_network_inform.edges_orig.distance = edge_orig_inform.col(5);
-	
+
 	// Organize simplified egde data
 	Power_network_inform.edges_simp.from = Eigen::VectorXi(fin_edge_simp_dim[0]);
 	Power_network_inform.edges_simp.to = Eigen::VectorXi(fin_edge_simp_dim[0]);
@@ -70,13 +70,13 @@ void points_data_input(network_inform &Power_network_inform, Eigen::MatrixXd bz_
 	auto fin_point_matrix_dim = get_file_dim(fin_point_matrix);
 	auto point_inform = read_file(fin_point_dim[0], fin_point_dim[1], fin_point);
 	auto point_matrix = read_file(fin_point_matrix_dim[0], fin_point_matrix_dim[1], fin_point_matrix);
-	
+
 	// Initialize point ID for DSO-Clusters
 	for(int cluster_iter = 0; cluster_iter < Power_network_inform.DSO_cluster.size(); ++ cluster_iter){
 		Power_network_inform.DSO_cluster[cluster_iter].points_ID.clear();
 		Power_network_inform.DSO_cluster[cluster_iter].points_ID.reserve(fin_point_dim[0]);
 	}
-	
+
 	// Organize point data
 	Power_network_inform.points.bidding_zone = Eigen::VectorXi(fin_point_dim[0]);
 	Power_network_inform.points.node = Eigen::VectorXi(fin_point_dim[0]);
@@ -101,7 +101,7 @@ void points_data_input(network_inform &Power_network_inform, Eigen::MatrixXd bz_
 //	}
 //	std::cout << "\n\n";
 //	std::cout << Power_network_inform.DSO_cluster.size() << "\n\n";
-	
+
 	// Read coordinate grid data
 	Power_network_inform.points.coordinate_grid = Eigen::MatrixXi(fin_point_matrix_dim[0], fin_point_matrix_dim[1]);
 	for(int x_coor_iter = 0; x_coor_iter < fin_point_matrix_dim[0]; ++ x_coor_iter){
@@ -109,7 +109,7 @@ void points_data_input(network_inform &Power_network_inform, Eigen::MatrixXd bz_
 			Power_network_inform.points.coordinate_grid(x_coor_iter, y_coor_iter) = std::max(int(point_matrix(x_coor_iter, y_coor_iter)), 0) - 1;
 		}
 	}
-	
+
 	// Calculate distance matrix
 	Power_network_inform.points.distance = Eigen::MatrixXd::Zero(fin_point_dim[0], fin_point_dim[0]);
 	Power_network_inform.points.covariance = Eigen::MatrixXd::Ones(fin_point_dim[0], fin_point_dim[0]);
@@ -122,7 +122,7 @@ void plant_data_input(network_inform &Power_network_inform, std::string fin_hydr
 	auto fin_wind_dim = get_file_dim(fin_wind);
 	auto hydro_inform = read_file(fin_hydro_dim[0], fin_hydro_dim[1], fin_hydro);
 	auto wind_inform = read_file(fin_wind_dim[0], fin_wind_dim[1], fin_wind);
-	
+
 	// Organize hydro power plant data
 	Power_network_inform.plants.hydro.node = Eigen::VectorXi(fin_hydro_dim[0]);
 	Power_network_inform.plants.hydro.type = Eigen::VectorXi(fin_hydro_dim[0]);
@@ -135,7 +135,7 @@ void plant_data_input(network_inform &Power_network_inform, std::string fin_hydr
 	Power_network_inform.plants.hydro.y = hydro_inform.col(hydro_inform.cols() - 3);
 	Power_network_inform.plants.hydro.lon = hydro_inform.col(hydro_inform.cols() - 2);
 	Power_network_inform.plants.hydro.lat = hydro_inform.col(hydro_inform.cols() - 1);
-	
+
 	// Organize wind power plant data
 	Power_network_inform.plants.wind.node = Eigen::VectorXi(fin_wind_dim[0]);
 	for(int wind_iter = 0; wind_iter < fin_wind_dim[0]; ++ wind_iter){
@@ -145,25 +145,25 @@ void plant_data_input(network_inform &Power_network_inform, std::string fin_hydr
 	Power_network_inform.plants.wind.x = wind_inform.col(wind_inform.cols() - 4);
 	Power_network_inform.plants.wind.y = wind_inform.col(wind_inform.cols() - 3);
 	Power_network_inform.plants.wind.lon = wind_inform.col(wind_inform.cols() - 2);
-	Power_network_inform.plants.wind.lat = wind_inform.col(wind_inform.cols() - 1);		
-	
+	Power_network_inform.plants.wind.lat = wind_inform.col(wind_inform.cols() - 1);
+
 	//std::cout << Power_network_inform.plants.wind.node.tail(10).transpose() << "\n";
 	//std::cout << Power_network_inform.plants.wind.lat.tail(10).transpose() << "\n";
 }
 
 void power_network_input_process(network_inform &Power_network_inform, std::string parent_dir){
-	auto fin_bz = parent_dir + "input/DSO_Bidding_Zone.csv";
-	auto fin_node = parent_dir + "input/transmission_nodes.csv";
-	auto fin_edge_orig = parent_dir + "input/transmission_edges.csv";
-	auto fin_edge_simp = parent_dir + "input/transmission_edges_pu_simp.csv";
-	auto fin_point = parent_dir + "input/point_info.csv";
-	auto fin_point_matrix = parent_dir + "input/point_matrix.csv";
-	auto fin_hydro = parent_dir + "input/hydro_plants.csv";
-	auto fin_wind = parent_dir + "input/wind_plants.csv";
-	
+	auto fin_bz = parent_dir + "DSO_Bidding_Zone.csv";
+	auto fin_node = parent_dir + "transmission_nodes.csv";
+	auto fin_edge_orig = parent_dir + "transmission_edges.csv";
+	auto fin_edge_simp = parent_dir + "transmission_edges_pu_simp.csv";
+	auto fin_point = parent_dir + "point_info.csv";
+	auto fin_point_matrix = parent_dir + "point_matrix.csv";
+	auto fin_hydro = parent_dir + "hydro_plants.csv";
+	auto fin_wind = parent_dir + "wind_plants.csv";
+
 	auto fin_bz_dim = get_file_dim(fin_bz);
-	auto bz_inform = read_file(fin_bz_dim[0], fin_bz_dim[1], fin_bz);	
-	
+	auto bz_inform = read_file(fin_bz_dim[0], fin_bz_dim[1], fin_bz);
+
 	tranmission_data_input(Power_network_inform, bz_inform, fin_node, fin_edge_orig, fin_edge_simp);
 	points_data_input(Power_network_inform, bz_inform, fin_point, fin_point_matrix);
 	plant_data_input(Power_network_inform, fin_hydro, fin_wind);

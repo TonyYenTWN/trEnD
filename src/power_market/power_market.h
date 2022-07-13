@@ -4,10 +4,10 @@
 #ifndef MARKET_OBJECT
 #define MARKET_OBJECT
 
-#include "../basic/Basic_Definitions.h"
-#include "../basic/Eigen_Sparse.h"
-#include "../basic/alglib/optimization.h"
-#include "../power_network/power_network.h"
+#include "src/basic/Basic_Definitions.h"
+#include "src/basic/Eigen_Sparse.h"
+#include "src/basic/alglib/optimization.h"
+#include "src/power_network/power_network.h"
 
 // Power market objects
 struct network_graph{
@@ -36,13 +36,13 @@ struct market_inform{
 	Eigen::VectorXd bidded_price;
 	Eigen::MatrixXd merit_order_curve;
 	Eigen::MatrixXd demand_default;			// Default demand profiles of the bidding zones; in later runs demand bids from Norway should come from lower level markets
-	
+
 	// Set bidded price
 	void set_bidded_price(){
 		this->bidded_price = Eigen::VectorXd(this->price_intervals + 2);
 		this->bidded_price(0) = this->price_range_inflex(0);
 		this->bidded_price.array().tail(1) = this->price_range_inflex(1);
-		this->bidded_price.segment(1, this->price_intervals) = Eigen::VectorXd::LinSpaced(this->price_intervals, this->price_range_flex(0) + .5 * (this->price_range_flex(1) - this->price_range_flex(0)) / this->price_intervals, this->price_range_flex(1) - .5 * (this->price_range_flex(1) - this->price_range_flex(0)) / this->price_intervals);		
+		this->bidded_price.segment(1, this->price_intervals) = Eigen::VectorXd::LinSpaced(this->price_intervals, this->price_range_flex(0) + .5 * (this->price_range_flex(1) - this->price_range_flex(0)) / this->price_intervals, this->price_range_flex(1) - .5 * (this->price_range_flex(1) - this->price_range_flex(0)) / this->price_intervals);
 	}
 
 	// Process Variables

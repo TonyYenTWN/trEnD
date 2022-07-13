@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="trEnD" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/trEnD" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/trEnD" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="src/alglib/alglibinternal.h" />
+		<Unit filename="src/alglib/alglibmisc.h" />
+		<Unit filename="src/alglib/ap.h" />
+		<Unit filename="src/alglib/kernels_avx2.h" />
+		<Unit filename="src/alglib/kernels_fma.h" />
+		<Unit filename="src/alglib/linalg.h" />
+		<Unit filename="src/alglib/optimization.h" />
+		<Unit filename="src/alglib/solvers.h" />
+		<Unit filename="src/alglib/stdafx.h" />
+		<Unit filename="src/basic/Basic_Definitions.h" />
+		<Unit filename="src/basic/Eigen_Sparse.h" />
+		<Unit filename="src/basic/alglib/alglibinternal.cpp" />
+		<Unit filename="src/basic/alglib/alglibinternal.h" />
+		<Unit filename="src/basic/alglib/alglibmisc.cpp" />
+		<Unit filename="src/basic/alglib/alglibmisc.h" />
+		<Unit filename="src/basic/alglib/ap.cpp" />
+		<Unit filename="src/basic/alglib/ap.h" />
+		<Unit filename="src/basic/alglib/kernels_avx2.cpp" />
+		<Unit filename="src/basic/alglib/kernels_avx2.h" />
+		<Unit filename="src/basic/alglib/kernels_fma.cpp" />
+		<Unit filename="src/basic/alglib/kernels_fma.h" />
+		<Unit filename="src/basic/alglib/linalg.cpp" />
+		<Unit filename="src/basic/alglib/linalg.h" />
+		<Unit filename="src/basic/alglib/optimization.cpp" />
+		<Unit filename="src/basic/alglib/optimization.h" />
+		<Unit filename="src/basic/alglib/solvers.cpp" />
+		<Unit filename="src/basic/alglib/solvers.h" />
+		<Unit filename="src/basic/alglib/stdafx.h" />
+		<Unit filename="src/basic/rw_csv.cpp" />
+		<Unit filename="src/basic/rw_csv.h" />
+		<Unit filename="src/main.cpp" />
+		<Unit filename="src/power_market/DSO.cpp" />
+		<Unit filename="src/power_market/IMO.cpp" />
+		<Unit filename="src/power_market/TSO.cpp" />
+		<Unit filename="src/power_market/power_market.h" />
+		<Unit filename="src/power_market/power_market_func.cpp" />
+		<Unit filename="src/power_network/power_network.h" />
+		<Unit filename="src/power_network/power_network_input.cpp" />
+		<Unit filename="src/spatial_field/Geostat.cpp" />
+		<Unit filename="src/spatial_field/Geostat.h" />
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>

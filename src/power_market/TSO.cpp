@@ -2,8 +2,8 @@
 #include <iostream>
 //#include <chrono>
 //#include "../basic/LP_gpa.h"
-#include "../basic/rw_csv.h"
-#include "../power_network/power_network.h"
+#include "src/basic/rw_csv.h"
+#include "src/power_network/power_network.h"
 #include "power_market.h"
 
 // May be useful in the future (when calculating actual ac power flow)
@@ -18,12 +18,12 @@
 
 void TSO_Market_Set(market_inform &TSO_Market, network_inform &Power_network_inform, int Time){
 	double pi = boost::math::constants::pi<double>();
-	
+
 	// Input parameters of TSO market
 	TSO_Market.num_zone = Power_network_inform.nodes.bidding_zone.size();
 	TSO_Market.time_intervals = Time;
 	TSO_Market.set_bidded_price();
-	
+
 	// Set compact incidence matrix and edge admittance matrix
 	TSO_Market.network.num_vertice = TSO_Market.num_zone;
 	TSO_Market.network.num_edges = Power_network_inform.edges_simp.from.size();
@@ -42,7 +42,7 @@ void TSO_Market_Set(market_inform &TSO_Market, network_inform &Power_network_inf
 
 	// Initialization of process variables
 	Market_Initialization(TSO_Market);
-	
+
 	// Initialization of output variables
 	TSO_Market.confirmed_supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.confirmed_demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);

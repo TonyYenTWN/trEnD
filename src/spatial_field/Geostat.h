@@ -4,8 +4,8 @@
 #ifndef GEOSTAT
 #define GEOSTAT
 
-#include "../basic/Basic_Definitions.h"
-#include "../power_network/power_network.h"
+#include "src/basic/Basic_Definitions.h"
+#include "src/power_network/power_network.h"
 
 // Constants of Earth Spheroid
 class Earth_Constant{

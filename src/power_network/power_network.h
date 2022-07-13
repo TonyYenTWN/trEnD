@@ -4,8 +4,8 @@
 #ifndef NETWORK_OBJECT
 #define NETWORK_OBJECT
 
-#include "../basic/Basic_Definitions.h"
-#include "../basic/rw_csv.h"
+#include "src/basic/Basic_Definitions.h"
+#include "src/basic/rw_csv.h"
 
 // Power network objects
 struct points{
@@ -32,14 +32,14 @@ struct nodes{
 	Eigen::VectorXd x;
 	Eigen::VectorXd y;
 	Eigen::VectorXd lon;
-	Eigen::VectorXd lat;	
+	Eigen::VectorXd lat;
 };
 
 struct edges_orig{
 	Eigen::VectorXi from;
 	Eigen::VectorXi to;
 	Eigen::VectorXi voltage_base;
-	Eigen::VectorXd distance;	
+	Eigen::VectorXd distance;
 };
 
 struct edges_simp{
@@ -55,7 +55,7 @@ struct plants_per_tech{
 	Eigen::VectorXd x;
 	Eigen::VectorXd y;
 	Eigen::VectorXd lon;
-	Eigen::VectorXd lat;	
+	Eigen::VectorXd lat;
 };
 
 struct plants_all{
@@ -70,11 +70,11 @@ struct DSO_cluster{
 
 struct technical_parameters{
 	int voltage_cutoff_trans = 132;
-	int voltage_cutoff_distr = 20; 
+	int voltage_cutoff_distr = 20;
 	int line_num_distr = 124245;
 	double line_density_distr;
 	double fraction_dim_distr = 1.5;
-	
+
 	std::complex<double> x_trans_series = std::complex<double> (0., 5. * pow(10., -4.));	// Series impedence per meter of transmission line
 	std::complex<double> x_trans_shunt = std::complex<double> (0., 0.);						// Shunt impedence per meter of transmission line
 	std::complex<double> x_distr_series = std::complex<double> (0., 7. * pow(10., -4.));	// Series impedence per meter of distribution line
@@ -90,7 +90,7 @@ struct network_inform{
 	plants_all plants;
 	std::vector <DSO_cluster> DSO_cluster;
 	technical_parameters tech_parameters;
-	
+
 	// Set line density of distribution networks
 	void set_line_density(){
 		this->tech_parameters.line_density_distr = (double) this->tech_parameters.line_num_distr / (double) this->points.bidding_zone.size();
@@ -101,6 +101,6 @@ struct network_inform{
 void tranmission_data_input(network_inform&, Eigen::MatrixXd, std::string, std::string, std::string);
 void points_data_input(network_inform&, Eigen::MatrixXd, std::string, std::string);
 void plant_data_input(network_inform&, std::string, std::string);
-void power_network_input_process(network_inform&, std::string parent_dir = "../power_network/");
+void power_network_input_process(network_inform&, std::string parent_dir);
 
 #endif
