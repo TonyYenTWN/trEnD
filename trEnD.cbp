@@ -31,6 +31,7 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fexceptions -fopenmp -mavx2 -mfma -DNDEBUG -O3 -s -std=c++2a" />
+			<Add directory="D:/Works/PhD/Research/Processed_Data/" />
 		</Compiler>
 		<Linker>
 			<Add option="-static-libgcc -fopenmp -s" />
