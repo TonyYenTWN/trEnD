@@ -34,7 +34,7 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add option="-fexceptions -fopenmp -mavx2 -mfma -DNDEBUG -O3 -s -std=c++2a" />
+			<Add option="-fexceptions -fopenmp -mavx2 -mfma -DNDEBUG -O3 -std=c++2a" />
 		</Compiler>
 		<Linker>
 			<Add option="-static-libgcc -fopenmp -s" />
