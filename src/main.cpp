@@ -9,7 +9,7 @@
 
 int main(){
 	// Initialization of power network information
-	network_inform Power_network_inform;
+	power_network::network_inform Power_network_inform;
 	power_network::power_network_input_process(Power_network_inform, "csv/input/power_network/");
 	Power_network_inform.set_line_density();
 
