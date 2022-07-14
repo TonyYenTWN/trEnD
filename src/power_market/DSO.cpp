@@ -1,4 +1,5 @@
 // Source file for dispatch filtering of DSOs in Norway
+// Note that in Norwegian terminology, HV distribution network (> 33kV) is called regional network.
 #include <iostream>
 //#include <chrono>
 //#include "../basic/LP_gpa.h"
