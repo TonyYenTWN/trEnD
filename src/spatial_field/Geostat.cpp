@@ -32,7 +32,7 @@ namespace {
 // Cross file functions
 double spatial_field::geodist(Eigen::Vector2d P_1, Eigen::Vector2d P_2){
 	// Constants of Earth Spheroid
-	spatial_field::Earth_Constant Geostat_constants;
+	Earth_Constant Geostat_constants;
 	double pi = boost::math::constants::pi<double>();
 
 	Eigen::Vector2d s_1 = P_1;
