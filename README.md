@@ -7,6 +7,8 @@ Welcome to trEnD, a c++ based model of the energy transition, focusing on the en
 ## Compiling the Source Codes
 To compile the source codes, you need to install the external libraries used in the them. Currently 3 external libraries are used in the source codes of the model. The library [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page) and [Boost](https://www.boost.org/) are required to compile the source codes. The library [ALGLIB](https://www.alglib.net/) is already in the source codes so you need not to download it in addition.
 
+## Output Files
+
 # Documentation of Source Codes
 - [agent_operational](https://github.com/TonyYenTWN/trEnD/tree/main/src/agent_operational): source codes for the operation strategies of relevant agents in the model.
 - [alglib](https://github.com/TonyYenTWN/trEnD/tree/main/src/alglib): source codes from the external library [ALGLIB](https://www.alglib.net/).
