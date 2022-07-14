@@ -16,7 +16,7 @@
 //	return(pu_dc_inform(v_iter, 1));
 //}
 
-void TSO_Market_Set(market_inform &TSO_Market, power_network::network_inform &Power_network_inform, int Time){
+void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::network_inform &Power_network_inform, int Time){
 	double pi = boost::math::constants::pi<double>();
 
 	// Input parameters of TSO market
@@ -33,15 +33,15 @@ void TSO_Market_Set(market_inform &TSO_Market, power_network::network_inform &Po
 	TSO_Market.network.admittance_vector = Power_network_inform.edges_simp.conductance;
 
 	// Set voltage and power constraints at each edge
-	TSO_Market.network.voltage_constraint = Eigen::MatrixXd(TSO_Market.network.num_vertice, 2);
-	TSO_Market.network.voltage_constraint.col(0) = Eigen::VectorXd::Constant(TSO_Market.network.num_vertice, -pi / 12);
-	TSO_Market.network.voltage_constraint.col(1) = Eigen::VectorXd::Constant(TSO_Market.network.num_vertice, pi / 12);
-	TSO_Market.network.power_constraint = Eigen::MatrixXd(TSO_Market.network.num_edges, 2);
-	TSO_Market.network.power_constraint.col(0) = Eigen::VectorXd::Constant(TSO_Market.network.num_edges, -50.);
-	TSO_Market.network.power_constraint.col(1) = Eigen::VectorXd::Constant(TSO_Market.network.num_edges, 50.);
+	TSO_Market.network.voltage_constraint = Eigen::MatrixXd::Ones(TSO_Market.network.num_vertice, 2);
+	TSO_Market.network.voltage_constraint.col(0) *= -pi / 12;
+	TSO_Market.network.voltage_constraint.col(1) *= pi / 12;
+	TSO_Market.network.power_constraint = Eigen::MatrixXd::Ones(TSO_Market.network.num_edges, 2);
+	TSO_Market.network.power_constraint.col(0) *= -50.;
+	TSO_Market.network.power_constraint.col(1) *= 50.;
 
 	// Initialization of process variables
-	Market_Initialization(TSO_Market);
+	power_market::Market_Initialization(TSO_Market);
 
 	// Initialization of output variables
 	TSO_Market.confirmed_supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);

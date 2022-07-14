@@ -4,7 +4,7 @@
 #include "src/basic/rw_csv.h"
 #include "power_market.h"
 
-void International_Market_Set(market_inform &International_Market, int Time, std::string fin_name_moc, std::string fin_name_demand){
+void power_market::International_Market_Set(market_inform &International_Market, int Time, std::string fin_name_moc, std::string fin_name_demand){
 	// Input Parameters of international market
 	International_Market.num_zone = 13;
 	International_Market.cross_border_zone_start = 5;
@@ -37,7 +37,7 @@ void International_Market_Set(market_inform &International_Market, int Time, std
 	International_Market.demand_default = basic::read_file(num_row, num_col, fin_name_demand).rightCols(International_Market.num_zone);
 
 	// Initialization of process variables
-	Market_Initialization(International_Market);
+	power_market::Market_Initialization(International_Market);
 
 	// Initialization of output variables
 	International_Market.confirmed_supply = Eigen::MatrixXd::Zero(Time, International_Market.num_zone);
@@ -46,7 +46,7 @@ void International_Market_Set(market_inform &International_Market, int Time, std
 	International_Market.network.confirmed_power = Eigen::MatrixXd(Time, International_Market.network.num_edges);
 }
 
-void International_Market_Optimization(int tick, market_inform &International_Market, bool print_result){
+void power_market::International_Market_Optimization(int tick, market_inform &International_Market, bool print_result){
 	// Initialization of process variables
 	int type_capacity_exchange;
 	double exchange_quantity;
@@ -106,7 +106,7 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 
 	// Initial market clearing within each bidding zones
 	default_price_ID = Eigen::VectorXi(International_Market.num_zone);
-	Market_clearing_nodal(tick, International_Market, default_price_ID, bidded_supply, bidded_demand);
+	power_market::Market_clearing_nodal(tick, International_Market, default_price_ID, bidded_supply, bidded_demand);
 
 	if(print_result){
 		std::cout << "---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- \n";
@@ -360,7 +360,7 @@ void International_Market_Optimization(int tick, market_inform &International_Ma
 	}
 }
 
-void International_Market_Output(market_inform &International_Market){
+void power_market::International_Market_Output(market_inform &International_Market){
 	std::string fout_name = "output/IMO_confirmed_price.csv";
 	basic::write_file(International_Market.confirmed_price, fout_name, International_Market.zone_names);
 }

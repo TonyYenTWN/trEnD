@@ -5,7 +5,7 @@
 #include "src/spatial_field/geostat.h"
 #include "power_market.h"
 
-void DSO_Markets_Set(DSO_Markets &DSO_Markets, power_network::network_inform &Power_network_inform, int Time){
+void power_market::DSO_Markets_Set(DSO_Markets &DSO_Markets, power_network::network_inform &Power_network_inform, int Time){
 	double pi = boost::math::constants::pi<double>();
 	DSO_Markets.markets.clear();
 	DSO_Markets.markets = std::vector <market_inform> (Power_network_inform.DSO_cluster.size());
@@ -27,10 +27,13 @@ void DSO_Markets_Set(DSO_Markets &DSO_Markets, power_network::network_inform &Po
 		DSO_Markets.markets[DSO_iter].network.num_vertice = DSO_Markets.markets[DSO_iter].num_zone;
 		if(DSO_Markets.markets[DSO_iter].num_zone > 1){
 			DSO_Markets.markets[DSO_iter].network.num_edges = DSO_Markets.markets[DSO_iter].num_zone * (DSO_Markets.markets[DSO_iter].num_zone - 1) / 2;
+			DSO_Markets.markets[DSO_iter].network.incidence_matrix = Eigen::MatrixXi(DSO_Markets.markets[DSO_iter].network.num_edges, 2);
 			DSO_Markets.markets[DSO_iter].network.admittance_vector = Eigen::VectorXd(DSO_Markets.markets[DSO_iter].network.num_edges);
 			int edge_iter = 0;
 			for(int row_iter = 0; row_iter < DSO_Markets.markets[DSO_iter].network.num_vertice - 1; ++ row_iter){
 				for(int col_iter = row_iter + 1; col_iter < DSO_Markets.markets[DSO_iter].network.num_vertice; ++ col_iter){
+					DSO_Markets.markets[DSO_iter].network.incidence_matrix(edge_iter, 0) = row_iter;
+					DSO_Markets.markets[DSO_iter].network.incidence_matrix(edge_iter, 1) = col_iter;
 					DSO_Markets.markets[DSO_iter].network.admittance_vector(edge_iter) = Power_network_inform.tech_parameters.line_density_distr / 4. / pi;
 					DSO_Markets.markets[DSO_iter].network.admittance_vector(edge_iter) /= Power_network_inform.tech_parameters.z_distr_series.imag() * 1E3;
 					double distance;
@@ -66,8 +69,16 @@ void DSO_Markets_Set(DSO_Markets &DSO_Markets, power_network::network_inform &Po
 			}
 		}
 
+		// Set voltage and power constraints at each edge
+		DSO_Markets.markets[DSO_iter].network.voltage_constraint = Eigen::MatrixXd::Ones(DSO_Markets.markets[DSO_iter].network.num_vertice, 2);
+		DSO_Markets.markets[DSO_iter].network.voltage_constraint.col(0) *= -pi / 12;
+		DSO_Markets.markets[DSO_iter].network.voltage_constraint.col(1) *= pi / 12;
+		DSO_Markets.markets[DSO_iter].network.power_constraint = Eigen::MatrixXd::Ones(DSO_Markets.markets[DSO_iter].network.num_edges, 2);
+		DSO_Markets.markets[DSO_iter].network.power_constraint.col(0) *= -50.;
+		DSO_Markets.markets[DSO_iter].network.power_constraint.col(1) *= 50.;
+
 		// Initialization of process variables
-		Market_Initialization(DSO_Markets.markets[DSO_iter]);
+		power_market::Market_Initialization(DSO_Markets.markets[DSO_iter]);
 
 		// Initialization of output variables
 		DSO_Markets.markets[DSO_iter].confirmed_supply = Eigen::MatrixXd::Zero(Time, DSO_Markets.markets[DSO_iter].num_zone);
