@@ -78,7 +78,7 @@ namespace power_network{
 		int voltage_cutoff_distr = 20;
 		/**Total number of power lines in the distribution network.*/
 		int line_num_distr = 124245;
-		/**Density of power lines in the distribution network.*/
+		/**Density of power lines per point in the distribution network.*/
 		double line_density_distr;
 		/**Fractional dimension of the distribution network.*/
 		double fraction_dim_distr = 1.5;
@@ -106,7 +106,7 @@ namespace power_network{
 
 		// Set line density of distribution networks
 		void set_line_density(){
-			this->tech_parameters.line_density_distr = (double) this->tech_parameters.line_num_distr / (double) this->points.bidding_zone.size() / this->points.point_area;
+			this->tech_parameters.line_density_distr = (double) this->tech_parameters.line_num_distr / (double) this->points.bidding_zone.size();
 		}
 	};
 
