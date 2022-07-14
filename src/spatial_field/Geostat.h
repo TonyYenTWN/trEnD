@@ -5,9 +5,8 @@
 #define GEOSTAT
 
 #include "src/basic/basic_definitions.h"
-#include "src/power_network/power_network.h"
 
-namespace geostat{
+namespace spatial_field{
 	// Constants of Earth Spheroid
 	class Earth_Constant{
 		public:
@@ -19,7 +18,6 @@ namespace geostat{
 
 	// Functions for calculation of the geodestic
 	double geodist(Eigen::Vector2d, Eigen::Vector2d);
-	void point_distance_cov(points&, double);
 }
 
 #endif

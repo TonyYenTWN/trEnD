@@ -30,9 +30,9 @@ namespace {
 }
 
 // Cross file functions
-double geostat::geodist(Eigen::Vector2d P_1, Eigen::Vector2d P_2){
+double spatial_field::geodist(Eigen::Vector2d P_1, Eigen::Vector2d P_2){
 	// Constants of Earth Spheroid
-	geostat::Earth_Constant Geostat_constants;
+	spatial_field::Earth_Constant Geostat_constants;
 	double pi = boost::math::constants::pi<double>();
 
 	Eigen::Vector2d s_1 = P_1;
@@ -47,28 +47,5 @@ double geostat::geodist(Eigen::Vector2d P_1, Eigen::Vector2d P_2){
 	double radius_mean = Geostat_constants.Earth_Radius_short / pow(1 - pow(Geostat_constants.Earth_Ecc * sin(lat_mean), 2), .5);
 
 	return(radius_mean * theta);
-}
-
-// Find the distance and covariance between points
-void geostat::point_distance_cov(points &point, double lambda){
-	double pi = boost::math::constants::pi<double>();
-	double tol = 1E-8;
-	Eigen::MatrixXd covariance = Eigen::MatrixXd::Ones(point.lon.size(), point.lon.size());
-	point.distance = Eigen::MatrixXd::Zero(point.lon.size(), point.lon.size());
-
-	#pragma omp parallel
-	{
-		#pragma omp for
-		for(int row_iter = 0; row_iter < point.lon.size() - 1; ++ row_iter){
-			for(int col_iter = row_iter + 1; col_iter < point.lon.size(); ++ col_iter){
-				point.distance(row_iter, col_iter) = geodist(Eigen::Vector2d(point.lon(row_iter) * pi / 180., point.lat(row_iter) * pi / 180.), Eigen::Vector2d(point.lon(col_iter) * pi / 180., point.lat(col_iter) * pi / 180.));
-				point.distance(col_iter, row_iter) = point.distance(row_iter, col_iter);
-				covariance(row_iter, col_iter) = exp(-pow(point.distance(row_iter, col_iter), 1.) / point.grid_length / lambda);
-				covariance(col_iter, row_iter) = covariance(row_iter, col_iter);
-			}
-		}
-	}
-
-	point.covariance = covariance.sparseView(tol);
 }
 
