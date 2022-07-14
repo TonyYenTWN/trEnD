@@ -48,7 +48,7 @@ void DSO_Markets_Set(DSO_Markets &DSO_Markets, network_inform &Power_network_inf
 							Eigen::Vector2d node_coor = Eigen::Vector2d(Power_network_inform.nodes.lon(point_ID), Power_network_inform.nodes.lat(point_ID));
 							point_coor *= pi / 180.;
 							node_coor *= pi / 180.;
-							distance = geostat::geodist(point_coor, node_coor);
+							distance = spatial_field::geodist(point_coor, node_coor);
 						}
 						else{
 							int node_ID_1 = Power_network_inform.DSO_cluster[DSO_iter].nodes_ID[row_iter - Power_network_inform.DSO_cluster[DSO_iter].points_ID.size()];
@@ -57,7 +57,7 @@ void DSO_Markets_Set(DSO_Markets &DSO_Markets, network_inform &Power_network_inf
 							Eigen::Vector2d node_coor_2 = Eigen::Vector2d(Power_network_inform.nodes.lon(node_ID_2), Power_network_inform.nodes.lat(node_ID_2));
 							node_coor_1 *= pi / 180.;
 							node_coor_2 *= pi / 180.;
-							distance = geostat::geodist(node_coor_1, node_coor_2);
+							distance = spatial_field::geodist(node_coor_1, node_coor_2);
 						}
 					}
 					DSO_Markets.markets[DSO_iter].network.admittance_vector(edge_iter) /= pow(distance * 1E-3, 2. + Power_network_inform.tech_parameters.fraction_dim_distr);

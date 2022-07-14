@@ -147,15 +147,15 @@ void Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlpstate &Problem
 	// Set matrix for general constraints
 	// -------------------------------------------------------------------------------
 	// Construct node admittance matrix
-	std::vector <Trip> Y_n_trip;
+	std::vector <Eigen::TripletXd> Y_n_trip;
 	Y_n_trip.reserve(2 * Market.network.num_edges + Market.network.num_vertice);
 	Eigen::SparseMatrix <double, Eigen::RowMajor> Y_n(Market.network.num_vertice, Market.network.num_vertice);
 	Eigen::VectorXd Y_n_diag = Eigen::VectorXd::Zero(Market.network.num_vertice);
 	Eigen::VectorXpd Connection_num = Eigen::VectorXpd::Ones(Market.network.num_vertice);
 	for(int edge_iter = 0; edge_iter < Market.network.num_edges; ++ edge_iter){
 		// Equality constraints of voltage - source / sink at the nodes, off-diagonal terms
-		Y_n_trip.push_back(Trip(Market.network.incidence_matrix(edge_iter, 0), Market.network.incidence_matrix(edge_iter, 1), -Market.network.admittance_vector(edge_iter)));
-		Y_n_trip.push_back(Trip(Market.network.incidence_matrix(edge_iter, 1), Market.network.incidence_matrix(edge_iter, 0), -Market.network.admittance_vector(edge_iter)));
+		Y_n_trip.push_back(Eigen::TripletXd(Market.network.incidence_matrix(edge_iter, 0), Market.network.incidence_matrix(edge_iter, 1), -Market.network.admittance_vector(edge_iter)));
+		Y_n_trip.push_back(Eigen::TripletXd(Market.network.incidence_matrix(edge_iter, 1), Market.network.incidence_matrix(edge_iter, 0), -Market.network.admittance_vector(edge_iter)));
 		Connection_num(Market.network.incidence_matrix(edge_iter, 0)) += 1;
 		Connection_num(Market.network.incidence_matrix(edge_iter, 1)) += 1;
 
@@ -165,7 +165,7 @@ void Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlpstate &Problem
 	}
 	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
 		// Equality constraints of voltage - source / sink at the nodes, summed diagonal terms
-		Y_n_trip.push_back(Trip(node_iter, node_iter, Y_n_diag(node_iter)));
+		Y_n_trip.push_back(Eigen::TripletXd(node_iter, node_iter, Y_n_diag(node_iter)));
 	}
 	Y_n.setFromTriplets(Y_n_trip.begin(), Y_n_trip.end());
 
