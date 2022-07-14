@@ -70,8 +70,7 @@ namespace power_network{
 		std::vector <int> nodes_ID;
 	};
 
-    /** \brief Technical parameters of the power network.
-     */
+    /** \brief Technical parameters of the power network.*/
 	struct technical_parameters{
 		int voltage_cutoff_trans = 132;
 		int voltage_cutoff_distr = 20;
@@ -79,11 +78,16 @@ namespace power_network{
 		double line_density_distr;
 		double fraction_dim_distr = 1.5;
 
-		std::complex<double> z_trans_series = std::complex<double> (0., 5. * pow(10., -4.));	/**< Series impedence per meter of transmission line */
-		std::complex<double> z_trans_shunt = std::complex<double> (0., 0.);	/**< Shunt impedence per meter of transmission line */
-		std::complex<double> z_distr_series = std::complex<double> (0., 7. * pow(10., -4.));	/**< Series impedence per meter of distribution line */
-		std::complex<double> z_distr_shunt = std::complex<double> (0., 0.);	/**< Shunt impedence per meter of distribution line */
-		std::complex<double> s_base = std::complex<double> (1000., 0.) * pow(3., .5);	/**< Reference value for non-dimensionalization of power into p.u. */
+		/**Series impedance per meter of transmission line.  */
+		std::complex<double> z_trans_series = std::complex<double> (0., 5. * pow(10., -4.));
+		/**Shunt impedance per meter of transmission line.  */
+		std::complex<double> z_trans_shunt = std::complex<double> (0., 0.);
+		/**Series impedance per meter of distribution line.  */
+		std::complex<double> z_distr_series = std::complex<double> (0., 7. * pow(10., -4.));
+		/**Shunt impedance per meter of distribution line.  */
+		std::complex<double> z_distr_shunt = std::complex<double> (0., 0.);
+		/**Reference value for non-dimensionalization of power into p.u..  */
+		std::complex<double> s_base = std::complex<double> (1000., 0.) * pow(3., .5);
     };
 
 	struct network_inform{
