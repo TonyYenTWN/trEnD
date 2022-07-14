@@ -98,10 +98,12 @@ struct network_inform{
 	}
 };
 
-// Functions for reading the files
-void tranmission_data_input(network_inform&, Eigen::MatrixXd, std::string, std::string, std::string);
-void points_data_input(network_inform&, Eigen::MatrixXd, std::string, std::string);
-void plant_data_input(network_inform&, std::string, std::string);
-void power_network_input_process(network_inform&, std::string parent_dir);
+namespace power_network{
+	// Function for constructing distance and covariance matrix of points
+	void point_distance_cov(points&, double);
+
+	// Function for reading the files
+	void power_network_input_process(network_inform&, std::string parent_dir);
+}
 
 #endif
