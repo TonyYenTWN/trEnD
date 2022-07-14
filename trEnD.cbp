@@ -5,6 +5,7 @@
 		<Option title="trEnD" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
+		<Option extended_obj_names="1" />
 		<Build>
 			<Target title="Debug">
 				<Option output="bin/Debug/trEnD" prefix_auto="1" extension_auto="1" />
@@ -68,7 +69,7 @@
 		<Unit filename="src/power_market/power_market_func.cpp" />
 		<Unit filename="src/power_network/power_network.h" />
 		<Unit filename="src/power_network/power_network_input.cpp" />
-		<Unit filename="src/spatial_field/Geostat.cpp" />
+		<Unit filename="src/spatial_field/geostat.cpp" />
 		<Unit filename="src/spatial_field/geostat.h" />
 		<Extensions />
 	</Project>
