@@ -5,7 +5,7 @@
 #include "src/spatial_field/geostat.h"
 #include "power_market.h"
 
-void DSO_Markets_Set(DSO_Markets &DSO_Markets, network_inform &Power_network_inform, int Time){
+void DSO_Markets_Set(DSO_Markets &DSO_Markets, power_network::network_inform &Power_network_inform, int Time){
 	double pi = boost::math::constants::pi<double>();
 	DSO_Markets.markets.clear();
 	DSO_Markets.markets = std::vector <market_inform> (Power_network_inform.DSO_cluster.size());

@@ -16,7 +16,7 @@
 //	return(pu_dc_inform(v_iter, 1));
 //}
 
-void TSO_Market_Set(market_inform &TSO_Market, network_inform &Power_network_inform, int Time){
+void TSO_Market_Set(market_inform &TSO_Market, power_network::network_inform &Power_network_inform, int Time){
 	double pi = boost::math::constants::pi<double>();
 
 	// Input parameters of TSO market

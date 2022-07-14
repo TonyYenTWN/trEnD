@@ -6,7 +6,7 @@
 // In-file functions
 namespace {
 	// Must read transmission data before points (DSO cluster initialize here)
-	void tranmission_data_input(network_inform &Power_network_inform, Eigen::MatrixXd bz_inform, std::string fin_node, std::string fin_edge_orig, std::string fin_edge_simp){
+	void tranmission_data_input(power_network::network_inform &Power_network_inform, Eigen::MatrixXd bz_inform, std::string fin_node, std::string fin_edge_orig, std::string fin_edge_simp){
 		// Read power network data
 		auto fin_node_dim = basic::get_file_dim(fin_node);
 		auto fin_edge_orig_dim = basic::get_file_dim(fin_edge_orig);
@@ -18,7 +18,7 @@ namespace {
 		// Initialize node ID for DSO-Clusters
 		int cluster_num = int(node_inform.col(1).maxCoeff());
 		Power_network_inform.DSO_cluster.clear();
-		Power_network_inform.DSO_cluster = std::vector <DSO_cluster> (cluster_num);
+		Power_network_inform.DSO_cluster = std::vector <power_network::DSO_cluster> (cluster_num);
 		for(int cluster_iter = 0; cluster_iter < cluster_num; ++ cluster_iter){
 			Power_network_inform.DSO_cluster[cluster_iter].nodes_ID.clear();
 			Power_network_inform.DSO_cluster[cluster_iter].nodes_ID.reserve(fin_node_dim[0]);
@@ -66,7 +66,7 @@ namespace {
 		Power_network_inform.edges_simp.conductance = edge_simp_inform.col(2);
 	}
 
-	void points_data_input(network_inform &Power_network_inform, Eigen::MatrixXd bz_inform, std::string fin_point, std::string fin_point_matrix){
+	void points_data_input(power_network::network_inform &Power_network_inform, Eigen::MatrixXd bz_inform, std::string fin_point, std::string fin_point_matrix){
 		// Read point data
 		auto fin_point_dim = basic::get_file_dim(fin_point);
 		auto fin_point_matrix_dim = basic::get_file_dim(fin_point_matrix);
@@ -117,7 +117,7 @@ namespace {
 		//std::cout << Power_network_inform.points.distance.bottomRightCorner(5, 5) << "\n\n";
 	}
 
-	void plant_data_input(network_inform &Power_network_inform, std::string fin_hydro, std::string fin_wind){
+	void plant_data_input(power_network::network_inform &Power_network_inform, std::string fin_hydro, std::string fin_wind){
 		// Read plant data
 		auto fin_hydro_dim = basic::get_file_dim(fin_hydro);
 		auto fin_wind_dim = basic::get_file_dim(fin_wind);

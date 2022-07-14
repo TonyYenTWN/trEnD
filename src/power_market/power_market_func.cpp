@@ -69,7 +69,7 @@ void Market_clearing_nodal(int tick, market_inform &Market, Eigen::VectorXi &def
 // ------------------------------------------------------------------------------------------------
 // Functions involving all markets
 // ------------------------------------------------------------------------------------------------
-void Submitted_bid_calculation(int tick, DSO_Markets &DSO_Markets, market_inform &TSO_Market, market_inform &International_Market, network_inform &Power_network_inform, std::string fin_point_demand){
+void Submitted_bid_calculation(int tick, DSO_Markets &DSO_Markets, market_inform &TSO_Market, market_inform &International_Market, power_network::network_inform &Power_network_inform, std::string fin_point_demand){
 	// Calculation of submit bids at the beginning of each time slice
 	auto fin_point_demand_dim = basic::get_file_dim(fin_point_demand);
 	auto point_demand_inform = basic::read_file(fin_point_demand_dim[0], fin_point_demand_dim[1], fin_point_demand);
