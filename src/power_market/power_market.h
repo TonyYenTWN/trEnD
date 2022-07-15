@@ -106,8 +106,8 @@ namespace power_market{
 	void Market_Initialization(market_inform&);
 	void Market_clearing_nodal(int, market_inform&, Eigen::VectorXi&, Eigen::MatrixXd&, Eigen::MatrixXd&);
 	void Submitted_bid_calculation(int, markets_inform&, market_inform&, market_inform&, power_network::network_inform&, std::string);
-	void Flow_Based_Market_LP_Set(market_inform&);
-	void Flow_Based_Market_Optimization(int, market_inform&);
+	void Flow_Based_Market_LP_Set(market_inform&, alglib::minlpstate &);
+	void Flow_Based_Market_Optimization(int, market_inform&, alglib::minlpstate&);
 }
 
 #endif
