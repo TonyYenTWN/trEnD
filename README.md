@@ -17,3 +17,4 @@ Currently 3 external libraries are used in the source codes of the model. The li
 - [power_network](https://github.com/TonyYenTWN/trEnD/tree/main/src/power_network): source codes for the processing of power network data.
 - [spatial_field](https://github.com/TonyYenTWN/trEnD/tree/main/src/spatial_field): source codes for the processing of spatial fields.
 - [main.cpp](https://github.com/TonyYenTWN/trEnD/blob/main/src/main.cpp): the cpp file where the main function is located.
+See full documentation at the Github page of this project (https://tonyyentwn.github.io/trEnD/).
