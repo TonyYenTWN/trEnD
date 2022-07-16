@@ -10,6 +10,8 @@ Currently 3 external libraries are used in the source codes of the model. The li
 ## Output Files
 
 # Documentation of Source Codes
+Below is a summary of what the source codes do, categorized by the subfolders in [src](https://github.com/TonyYenTWN/trEnD/tree/main/src) folder. For full documentation, see [the Github page of this project](https://tonyyentwn.github.io/trEnD/).
+
 - [agent_operational](https://github.com/TonyYenTWN/trEnD/tree/main/src/agent_operational): source codes for the operation strategies of relevant agents in the model.
 - [alglib](https://github.com/TonyYenTWN/trEnD/tree/main/src/alglib): source codes from the external library [ALGLIB](https://www.alglib.net/).
 - [basic](https://github.com/TonyYenTWN/trEnD/tree/main/src/basic): source codes for generic functions and headers.
@@ -17,4 +19,3 @@ Currently 3 external libraries are used in the source codes of the model. The li
 - [power_network](https://github.com/TonyYenTWN/trEnD/tree/main/src/power_network): source codes for the processing of power network data.
 - [spatial_field](https://github.com/TonyYenTWN/trEnD/tree/main/src/spatial_field): source codes for the processing of spatial fields.
 - [main.cpp](https://github.com/TonyYenTWN/trEnD/blob/main/src/main.cpp): the cpp file where the main function is located.
-See full documentation at the [Github page of this project](https://tonyyentwn.github.io/trEnD/).
