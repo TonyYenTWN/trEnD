@@ -266,7 +266,7 @@ ul {
 }
 
 #side-nav ul {
-  overflow: visible; /* reset ul rule for scroll bar in GENERATE_TREEVIEW window */
+  overflow: visible; /* reset ul rule for scroll bar in GENERATE_TREEVIEW window */ */
 }
 
 #main-nav ul {

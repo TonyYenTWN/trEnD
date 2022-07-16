@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['basic_0',['basic',['../namespacebasic.html',1,'']]]
+  ['basic_0',['basic',['../de/dbb/namespacebasic.html',1,'']]]
 ];
