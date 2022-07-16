@@ -9,90 +9,236 @@
 #include "src/basic/rw_csv.h"
 
 namespace power_network{
-	// Power network objects
+    /** Information of spatial points in the model.*/
 	struct points{
-		double point_area = 100.; 		// square km
-		double grid_length = 10000.; 	// meters
+		/*@{*/
+		/** Area size of a point, in square kilometers.*/
+		double point_area = 100.;
+		/** Rough spacing distance between 2 adjacent points, in meters.*/
+		double grid_length = 10000.;
+		/*@{*/
+
+		/*@{*/
+		/** A matrix mapping point indexs onto x-y coordinates. Row indexs represent the x coordinates and column indexs represent the y coordinates.*/
 		Eigen::MatrixXi coordinate_grid;
+		/** Distance between the points.*/
 		Eigen::MatrixXd distance;
+		/** Covariance of the reference random fields between the points.*/
 		Eigen::SparseMatrix <double> covariance;
+		/*@{*/
+
+		/**
+		* @name hierarchy information
+		*/
+		/*@{*/
+		/** Bidding zones where the points are located.*/
 		Eigen::VectorXi bidding_zone;
+		/** Transmission nodes where the power source / sink on the point will be injected to the transmission network.*/
 		Eigen::VectorXi node;
+		/** Index number of the point in the DSO cluster which it is located.*/
 		Eigen::VectorXi in_cluster_ID;
+		/*@{*/
+
+		/**
+		* @name features information
+		*/
+		/*@{*/
+		/** Population density at the spatial point.*/
 		Eigen::VectorXd population_density;
+		/*@{*/
+
+		/**
+		* @name geometric information
+		*/
+		/*@{*/
+		/** X-coordinate of the spatial point in European grid (ETRS89).*/
 		Eigen::VectorXd x;
+		/** Y-coordinate of the spatial point in European grid (ETRS89).*/
 		Eigen::VectorXd y;
+		/** Longitude of the spatial point.*/
 		Eigen::VectorXd lon;
+		/** Latitude of the spatial point.*/
 		Eigen::VectorXd lat;
+		/*@{*/
 	};
 
+	/** Information of nodes on the transmission network.*/
 	struct nodes{
+		/**
+		* @name hierarchy information
+		*/
+		/*@{*/
+		/** Bidding zones where the nodes are located.*/
 		Eigen::VectorXi bidding_zone;
+		/** DSO clusters where the nodes are located.*/
 		Eigen::VectorXi cluster;
+		/** Index number of the node in the DSO cluster which it is located.*/
 		Eigen::VectorXi in_cluster_ID;
+		/*@{*/
+
+		/**
+		* @name features information
+		*/
+		/*@{*/
+		/** Reference value for non-dimensionalization of voltage into p.u..*/
 		Eigen::VectorXi voltage_base;
+		/*@{*/
+
+		/**
+		* @name geometric information
+		*/
+		/*@{*/
+		/** X-coordinate of the node in European grid (ETRS89).*/
 		Eigen::VectorXd x;
+		/** Y-coordinate of the node in European grid (ETRS89).*/
 		Eigen::VectorXd y;
+		/** Longitude of the node.*/
 		Eigen::VectorXd lon;
+		/** Latitude of the node.*/
 		Eigen::VectorXd lat;
+		/*@{*/
 	};
 
+	/** Transmission network edges (power lines) from the original power network data.*/
 	struct edges_orig{
+		/**
+		* @name topological information
+		*/
+		/*@{*/
+		/** Starting node of the power line.*/
 		Eigen::VectorXi from;
+		/** Ending node of the power line.*/
 		Eigen::VectorXi to;
-		Eigen::VectorXi voltage_base;
+		/** Ending node of the power line.*/
+		/*@{*/
+
+		/**
+		* @name geometric information
+		*/
+		/*@{*/
 		Eigen::VectorXd distance;
+		/*@{*/
+
+		/**
+		* @name features information
+		*/
+		/*@{*/
+		/** Reference value for non-dimensionalization of voltage into p.u..*/
+		Eigen::VectorXi voltage_base;
+		/*@{*/
 	};
 
+	/** Transmission network edges (power lines) from simplified power network data.*/
 	struct edges_simp{
+		/**
+		* @name topological information
+		*/
+		/*@{*/
+		/** Starting node of the power line.*/
 		Eigen::VectorXi from;
+		/** Ending node of the power line.*/
 		Eigen::VectorXi to;
-		Eigen::VectorXd conductance;	// non-dimensionalized into p.u.
+		/*@{*/
+
+		/**
+		* @name features information
+		*/
+		/*@{*/
+		/** Conductance of the edges in p.u..*/
+		Eigen::VectorXd conductance;
+		/*@{*/
 	};
 
+	/** Power plants of a type of technology.*/
 	struct plants_per_tech{
 		Eigen::VectorXi node;
+
+		/**
+		* @name features information
+		*/
+		/*@{*/
+		/** Type of the power plant.*/
 		Eigen::VectorXi type;
+		/** Capacity of the power plant.*/
 		Eigen::VectorXd cap;
+		/*@{*/
+
+		/**
+		* @name coordinates information
+		*/
+		/*@{*/
+		/** X-coordinate of the power plant in European grid (ETRS89).*/
 		Eigen::VectorXd x;
+		/** Y-coordinate of the power plant in European grid (ETRS89).*/
 		Eigen::VectorXd y;
+		/** Longitude of the power plant.*/
 		Eigen::VectorXd lon;
+		/** Latitude of the power plant.*/
 		Eigen::VectorXd lat;
+		/*@{*/
 	};
 
+	/** Power plants of all types of technologies.*/
 	struct plants_all{
+		/** Information of hydroelectric power plants.*/
 		plants_per_tech hydro;
+		/** Information of wind power plants.*/
 		plants_per_tech wind;
 	};
 
+	/** Clustered DSOs in the model.*/
 	struct DSO_cluster{
+		/** Indexes of spatial points included in the DSO cluster.*/
 		std::vector <int> points_ID;
+		/** Indexes of transmission nodes included in the DSO cluster.*/
 		std::vector <int> nodes_ID;
 	};
 
-    /** \brief Technical parameters of the power network.*/
+    /** Technical parameters of the power network.*/
 	struct technical_parameters{
-		/**Cutoff voltage level of the transmission network.*/
+		/**
+		* @name voltage on the power network
+		*/
+		/*@{*/
+		/** Cutoff voltage level of the transmission network.*/
 		int voltage_cutoff_trans = 132;
-		/**Cutoff voltage level of the distribution network.*/
+		/** Cutoff voltage level of the distribution network.*/
 		int voltage_cutoff_distr = 20;
-		/**Total number of power lines in the distribution network.*/
-		int line_num_distr = 124245;
-		/**Density of power lines per point in the distribution network.*/
-		double line_density_distr;
-		/**Fractional dimension of the distribution network.*/
-		double fraction_dim_distr = 1.5;
+		/*@{*/
 
-		/**Series impedance per meter of transmission line.*/
+		/**
+		* @name statistical parameters of power network
+		*/
+		/*@{*/
+		/** Total number of power lines in the distribution network.*/
+		int line_num_distr = 124245;
+		/** Density of power lines per point in the distribution network.*/
+		double line_density_distr;
+		/** Fractional dimension of the distribution network.*/
+		double fraction_dim_distr = 1.5;
+		/*@{*/
+
+		/**
+		* @name physical parameters of power lines
+		*/
+		/*@{*/
+		/** Series impedance per meter of transmission line.*/
 		std::complex<double> z_trans_series = std::complex<double> (0., 5. * pow(10., -4.));
-		/**Shunt impedance per meter of transmission line.*/
+		/** Shunt impedance per meter of transmission line.*/
 		std::complex<double> z_trans_shunt = std::complex<double> (0., 0.);
-		/**Series impedance per meter of distribution line.*/
+		/** Series impedance per meter of distribution line.*/
 		std::complex<double> z_distr_series = std::complex<double> (0., 7. * pow(10., -4.));
-		/**Shunt impedance per meter of distribution line.*/
+		/** Shunt impedance per meter of distribution line.*/
 		std::complex<double> z_distr_shunt = std::complex<double> (0., 0.);
-		/**Reference value for non-dimensionalization of power into p.u..*/
+		/*@{*/
+
+		/**
+		* @name non-dimensionalization parameters
+		*/
+		/*@{*/
+		/** Reference value for non-dimensionalization of power into p.u..*/
 		std::complex<double> s_base = std::complex<double> (1000., 0.) * pow(3., .5);
+		/*@{*/
     };
 
 	struct network_inform{
