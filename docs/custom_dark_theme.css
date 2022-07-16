@@ -17,9 +17,9 @@ body {
 	color: #D8D8D8;
 	
 	/* Below are additional parameters to default */
-	width:80%;
-	margin-left:auto;
-	margin-right:auto;
+	/*width:80%;*/
+	margin-left:0%;
+	margin-right:20%;
 	/* About are additional parameters to default */
 }
 
@@ -69,7 +69,7 @@ a.highlighted {
 .sm-dox ul {
 	border: 1px solid #000000;
 	background: #32363d;
-}
+} 
 
 .directory tr.even {
 	background: #32363d;
