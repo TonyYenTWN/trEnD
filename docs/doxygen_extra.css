@@ -11,7 +11,7 @@
 body, table, div, p, dl {
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
-  color: #24292f;
+  color: #24292f; /*default #24292f */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 1.5;
