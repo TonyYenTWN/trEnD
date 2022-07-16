@@ -9,7 +9,7 @@
 #include "src/basic/rw_csv.h"
 
 namespace power_network{
-    /** Information of spatial points in the model.*/
+    /** @brief Information of spatial points in the model.*/
 	struct points{
 		/*@{*/
 		/** Area size of a point, in square kilometers.*/
@@ -62,7 +62,7 @@ namespace power_network{
 		/*@{*/
 	};
 
-	/** Information of nodes on the transmission network.*/
+	/** @brief Information of nodes on the transmission network.*/
 	struct nodes{
 		/**
 		* @name hierarchy information
@@ -99,7 +99,7 @@ namespace power_network{
 		/*@{*/
 	};
 
-	/** Transmission network edges (power lines) from the original power network data.*/
+	/** @brief Transmission network edges (power lines) from the original power network data.*/
 	struct edges_orig{
 		/**
 		* @name topological information
@@ -128,7 +128,7 @@ namespace power_network{
 		/*@{*/
 	};
 
-	/** Transmission network edges (power lines) from simplified power network data.*/
+	/** @brief Transmission network edges (power lines) from simplified power network data.*/
 	struct edges_simp{
 		/**
 		* @name topological information
@@ -149,7 +149,7 @@ namespace power_network{
 		/*@{*/
 	};
 
-	/** Power plants of a type of technology.*/
+	/** @brief Power plants of a type of technology.*/
 	struct plants_per_tech{
 		Eigen::VectorXi node;
 
@@ -178,7 +178,7 @@ namespace power_network{
 		/*@{*/
 	};
 
-	/** Power plants of all types of technologies.*/
+	/** @brief Power plants of all types of technologies.*/
 	struct plants_all{
 		/** Information of hydroelectric power plants.*/
 		plants_per_tech hydro;
@@ -186,7 +186,7 @@ namespace power_network{
 		plants_per_tech wind;
 	};
 
-	/** Clustered DSOs in the model.*/
+	/** @brief Clustered DSOs in the model.*/
 	struct DSO_cluster{
 		/** Indexes of spatial points included in the DSO cluster.*/
 		std::vector <int> points_ID;
@@ -194,7 +194,14 @@ namespace power_network{
 		std::vector <int> nodes_ID;
 	};
 
-    /** Technical parameters of the power network.*/
+    /** @brief Technical parameters of the power network.
+    *
+    * Including:
+    * - cutoff voltage level of the transmission and distribution network
+    * - number and density of power lines of the distribution network
+    * - fractional dimension of the power lines of the distribution network
+    * - series and shunt impedance of the power lines
+    */
 	struct technical_parameters{
 		/**
 		* @name voltage on the power network
