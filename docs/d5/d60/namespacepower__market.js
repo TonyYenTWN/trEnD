@@ -1,7 +1,7 @@
 var namespacepower__market =
 [
     [ "market_inform", "d8/d2d/structpower__market_1_1market__inform.html", "d8/d2d/structpower__market_1_1market__inform" ],
-    [ "network_graph", "d5/d93/structpower__market_1_1network__graph.html", "d5/d93/structpower__market_1_1network__graph" ],
+    [ "network_graph", "d5/d60/namespacepower__market.html#d5/d93/structpower__market_1_1network__graph", "d5/d60/namespacepower__market_d5/d93/structpower__market_1_1network__graph_dup" ],
     [ "markets_inform", "d5/d60/namespacepower__market.html#ae5bf82a7e636a2eda3d317cffe0dffd4", null ],
     [ "DSO_Markets_Set", "d5/d60/namespacepower__market.html#a33e114e901ed9959e3bf88c5fd7c2547", null ],
     [ "Flow_Based_Market_LP_Set", "d5/d60/namespacepower__market.html#a0557dcec734d9f05dd56f7e5b5220164", null ],

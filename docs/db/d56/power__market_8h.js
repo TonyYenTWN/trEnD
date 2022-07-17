@@ -1,7 +1,16 @@
 var power__market_8h =
 [
     [ "power_market::market_inform", "d8/d2d/structpower__market_1_1market__inform.html", "d8/d2d/structpower__market_1_1market__inform" ],
-    [ "power_market::network_graph", "d5/d93/structpower__market_1_1network__graph.html", "d5/d93/structpower__market_1_1network__graph" ],
+    [ "power_market::network_graph", "d5/d60/namespacepower__market.html#d5/d93/structpower__market_1_1network__graph", [
+      [ "admittance_vector", "d5/d60/namespacepower__market.html#a65e67e1f3065f75735e0376d9346aaee", null ],
+      [ "confirmed_power", "d5/d60/namespacepower__market.html#ad0e9e9dc2b0cea55613749d8ccfe92ff", null ],
+      [ "confirmed_voltage", "d5/d60/namespacepower__market.html#a34a6ae837ef4b26317f5bd4ab52c8ad4", null ],
+      [ "incidence_matrix", "d5/d60/namespacepower__market.html#a53649c617b56f1029ea1ce55cde593f3", null ],
+      [ "num_edges", "d5/d60/namespacepower__market.html#a95b4d266f09130ccf274d1362a111d92", null ],
+      [ "num_vertice", "d5/d60/namespacepower__market.html#a1ea9489a892267b3d2c8c55d90b68fc9", null ],
+      [ "power_constraint", "d5/d60/namespacepower__market.html#a911b988210fff6ab0ae6ffeb06a7464d", null ],
+      [ "voltage_constraint", "d5/d60/namespacepower__market.html#ac3e71d7b6db0d90f480efdb02863ab8c", null ]
+    ] ],
     [ "DSO", "db/d56/power__market_8h.html#a074e1ec61026c1e79874b090a095ac14", null ],
     [ "IMO", "db/d56/power__market_8h.html#ad907407d56462a7ef82d9ccd80f056d6", null ],
     [ "MARKET_OBJECT", "db/d56/power__market_8h.html#a75ade5072001662f3dd76d55e651155e", null ],
