@@ -15,7 +15,6 @@ var structpower__market_1_1market__inform =
     [ "price_intervals", "d8/d2d/structpower__market_1_1market__inform.html#a87ca4403dcc9d625e4deb5d65897b148", null ],
     [ "price_range_flex", "d8/d2d/structpower__market_1_1market__inform.html#a68990cd3fe5ac6807419ee05756af1d2", null ],
     [ "price_range_inflex", "d8/d2d/structpower__market_1_1market__inform.html#afb712555e8eddb9694bb30d6b3291e5a", null ],
-    [ "Problem", "d8/d2d/structpower__market_1_1market__inform.html#ae3ff66f3861c47ea2c5b9b7e95abc09b", null ],
     [ "submitted_demand", "d8/d2d/structpower__market_1_1market__inform.html#af221f0fa9d5a3c448cdcb5f269636736", null ],
     [ "submitted_supply", "d8/d2d/structpower__market_1_1market__inform.html#ada30720245d62f903b33773fe1682038", null ],
     [ "time_intervals", "d8/d2d/structpower__market_1_1market__inform.html#a55a6f4eb29012716ca077ac3502617e0", null ],

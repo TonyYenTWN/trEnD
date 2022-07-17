@@ -1,7 +1,5 @@
 var NAVTREEINDEX1 =
 {
-"db/d51/rw__csv_8h.html":[2,0,0,1,5],
-"db/d51/rw__csv_8h.html#a27f0ca57a03561dbb4cdad6525cc6bbb":[2,0,0,1,5,1],
 "db/d51/rw__csv_8h.html#a3b5e94658defb15a24da0abf9e216c7e":[2,0,0,1,5,2],
 "db/d51/rw__csv_8h.html#a8f9c05ee5ba9f9d151077617712d4d00":[2,0,0,1,5,3],
 "db/d51/rw__csv_8h.html#abfaff671037b7851e6c9ee09b0221c5a":[2,0,0,1,5,0],
