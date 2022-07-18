@@ -36,7 +36,9 @@
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">trEnD<span id="projectnumber">&#160;Documentation</span>
    </div>
-   <div id="projectbrief">Model for transition of end-users and the distribution power network <i>generated with <a href=https://www.doxygen.org>Doxygen</a> 1.9.4</i></div>
+   <div id="projectbrief">Model for transition of end-users and the distribution power network <br>
+   <i>generated with <a href=https://www.doxygen.org target="_blank">Doxygen</a> 1.9.4 and <a href=https://github.com/piconomix/doxygen-github-markdown-theme target="_blank">template provided by piconomix</a>
+   </i></div>
   </td>
     <td>        <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
@@ -127,8 +129,8 @@ $(document).ready(function(){initNavTree('d5/d56/DSO_8cpp_source.html','../../')
 <div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="comment">// z: per length impedence of power lines</span></div>
 <div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        <span class="comment">// d: fractional dimension of the power line distribution</span></div>
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        DSO_Markets[DSO_iter].network.num_vertice = DSO_Markets[DSO_iter].num_zone;</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">if</span>(DSO_Markets[DSO_iter].num_zone &gt; 1){</div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            DSO_Markets[DSO_iter].network.num_edges = DSO_Markets[DSO_iter].num_zone * (DSO_Markets[DSO_iter].num_zone - 1) / 2;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        DSO_Markets[DSO_iter].network.num_edges = DSO_Markets[DSO_iter].num_zone * (DSO_Markets[DSO_iter].num_zone - 1) / 2;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keywordflow">if</span>(DSO_Markets[DSO_iter].num_zone &gt; 1){</div>
 <div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            DSO_Markets[DSO_iter].network.incidence_matrix = Eigen::MatrixXi(DSO_Markets[DSO_iter].network.num_edges, 2);</div>
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            DSO_Markets[DSO_iter].network.admittance_vector = Eigen::VectorXd(DSO_Markets[DSO_iter].network.num_edges);</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            <span class="keywordtype">int</span> edge_iter = 0;</div>
