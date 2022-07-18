@@ -11,7 +11,7 @@ Currently 3 external libraries are used in the source codes of the model. The li
 ## Output Files
 
 # Documentation of Source Codes
-Below is a summary of what the source codes do, categorized by the subfolders in [src](https://github.com/TonyYenTWN/trEnD/tree/main/src) folder. The full documentation can be found at [this site](https://tonyyentwn.github.io/trEnD/).
+Below is a summary of what the source codes do, categorized by the subfolders in [src](https://github.com/TonyYenTWN/trEnD/tree/main/src) folder. The full documentation can be found at <a href=https://tonyyentwn.github.io/trEnD/ target="_blank">this site</a>.
 
 - [agent_operational](https://github.com/TonyYenTWN/trEnD/tree/main/src/agent_operational): source codes for the operation strategies of relevant agents in the model.
 - [alglib](https://github.com/TonyYenTWN/trEnD/tree/main/src/alglib): source codes from the external library [ALGLIB](https://www.alglib.net/).
