@@ -63,8 +63,8 @@ namespace power_market{
 		Eigen::MatrixXd submitted_supply;
 		/**Demand bid submitted in the bidding zones.*/
 		Eigen::MatrixXd submitted_demand;
-		/**Member object that stores the linear programming problem (for TSO and DSO markets).*/
-		alglib::minlpstate Problem;
+		//Member object that stores the linear programming problem (for TSO and DSO markets).*/
+		//alglib::minlpstate Problem;
 
 		// Output Variables
 		/**Confirmed supply quantity of the market.*/

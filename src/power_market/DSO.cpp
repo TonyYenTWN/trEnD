@@ -26,8 +26,8 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 		// z: per length impedence of power lines
 		// d: fractional dimension of the power line distribution
 		DSO_Markets[DSO_iter].network.num_vertice = DSO_Markets[DSO_iter].num_zone;
+		DSO_Markets[DSO_iter].network.num_edges = DSO_Markets[DSO_iter].num_zone * (DSO_Markets[DSO_iter].num_zone - 1) / 2;
 		if(DSO_Markets[DSO_iter].num_zone > 1){
-			DSO_Markets[DSO_iter].network.num_edges = DSO_Markets[DSO_iter].num_zone * (DSO_Markets[DSO_iter].num_zone - 1) / 2;
 			DSO_Markets[DSO_iter].network.incidence_matrix = Eigen::MatrixXi(DSO_Markets[DSO_iter].network.num_edges, 2);
 			DSO_Markets[DSO_iter].network.admittance_vector = Eigen::VectorXd(DSO_Markets[DSO_iter].network.num_edges);
 			int edge_iter = 0;

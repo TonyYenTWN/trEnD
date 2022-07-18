@@ -147,16 +147,18 @@ void power_market::Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlp
 	// Set matrix for general constraints
 	// -------------------------------------------------------------------------------
 	// Construct node admittance matrix
-	double tol = 1E-10;
+	double tol = 1E-16;
+	//double tol = 0.;
 	std::vector <Eigen::TripletXd> Y_n_trip;
 	Y_n_trip.reserve(2 * Market.network.num_edges + Market.network.num_vertice);
 	Eigen::SparseMatrix <double, Eigen::RowMajor> Y_n(Market.network.num_vertice, Market.network.num_vertice);
 	Eigen::VectorXd Y_n_diag = Eigen::VectorXd::Zero(Market.network.num_vertice);
 	Eigen::VectorXpd Connection_num = Eigen::VectorXpd::Ones(Market.network.num_vertice);
 	for(int edge_iter = 0; edge_iter < Market.network.num_edges; ++ edge_iter){
-			double y_edge;
-			y_edge = std::max(tol, abs(Market.network.admittance_vector(edge_iter)));
-			y_edge *=  (Market.network.admittance_vector(edge_iter) > 0.);
+		double y_edge;
+		y_edge = std::max(tol, abs(Market.network.admittance_vector(edge_iter)));
+		y_edge *=  (Market.network.admittance_vector(edge_iter) > 0.);
+
 		// Equality constraints of voltage - source / sink at the nodes, off-diagonal terms
 		if(abs(y_edge) > tol){
 			Y_n_trip.push_back(Eigen::TripletXd(Market.network.incidence_matrix(edge_iter, 0), Market.network.incidence_matrix(edge_iter, 1), -y_edge));
@@ -244,8 +246,7 @@ void power_market::Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlp
 	// Set bounds for general and box constraints
 	// -------------------------------------------------------------------------------
 	Eigen::MatrixXd bound_general = Eigen::MatrixXd::Zero(constrant_num, 2);
-	Eigen::MatrixXd bound_box(variable_num, 2);
-	std::cout << variable_num << "\n";
+	Eigen::MatrixXd bound_box = Eigen::MatrixXd::Zero(variable_num, 2);
 	bound_box.topRows(Market.network.num_vertice) = Market.network.voltage_constraint;
 	bound_box.middleRows(Market.network.num_vertice, Market.network.num_vertice).col(0) = Eigen::VectorXd::Constant(Market.network.num_vertice, -std::numeric_limits<double>::infinity());
 	bound_box.middleRows(Market.network.num_vertice, Market.network.num_vertice).col(1) = Eigen::VectorXd::Constant(Market.network.num_vertice, std::numeric_limits<double>::infinity());
@@ -317,15 +318,15 @@ void power_market::Flow_Based_Market_Optimization(int tick, market_inform &Marke
 	alglib::real_1d_array ub_box;
 	lb_box.setcontent(bound_box.rows(), bound_box.col(0).data());
 	ub_box.setcontent(bound_box.rows(), bound_box.col(1).data());
-	alglib::minlpsetbc(Market.Problem, lb_box, ub_box);
+	alglib::minlpsetbc(Problem, lb_box, ub_box);
 
 	// -------------------------------------------------------------------------------
 	// Solve the problem
 	// -------------------------------------------------------------------------------
 	alglib::real_1d_array sol;
 	alglib::minlpreport rep;
-	alglib::minlpoptimize(Market.Problem);
-	alglib::minlpresults(Market.Problem, sol, rep);
+	alglib::minlpoptimize(Problem);
+	alglib::minlpresults(Problem, sol, rep);
 
 	// -------------------------------------------------------------------------------
 	// Store the solution
@@ -347,6 +348,7 @@ void power_market::Flow_Based_Market_Optimization(int tick, market_inform &Marke
 	//std::cout << Market.confirmed_price.row(tick) << "\n\n";
 
 	//std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).transpose() << "\n\n";
+	std::cout << "Number of variables: " << variable_num << "\n\n";
 	std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).array().abs().sum() << "\n";
 	std::cout << sol_vec.head(Market.network.num_vertice).minCoeff() << " " << sol_vec.head(Market.network.num_vertice).maxCoeff()  << "\n";
 	std::cout << sol_vec.tail(Market.network.num_edges).minCoeff() << " " << sol_vec.tail(Market.network.num_edges).maxCoeff() << "\n\n";
