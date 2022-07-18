@@ -13,7 +13,7 @@ var annotated_dup =
       [ "plants_all", "d8/dcc/namespacepower__network.html#db/dd7/structpower__network_1_1plants__all", "d8/dcc/namespacepower__network_db/dd7/structpower__network_1_1plants__all_dup" ],
       [ "plants_per_tech", "d8/dcc/namespacepower__network.html#dc/d2e/structpower__network_1_1plants__per__tech", "d8/dcc/namespacepower__network_dc/d2e/structpower__network_1_1plants__per__tech_dup" ],
       [ "points", "d8/dcc/namespacepower__network.html#d4/dbd/structpower__network_1_1points", "d8/dcc/namespacepower__network_d4/dbd/structpower__network_1_1points_dup" ],
-      [ "technical_parameters", "d8/dcc/namespacepower__network.html#dc/dd8/structpower__network_1_1technical__parameters", "d8/dcc/namespacepower__network_dc/dd8/structpower__network_1_1technical__parameters_dup" ]
+      [ "technical_parameters", "dc/dd8/structpower__network_1_1technical__parameters.html", "dc/dd8/structpower__network_1_1technical__parameters" ]
     ] ],
     [ "spatial_field", "d9/d64/namespacespatial__field.html", [
       [ "Earth_Constant", "d9/d64/namespacespatial__field.html#d4/d89/classspatial__field_1_1Earth__Constant", "d9/d64/namespacespatial__field_d4/d89/classspatial__field_1_1Earth__Constant_dup" ]

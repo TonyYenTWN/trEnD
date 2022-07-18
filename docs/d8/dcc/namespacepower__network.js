@@ -8,7 +8,7 @@ var namespacepower__network =
     [ "plants_all", "d8/dcc/namespacepower__network.html#db/dd7/structpower__network_1_1plants__all", "d8/dcc/namespacepower__network_db/dd7/structpower__network_1_1plants__all_dup" ],
     [ "plants_per_tech", "d8/dcc/namespacepower__network.html#dc/d2e/structpower__network_1_1plants__per__tech", "d8/dcc/namespacepower__network_dc/d2e/structpower__network_1_1plants__per__tech_dup" ],
     [ "points", "d8/dcc/namespacepower__network.html#d4/dbd/structpower__network_1_1points", "d8/dcc/namespacepower__network_d4/dbd/structpower__network_1_1points_dup" ],
-    [ "technical_parameters", "d8/dcc/namespacepower__network.html#dc/dd8/structpower__network_1_1technical__parameters", "d8/dcc/namespacepower__network_dc/dd8/structpower__network_1_1technical__parameters_dup" ],
+    [ "technical_parameters", "dc/dd8/structpower__network_1_1technical__parameters.html", "dc/dd8/structpower__network_1_1technical__parameters" ],
     [ "point_distance_cov", "d8/dcc/namespacepower__network.html#a4b6a21877e715342c8c684b927f2672e", null ],
     [ "power_network_input_process", "d8/dcc/namespacepower__network.html#a7b618914786ca0d322b51b456244c0d4", null ]
 ];

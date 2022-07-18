@@ -54,18 +54,7 @@ var power__network_8h =
       [ "x", "d8/dcc/namespacepower__network.html#ad0129ca9a7d9a5fec1e0af235409c0e8", null ],
       [ "y", "d8/dcc/namespacepower__network.html#ab6f0522ec951e3c4ed6ddb544d005ee2", null ]
     ] ],
-    [ "power_network::technical_parameters", "d8/dcc/namespacepower__network.html#dc/dd8/structpower__network_1_1technical__parameters", [
-      [ "fraction_dim_distr", "d8/dcc/namespacepower__network.html#a802fdb336e89814930dc15991b95089a", null ],
-      [ "line_density_distr", "d8/dcc/namespacepower__network.html#abd89e18928a1f18edb0ca293ad4aa1a7", null ],
-      [ "line_num_distr", "d8/dcc/namespacepower__network.html#a6566309a328253303e9330c0a91ebaba", null ],
-      [ "s_base", "d8/dcc/namespacepower__network.html#a05cb00a417e729b412be1761be5c3d0c", null ],
-      [ "voltage_cutoff_distr", "d8/dcc/namespacepower__network.html#a607d202ae86f1e145512bbba97eb55d7", null ],
-      [ "voltage_cutoff_trans", "d8/dcc/namespacepower__network.html#a92d326aea9664ea45dbaf788af07cfb0", null ],
-      [ "z_distr_series", "d8/dcc/namespacepower__network.html#ac0a9a577e06ff244415eca9a4d980fe6", null ],
-      [ "z_distr_shunt", "d8/dcc/namespacepower__network.html#a1428c8bdd874f61e71cc015871aa255d", null ],
-      [ "z_trans_series", "d8/dcc/namespacepower__network.html#ae040661f126cd8bca329c531ab20e362", null ],
-      [ "z_trans_shunt", "d8/dcc/namespacepower__network.html#acecdf4d992310a328762df6cf416dc03", null ]
-    ] ],
+    [ "power_network::technical_parameters", "dc/dd8/structpower__network_1_1technical__parameters.html", "dc/dd8/structpower__network_1_1technical__parameters" ],
     [ "NETWORK_OBJECT", "d9/dde/power__network_8h.html#a234a9d06a433e6815e1affa4d4bb14a1", null ],
     [ "point_distance_cov", "d9/dde/power__network_8h.html#a4b6a21877e715342c8c684b927f2672e", null ],
     [ "power_network_input_process", "d9/dde/power__network_8h.html#a7b618914786ca0d322b51b456244c0d4", null ]

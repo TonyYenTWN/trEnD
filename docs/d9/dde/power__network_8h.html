@@ -36,7 +36,7 @@
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">trEnD<span id="projectnumber">&#160;Documentation</span>
    </div>
-   <div id="projectbrief">Model for transition of end-users and the distribution power network 
+   <div id="projectbrief">Model for transition of end-users and the distribution power network. <a href=https://github.com/TonyYenTWN/trEnD target="_blank">Github repository</a> 
    </div>
    <div style="font-size:10px; bottom:0px; right:12.5px; position:fixed; text-align: center; background-color:rgba(255, 255, 255, 0.75);">
 	  Generated with <a href=https://www.doxygen.org target="_blank">Doxygen</a> 1.9.4 and <a href=https://github.com/piconomix/doxygen-github-markdown-theme target="_blank">template provided by piconomix</a>   
@@ -139,9 +139,9 @@ Classes</h2></td></tr>
 <tr class="memitem:d4/dbd/structpower__network_1_1points"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/dcc/namespacepower__network.html#d4/dbd/structpower__network_1_1points">power_network::points</a></td></tr>
 <tr class="memdesc:d4/dbd/structpower__network_1_1points"><td class="mdescLeft">&#160;</td><td class="mdescRight">Information of spatial points in the model.  <a href="../../d8/dcc/namespacepower__network.html#d4/dbd/structpower__network_1_1points">More...</a><br /></td></tr>
 <tr class="separator:d4/dbd/structpower__network_1_1points"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:dc/dd8/structpower__network_1_1technical__parameters"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/dcc/namespacepower__network.html#dc/dd8/structpower__network_1_1technical__parameters">power_network::technical_parameters</a></td></tr>
-<tr class="memdesc:dc/dd8/structpower__network_1_1technical__parameters"><td class="mdescLeft">&#160;</td><td class="mdescRight">Technical parameters of the power network.  <a href="../../d8/dcc/namespacepower__network.html#dc/dd8/structpower__network_1_1technical__parameters">More...</a><br /></td></tr>
-<tr class="separator:dc/dd8/structpower__network_1_1technical__parameters"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/dd8/structpower__network_1_1technical__parameters.html">power_network::technical_parameters</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Technical parameters of the power network.  <a href="../../dc/dd8/structpower__network_1_1technical__parameters.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
 Namespaces</h2></td></tr>
@@ -567,102 +567,6 @@ x</td>
 y</td>
 <td class="fielddoc">
 <p >Y-coordinate of the spatial point in European grid (ETRS89). </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<a name="dc/dd8/structpower__network_1_1technical__parameters" id="dc/dd8/structpower__network_1_1technical__parameters"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#dc/dd8/structpower__network_1_1technical__parameters">&#9670;&nbsp;</a></span>power_network::technical_parameters</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">struct power_network::technical_parameters</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<div class="textblock"><p >Technical parameters of the power network. </p>
-<p >Including:</p><ul>
-<li>cutoff voltage level of the transmission and distribution network</li>
-<li>number and density of power lines of the distribution network</li>
-<li>fractional dimension of the power lines of the distribution network</li>
-<li>series and shunt impedance of the power lines </li>
-</ul>
-
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00205">205</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
-</div><table class="fieldtable">
-<tr><th colspan="3">Class Members</th></tr>
-<tr><td class="fieldtype">
-<a id="a802fdb336e89814930dc15991b95089a" name="a802fdb336e89814930dc15991b95089a"></a>double</td>
-<td class="fieldname">
-fraction_dim_distr</td>
-<td class="fielddoc">
-<p >Fractional dimension of the distribution network. </p>
-</td></tr>
-<tr><td class="fieldtype">
-<a id="abd89e18928a1f18edb0ca293ad4aa1a7" name="abd89e18928a1f18edb0ca293ad4aa1a7"></a>double</td>
-<td class="fieldname">
-line_density_distr</td>
-<td class="fielddoc">
-<p >Density of power lines per point in the distribution network. </p>
-</td></tr>
-<tr><td class="fieldtype">
-<a id="a6566309a328253303e9330c0a91ebaba" name="a6566309a328253303e9330c0a91ebaba"></a>int</td>
-<td class="fieldname">
-line_num_distr</td>
-<td class="fielddoc">
-<p >Total number of power lines in the distribution network. </p>
-</td></tr>
-<tr><td class="fieldtype">
-<a id="a05cb00a417e729b412be1761be5c3d0c" name="a05cb00a417e729b412be1761be5c3d0c"></a>complex&lt; double &gt;</td>
-<td class="fieldname">
-s_base</td>
-<td class="fielddoc">
-<p >Reference value for non-dimensionalization of power into p.u.. </p>
-</td></tr>
-<tr><td class="fieldtype">
-<a id="a607d202ae86f1e145512bbba97eb55d7" name="a607d202ae86f1e145512bbba97eb55d7"></a>int</td>
-<td class="fieldname">
-voltage_cutoff_distr</td>
-<td class="fielddoc">
-<p >Cutoff voltage level of the distribution network. </p>
-</td></tr>
-<tr><td class="fieldtype">
-<a id="a92d326aea9664ea45dbaf788af07cfb0" name="a92d326aea9664ea45dbaf788af07cfb0"></a>int</td>
-<td class="fieldname">
-voltage_cutoff_trans</td>
-<td class="fielddoc">
-<p >Cutoff voltage level of the transmission network. </p>
-</td></tr>
-<tr><td class="fieldtype">
-<a id="ac0a9a577e06ff244415eca9a4d980fe6" name="ac0a9a577e06ff244415eca9a4d980fe6"></a>complex&lt; double &gt;</td>
-<td class="fieldname">
-z_distr_series</td>
-<td class="fielddoc">
-<p >Series impedance per meter of distribution line. </p>
-</td></tr>
-<tr><td class="fieldtype">
-<a id="a1428c8bdd874f61e71cc015871aa255d" name="a1428c8bdd874f61e71cc015871aa255d"></a>complex&lt; double &gt;</td>
-<td class="fieldname">
-z_distr_shunt</td>
-<td class="fielddoc">
-<p >Shunt impedance per meter of distribution line. </p>
-</td></tr>
-<tr><td class="fieldtype">
-<a id="ae040661f126cd8bca329c531ab20e362" name="ae040661f126cd8bca329c531ab20e362"></a>complex&lt; double &gt;</td>
-<td class="fieldname">
-z_trans_series</td>
-<td class="fielddoc">
-<p >Series impedance per meter of transmission line. </p>
-</td></tr>
-<tr><td class="fieldtype">
-<a id="acecdf4d992310a328762df6cf416dc03" name="acecdf4d992310a328762df6cf416dc03"></a>complex&lt; double &gt;</td>
-<td class="fieldname">
-z_trans_shunt</td>
-<td class="fielddoc">
-<p >Shunt impedance per meter of transmission line. </p>
 </td></tr>
 </table>
 

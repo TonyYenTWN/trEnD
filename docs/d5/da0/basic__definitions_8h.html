@@ -36,7 +36,7 @@
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">trEnD<span id="projectnumber">&#160;Documentation</span>
    </div>
-   <div id="projectbrief">Model for transition of end-users and the distribution power network 
+   <div id="projectbrief">Model for transition of end-users and the distribution power network. <a href=https://github.com/TonyYenTWN/trEnD target="_blank">Github repository</a> 
    </div>
    <div style="font-size:10px; bottom:0px; right:12.5px; position:fixed; text-align: center; background-color:rgba(255, 255, 255, 0.75);">
 	  Generated with <a href=https://www.doxygen.org target="_blank">Doxygen</a> 1.9.4 and <a href=https://github.com/piconomix/doxygen-github-markdown-theme target="_blank">template provided by piconomix</a>   
@@ -107,13 +107,14 @@ $(document).ready(function(){initNavTree('d5/da0/basic__definitions_8h.html','..
   <div class="headertitle"><div class="title">basic_definitions.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;vector&gt;</code><br />
-<code>#include &lt;numeric&gt;</code><br />
-<code>#include &lt;algorithm&gt;</code><br />
-<code>#include &lt;omp.h&gt;</code><br />
+<div class="textblock"><code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;boost/math/constants/constants.hpp&gt;</code><br />
 <code>#include &lt;Eigen/Dense&gt;</code><br />
 <code>#include &lt;Eigen/Core&gt;</code><br />
-<code>#include &lt;boost/math/constants/constants.hpp&gt;</code><br />
+<code>#include &lt;map&gt;</code><br />
+<code>#include &lt;numeric&gt;</code><br />
+<code>#include &lt;omp.h&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
 </div>
 <p><a href="../../d5/da0/basic__definitions_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -130,6 +131,8 @@ Macros</h2></td></tr>
 <tr class="separator:aa07f83a2de5a158b8643cdc36541b711"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a94ccec2498456690f31fdcb835fc0575"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/basic__definitions_8h.html#a94ccec2498456690f31fdcb835fc0575">EIGEN</a></td></tr>
 <tr class="separator:a94ccec2498456690f31fdcb835fc0575"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e58380df1435929cc191b5b4ba99cd5"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/basic__definitions_8h.html#a4e58380df1435929cc191b5b4ba99cd5">MAP</a></td></tr>
+<tr class="separator:a4e58380df1435929cc191b5b4ba99cd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1046572de30f68fa0b1d2ed02124f876"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/basic__definitions_8h.html#a1046572de30f68fa0b1d2ed02124f876">NUMERIC</a></td></tr>
 <tr class="separator:a1046572de30f68fa0b1d2ed02124f876"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a70961aa05357419a449bf2070cf4c3c6"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/da0/basic__definitions_8h.html#a70961aa05357419a449bf2070cf4c3c6">OMP</a></td></tr>
@@ -155,7 +158,7 @@ Typedefs</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d5/da0/basic__definitions_8h_source.html#l00014">14</a> of file <a class="el" href="../../d5/da0/basic__definitions_8h_source.html">basic_definitions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/da0/basic__definitions_8h_source.html#l00004">4</a> of file <a class="el" href="../../d5/da0/basic__definitions_8h_source.html">basic_definitions.h</a>.</p>
 
 </div>
 </div>
@@ -171,7 +174,7 @@ Typedefs</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d5/da0/basic__definitions_8h_source.html#l00033">33</a> of file <a class="el" href="../../d5/da0/basic__definitions_8h_source.html">basic_definitions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/da0/basic__definitions_8h_source.html#l00009">9</a> of file <a class="el" href="../../d5/da0/basic__definitions_8h_source.html">basic_definitions.h</a>.</p>
 
 </div>
 </div>
@@ -187,7 +190,23 @@ Typedefs</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d5/da0/basic__definitions_8h_source.html#l00024">24</a> of file <a class="el" href="../../d5/da0/basic__definitions_8h_source.html">basic_definitions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/da0/basic__definitions_8h_source.html#l00014">14</a> of file <a class="el" href="../../d5/da0/basic__definitions_8h_source.html">basic_definitions.h</a>.</p>
+
+</div>
+</div>
+<a id="a4e58380df1435929cc191b5b4ba99cd5" name="a4e58380df1435929cc191b5b4ba99cd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e58380df1435929cc191b5b4ba99cd5">&#9670;&nbsp;</a></span>MAP</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MAP</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d5/da0/basic__definitions_8h_source.html#l00023">23</a> of file <a class="el" href="../../d5/da0/basic__definitions_8h_source.html">basic_definitions.h</a>.</p>
 
 </div>
 </div>
@@ -203,7 +222,7 @@ Typedefs</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d5/da0/basic__definitions_8h_source.html#l00009">9</a> of file <a class="el" href="../../d5/da0/basic__definitions_8h_source.html">basic_definitions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/da0/basic__definitions_8h_source.html#l00028">28</a> of file <a class="el" href="../../d5/da0/basic__definitions_8h_source.html">basic_definitions.h</a>.</p>
 
 </div>
 </div>
@@ -219,7 +238,7 @@ Typedefs</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d5/da0/basic__definitions_8h_source.html#l00019">19</a> of file <a class="el" href="../../d5/da0/basic__definitions_8h_source.html">basic_definitions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/da0/basic__definitions_8h_source.html#l00033">33</a> of file <a class="el" href="../../d5/da0/basic__definitions_8h_source.html">basic_definitions.h</a>.</p>
 
 </div>
 </div>
@@ -235,7 +254,7 @@ Typedefs</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d5/da0/basic__definitions_8h_source.html#l00004">4</a> of file <a class="el" href="../../d5/da0/basic__definitions_8h_source.html">basic_definitions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d5/da0/basic__definitions_8h_source.html#l00038">38</a> of file <a class="el" href="../../d5/da0/basic__definitions_8h_source.html">basic_definitions.h</a>.</p>
 
 </div>
 </div>
