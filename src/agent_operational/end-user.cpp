@@ -75,7 +75,7 @@ sorted_vector sort(Eigen::VectorXd original){
 	// Sort of vector
  	std::vector<int> item_seq(original.size());
  	std::iota(item_seq.begin(), item_seq.end(), 0); 
- 	sort(item_seq.begin(), item_seq.end(), [&](int i,int j){return original(i) < original(j);});
+ 	std::sort(item_seq.begin(), item_seq.end(), [&](int i,int j){return original(i) < original(j);});
  	
  	// Output of vector
  	sorted_vector result;
