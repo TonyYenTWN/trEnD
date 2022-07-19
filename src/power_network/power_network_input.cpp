@@ -6,13 +6,13 @@
 // In-file functions
 namespace {
 	// Must read transmission data before points (DSO cluster initialize here)
-	void tranmission_data_input(power_network::network_inform &Power_network_inform, Eigen::MatrixXd bz_inform, std::string fin_node, std::string fin_edge_orig, std::string fin_edge_simp){
+	void tranmission_data_input(power_network::network_inform &Power_network_inform, Eigen::MatrixXd bz_inform, std::string fin_node, std::string fin_edge, std::string fin_edge_simp){
 		// Read power network data
 		auto fin_node_dim = basic::get_file_dim(fin_node);
-		auto fin_edge_orig_dim = basic::get_file_dim(fin_edge_orig);
+		auto fin_edge_dim = basic::get_file_dim(fin_edge);
 		auto fin_edge_simp_dim = basic::get_file_dim(fin_edge_simp);
 		auto node_inform = basic::read_file(fin_node_dim[0], fin_node_dim[1], fin_node);
-		auto edge_orig_inform = basic::read_file(fin_edge_orig_dim[0], fin_edge_orig_dim[1], fin_edge_orig);
+		auto edge_inform = basic::read_file(fin_edge_dim[0], fin_edge_dim[1], fin_edge);
 		auto edge_simp_inform = basic::read_file(fin_edge_simp_dim[0], fin_edge_simp_dim[1], fin_edge_simp);
 
 		// Initialize node ID for DSO-Clusters
@@ -42,15 +42,15 @@ namespace {
 		Power_network_inform.nodes.lat = node_inform.col(node_inform.cols() - 1);
 
 		// Organize original edge data
-		Power_network_inform.edges_orig.from = Eigen::VectorXi(fin_edge_orig_dim[0]);
-		Power_network_inform.edges_orig.to = Eigen::VectorXi(fin_edge_orig_dim[0]);
-		Power_network_inform.edges_orig.voltage_base = Eigen::VectorXi(fin_edge_orig_dim[0]);
-		for(int edge_iter = 0; edge_iter < fin_edge_orig_dim[0]; ++ edge_iter){
-			Power_network_inform.edges_orig.from(edge_iter) = int(edge_orig_inform(edge_iter, 0)) - 1;
-			Power_network_inform.edges_orig.to(edge_iter) = int(edge_orig_inform(edge_iter, 1)) - 1;
-			Power_network_inform.edges_orig.voltage_base(edge_iter) = int(edge_orig_inform(edge_iter, 4));
+		Power_network_inform.edges.from = Eigen::VectorXi(fin_edge_dim[0]);
+		Power_network_inform.edges.to = Eigen::VectorXi(fin_edge_dim[0]);
+		Power_network_inform.edges.voltage_base = Eigen::VectorXi(fin_edge_dim[0]);
+		for(int edge_iter = 0; edge_iter < fin_edge_dim[0]; ++ edge_iter){
+			Power_network_inform.edges.from(edge_iter) = int(edge_inform(edge_iter, 0)) - 1;
+			Power_network_inform.edges.to(edge_iter) = int(edge_inform(edge_iter, 1)) - 1;
+			Power_network_inform.edges.voltage_base(edge_iter) = int(edge_inform(edge_iter, 4));
 		}
-		Power_network_inform.edges_orig.distance = edge_orig_inform.col(5);
+		Power_network_inform.edges.distance = edge_inform.col(5);
 
 		// Organize simplified egde data
 		Power_network_inform.edges_simp.from = Eigen::VectorXi(fin_edge_simp_dim[0]);
@@ -166,7 +166,7 @@ void power_network::point_distance_cov(points &point, double lambda){
 void power_network::power_network_input_process(network_inform &Power_network_inform, std::string parent_dir){
 	auto fin_bz = parent_dir + "DSO_Bidding_Zone.csv";
 	auto fin_node = parent_dir + "transmission_nodes.csv";
-	auto fin_edge_orig = parent_dir + "transmission_edges.csv";
+	auto fin_edge = parent_dir + "transmission_edges.csv";
 	auto fin_edge_simp = parent_dir + "transmission_edges_pu_simp.csv";
 	auto fin_point = parent_dir + "point_info.csv";
 	auto fin_point_matrix = parent_dir + "point_matrix.csv";
@@ -176,7 +176,7 @@ void power_network::power_network_input_process(network_inform &Power_network_in
 	auto fin_bz_dim = basic::get_file_dim(fin_bz);
 	auto bz_inform = basic::read_file(fin_bz_dim[0], fin_bz_dim[1], fin_bz);
 
-	tranmission_data_input(Power_network_inform, bz_inform, fin_node, fin_edge_orig, fin_edge_simp);
+	tranmission_data_input(Power_network_inform, bz_inform, fin_node, fin_edge, fin_edge_simp);
 	points_data_input(Power_network_inform, bz_inform, fin_point, fin_point_matrix);
 	plant_data_input(Power_network_inform, fin_hydro, fin_wind);
 
