@@ -7,13 +7,17 @@
 #include "src/basic/basic_definitions.h"
 
 namespace spatial_field{
-	// Constants of Earth Spheroid
+	/** Constants of for the Earth spheroid*/
 	class Earth_Constant{
 		public:
-			double Earth_Radius_short = 6356752.3142;									// long axis (meters)
-			double Earth_Radius_long = 6378137.;											// short axis
-			double Earth_flat = 1 / 298.257223563; 										// flatness
-			double Earth_Ecc = pow(2 * Earth_flat - pow(Earth_flat, 2), .5);	// eccentricity
+			/** Short radius of Earth (in meters).*/
+			double Earth_Radius_short = 6356752.3142;
+			/** Long radius of Earth (in meters).*/
+			double Earth_Radius_long = 6378137.;
+			/** Flatness of Earth.*/
+			double Earth_flat = 1 / 298.257223563;
+			/** Eccentricity of Earth.*/
+			double Earth_Ecc = pow(2 * Earth_flat - pow(Earth_flat, 2), .5);
 	};
 
 	// Functions for calculation of the geodestic
