@@ -34,10 +34,13 @@ namespace power_market{
 		/**Power flow constraints at each edge (0th col: from start to end; 1st col: from end to start).*/
 		std::vector <double> power_limit;
 
+		// Delete them later
 		/**Compact form of the incidence matrix (0th col: start; 1st col: end).*/
 		Eigen::MatrixXi incidence_matrix;
 		/**(Imaginary part of) admittance of each edge; used in TSO and DSOs markets.*/
 		Eigen::VectorXd admittance_vector;
+		// Delete them later
+
 		/**Voltage constraints at each node; used in TSO and DSOs markets.*/
 		Eigen::MatrixXd voltage_constraint;
 		/**Power flow constraints at each edge (0th col: from start to end; 1st col: from end to start).*/

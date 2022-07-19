@@ -67,7 +67,12 @@ int main(){
 	// Re-dispatch + tertiary control reserve in TSO
 	start = std::chrono::high_resolution_clock::now();
 
-	power_market::Flow_Based_Market_Optimization(0, TSO_Market, TSO_Problem);
+	try{
+		power_market::Flow_Based_Market_Optimization(0, TSO_Market, TSO_Problem);
+	}
+	catch(alglib::ap_error e){
+		std::cout << e.msg << "\n\n";
+	}
 
 	stop = std::chrono::high_resolution_clock::now();
 	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);

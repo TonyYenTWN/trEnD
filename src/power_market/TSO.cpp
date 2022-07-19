@@ -44,13 +44,14 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 	double tol = 1E-6;
 	TSO_Market.network.incidence.reserve(TSO_Market.network.num_vertice * TSO_Market.network.num_vertice);
 	TSO_Market.network.admittance.reserve(TSO_Market.network.num_vertice * TSO_Market.network.num_vertice);
-	TSO_Market.network.power_limit.reserve(TSO_Market.network.num_vertice * TSO_Market.network.num_vertice);
+	std::vector <double> power_limit;
+	power_limit.reserve(TSO_Market.network.num_vertice * TSO_Market.network.num_vertice);
 	for(int row_iter = 0; row_iter < TSO_Market.network.num_vertice - 1; ++ row_iter){
 		for(int col_iter = row_iter + 1; col_iter < TSO_Market.network.num_vertice; ++ col_iter){
 			if(abs(admittance(row_iter , col_iter)) > tol){
 				TSO_Market.network.incidence.push_back(Eigen::Vector2i(row_iter, col_iter));
 				TSO_Market.network.admittance.push_back(admittance(row_iter , col_iter));
-				TSO_Market.network.power_limit.push_back(capacity(row_iter , col_iter));
+				power_limit.push_back(capacity(row_iter , col_iter));
 			}
 		}
 	}
@@ -72,7 +73,8 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 	TSO_Market.network.voltage_constraint.col(0) *= -Power_network_inform.tech_parameters.theta_limit;
 	TSO_Market.network.voltage_constraint.col(1) *= Power_network_inform.tech_parameters.theta_limit;
 	TSO_Market.network.power_constraint = Eigen::MatrixXd (TSO_Market.network.num_edges, 2);
-	TSO_Market.network.power_constraint.col(1) = Eigen::Map <Eigen::VectorXd> (TSO_Market.network.power_limit.data(), TSO_Market.network.power_limit.size());
+	TSO_Market.network.power_constraint.col(1) = Eigen::Map <Eigen::VectorXd> (power_limit.data(), power_limit.size());
+	TSO_Market.network.power_constraint.col(1) /= Power_network_inform.tech_parameters.s_base;
 	TSO_Market.network.power_constraint.col(0) = -TSO_Market.network.power_constraint.col(1);
 
 	// Initialization of process variables

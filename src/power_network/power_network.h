@@ -124,7 +124,7 @@ namespace power_network{
 		* @name features information
 		*/
 		/*@{*/
-		/** Reference value for non-dimensionalization of voltage into p.u..*/
+		/** Reference value of line-to-line voltage (in kV) for non-dimensionalization into p.u..*/
 		Eigen::VectorXi voltage_base;
 		/*@{*/
 	};
@@ -230,17 +230,17 @@ namespace power_network{
 		* @name physical parameters of power lines
 		*/
 		/*@{*/
-		/** Series impedance ohm per meter of transmission line.*/
-		std::complex<double> z_trans_series = std::complex<double> (0., 1. * pow(10., -4.));
-		/** Shunt impedance ohm per meter of transmission line.*/
+		/** Series impedance (ohm per meter) of transmission line.*/
+		std::complex<double> z_trans_series = std::complex<double> (0., 5. * pow(10., -4.));
+		/** Shunt impedance (ohm per meter) of transmission line.*/
 		std::complex<double> z_trans_shunt = std::complex<double> (0., 0.);
-		/** Series impedance ohm per meter of distribution line.*/
-		std::complex<double> z_distr_series = std::complex<double> (0., 1.5 * pow(10., -4.));
-		/** Shunt impedance ohm per meter of distribution line.*/
+		/** Series impedance (ohm per meter) of distribution line.*/
+		std::complex<double> z_distr_series = std::complex<double> (0., 7. * pow(10., -4.));
+		/** Shunt impedance (ohm per meter) of distribution line.*/
 		std::complex<double> z_distr_shunt = std::complex<double> (0., 0.);
 		/**Phase angle limits on a node.*/
-		double theta_limit = boost::math::constants::pi<double>() / 6.;
-		/**Hash table (mapping) of power flow limits on an edge at different voltage base levels*/
+		double theta_limit = boost::math::constants::pi<double>() / 18.;
+		/**Hash table (mapping) of per phase power flow limits on an edge at different voltage base levels, in MW.*/
 		std::map <int, double> power_limit;
 		/*@{*/
 
@@ -248,11 +248,11 @@ namespace power_network{
 		* @name non-dimensionalization parameters
 		*/
 		/*@{*/
-		/** Reference value for non-dimensionalization of power into p.u..*/
-		double s_base = 1000. * pow(3., .5);
-		/** Hash table (mapping) of base voltage levels.*/
+		/** Reference value of power on the line (in MW, per phase) for non-dimensionalization into p.u..*/
+		double s_base = 1.;
+		/** Hash table (mapping) of line to line base voltage levels in kV.*/
 		std::map <int, int> voltage_base_levels;
-		/** Hash table (mapping) of base impedance levels.*/
+		/** Hash table (mapping) of per phase base impedance levels in Ohm.*/
 		std::map <int, double> impedenace_base_levels;
 		/*@{*/
 
@@ -272,7 +272,7 @@ namespace power_network{
 					voltage_max = voltage_base_sorted[node_iter];
 					level_count += 1;
 					this->voltage_base_levels.insert(std::make_pair(voltage_max, level_count));
-					this->impedenace_base_levels.insert(std::make_pair(voltage_max, voltage_max * voltage_max / this->s_base));
+					this->impedenace_base_levels.insert(std::make_pair(voltage_max, (double) voltage_max * voltage_max / this->s_base / 3.));
 					this->power_limit.insert(std::make_pair(voltage_max, (double) voltage_max));
 					//std::cout << voltage_base_levels[voltage_max] << "\t" <<  voltage_max << "\t" << impedenace_base_levels[level_count] << "\n";
 				}
