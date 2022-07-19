@@ -40,10 +40,6 @@ namespace {
 		Power_network_inform.nodes.y = node_inform.col(node_inform.cols() - 3);
 		Power_network_inform.nodes.lon = node_inform.col(node_inform.cols() - 2);
 		Power_network_inform.nodes.lat = node_inform.col(node_inform.cols() - 1);
-	//	for(int node_iter = 0; node_iter < Power_network_inform.DSO_cluster[0].nodes_ID.size(); ++ node_iter){
-	//		std::cout << Power_network_inform.DSO_cluster[0].nodes_ID[node_iter] << " ";
-	//	}
-	//	std::cout << "\n\n";
 
 		// Organize original edge data
 		Power_network_inform.edges_orig.from = Eigen::VectorXi(fin_edge_orig_dim[0]);
@@ -94,15 +90,6 @@ namespace {
 		Power_network_inform.points.y = point_inform.col(point_inform.cols() - 3);
 		Power_network_inform.points.lon = point_inform.col(point_inform.cols() - 2);
 		Power_network_inform.points.lat = point_inform.col(point_inform.cols() - 1);
-	//	for(int node_iter = 0; node_iter < Power_network_inform.DSO_cluster[0].nodes_ID.size(); ++ node_iter){
-	//		std::cout << Power_network_inform.DSO_cluster[0].nodes_ID[node_iter] << " ";
-	//	}
-	//	std::cout << "\n\n";
-	//	for(int point_iter = 0; point_iter < Power_network_inform.DSO_cluster[0].points_ID.size(); ++ point_iter){
-	//		std::cout << Power_network_inform.DSO_cluster[0].points_ID[point_iter] << " ";
-	//	}
-	//	std::cout << "\n\n";
-	//	std::cout << Power_network_inform.DSO_cluster.size() << "\n\n";
 
 		// Read coordinate grid data
 		Power_network_inform.points.coordinate_grid = Eigen::MatrixXi(fin_point_matrix_dim[0], fin_point_matrix_dim[1]);
@@ -192,6 +179,12 @@ void power_network::power_network_input_process(network_inform &Power_network_in
 	tranmission_data_input(Power_network_inform, bz_inform, fin_node, fin_edge_orig, fin_edge_simp);
 	points_data_input(Power_network_inform, bz_inform, fin_point, fin_point_matrix);
 	plant_data_input(Power_network_inform, fin_hydro, fin_wind);
+
+	// Set power line density for the distribution network
+	Power_network_inform.set_line_density();
+
+	// Construct base voltage and base impedance level maps
+	Power_network_inform.tech_parameters.set_level_maps(Power_network_inform.nodes);
 }
 
 //int main(){

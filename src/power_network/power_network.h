@@ -204,7 +204,7 @@ namespace power_network{
     */
 	struct technical_parameters{
 		/**
-		* @name voltage on the power network
+		* @name voltage boundaries of the power network
 		*/
 		/*@{*/
 		/** Cutoff voltage level of the transmission network.*/
@@ -237,6 +237,10 @@ namespace power_network{
 		std::complex<double> z_distr_series = std::complex<double> (0., 7. * pow(10., -4.));
 		/** Shunt impedance per meter of distribution line.*/
 		std::complex<double> z_distr_shunt = std::complex<double> (0., 0.);
+		/**Phase angle limits on a node.*/
+		double theta_limit = boost::math::constants::pi<double>() / 12.;
+		/**Power flow limits on an edge at different voltage base levels*/
+		Eigen::VectorXd power_limit;
 		/*@{*/
 
 		/**
@@ -244,8 +248,39 @@ namespace power_network{
 		*/
 		/*@{*/
 		/** Reference value for non-dimensionalization of power into p.u..*/
-		std::complex<double> s_base = std::complex<double> (1000., 0.) * pow(3., .5);
+		double s_base = 1000. * pow(3., .5);
+		/** Hash table (mapping) of base voltage levels.*/
+		std::map <int, int> voltage_base_levels;
+		/** Hash table (mapping) of base impedance levels.*/
+		std::map <int, double> impedenace_base_levels;
 		/*@{*/
+
+		// Set the maps for levels of voltage and impedance base
+		void set_level_maps(nodes &nodes){
+			int voltage_min = nodes.voltage_base.minCoeff();
+			int voltage_max = voltage_min;
+			int level_count = 0;
+			this->voltage_base_levels.insert(std::make_pair(level_count, voltage_max));
+			this->impedenace_base_levels.insert(std::make_pair(level_count, voltage_max * voltage_max / this->s_base));
+
+			std::vector <int> voltage_base_sorted(nodes.voltage_base.data(), nodes.voltage_base.data() + nodes.voltage_base.size());
+			std::sort(voltage_base_sorted.begin(), voltage_base_sorted.end());
+			for(int node_iter = 0; node_iter < nodes.voltage_base.size(); ++ node_iter){
+				if(voltage_base_sorted[node_iter] > voltage_max){
+					voltage_max = voltage_base_sorted[node_iter];
+					level_count += 1;
+					this->voltage_base_levels.insert(std::make_pair(level_count, voltage_max));
+					this->impedenace_base_levels.insert(std::make_pair(level_count, voltage_max * voltage_max / this->s_base));
+					//std::cout << level_count  << "\t" << voltage_base_levels[level_count] << "\t" << impedenace_base_levels[level_count] << "\n";
+				}
+			}
+
+			// Set power flow limits for different base voltage levels
+			this->power_limit = Eigen::VectorXd(voltage_base_levels.size());
+			for(int level_iter = 0; level_iter < voltage_base_levels.size(); ++ level_iter){
+				this->power_limit(level_iter) = voltage_base_levels[level_iter];
+			}
+		}
     };
 
 	struct network_inform{
