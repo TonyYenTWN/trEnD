@@ -155,21 +155,19 @@ void power_market::Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlp
 	Eigen::VectorXd Y_n_diag = Eigen::VectorXd::Zero(Market.network.num_vertice);
 	Eigen::VectorXpd Connection_num = Eigen::VectorXpd::Ones(Market.network.num_vertice);
 	for(int edge_iter = 0; edge_iter < Market.network.num_edges; ++ edge_iter){
-		double y_edge;
-		y_edge = std::max(tol, abs(Market.network.admittance_vector(edge_iter)));
-		y_edge *=  (Market.network.admittance_vector(edge_iter) > 0.);
+		double y_edge = Market.network.admittance[edge_iter];
 
 		// Equality constraints of voltage - source / sink at the nodes, off-diagonal terms
 		if(abs(y_edge) > tol){
-			Y_n_trip.push_back(Eigen::TripletXd(Market.network.incidence_matrix(edge_iter, 0), Market.network.incidence_matrix(edge_iter, 1), -y_edge));
-			Y_n_trip.push_back(Eigen::TripletXd(Market.network.incidence_matrix(edge_iter, 1), Market.network.incidence_matrix(edge_iter, 0), -y_edge));
-			Connection_num(Market.network.incidence_matrix(edge_iter, 0)) += 1;
-			Connection_num(Market.network.incidence_matrix(edge_iter, 1)) += 1;
+			Y_n_trip.push_back(Eigen::TripletXd(Market.network.incidence[edge_iter](0), Market.network.incidence[edge_iter](1), -y_edge));
+			Y_n_trip.push_back(Eigen::TripletXd(Market.network.incidence[edge_iter](1), Market.network.incidence[edge_iter](0), -y_edge));
+			Connection_num(Market.network.incidence[edge_iter](0)) += 1;
+			Connection_num(Market.network.incidence[edge_iter](1)) += 1;
 		}
 
 		// Equality constraints of voltage - source / sink at the nodes, diagonal terms
-		Y_n_diag(Market.network.incidence_matrix(edge_iter, 0)) += Market.network.admittance_vector(edge_iter);
-		Y_n_diag(Market.network.incidence_matrix(edge_iter, 1)) += Market.network.admittance_vector(edge_iter);
+		Y_n_diag(Market.network.incidence[edge_iter](0)) += y_edge;
+		Y_n_diag(Market.network.incidence[edge_iter](1)) += y_edge;
 	}
 	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
 		// Equality constraints of voltage - source / sink at the nodes, summed diagonal terms
@@ -196,18 +194,15 @@ void power_market::Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlp
 	}
 	// Rows for voltage - power flow equalities
 	for(int edge_iter = 0; edge_iter < Market.network.num_edges; ++ edge_iter){
-		double y_edge;
-		y_edge = std::max(tol, abs(Market.network.admittance_vector(edge_iter)));
-		y_edge *= (y_edge > tol);
-		y_edge *=  (Market.network.admittance_vector(edge_iter) > 0.);
+		double y_edge = Market.network.admittance[edge_iter];
 
-		if(Market.network.incidence_matrix(edge_iter, 0) < Market.network.incidence_matrix(edge_iter, 1)){
-			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence_matrix(edge_iter, 0), y_edge);
-			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence_matrix(edge_iter, 1), -y_edge);
+		if(Market.network.incidence[edge_iter](0) < Market.network.incidence[edge_iter](1)){
+			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence[edge_iter](0), y_edge);
+			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence[edge_iter](1), -y_edge);
 		}
 		else{
-			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence_matrix(edge_iter, 1), -y_edge);
-			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence_matrix(edge_iter, 0), y_edge);
+			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence[edge_iter](0), -y_edge);
+			alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.incidence[edge_iter](1), y_edge);
 		}
 		alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, Market.network.num_vertice * (Market.price_intervals + 4) + edge_iter, -1.);
 	}
@@ -259,10 +254,10 @@ void power_market::Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlp
 	ub_general.setcontent(bound_general.rows(), bound_general.col(1).data());
 
 	// Bounds of box constraints
-	alglib::real_1d_array lb_box;
-	alglib::real_1d_array ub_box;
-	lb_box.setcontent(bound_box.rows(), bound_box.col(0).data());
-	ub_box.setcontent(bound_box.rows(), bound_box.col(1).data());
+//	alglib::real_1d_array lb_box;
+//	alglib::real_1d_array ub_box;
+//	lb_box.setcontent(bound_box.rows(), bound_box.col(0).data());
+//	ub_box.setcontent(bound_box.rows(), bound_box.col(1).data());
 
 	// -------------------------------------------------------------------------------
 	// Set scale of variables

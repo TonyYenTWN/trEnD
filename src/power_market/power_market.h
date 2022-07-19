@@ -27,6 +27,13 @@ namespace power_market{
 		Eigen::SparseMatrix <double, Eigen::RowMajor> line_capacity_matrix;
 
 		// Older variables
+		/**Compact form of the incidence matrix (0th index: start; 1st index: end).*/
+		std::vector <Eigen::Vector2i> incidence;
+		/**(Imaginary part of) admittance of each edge; used in TSO and DSOs markets.*/
+		std::vector <double> admittance;
+		/**Power flow constraints at each edge (0th col: from start to end; 1st col: from end to start).*/
+		std::vector <double> power_limit;
+
 		/**Compact form of the incidence matrix (0th col: start; 1st col: end).*/
 		Eigen::MatrixXi incidence_matrix;
 		/**(Imaginary part of) admittance of each edge; used in TSO and DSOs markets.*/
