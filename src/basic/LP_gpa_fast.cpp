@@ -26,7 +26,7 @@ void LP_variables_permutation(LP_object &Problem, bool stepwise_obj){
 	// Set precision of zero detection
 	double tol = pow(10, -12);
 	
-	std::vector<Trip> Permutation_trip;
+	std::vector<Eigen::TripletXd> Permutation_trip;
 	Permutation_trip.reserve(Problem.Variables_num);	
 	int redundant_size = 0;
 	int remaining_size = 0;
