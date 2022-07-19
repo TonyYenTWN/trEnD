@@ -262,7 +262,7 @@ namespace power_network{
 			int voltage_max = voltage_min;
 			int level_count = 0;
 			this->voltage_base_levels.insert(std::make_pair(voltage_max, level_count));
-			this->impedenace_base_levels.insert(std::make_pair(voltage_max, voltage_max * voltage_max / this->s_base));
+			this->impedenace_base_levels.insert(std::make_pair(voltage_max, (double) voltage_max * voltage_max / this->s_base / 3.));
 			this->power_limit.insert(std::make_pair(voltage_max, (double) voltage_max));
 
 			std::vector <int> voltage_base_sorted(nodes.voltage_base.data(), nodes.voltage_base.data() + nodes.voltage_base.size());
