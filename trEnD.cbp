@@ -13,11 +13,11 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-pg" />
 					<Add option="-g" />
-					<Add option="-fopenmp -mavx2 -mfma -DNDEBUG -O3 -s -std=c++2a" />
 				</Compiler>
 				<Linker>
-					<Add option="-static-libgcc -fopenmp -s" />
+					<Add option="-pg -lgmon" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -25,17 +25,11 @@
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Compiler>
-					<Add option="-fopenmp -mavx2 -mfma -DNDEBUG -O3 -s -std=c++2a" />
-				</Compiler>
-				<Linker>
-					<Add option="-static-libgcc -fopenmp -s" />
-				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add option="-fexceptions -fopenmp -mavx2 -mfma -DNDEBUG -O3 -std=c++2a" />
+			<Add option="-fopenmp -mavx2 -mfma -DNDEBUG -O3 -std=c++2a" />
 		</Compiler>
 		<Linker>
 			<Add option="-static-libgcc -fopenmp -s" />
@@ -50,6 +44,8 @@
 		<Unit filename="src/alglib/kernels_avx2.h" />
 		<Unit filename="src/alglib/kernels_fma.cpp" />
 		<Unit filename="src/alglib/kernels_fma.h" />
+		<Unit filename="src/alglib/kernels_sse2.cpp" />
+		<Unit filename="src/alglib/kernels_sse2.h" />
 		<Unit filename="src/alglib/linalg.cpp" />
 		<Unit filename="src/alglib/linalg.h" />
 		<Unit filename="src/alglib/optimization.cpp" />
