@@ -5,7 +5,7 @@ var searchData=
   ['varying_5fvector_2',['varying_vector',['../da/d45/LP__gpa_8h.html#ae4d0be0c1b24c6b9760a01a8892eee57',1,'LP_objective']]],
   ['vector_3',['VECTOR',['../d5/da0/basic__definitions_8h.html#ac6e89954deaa373db52a91ac6db50884',1,'basic_definitions.h']]],
   ['vectorxpd_4',['VectorXpd',['../d1/d62/namespaceEigen.html#ac0d9d1187ce28ccc8e2aef867e87b9c9',1,'Eigen']]],
-  ['voltage_5fbase_5',['voltage_base',['../d8/dcc/namespacepower__network.html#a80d2a503b492d1633297fadad3d37302',1,'power_network::nodes::voltage_base()'],['../d8/dcc/namespacepower__network.html#a8159713a2a673d3a0e0aa7ba71f855d7',1,'power_network::edges_orig::voltage_base()']]],
+  ['voltage_5fbase_5',['voltage_base',['../d8/dcc/namespacepower__network.html#a80d2a503b492d1633297fadad3d37302',1,'power_network::nodes::voltage_base()'],['../d8/dcc/namespacepower__network.html#a8d2079dcfaaf3bcd619753bdb6f0b883',1,'power_network::edges::voltage_base()']]],
   ['voltage_5fbase_5flevels_6',['voltage_base_levels',['../dc/dd8/structpower__network_1_1technical__parameters.html#a71a8da8cca8cd9e2efeb944a22f4127f',1,'power_network::technical_parameters']]],
   ['voltage_5fconstraint_7',['voltage_constraint',['../d5/d60/namespacepower__market.html#ac3e71d7b6db0d90f480efdb02863ab8c',1,'power_market::network_graph']]],
   ['voltage_5fcutoff_5fdistr_8',['voltage_cutoff_distr',['../dc/dd8/structpower__network_1_1technical__parameters.html#a607d202ae86f1e145512bbba97eb55d7',1,'power_network::technical_parameters']]],

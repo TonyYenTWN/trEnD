@@ -4,11 +4,11 @@ var power__network_8h =
       [ "nodes_ID", "d8/dcc/namespacepower__network.html#afbca11109038cef3a34092dc0c6a9b58", null ],
       [ "points_ID", "d8/dcc/namespacepower__network.html#adbb56a471dcafe9482144e7b79446ea5", null ]
     ] ],
-    [ "power_network::edges_orig", "d8/dcc/namespacepower__network.html#d5/dfc/structpower__network_1_1edges__orig", [
-      [ "distance", "d8/dcc/namespacepower__network.html#a05755073017072494f87bafa5669556a", null ],
-      [ "from", "d8/dcc/namespacepower__network.html#af10e1e8d0d0ddb0f9bc74c2a7128f45f", null ],
-      [ "to", "d8/dcc/namespacepower__network.html#af244cfcfa54b14ef9c8f400f8a59c74b", null ],
-      [ "voltage_base", "d8/dcc/namespacepower__network.html#a8159713a2a673d3a0e0aa7ba71f855d7", null ]
+    [ "power_network::edges", "d8/dcc/namespacepower__network.html#d3/d9c/structpower__network_1_1edges", [
+      [ "distance", "d8/dcc/namespacepower__network.html#ac3d6ec2c270c4f4bf32d72d210a61523", null ],
+      [ "from", "d8/dcc/namespacepower__network.html#a417ae68b2154cd8facca6eb9976f9c2e", null ],
+      [ "to", "d8/dcc/namespacepower__network.html#ae7844ae7d747cd776f3e141396c8b220", null ],
+      [ "voltage_base", "d8/dcc/namespacepower__network.html#a8d2079dcfaaf3bcd619753bdb6f0b883", null ]
     ] ],
     [ "power_network::edges_simp", "d8/dcc/namespacepower__network.html#de/d6a/structpower__network_1_1edges__simp", [
       [ "conductance", "d8/dcc/namespacepower__network.html#a23f77f1d49a9b220fec396d8404b8a61", null ],

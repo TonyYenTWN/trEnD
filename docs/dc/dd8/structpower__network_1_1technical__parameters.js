@@ -5,7 +5,7 @@ var structpower__network_1_1technical__parameters =
     [ "impedenace_base_levels", "dc/dd8/structpower__network_1_1technical__parameters.html#ab22541d7420be9da0b14c7b84cd5c52e", null ],
     [ "line_density_distr", "dc/dd8/structpower__network_1_1technical__parameters.html#abd89e18928a1f18edb0ca293ad4aa1a7", null ],
     [ "line_num_distr", "dc/dd8/structpower__network_1_1technical__parameters.html#a6566309a328253303e9330c0a91ebaba", null ],
-    [ "power_limit", "dc/dd8/structpower__network_1_1technical__parameters.html#a59d7f8a1585c88b49949d543764eac25", null ],
+    [ "power_limit", "dc/dd8/structpower__network_1_1technical__parameters.html#a38d93385626964b38e5b367e6f74d417", null ],
     [ "s_base", "dc/dd8/structpower__network_1_1technical__parameters.html#a2e13b253c12906962e9ef94053933119", null ],
     [ "theta_limit", "dc/dd8/structpower__network_1_1technical__parameters.html#a183af4264522a9d0668a0282e9344ba3", null ],
     [ "voltage_base_levels", "dc/dd8/structpower__network_1_1technical__parameters.html#a71a8da8cca8cd9e2efeb944a22f4127f", null ],

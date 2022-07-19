@@ -112,9 +112,9 @@ Classes</h2></td></tr>
 <tr class="memitem:d0/df7/structpower__network_1_1DSO__cluster"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/dcc/namespacepower__network.html#d0/df7/structpower__network_1_1DSO__cluster">DSO_cluster</a></td></tr>
 <tr class="memdesc:d0/df7/structpower__network_1_1DSO__cluster"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clustered DSOs in the model.  <a href="../../d8/dcc/namespacepower__network.html#d0/df7/structpower__network_1_1DSO__cluster">More...</a><br /></td></tr>
 <tr class="separator:d0/df7/structpower__network_1_1DSO__cluster"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:d5/dfc/structpower__network_1_1edges__orig"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/dcc/namespacepower__network.html#d5/dfc/structpower__network_1_1edges__orig">edges_orig</a></td></tr>
-<tr class="memdesc:d5/dfc/structpower__network_1_1edges__orig"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transmission network edges (power lines) from the original power network data.  <a href="../../d8/dcc/namespacepower__network.html#d5/dfc/structpower__network_1_1edges__orig">More...</a><br /></td></tr>
-<tr class="separator:d5/dfc/structpower__network_1_1edges__orig"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:d3/d9c/structpower__network_1_1edges"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/dcc/namespacepower__network.html#d3/d9c/structpower__network_1_1edges">edges</a></td></tr>
+<tr class="memdesc:d3/d9c/structpower__network_1_1edges"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transmission network edges (power lines) from the power network data.  <a href="../../d8/dcc/namespacepower__network.html#d3/d9c/structpower__network_1_1edges">More...</a><br /></td></tr>
+<tr class="separator:d3/d9c/structpower__network_1_1edges"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:de/d6a/structpower__network_1_1edges__simp"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/dcc/namespacepower__network.html#de/d6a/structpower__network_1_1edges__simp">edges_simp</a></td></tr>
 <tr class="memdesc:de/d6a/structpower__network_1_1edges__simp"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transmission network edges (power lines) from simplified power network data.  <a href="../../d8/dcc/namespacepower__network.html#de/d6a/structpower__network_1_1edges__simp">More...</a><br /></td></tr>
 <tr class="separator:de/d6a/structpower__network_1_1edges__simp"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -157,7 +157,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <div class="textblock"><p >Clustered DSOs in the model. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00190">190</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00191">191</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 </div><table class="fieldtable">
 <tr><th colspan="3">Class Members</th></tr>
 <tr><td class="fieldtype">
@@ -178,44 +178,45 @@ points_ID</td>
 
 </div>
 </div>
-<a name="d5/dfc/structpower__network_1_1edges__orig" id="d5/dfc/structpower__network_1_1edges__orig"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#d5/dfc/structpower__network_1_1edges__orig">&#9670;&nbsp;</a></span>power_network::edges_orig</h2>
+<a name="d3/d9c/structpower__network_1_1edges" id="d3/d9c/structpower__network_1_1edges"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#d3/d9c/structpower__network_1_1edges">&#9670;&nbsp;</a></span>power_network::edges</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">struct power_network::edges_orig</td>
+          <td class="memname">struct power_network::edges</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="textblock"><p >Transmission network edges (power lines) from the original power network data. </p>
+<div class="textblock"><p >Transmission network edges (power lines) from the power network data. </p>
 
 <p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00103">103</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 </div><table class="fieldtable">
 <tr><th colspan="3">Class Members</th></tr>
 <tr><td class="fieldtype">
-<a id="a05755073017072494f87bafa5669556a" name="a05755073017072494f87bafa5669556a"></a>VectorXd</td>
+<a id="ac3d6ec2c270c4f4bf32d72d210a61523" name="ac3d6ec2c270c4f4bf32d72d210a61523"></a>VectorXd</td>
 <td class="fieldname">
 distance</td>
 <td class="fielddoc">
+<p >Length of the power line in meters. </p>
 </td></tr>
 <tr><td class="fieldtype">
-<a id="af10e1e8d0d0ddb0f9bc74c2a7128f45f" name="af10e1e8d0d0ddb0f9bc74c2a7128f45f"></a>VectorXi</td>
+<a id="a417ae68b2154cd8facca6eb9976f9c2e" name="a417ae68b2154cd8facca6eb9976f9c2e"></a>VectorXi</td>
 <td class="fieldname">
 from</td>
 <td class="fielddoc">
 <p >Starting node of the power line. </p>
 </td></tr>
 <tr><td class="fieldtype">
-<a id="af244cfcfa54b14ef9c8f400f8a59c74b" name="af244cfcfa54b14ef9c8f400f8a59c74b"></a>VectorXi</td>
+<a id="ae7844ae7d747cd776f3e141396c8b220" name="ae7844ae7d747cd776f3e141396c8b220"></a>VectorXi</td>
 <td class="fieldname">
 to</td>
 <td class="fielddoc">
 <p >Ending node of the power line. </p>
 </td></tr>
 <tr><td class="fieldtype">
-<a id="a8159713a2a673d3a0e0aa7ba71f855d7" name="a8159713a2a673d3a0e0aa7ba71f855d7"></a>VectorXi</td>
+<a id="a8d2079dcfaaf3bcd619753bdb6f0b883" name="a8d2079dcfaaf3bcd619753bdb6f0b883"></a>VectorXi</td>
 <td class="fieldname">
 voltage_base</td>
 <td class="fielddoc">
@@ -238,7 +239,7 @@ voltage_base</td>
 </div><div class="memdoc">
 <div class="textblock"><p >Transmission network edges (power lines) from simplified power network data. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00132">132</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00133">133</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 </div><table class="fieldtable">
 <tr><th colspan="3">Class Members</th></tr>
 <tr><td class="fieldtype">
@@ -355,7 +356,7 @@ y</td>
 </div><div class="memdoc">
 <div class="textblock"><p >Power plants of all types of technologies. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00182">182</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00183">183</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 </div><table class="fieldtable">
 <tr><th colspan="3">Class Members</th></tr>
 <tr><td class="fieldtype">
@@ -389,7 +390,7 @@ wind</td>
 </div><div class="memdoc">
 <div class="textblock"><p >Power plants of a type of technology. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00153">153</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00154">154</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 </div><table class="fieldtable">
 <tr><th colspan="3">Class Members</th></tr>
 <tr><td class="fieldtype">
@@ -493,7 +494,7 @@ distance</td>
 <td class="fieldname">
 grid_length</td>
 <td class="fielddoc">
-<p >Rough spacing distance between 2 adjacent points, in meters. </p>
+<p >Rough spacing distance between 2 adjacent points in meters. </p>
 </td></tr>
 <tr><td class="fieldtype">
 <a id="a31806e3fc8fcec04162602a786aeabf8" name="a31806e3fc8fcec04162602a786aeabf8"></a>VectorXi</td>
@@ -528,7 +529,7 @@ node</td>
 <td class="fieldname">
 point_area</td>
 <td class="fielddoc">
-<p >Area size of a point, in square kilometers. </p>
+<p >Area size of a point in square kilometers. </p>
 </td></tr>
 <tr><td class="fieldtype">
 <a id="ad87de87c3072f5ae6926e9d70aaec9d0" name="ad87de87c3072f5ae6926e9d70aaec9d0"></a>VectorXd</td>
@@ -616,7 +617,7 @@ y</td>
 
 <p class="definition">Definition at line <a class="el" href="../../dc/d47/power__network__input_8cpp_source.html#l00166">166</a> of file <a class="el" href="../../dc/d47/power__network__input_8cpp_source.html">power_network_input.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html#l00004">basic::get_file_dim()</a>, <a class="el" href="../../d9/dde/power__network_8h_source.html#l00288">power_network::network_inform::nodes</a>, <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html#l00038">basic::read_file()</a>, <a class="el" href="../../d9/dde/power__network_8h_source.html#l00259">power_network::technical_parameters::set_level_maps()</a>, <a class="el" href="../../d9/dde/power__network_8h_source.html#l00296">power_network::network_inform::set_line_density()</a>, and <a class="el" href="../../d9/dde/power__network_8h_source.html#l00293">power_network::network_inform::tech_parameters</a>.</p>
+<p class="reference">References <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html#l00004">basic::get_file_dim()</a>, <a class="el" href="../../d9/dde/power__network_8h_source.html#l00291">power_network::network_inform::nodes</a>, <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html#l00038">basic::read_file()</a>, <a class="el" href="../../d9/dde/power__network_8h_source.html#l00260">power_network::technical_parameters::set_level_maps()</a>, <a class="el" href="../../d9/dde/power__network_8h_source.html#l00299">power_network::network_inform::set_line_density()</a>, and <a class="el" href="../../d9/dde/power__network_8h_source.html#l00296">power_network::network_inform::tech_parameters</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../df/d0a/main_8cpp_source.html#l00011">main()</a>.</p>
 

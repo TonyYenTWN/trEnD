@@ -6,7 +6,7 @@ var annotated_dup =
     ] ],
     [ "power_network", "d8/dcc/namespacepower__network.html", [
       [ "DSO_cluster", "d8/dcc/namespacepower__network.html#d0/df7/structpower__network_1_1DSO__cluster", "d8/dcc/namespacepower__network_d0/df7/structpower__network_1_1DSO__cluster_dup" ],
-      [ "edges_orig", "d8/dcc/namespacepower__network.html#d5/dfc/structpower__network_1_1edges__orig", "d8/dcc/namespacepower__network_d5/dfc/structpower__network_1_1edges__orig_dup" ],
+      [ "edges", "d8/dcc/namespacepower__network.html#d3/d9c/structpower__network_1_1edges", "d8/dcc/namespacepower__network_d3/d9c/structpower__network_1_1edges_dup" ],
       [ "edges_simp", "d8/dcc/namespacepower__network.html#de/d6a/structpower__network_1_1edges__simp", "d8/dcc/namespacepower__network_de/d6a/structpower__network_1_1edges__simp_dup" ],
       [ "network_inform", "d4/ddd/structpower__network_1_1network__inform.html", "d4/ddd/structpower__network_1_1network__inform" ],
       [ "nodes", "d8/dcc/namespacepower__network.html#d8/d02/structpower__network_1_1nodes", "d8/dcc/namespacepower__network_d8/d02/structpower__network_1_1nodes_dup" ],

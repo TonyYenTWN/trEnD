@@ -187,6 +187,13 @@ Functions</h2></td></tr>
 </div><table class="fieldtable">
 <tr><th colspan="3">Class Members</th></tr>
 <tr><td class="fieldtype">
+<a id="a3f99d1f7d20cb44d0ebd1fadf28fbee3" name="a3f99d1f7d20cb44d0ebd1fadf28fbee3"></a>vector&lt; double &gt;</td>
+<td class="fieldname">
+admittance</td>
+<td class="fielddoc">
+<p >(Imaginary part of) admittance of each edge; used in TSO and DSOs markets. </p>
+</td></tr>
+<tr><td class="fieldtype">
 <a id="a65e67e1f3065f75735e0376d9346aaee" name="a65e67e1f3065f75735e0376d9346aaee"></a>VectorXd</td>
 <td class="fieldname">
 admittance_vector</td>
@@ -208,11 +215,32 @@ confirmed_voltage</td>
 <p >Voltage at each vertex. </p>
 </td></tr>
 <tr><td class="fieldtype">
+<a id="a1d0a9607568fcdfe0f3f2ca074c80acc" name="a1d0a9607568fcdfe0f3f2ca074c80acc"></a>vector&lt; Vector2i &gt;</td>
+<td class="fieldname">
+incidence</td>
+<td class="fielddoc">
+<p >Compact form of the incidence matrix (0th index: start; 1st index: end). </p>
+</td></tr>
+<tr><td class="fieldtype">
 <a id="a53649c617b56f1029ea1ce55cde593f3" name="a53649c617b56f1029ea1ce55cde593f3"></a>MatrixXi</td>
 <td class="fieldname">
 incidence_matrix</td>
 <td class="fielddoc">
 <p >Compact form of the incidence matrix (0th col: start; 1st col: end). </p>
+</td></tr>
+<tr><td class="fieldtype">
+<a id="ad550533f08cb0ec7377c591dcb46f855" name="ad550533f08cb0ec7377c591dcb46f855"></a>SparseMatrix&lt; double, RowMajor &gt;</td>
+<td class="fieldname">
+line_capacity_matrix</td>
+<td class="fielddoc">
+<p >Line capacity matrix. Term (i, j) represents the maximum power flow capacity between node #i and #j. </p>
+</td></tr>
+<tr><td class="fieldtype">
+<a id="a8e0b793d1f4d2b452707dd1a08069c83" name="a8e0b793d1f4d2b452707dd1a08069c83"></a>SparseMatrix&lt; double, RowMajor &gt;</td>
+<td class="fieldname">
+node_admittance_matrix</td>
+<td class="fielddoc">
+<p >Node admittance matrix. </p>
 </td></tr>
 <tr><td class="fieldtype">
 <a id="a95b4d266f09130ccf274d1362a111d92" name="a95b4d266f09130ccf274d1362a111d92"></a>int</td>
@@ -232,6 +260,13 @@ num_vertice</td>
 <a id="a911b988210fff6ab0ae6ffeb06a7464d" name="a911b988210fff6ab0ae6ffeb06a7464d"></a>MatrixXd</td>
 <td class="fieldname">
 power_constraint</td>
+<td class="fielddoc">
+<p >Power flow constraints at each edge (0th col: from start to end; 1st col: from end to start). </p>
+</td></tr>
+<tr><td class="fieldtype">
+<a id="a136eeb731ef6df49e05d13852c9fe96f" name="a136eeb731ef6df49e05d13852c9fe96f"></a>vector&lt; double &gt;</td>
+<td class="fieldname">
+power_limit</td>
 <td class="fielddoc">
 <p >Power flow constraints at each edge (0th col: from start to end; 1st col: from end to start). </p>
 </td></tr>
@@ -259,7 +294,7 @@ voltage_constraint</td>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00145">145</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00158">158</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
 
 </div>
 </div>
@@ -275,7 +310,7 @@ voltage_constraint</td>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00123">123</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00136">136</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
 
 </div>
 </div>
@@ -307,7 +342,7 @@ voltage_constraint</td>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00109">109</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00122">122</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
 
 </div>
 </div>
@@ -323,7 +358,7 @@ voltage_constraint</td>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00135">135</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00148">148</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
 
 </div>
 </div>

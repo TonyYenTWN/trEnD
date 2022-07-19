@@ -11,7 +11,7 @@ var searchData=
   ['points_5fid_8',['points_ID',['../d8/dcc/namespacepower__network.html#adbb56a471dcafe9482144e7b79446ea5',1,'power_network::DSO_cluster']]],
   ['population_5fdensity_9',['population_density',['../d8/dcc/namespacepower__network.html#ad87de87c3072f5ae6926e9d70aaec9d0',1,'power_network::points']]],
   ['power_5fconstraint_10',['power_constraint',['../d5/d60/namespacepower__market.html#a911b988210fff6ab0ae6ffeb06a7464d',1,'power_market::network_graph']]],
-  ['power_5flimit_11',['power_limit',['../dc/dd8/structpower__network_1_1technical__parameters.html#a59d7f8a1585c88b49949d543764eac25',1,'power_network::technical_parameters']]],
+  ['power_5flimit_11',['power_limit',['../d5/d60/namespacepower__market.html#a136eeb731ef6df49e05d13852c9fe96f',1,'power_market::network_graph::power_limit()'],['../dc/dd8/structpower__network_1_1technical__parameters.html#a38d93385626964b38e5b367e6f74d417',1,'power_network::technical_parameters::power_limit()']]],
   ['power_5fmarket_12',['power_market',['../d5/d60/namespacepower__market.html',1,'']]],
   ['power_5fmarket_13',['POWER_MARKET',['../db/d56/power__market_8h.html#a30e4fc263909c91cf4c491e92ab1bb08',1,'power_market.h']]],
   ['power_5fmarket_2eh_14',['power_market.h',['../db/d56/power__market_8h.html',1,'']]],
