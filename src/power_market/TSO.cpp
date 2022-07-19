@@ -17,15 +17,20 @@
 //}
 
 void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::network_inform &Power_network_inform, int Time){
-	double pi = boost::math::constants::pi<double>();
+//	double pi = boost::math::constants::pi<double>();
 
 	// Input parameters of TSO market
 	TSO_Market.num_zone = Power_network_inform.nodes.bidding_zone.size();
 	TSO_Market.time_intervals = Time;
 	TSO_Market.set_bidded_price();
 
-	// Set compact incidence matrix and edge admittance matrix
+	// Set node admittance matrix and line capacity matrix
 	TSO_Market.network.num_vertice = TSO_Market.num_zone;
+	Eigen::MatrixXd admittance = Eigen::MatrixXd::Zero(TSO_Market.network.num_vertice, TSO_Market.network.num_vertice);
+	Eigen::MatrixXd capacity = Eigen::MatrixXd::Zero(TSO_Market.network.num_vertice, TSO_Market.network.num_vertice);
+
+
+	// Set compact incidence matrix and edge admittance matrix
 	TSO_Market.network.num_edges = Power_network_inform.edges_simp.from.size();
 	TSO_Market.network.incidence_matrix = Eigen::MatrixXi(TSO_Market.network.num_edges, 2);
 	TSO_Market.network.incidence_matrix.col(0) = Power_network_inform.edges_simp.from;
@@ -34,8 +39,8 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 
 	// Set voltage and power constraints at each edge
 	TSO_Market.network.voltage_constraint = Eigen::MatrixXd::Ones(TSO_Market.network.num_vertice, 2);
-	TSO_Market.network.voltage_constraint.col(0) *= -pi / 12;
-	TSO_Market.network.voltage_constraint.col(1) *= pi / 12;
+//	TSO_Market.network.voltage_constraint.col(0) *= -pi / 12;
+//	TSO_Market.network.voltage_constraint.col(1) *= pi / 12;
 	TSO_Market.network.power_constraint = Eigen::MatrixXd::Ones(TSO_Market.network.num_edges, 2);
 	TSO_Market.network.power_constraint.col(0) *= -50.;
 	TSO_Market.network.power_constraint.col(1) *= 50.;

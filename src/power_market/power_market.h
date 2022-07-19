@@ -11,13 +11,22 @@
 
 namespace power_market{
 	// Power market objects
-	/**Information of the corresponding power network of the market.*/
+	/** Information of the corresponding power network of the market.*/
 	struct network_graph{
-		// Input parameters
+		/**
+		* @name input parameters
+		*/
+		/*@{*/
 		/**Number of vertices (nodes) in the power network of the market.*/
 		int num_vertice;
 		/**Number of edges (lines) in the power network of the market.*/
 		int num_edges;
+		/**Node admittance matrix.*/
+		Eigen::SparseMatrix <double, Eigen::RowMajor> node_admittance_matrix;
+		/**Line capacity matrix. Term (i, j) represents the maximum power flow capacity between node #i and #j.*/
+		Eigen::SparseMatrix <double, Eigen::RowMajor> line_capacity_matrix;
+
+		// Older variables
 		/**Compact form of the incidence matrix (0th col: start; 1st col: end).*/
 		Eigen::MatrixXi incidence_matrix;
 		/**(Imaginary part of) admittance of each edge; used in TSO and DSOs markets.*/
@@ -26,12 +35,17 @@ namespace power_market{
 		Eigen::MatrixXd voltage_constraint;
 		/**Power flow constraints at each edge (0th col: from start to end; 1st col: from end to start).*/
 		Eigen::MatrixXd power_constraint;
+		/*@{*/
 
-		// Output variables
+		/**
+		* @name output parameters
+		*/
+		/*@{*/
 		/**Power flow across each edge; a positive value indicates flowing from start to end.*/
 		Eigen::MatrixXd confirmed_power;
 		/**Voltage at each vertex.*/
 		Eigen::MatrixXd confirmed_voltage;
+		/*@{*/
 	};
 
 	/**Information of the power market.*/
@@ -63,8 +77,6 @@ namespace power_market{
 		Eigen::MatrixXd submitted_supply;
 		/**Demand bid submitted in the bidding zones.*/
 		Eigen::MatrixXd submitted_demand;
-		//Member object that stores the linear programming problem (for TSO and DSO markets).*/
-		//alglib::minlpstate Problem;
 
 		// Output Variables
 		/**Confirmed supply quantity of the market.*/
