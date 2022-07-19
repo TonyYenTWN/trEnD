@@ -40,7 +40,7 @@ int main(){
 //	for(int DSO_iter = 0; DSO_iter < DSO_Markets.size(); ++ DSO_iter){
 //		power_market::Flow_Based_Market_LP_Set(DSO_Markets[DSO_iter], DSO_Problems[DSO_iter]);
 //	}
-//
+
 	// Re-initialization of submitted bids
 	std::string fin_point_demand = "csv/processed/spatial_field/nominal_mean_demand_field_10km_annual_mean.csv";
 	power_market::Submitted_bid_calculation(0, DSO_Markets, TSO_Market, International_Market, Power_network_inform, fin_point_demand);
