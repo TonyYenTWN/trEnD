@@ -32,9 +32,9 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 		Eigen::MatrixXd admittance = Eigen::MatrixXd::Ones(DSO_Markets[DSO_iter].network.num_vertice, DSO_Markets[DSO_iter].network.num_vertice);
 		Eigen::MatrixXd distance = Eigen::MatrixXd::Zero(DSO_Markets[DSO_iter].network.num_vertice, DSO_Markets[DSO_iter].network.num_vertice);
 
-		std::cout << "-------------------------------------------------------------------------------------------------------------------------------------------------\n";
-		std::cout << DSO_iter << "\n";
-		std::cout << "-------------------------------------------------------------------------------------------------------------------------------------------------\n";
+//		std::cout << "-------------------------------------------------------------------------------------------------------------------------------------------------\n";
+//		std::cout << DSO_iter << "\n";
+//		std::cout << "-------------------------------------------------------------------------------------------------------------------------------------------------\n";
 		for(int row_iter = 0; row_iter < DSO_Markets[DSO_iter].network.num_vertice - 1; ++ row_iter){
 			for(int col_iter = row_iter + 1; col_iter < DSO_Markets[DSO_iter].network.num_vertice; ++ col_iter){
 				if(row_iter < Power_network_inform.DSO_cluster[DSO_iter].points_ID.size() && col_iter < Power_network_inform.DSO_cluster[DSO_iter].points_ID.size()){
@@ -70,11 +70,11 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 		admittance.topLeftCorner(Power_network_inform.DSO_cluster[DSO_iter].points_ID.size(), Power_network_inform.DSO_cluster[DSO_iter].points_ID.size()) /= partition_func * Power_network_inform.tech_parameters.z_distr_series.imag();
 		admittance.rightCols(Power_network_inform.DSO_cluster[DSO_iter].nodes_ID.size()) *= z_base_high / Power_network_inform.tech_parameters.z_distr_series.imag();
 		int demo = std::min(15, DSO_Markets[DSO_iter].network.num_vertice);
-		std::cout << admittance.topLeftCorner(demo, demo) << "\n\n";
-		std::cout << distance.topLeftCorner(demo, demo) << "\n\n";
+//		std::cout << admittance.topLeftCorner(demo, demo) << "\n\n";
+//		std::cout << distance.topLeftCorner(demo, demo) << "\n\n";
 		admittance = admittance.array() / distance.array();
-		std::cout << admittance.topLeftCorner(demo, demo) << "\n\n";
-		std::cout << "\n\n";
+//		std::cout << admittance.topLeftCorner(demo, demo) << "\n\n";
+//		std::cout << "\n\n";
 
 		// Set compact incidence matrix and edge admittance matrix
 		double tol = 1.;
@@ -89,6 +89,11 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 						DSO_Markets[DSO_iter].network.admittance.push_back(admittance(row_iter , col_iter));
 						// power limit?
 					}
+				}
+				else{
+					DSO_Markets[DSO_iter].network.incidence.push_back(Eigen::Vector2i(row_iter, col_iter));
+					DSO_Markets[DSO_iter].network.admittance.push_back(admittance(row_iter , col_iter));
+					// power limit?
 				}
 			}
 		}
