@@ -1,23 +1,13 @@
 #pragma once
 
-#ifndef VECTOR
-#define VECTOR
-#include <vector>
-#endif
-
-#ifndef NUMERIC
-#define NUMERIC
-#include <numeric>
-#endif
-
 #ifndef ALGORITHM
 #define ALGORITHM
 #include <algorithm>
 #endif
 
-#ifndef OMP
-#define OMP
-#include <omp.h>
+#ifndef CONSTANT
+#define CONSTANT
+#include <boost/math/constants/constants.hpp>
 #endif
 
 #ifndef EIGEN
@@ -29,7 +19,22 @@ namespace Eigen{
 }
 #endif
 
-#ifndef CONSTANT
-#define CONSTANT
-#include <boost/math/constants/constants.hpp>
+#ifndef MAP
+#define MAP
+#include <map>
+#endif
+
+#ifndef NUMERIC
+#define NUMERIC
+#include <numeric>
+#endif
+
+#ifndef OMP
+#define OMP
+#include <omp.h>
+#endif
+
+#ifndef VECTOR
+#define VECTOR
+#include <vector>
 #endif
