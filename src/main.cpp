@@ -54,20 +54,21 @@ int main(){
 
 	// Bid-filtering in DSOs
 //	#pragma omp parallel
-//	{
+	{
 //		#pragma omp for
-//		for(int DSO_iter = 0; DSO_iter < DSO_Markets.size(); ++ DSO_iter){
+		for(int DSO_iter = 0; DSO_iter < DSO_Markets.size(); ++ DSO_iter){
 //			std::cout << "--------------------------------------------------------------------------------------------------------------\n";
 //			start = std::chrono::high_resolution_clock::now();
-//
-//			power_market::Flow_Based_Market_Optimization(0, DSO_Markets[DSO_iter], DSO_Problems[DSO_iter]);
-//
+
+			std::cout << DSO_iter << "-th DSO: \n";
+			power_market::Flow_Based_Market_Optimization(0, DSO_Markets[DSO_iter], DSO_Problems[DSO_iter]);
+
 //			stop = std::chrono::high_resolution_clock::now();
 //			duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
-//			std::cout << DSO_iter << "-th DSO optimization time: " << duration.count() << " microseconds" << "\n";
+//			std::cout << DSO_iter << "-th DSO: \n";// << duration.count() << " microseconds" << "\n";
 //			std::cout << "--------------------------------------------------------------------------------------------------------------\n\n";
-//		}
-//	}
+		}
+	}
 
 	// Re-dispatch + tertiary control reserve in TSO
 	start = std::chrono::high_resolution_clock::now();
