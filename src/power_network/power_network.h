@@ -129,27 +129,6 @@ namespace power_network{
 		/*@{*/
 	};
 
-	/** @brief Transmission network edges (power lines) from simplified power network data.*/
-	struct edges_simp{
-		/**
-		* @name topological information
-		*/
-		/*@{*/
-		/** Starting node of the power line.*/
-		Eigen::VectorXi from;
-		/** Ending node of the power line.*/
-		Eigen::VectorXi to;
-		/*@{*/
-
-		/**
-		* @name features information
-		*/
-		/*@{*/
-		/** Conductance of the edges in p.u..*/
-		Eigen::VectorXd conductance;
-		/*@{*/
-	};
-
 	/** @brief Power plants of a type of technology.*/
 	struct plants_per_tech{
 		Eigen::VectorXi node;
