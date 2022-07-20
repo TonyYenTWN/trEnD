@@ -26,7 +26,7 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 		// z: per length impedence of power lines
 		// d: fractional dimension of the power line distribution
 		double z_base_low = pow(Power_network_inform.tech_parameters.voltage_cutoff_distr, 2.) / Power_network_inform.tech_parameters.s_base / 3.;
-		double z_base_high = pow(66., 2.) / Power_network_inform.tech_parameters.s_base / 3.;
+		double z_base_high = pow(Power_network_inform.tech_parameters.voltage_cutoff_connection, 2.) / Power_network_inform.tech_parameters.s_base / 3.;
 		double partition_func = 0.;
 		DSO_Markets[DSO_iter].network.num_vertice = DSO_Markets[DSO_iter].num_zone;
 		Eigen::MatrixXd admittance = Eigen::MatrixXd::Ones(DSO_Markets[DSO_iter].network.num_vertice, DSO_Markets[DSO_iter].network.num_vertice);
@@ -80,6 +80,8 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 		double tol = 1.;
 		DSO_Markets[DSO_iter].network.incidence.reserve(DSO_Markets[DSO_iter].network.num_vertice * DSO_Markets[DSO_iter].network.num_vertice);
 		DSO_Markets[DSO_iter].network.admittance.reserve(DSO_Markets[DSO_iter].network.num_vertice * DSO_Markets[DSO_iter].network.num_vertice);
+		std::vector <double> power_limit;
+		power_limit.reserve(DSO_Markets[DSO_iter].network.num_vertice * DSO_Markets[DSO_iter].network.num_vertice);
 
 		for(int row_iter = 0; row_iter < DSO_Markets[DSO_iter].network.num_vertice - 1; ++ row_iter){
 			for(int col_iter = row_iter + 1; col_iter < DSO_Markets[DSO_iter].network.num_vertice; ++ col_iter){
@@ -87,13 +89,13 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 					if(admittance(row_iter, col_iter) > tol){
 						DSO_Markets[DSO_iter].network.incidence.push_back(Eigen::Vector2i(row_iter, col_iter));
 						DSO_Markets[DSO_iter].network.admittance.push_back(admittance(row_iter , col_iter));
-						// power limit?
+						power_limit.push_back(Power_network_inform.tech_parameters.voltage_cutoff_distr);
 					}
 				}
 				else{
 					DSO_Markets[DSO_iter].network.incidence.push_back(Eigen::Vector2i(row_iter, col_iter));
 					DSO_Markets[DSO_iter].network.admittance.push_back(admittance(row_iter , col_iter));
-					// power limit?
+					power_limit.push_back(Power_network_inform.tech_parameters.voltage_cutoff_connection);
 				}
 			}
 		}
