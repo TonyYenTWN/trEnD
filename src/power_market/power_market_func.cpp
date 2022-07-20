@@ -158,12 +158,10 @@ void power_market::Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlp
 		double y_edge = Market.network.admittance[edge_iter];
 
 		// Equality constraints of voltage - source / sink at the nodes, off-diagonal terms
-		if(abs(y_edge) > tol){
-			Y_n_trip.push_back(Eigen::TripletXd(Market.network.incidence[edge_iter](0), Market.network.incidence[edge_iter](1), -y_edge));
-			Y_n_trip.push_back(Eigen::TripletXd(Market.network.incidence[edge_iter](1), Market.network.incidence[edge_iter](0), -y_edge));
-			Connection_num(Market.network.incidence[edge_iter](0)) += 1;
-			Connection_num(Market.network.incidence[edge_iter](1)) += 1;
-		}
+		Y_n_trip.push_back(Eigen::TripletXd(Market.network.incidence[edge_iter](0), Market.network.incidence[edge_iter](1), -y_edge));
+		Y_n_trip.push_back(Eigen::TripletXd(Market.network.incidence[edge_iter](1), Market.network.incidence[edge_iter](0), -y_edge));
+		Connection_num(Market.network.incidence[edge_iter](0)) += 1;
+		Connection_num(Market.network.incidence[edge_iter](1)) += 1;
 
 		// Equality constraints of voltage - source / sink at the nodes, diagonal terms
 		Y_n_diag(Market.network.incidence[edge_iter](0)) += y_edge;
