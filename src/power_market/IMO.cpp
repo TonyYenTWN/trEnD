@@ -13,9 +13,13 @@ void power_market::International_Market_Set(market_inform &International_Market,
 	International_Market.set_bidded_price();
 	International_Market.network.num_vertice = International_Market.num_zone;
 	International_Market.network.num_edges = 15;
-	International_Market.network.incidence_matrix = Eigen::MatrixXi(International_Market.network.num_edges, 2);
-	International_Market.network.incidence_matrix.col(0) << 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3;
-	International_Market.network.incidence_matrix.col(1) << 1, 2, 4, 12, 4, 5, 6, 8, 9, 3, 4, 11, 7, 10, 11;
+	International_Market.network.incidence.reserve(International_Market.network.num_edges);
+	Eigen::MatrixXi incidence_matrix (International_Market.network.num_edges, 2);
+	incidence_matrix.col(0) << 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3;
+	incidence_matrix.col(1) << 1, 2, 4, 12, 4, 5, 6, 8, 9, 3, 4, 11, 7, 10, 11;
+	for(int edge_iter = 0; edge_iter < International_Market.network.num_edges; ++ edge_iter){
+		International_Market.network.incidence.push_back(incidence_matrix.row(edge_iter));
+	}
 	International_Market.network.power_constraint = Eigen::MatrixXd(International_Market.network.num_edges, 2);
 	International_Market.network.power_constraint.col(0) << 1900, 100, 500, 2130, 300, 1400, 1680, 720, 720, 300, 500, 600, 0, 650, 200;
 	International_Market.network.power_constraint.col(1) << 3400, 350, 3900, 2095, 500, 1400, 1150, 720, 720, 1100, 450, 1000, 0, 600, 250;
@@ -66,8 +70,8 @@ void power_market::International_Market_Optimization(int tick, market_inform &In
 	{
 		#pragma omp for
 		for(int edge_ID = 0; edge_ID < International_Market.network.num_edges; ++ edge_ID){
-			maximum_capacity_exchange(International_Market.network.incidence_matrix(edge_ID, 0), International_Market.network.incidence_matrix(edge_ID, 1)) = International_Market.network.power_constraint(edge_ID, 0);
-			maximum_capacity_exchange(International_Market.network.incidence_matrix(edge_ID, 1), International_Market.network.incidence_matrix(edge_ID, 0)) = International_Market.network.power_constraint(edge_ID, 1);
+			maximum_capacity_exchange(International_Market.network.incidence[edge_ID](0), International_Market.network.incidence[edge_ID](1)) = International_Market.network.power_constraint(edge_ID, 0);
+			maximum_capacity_exchange(International_Market.network.incidence[edge_ID](1), International_Market.network.incidence[edge_ID](0)) = International_Market.network.power_constraint(edge_ID, 1);
 		}
 	}
 	Eigen::MatrixXi available_capacity_exchange;
@@ -337,11 +341,11 @@ void power_market::International_Market_Optimization(int tick, market_inform &In
 	{
 		#pragma omp for
 		for(int edge_ID = 0; edge_ID < International_Market.network.num_edges; ++ edge_ID){
-			if(actual_capacity_exchange(International_Market.network.incidence_matrix(edge_ID, 0), International_Market.network.incidence_matrix(edge_ID, 1)) > 0){
-				International_Market.network.confirmed_power(tick, edge_ID) = actual_capacity_exchange(International_Market.network.incidence_matrix(edge_ID, 0), International_Market.network.incidence_matrix(edge_ID, 1));
+			if(actual_capacity_exchange(International_Market.network.incidence[edge_ID](0), International_Market.network.incidence[edge_ID](1)) > 0){
+				International_Market.network.confirmed_power(tick, edge_ID) = actual_capacity_exchange(International_Market.network.incidence[edge_ID](0), International_Market.network.incidence[edge_ID](1));
 			}
 			else{
-				International_Market.network.confirmed_power(tick, edge_ID) = -actual_capacity_exchange(International_Market.network.incidence_matrix(edge_ID, 1), International_Market.network.incidence_matrix(edge_ID, 0));
+				International_Market.network.confirmed_power(tick, edge_ID) = -actual_capacity_exchange(International_Market.network.incidence[edge_ID](1), International_Market.network.incidence[edge_ID](0));
 			}
 		}
 	}
