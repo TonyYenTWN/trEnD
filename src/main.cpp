@@ -36,10 +36,10 @@ int main(){
 	// Initialization of the DSO
 	power_market::markets_inform DSO_Markets;
 	power_market::DSO_Markets_Set(DSO_Markets, Power_network_inform, Time);
-//	std::vector <alglib::minlpstate> DSO_Problems (DSO_Markets.size());
-//	for(int DSO_iter = 0; DSO_iter < DSO_Markets.size(); ++ DSO_iter){
-//		power_market::Flow_Based_Market_LP_Set(DSO_Markets[DSO_iter], DSO_Problems[DSO_iter]);
-//	}
+	std::vector <alglib::minlpstate> DSO_Problems (DSO_Markets.size());
+	for(int DSO_iter = 0; DSO_iter < DSO_Markets.size(); ++ DSO_iter){
+		power_market::Flow_Based_Market_LP_Set(DSO_Markets[DSO_iter], DSO_Problems[DSO_iter]);
+	}
 
 	// Re-initialization of submitted bids
 	std::string fin_point_demand = "csv/processed/spatial_field/nominal_mean_demand_field_10km_annual_mean.csv";
