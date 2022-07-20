@@ -75,13 +75,11 @@ void power_market::Submitted_bid_calculation(int tick, markets_inform &DSO_Marke
 	auto point_demand_inform = basic::read_file(fin_point_demand_dim[0], fin_point_demand_dim[1], fin_point_demand);
 
 	// Initialize submit bids of markets
+	Market_Initialization(International_Market);
 	Market_Initialization(TSO_Market);
 	for(int DSO_iter = 0; DSO_iter < DSO_Markets.size(); ++ DSO_iter){
 		Market_Initialization(DSO_Markets[DSO_iter]);
 	}
-
-	// Declare variables for the loops
-	Eigen::VectorXd bid_vec;
 
 	// Trivial case: demand at each point are 100% inflexible
 	for(int point_iter = 0; point_iter < Power_network_inform.points.bidding_zone.size(); ++ point_iter){
@@ -93,6 +91,7 @@ void power_market::Submitted_bid_calculation(int tick, markets_inform &DSO_Marke
 
 		DSO_Markets[DSO_ID].submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, Power_network_inform.points.in_cluster_ID(point_iter)) = bid_quan;
 		TSO_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, node_ID) += bid_quan; // delete this later
+		International_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, bz_ID) += bid_quan;
 	}
 
 	// Supply at each point (LV power plants) / node (HV power plants)
@@ -100,6 +99,7 @@ void power_market::Submitted_bid_calculation(int tick, markets_inform &DSO_Marke
 		int bz_ID;
 		int DSO_ID;
 		int node_ID;
+		Eigen::VectorXd bid_vec;
 
 		// High voltage power plants connect directly to transmission netwrok
 		if(Power_network_inform.plants.hydro.cap(hydro_iter) >= 20.){
@@ -129,6 +129,7 @@ void power_market::Submitted_bid_calculation(int tick, markets_inform &DSO_Marke
 			DSO_Markets[DSO_ID].submitted_supply.col(Power_network_inform.points.in_cluster_ID(point_ID)) += bid_vec;
 			TSO_Market.submitted_supply.col(node_ID) += bid_vec; // delete this later
 		}
+		International_Market.submitted_supply.col(bz_ID) += bid_vec;
 	}
 }
 
