@@ -80,8 +80,9 @@ void power_market::International_Market_Optimization(int tick, market_inform &In
 	Eigen::MatrixXd actual_capacity_exchange;
 
 	// Update of submitted supply and demand bids
-	// In the future, input of bidding zones of Norway should come from results of DSOs
+	// In the future, input of bidding zones of Norway should come from results of DSOs -> since mc comes first, not necessary
 	// Bidding zones of other nations: assume inflexible supply or demand
+	Market_Initialization(International_Market);
 	International_Market.submitted_supply = International_Market.merit_order_curve;
 	for(int zone_ID = 0; zone_ID < International_Market.cross_border_zone_start; ++ zone_ID){
 		if(International_Market.demand_default(tick, zone_ID) >= 0){
