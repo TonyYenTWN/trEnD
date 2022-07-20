@@ -44,25 +44,25 @@ int main(){
 	// Re-initialization of submitted bids
 	std::string fin_point_demand = "csv/processed/spatial_field/nominal_mean_demand_field_10km_annual_mean.csv";
 	power_market::Submitted_bid_calculation(0, DSO_Markets, TSO_Market, International_Market, Power_network_inform, fin_point_demand);
+
+	stop = std::chrono::high_resolution_clock::now();
+	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
+	std::cout << "Set time: " << duration.count() << " microseconds" << "\n\n";
+
+	// Ideal market clearing in IMO
+
+	// Bid-filtering in DSOs
+//	for(int DSO_iter = 0; DSO_iter < DSO_Markets.size(); ++ DSO_iter){
+//		std::cout << "--------------------------------------------------------------------------------------------------------------\n";
+//		start = std::chrono::high_resolution_clock::now();
 //
-//	stop = std::chrono::high_resolution_clock::now();
-//	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
-//	std::cout << "Set time: " << duration.count() << " microseconds" << "\n\n";
+//		power_market::Flow_Based_Market_Optimization(0, DSO_Markets[DSO_iter], DSO_Problems[DSO_iter]);
 //
-//	// Ideal market clearing in IMO
-//
-//	// Bid-filtering in DSOs
-////	for(int DSO_iter = 0; DSO_iter < DSO_Markets.size(); ++ DSO_iter){
-////		std::cout << "--------------------------------------------------------------------------------------------------------------\n";
-////		start = std::chrono::high_resolution_clock::now();
-////
-////		power_market::Flow_Based_Market_Optimization(0, DSO_Markets[DSO_iter], DSO_Problems[DSO_iter]);
-////
-////		stop = std::chrono::high_resolution_clock::now();
-////		duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
-////		std::cout << DSO_iter << "-th DSO optimization time: " << duration.count() << " microseconds" << "\n";
-////		std::cout << "--------------------------------------------------------------------------------------------------------------\n\n";
-////	}
+//		stop = std::chrono::high_resolution_clock::now();
+//		duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
+//		std::cout << DSO_iter << "-th DSO optimization time: " << duration.count() << " microseconds" << "\n";
+//		std::cout << "--------------------------------------------------------------------------------------------------------------\n\n";
+//	}
 
 	// Re-dispatch + tertiary control reserve in TSO
 	start = std::chrono::high_resolution_clock::now();
