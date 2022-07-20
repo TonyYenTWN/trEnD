@@ -271,7 +271,6 @@ namespace power_network{
 		points points;
 		nodes nodes;
 		edges edges;
-		edges_simp edges_simp;
 		plants_all plants;
 		std::vector <DSO_cluster> DSO_cluster;
 		technical_parameters tech_parameters;
