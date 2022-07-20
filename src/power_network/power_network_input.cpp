@@ -41,7 +41,7 @@ namespace {
 		Power_network_inform.nodes.lon = node_inform.col(node_inform.cols() - 2);
 		Power_network_inform.nodes.lat = node_inform.col(node_inform.cols() - 1);
 
-		// Organize original edge data
+		// Organize edge data
 		Power_network_inform.edges.from = Eigen::VectorXi(fin_edge_dim[0]);
 		Power_network_inform.edges.to = Eigen::VectorXi(fin_edge_dim[0]);
 		Power_network_inform.edges.voltage_base = Eigen::VectorXi(fin_edge_dim[0]);
@@ -51,15 +51,6 @@ namespace {
 			Power_network_inform.edges.voltage_base(edge_iter) = int(edge_inform(edge_iter, 4));
 		}
 		Power_network_inform.edges.distance = edge_inform.col(5);
-
-		// Organize simplified egde data
-		Power_network_inform.edges_simp.from = Eigen::VectorXi(fin_edge_simp_dim[0]);
-		Power_network_inform.edges_simp.to = Eigen::VectorXi(fin_edge_simp_dim[0]);
-		for(int edge_iter = 0; edge_iter < fin_edge_simp_dim[0]; ++ edge_iter){
-			Power_network_inform.edges_simp.from(edge_iter) = int(edge_simp_inform(edge_iter, 0)) - 1;
-			Power_network_inform.edges_simp.to(edge_iter) = int(edge_simp_inform(edge_iter, 1)) - 1;
-		}
-		Power_network_inform.edges_simp.conductance = edge_simp_inform.col(2);
 	}
 
 	void points_data_input(power_network::network_inform &Power_network_inform, Eigen::MatrixXd bz_inform, std::string fin_point, std::string fin_point_matrix){
