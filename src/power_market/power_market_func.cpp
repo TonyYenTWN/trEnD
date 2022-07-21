@@ -328,10 +328,16 @@ void power_market::Filtered_bid_calculation(markets_inform &DSO_Markets, market_
 		std::cout << "--------------------------------------------------------------------------------------------------------------\n";
 		std::cout << DSO_iter << "-th DSO \n\n";
 
+		// Find merit order curve for filtered demand
+		Eigen::MatrixXd submitted_supply = DSO_Markets[DSO_iter].submitted_supply;
+		DSO_Markets[DSO_iter].submitted_supply = Eigen::MatrixXd::Zero(DSO_Markets[DSO_iter].price_intervals + 2, DSO_Markets[DSO_iter].num_zone);
 		power_market::Source_Node_Set(DSO_Markets[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter]);
 		power_market::Flow_Based_Market_Optimization(DSO_Markets[DSO_iter], DSO_Problems[DSO_iter]);
 		power_market::DSO_Market_Results_Get(DSO_Markets[DSO_iter], DSO_Problems[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter], 0);
 
+		// Find merit order curve for filtered supply
+		DSO_Markets[DSO_iter].submitted_supply = submitted_supply;
+		DSO_Markets[DSO_iter].submitted_demand = Eigen::MatrixXd::Zero(DSO_Markets[DSO_iter].price_intervals + 2, DSO_Markets[DSO_iter].num_zone);
 		power_market::Sink_Node_Set(DSO_Markets[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter]);
 		power_market::Flow_Based_Market_Optimization(DSO_Markets[DSO_iter], DSO_Problems[DSO_iter]);
 		power_market::DSO_Market_Results_Get(DSO_Markets[DSO_iter], DSO_Problems[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter], 1);
