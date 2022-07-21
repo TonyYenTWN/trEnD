@@ -127,7 +127,7 @@ void power_market::Source_Node_Set(market_inform &DSO_Market, power_network::DSO
 
 void power_market::Sink_Node_Set(market_inform &DSO_Market, power_network::DSO_cluster &DSO_cluster){
 	for(int node_iter = 0; node_iter < DSO_cluster.nodes_ID.size(); ++ node_iter){
-		DSO_Market.submitted_supply.col(DSO_cluster.points_ID.size() + node_iter)	= Eigen::VectorXd::Zero(DSO_Market.price_intervals + 2);
+		DSO_Market.submitted_supply.col(DSO_cluster.points_ID.size() + node_iter) = Eigen::VectorXd::Zero(DSO_Market.price_intervals + 2);
 		DSO_Market.submitted_demand(DSO_Market.price_intervals + 1, DSO_cluster.points_ID.size() + node_iter) =  std::numeric_limits<double>::infinity();
 	}
 }
