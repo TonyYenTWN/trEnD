@@ -79,6 +79,8 @@ void power_market::Submitted_bid_calculation(markets_inform &DSO_Markets, market
 	Market_Initialization(TSO_Market);
 	for(int DSO_iter = 0; DSO_iter < DSO_Markets.size(); ++ DSO_iter){
 		Market_Initialization(DSO_Markets[DSO_iter]);
+		DSO_Markets[DSO_iter].filtered_supply = DSO_Markets[DSO_iter].submitted_supply;
+		DSO_Markets[DSO_iter].filtered_demand = DSO_Markets[DSO_iter].submitted_demand;
 	}
 
 	// Trivial case: demand at each point are 100% inflexible
@@ -291,7 +293,7 @@ void power_market::Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlp
 	//Market.Problem = Problem;
 }
 
-void power_market::Flow_Based_Market_Optimization(int tick, market_inform &Market, alglib::minlpstate &Problem){
+void power_market::Flow_Based_Market_Optimization(market_inform &Market, alglib::minlpstate &Problem){
 	// -------------------------------------------------------------------------------
 	// Update bounds for box constraints
 	// -------------------------------------------------------------------------------
@@ -320,32 +322,4 @@ void power_market::Flow_Based_Market_Optimization(int tick, market_inform &Marke
 	alglib::minlpoptimize(Problem);
 
 //	std::cout << "function end\n";
-}
-
-void power_market::Flow_Based_Market_Results_Get(int tick, market_inform &Market, alglib::minlpstate &Problem, bool confirmed){
-	alglib::real_1d_array sol;
-	alglib::minlpreport rep;
-	alglib::minlpresults(Problem, sol, rep);
-	Eigen::VectorXd sol_vec = Eigen::Map <Eigen::VectorXd> (sol.getcontent(), sol.length());
-
-	// Store the solution in confirmed bids
-	if(confirmed){
-		for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
-			// Store power source / sink
-			int row_start = 2 * Market.network.num_vertice + node_iter * (Market.price_intervals + 2);
-			Market.confirmed_supply(tick, node_iter) = (sol_vec.segment(row_start, Market.price_intervals + 2).array().max(0)).sum();
-			Market.confirmed_demand(tick, node_iter) = -(sol_vec.segment(row_start, Market.price_intervals + 2).array().min(0)).sum();
-			Market.confirmed_price(tick, node_iter) = Market.bidded_price(0) + rep.lagbc[row_start];
-			Market.confirmed_price(tick, node_iter) = std::min(Market.confirmed_price(tick, node_iter), Market.price_range_inflex(1));
-			Market.confirmed_price(tick, node_iter) = std::max(Market.confirmed_price(tick, node_iter), Market.price_range_inflex(0));
-
-			// Store voltage and power flow
-			Market.network.confirmed_voltage.row(tick) = sol_vec.head(Market.network.num_vertice);
-			Market.network.confirmed_power.row(tick) = sol_vec.tail(Market.network.num_edges);
-		}
-	}
-
-	std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).array().abs().sum() << "\n";
-	std::cout << sol_vec.head(Market.network.num_vertice).minCoeff() << " " << sol_vec.head(Market.network.num_vertice).maxCoeff()  << "\n";
-	std::cout << sol_vec.tail(Market.network.num_edges).minCoeff() << " " << sol_vec.tail(Market.network.num_edges).maxCoeff() << "\n\n";
 }
