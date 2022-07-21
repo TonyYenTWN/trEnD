@@ -130,6 +130,7 @@ namespace power_market{
 	void Submitted_bid_calculation(markets_inform&, market_inform&, market_inform&, power_network::network_inform&, std::string);
 	void Flow_Based_Market_LP_Set(market_inform&, alglib::minlpstate &);
 	void Flow_Based_Market_Optimization(market_inform&, alglib::minlpstate&);
+	void Filtered_bid_calculation(markets_inform&, market_inform&, power_network::network_inform&);
 }
 
 #endif
