@@ -337,11 +337,12 @@ void power_market::Filtered_bid_calculation(markets_inform &DSO_Markets, market_
 		power_market::DSO_Market_Results_Get(DSO_Markets[DSO_iter], DSO_Problems[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter], 1);
 
 		// Store the filtered results in the submitted bids of TSO
+//		std::cout << Power_network_inform.DSO_cluster[DSO_iter].points_ID.size() << "\n";
 		for(int point_iter = 0; point_iter < Power_network_inform.DSO_cluster[DSO_iter].points_ID.size(); ++ point_iter){
 			int point_ID = Power_network_inform.DSO_cluster[DSO_iter].points_ID[point_iter];
 			int node_ID = Power_network_inform.points.node(point_ID);
-			TSO_Market.submitted_supply.col(node_ID) += DSO_Markets[DSO_iter].filtered_supply.col(point_ID);
-			TSO_Market.submitted_demand.col(node_ID) += DSO_Markets[DSO_iter].filtered_demand.col(point_ID);
+			TSO_Market.submitted_supply.col(node_ID) += DSO_Markets[DSO_iter].filtered_supply.col(point_iter);
+			TSO_Market.submitted_demand.col(node_ID) += DSO_Markets[DSO_iter].filtered_demand.col(point_iter);
 		}
 	}
 }
