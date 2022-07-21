@@ -57,17 +57,6 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 	}
 	TSO_Market.network.num_edges = TSO_Market.network.incidence.size();
 
-//	TSO_Market.network.node_admittance_matrix = Eigen::SparseView(admittance, tol);
-//	TSO_Market.network.line_capacity_matrix = Eigen::SparseView(capacity, tol);
-//	TSO_Market.network.num_edges = TSO_Market.network.line_capacity_matrix.nonZeros() / 2;
-
-	// Set compact incidence matrix and edge admittance matrix
-//	TSO_Market.network.num_edges = Power_network_inform.edges_simp.from.size();
-//	TSO_Market.network.incidence_matrix = Eigen::MatrixXi(TSO_Market.network.num_edges, 2);
-//	TSO_Market.network.incidence_matrix.col(0) = Power_network_inform.edges_simp.from;
-//	TSO_Market.network.incidence_matrix.col(1) = Power_network_inform.edges_simp.to;
-//	TSO_Market.network.admittance_vector = Power_network_inform.edges_simp.conductance;
-
 	// Set voltage and power constraints at each edge
 	TSO_Market.network.voltage_constraint = Eigen::MatrixXd::Ones(TSO_Market.network.num_vertice, 2);
 	TSO_Market.network.voltage_constraint.col(0) *= -Power_network_inform.tech_parameters.theta_limit;
