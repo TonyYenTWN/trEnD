@@ -132,6 +132,32 @@ void power_market::Sink_Node_Set(market_inform &DSO_Market, power_network::DSO_c
 	}
 }
 
+void power_market::DSO_Market_Results_Get(market_inform &Market, alglib::minlpstate &Problem, power_network::DSO_cluster &DSO_cluster, bool supply){
+	alglib::real_1d_array sol;
+	alglib::minlpreport rep;
+	alglib::minlpresults(Problem, sol, rep);
+	Eigen::VectorXd sol_vec = Eigen::Map <Eigen::VectorXd> (sol.getcontent(), sol.length());
+
+	if(supply){
+		// Store filtered supply bids at spatial points
+		for(int node_iter = 0; node_iter < DSO_cluster.points_ID.size(); ++ node_iter){
+			int row_start = 2 * Market.network.num_vertice + node_iter * (Market.price_intervals + 2);
+			Market.filtered_supply.col(node_iter) = sol_vec.segment(row_start, Market.price_intervals + 2).array().max(0);
+		}
+	}
+	else{
+		// Store filtered demand bids at spatial points
+		for(int node_iter = 0; node_iter < DSO_cluster.points_ID.size(); ++ node_iter){
+			int row_start = 2 * Market.network.num_vertice + node_iter * (Market.price_intervals + 2);
+			Market.filtered_demand.col(node_iter) = -(sol_vec.segment(row_start, Market.price_intervals + 2).array().min(0));
+		}
+	}
+
+	std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).array().abs().sum() << "\n";
+	std::cout << sol_vec.head(Market.network.num_vertice).minCoeff() << " " << sol_vec.head(Market.network.num_vertice).maxCoeff()  << "\n";
+	std::cout << sol_vec.tail(Market.network.num_edges).minCoeff() << " " << sol_vec.tail(Market.network.num_edges).maxCoeff() << "\n\n";
+}
+
 //int main(){
 //	network_inform Power_network_inform;
 //	power_network_input_process(Power_network_inform);
