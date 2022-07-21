@@ -116,6 +116,8 @@ Public Attributes</h2></td></tr>
 <tr><td colspan="2"><div class="groupHeader">voltage boundaries of the power network</div></td></tr>
 <tr class="memitem:a92d326aea9664ea45dbaf788af07cfb0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/dd8/structpower__network_1_1technical__parameters.html#a92d326aea9664ea45dbaf788af07cfb0">voltage_cutoff_trans</a> = 132</td></tr>
 <tr class="separator:a92d326aea9664ea45dbaf788af07cfb0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a78080db9bf4b6714f10e36dc9449c304"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/dd8/structpower__network_1_1technical__parameters.html#a78080db9bf4b6714f10e36dc9449c304">voltage_cutoff_connection</a> = 40</td></tr>
+<tr class="separator:a78080db9bf4b6714f10e36dc9449c304"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a607d202ae86f1e145512bbba97eb55d7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/dd8/structpower__network_1_1technical__parameters.html#a607d202ae86f1e145512bbba97eb55d7">voltage_cutoff_distr</a> = 20</td></tr>
 <tr class="separator:a607d202ae86f1e145512bbba97eb55d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">statistical parameters of power network</div></td></tr>
@@ -146,7 +148,7 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a71a8da8cca8cd9e2efeb944a22f4127f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab22541d7420be9da0b14c7b84cd5c52e"><td class="memItemLeft" align="right" valign="top">std::map&lt; int, double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/dd8/structpower__network_1_1technical__parameters.html#ab22541d7420be9da0b14c7b84cd5c52e">impedenace_base_levels</a></td></tr>
 <tr class="separator:ab22541d7420be9da0b14c7b84cd5c52e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab01b42cec67a914ee5b819c205724241"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/dd8/structpower__network_1_1technical__parameters.html#ab01b42cec67a914ee5b819c205724241">set_level_maps</a> (<a class="el" href="../../d8/dcc/namespacepower__network.html#d8/d02/structpower__network_1_1nodes">nodes</a> &amp;<a class="el" href="../../d8/dcc/namespacepower__network.html#d8/d02/structpower__network_1_1nodes">nodes</a>)</td></tr>
+<tr class="memitem:ab01b42cec67a914ee5b819c205724241"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/dd8/structpower__network_1_1technical__parameters.html#ab01b42cec67a914ee5b819c205724241">set_level_maps</a> (<a class="el" href="../../d8/d02/structpower__network_1_1nodes.html">nodes</a> &amp;<a class="el" href="../../d8/d02/structpower__network_1_1nodes.html">nodes</a>)</td></tr>
 <tr class="separator:ab01b42cec67a914ee5b819c205724241"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -158,7 +160,7 @@ Public Attributes</h2></td></tr>
 <li>series and shunt impedance of the power lines </li>
 </ul>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00206">206</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00185">185</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="ab01b42cec67a914ee5b819c205724241" name="ab01b42cec67a914ee5b819c205724241"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab01b42cec67a914ee5b819c205724241">&#9670;&nbsp;</a></span>set_level_maps()</h2>
@@ -172,7 +174,7 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="memname">void power_network::technical_parameters::set_level_maps </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="../../d8/dcc/namespacepower__network.html#d8/d02/structpower__network_1_1nodes">nodes</a> &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="../../d8/d02/structpower__network_1_1nodes.html">nodes</a> &amp;&#160;</td>
           <td class="paramname"><em>nodes</em></td><td>)</td>
           <td></td>
         </tr>
@@ -184,11 +186,11 @@ Public Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00260">260</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00241">241</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
 <p class="reference">References <a class="el" href="../../dc/dc3/end-user_8cpp_source.html#l00074">sort()</a>, and <a class="el" href="../../d9/dde/power__network_8h_source.html#l00084">power_network::nodes::voltage_base</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../dc/d47/power__network__input_8cpp_source.html#l00166">power_network::power_network_input_process()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../dc/d47/power__network__input_8cpp_source.html#l00157">power_network::power_network_input_process()</a>.</p>
 
 </div>
 </div>
@@ -206,7 +208,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Fractional dimension of the distribution network. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00226">226</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00207">207</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d5/d56/DSO_8cpp_source.html#l00009">power_market::DSO_Markets_Set()</a>.</p>
 
@@ -225,7 +227,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Hash table (mapping) of per phase base impedance levels in Ohm. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00256">256</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00237">237</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d9/dfa/TSO_8cpp_source.html#l00019">power_market::TSO_Market_Set()</a>.</p>
 
@@ -244,9 +246,9 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Density of power lines per point in the distribution network. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00224">224</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00205">205</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d5/d56/DSO_8cpp_source.html#l00009">power_market::DSO_Markets_Set()</a>, and <a class="el" href="../../d9/dde/power__network_8h_source.html#l00299">power_network::network_inform::set_line_density()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d5/d56/DSO_8cpp_source.html#l00009">power_market::DSO_Markets_Set()</a>, and <a class="el" href="../../d9/dde/power__network_8h_source.html#l00279">power_network::network_inform::set_line_density()</a>.</p>
 
 </div>
 </div>
@@ -263,9 +265,9 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Total number of power lines in the distribution network. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00222">222</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00203">203</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d9/dde/power__network_8h_source.html#l00299">power_network::network_inform::set_line_density()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d9/dde/power__network_8h_source.html#l00279">power_network::network_inform::set_line_density()</a>.</p>
 
 </div>
 </div>
@@ -282,7 +284,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Hash table (mapping) of per phase power flow limits on an edge at different voltage base levels, in MW. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00244">244</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00225">225</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d9/dfa/TSO_8cpp_source.html#l00019">power_market::TSO_Market_Set()</a>.</p>
 
@@ -301,9 +303,9 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Reference value of power on the line (in MW, per phase) for non-dimensionalization into p.u.. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00252">252</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00233">233</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d9/dfa/TSO_8cpp_source.html#l00019">power_market::TSO_Market_Set()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d5/d56/DSO_8cpp_source.html#l00009">power_market::DSO_Markets_Set()</a>, and <a class="el" href="../../d9/dfa/TSO_8cpp_source.html#l00019">power_market::TSO_Market_Set()</a>.</p>
 
 </div>
 </div>
@@ -320,9 +322,9 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Phase angle limits on a node. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00242">242</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00223">223</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d9/dfa/TSO_8cpp_source.html#l00019">power_market::TSO_Market_Set()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d5/d56/DSO_8cpp_source.html#l00009">power_market::DSO_Markets_Set()</a>, and <a class="el" href="../../d9/dfa/TSO_8cpp_source.html#l00019">power_market::TSO_Market_Set()</a>.</p>
 
 </div>
 </div>
@@ -339,7 +341,26 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Hash table (mapping) of line to line base voltage levels in kV. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00254">254</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00235">235</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+
+</div>
+</div>
+<a id="a78080db9bf4b6714f10e36dc9449c304" name="a78080db9bf4b6714f10e36dc9449c304"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a78080db9bf4b6714f10e36dc9449c304">&#9670;&nbsp;</a></span>voltage_cutoff_connection</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int power_network::technical_parameters::voltage_cutoff_connection = 40</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Voltage level of connection between the transmission and the distribution network. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00193">193</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../d5/d56/DSO_8cpp_source.html#l00009">power_market::DSO_Markets_Set()</a>.</p>
 
 </div>
 </div>
@@ -356,7 +377,9 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Cutoff voltage level of the distribution network. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00214">214</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00195">195</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../d5/d56/DSO_8cpp_source.html#l00009">power_market::DSO_Markets_Set()</a>.</p>
 
 </div>
 </div>
@@ -373,7 +396,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Cutoff voltage level of the transmission network. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00212">212</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00191">191</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
 </div>
 </div>
@@ -390,7 +413,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Series impedance (ohm per meter) of distribution line. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00238">238</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00219">219</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d5/d56/DSO_8cpp_source.html#l00009">power_market::DSO_Markets_Set()</a>, and <a class="el" href="../../d9/dfa/TSO_8cpp_source.html#l00019">power_market::TSO_Market_Set()</a>.</p>
 
@@ -409,7 +432,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Shunt impedance (ohm per meter) of distribution line. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00240">240</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00221">221</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
 </div>
 </div>
@@ -426,7 +449,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Series impedance (ohm per meter) of transmission line. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00234">234</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00215">215</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
 </div>
 </div>
@@ -443,7 +466,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Shunt impedance (ohm per meter) of transmission line. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00236">236</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00217">217</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
 </div>
 </div>

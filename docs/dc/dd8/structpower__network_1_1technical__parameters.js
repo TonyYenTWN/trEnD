@@ -9,6 +9,7 @@ var structpower__network_1_1technical__parameters =
     [ "s_base", "dc/dd8/structpower__network_1_1technical__parameters.html#a2e13b253c12906962e9ef94053933119", null ],
     [ "theta_limit", "dc/dd8/structpower__network_1_1technical__parameters.html#a183af4264522a9d0668a0282e9344ba3", null ],
     [ "voltage_base_levels", "dc/dd8/structpower__network_1_1technical__parameters.html#a71a8da8cca8cd9e2efeb944a22f4127f", null ],
+    [ "voltage_cutoff_connection", "dc/dd8/structpower__network_1_1technical__parameters.html#a78080db9bf4b6714f10e36dc9449c304", null ],
     [ "voltage_cutoff_distr", "dc/dd8/structpower__network_1_1technical__parameters.html#a607d202ae86f1e145512bbba97eb55d7", null ],
     [ "voltage_cutoff_trans", "dc/dd8/structpower__network_1_1technical__parameters.html#a92d326aea9664ea45dbaf788af07cfb0", null ],
     [ "z_distr_series", "dc/dd8/structpower__network_1_1technical__parameters.html#ac0a9a577e06ff244415eca9a4d980fe6", null ],
