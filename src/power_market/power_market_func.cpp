@@ -92,7 +92,7 @@ void power_market::Submitted_bid_calculation(markets_inform &DSO_Markets, market
 		// nominal demand currently wrong in processed files, should change them and then multiply area of a point later
 
 		DSO_Markets[DSO_ID].submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, Power_network_inform.points.in_cluster_ID(point_iter)) = bid_quan;
-		TSO_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, node_ID) += bid_quan; // delete this later
+		//TSO_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, node_ID) += bid_quan; // delete this later
 		International_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, bz_ID) += bid_quan;
 	}
 
@@ -323,8 +323,20 @@ void power_market::Flow_Based_Market_Optimization(market_inform &Market, alglib:
 //	std::cout << "function end\n";
 }
 
-void power_market::Filtered_bid_calculation(markets_inform &DSO_Markets, market_inform &TSO_Market, power_network::network_inform &Power_network_inform){
+void power_market::Filtered_bid_calculation(markets_inform &DSO_Markets, market_inform &TSO_Market, power_network::network_inform &Power_network_inform, std::vector <alglib::minlpstate> &DSO_Problems){
 	for(int DSO_iter = 0; DSO_iter < DSO_Markets.size(); ++ DSO_iter){
+		std::cout << "--------------------------------------------------------------------------------------------------------------\n";
+		std::cout << DSO_iter << "-th DSO \n\n";
+
+		power_market::Source_Node_Set(DSO_Markets[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter]);
+		power_market::Flow_Based_Market_Optimization(DSO_Markets[DSO_iter], DSO_Problems[DSO_iter]);
+		power_market::DSO_Market_Results_Get(DSO_Markets[DSO_iter], DSO_Problems[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter], 0);
+
+		power_market::Sink_Node_Set(DSO_Markets[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter]);
+		power_market::Flow_Based_Market_Optimization(DSO_Markets[DSO_iter], DSO_Problems[DSO_iter]);
+		power_market::DSO_Market_Results_Get(DSO_Markets[DSO_iter], DSO_Problems[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter], 1);
+
+		// Store the filtered results in the submitted bids of TSO
 		for(int point_iter = 0; point_iter < Power_network_inform.DSO_cluster[DSO_iter].points_ID.size(); ++ point_iter){
 			int point_ID = Power_network_inform.DSO_cluster[DSO_iter].points_ID[point_iter];
 			int node_ID = Power_network_inform.points.node(point_ID);
