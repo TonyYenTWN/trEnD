@@ -43,25 +43,32 @@ int main(){
 
 	// Re-initialization of submitted bids in DSOs and TSOs
 	std::string fin_point_demand = "csv/processed/spatial_field/nominal_mean_demand_field_10km_annual_mean.csv";
-	power_market::Submitted_bid_calculation(0, DSO_Markets, TSO_Market, International_Market, Power_network_inform, fin_point_demand);
+	power_market::Submitted_bid_calculation(DSO_Markets, TSO_Market, International_Market, Power_network_inform, fin_point_demand);
 
 	// Ideal market clearing in IMO
-	power_market::International_Market_Optimization(0, International_Market);
+	power_market::International_Market_Optimization(0, International_Market, 0);
 
 	stop = std::chrono::high_resolution_clock::now();
 	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
 	std::cout << "Set time: " << duration.count() << " microseconds" << "\n\n";
 
 	// Bid-filtering in DSOs
-//	#pragma omp parallel
+	#pragma omp parallel
 	{
-//		#pragma omp for
-		for(int DSO_iter = 0; DSO_iter < DSO_Markets.size(); ++ DSO_iter){
+		#pragma omp for schedule(dynamic)
+		for(int DSO_iter = 0; DSO_iter < 5; ++ DSO_iter){
+		//for(int DSO_iter = 0; DSO_iter < DSO_Markets.size(); ++ DSO_iter){
 //			std::cout << "--------------------------------------------------------------------------------------------------------------\n";
 //			start = std::chrono::high_resolution_clock::now();
 
-			std::cout << DSO_iter << "-th DSO: \n";
-			power_market::Flow_Based_Market_Optimization(0, DSO_Markets[DSO_iter], DSO_Problems[DSO_iter]);
+//			std::cout << DSO_iter << "-th DSO \t";
+//			try{
+//				power_market::Flow_Based_Market_Optimization(0, DSO_Markets[DSO_iter], DSO_Problems[DSO_iter]);
+//			}
+//			catch(alglib::ap_error e){
+//				std::cout << e.msg;
+//			}
+//			std::cout << "\n";
 
 //			stop = std::chrono::high_resolution_clock::now();
 //			duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
@@ -73,10 +80,13 @@ int main(){
 	// Re-dispatch + tertiary control reserve in TSO
 	start = std::chrono::high_resolution_clock::now();
 
+	std::cout << "TSO: \n";
 	power_market::Flow_Based_Market_Optimization(0, TSO_Market, TSO_Problem);
 
 	stop = std::chrono::high_resolution_clock::now();
 	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
 	std::cout << "TSO optimization time: " << duration.count() << " microseconds" << "\n\n";
+
+	power_market::Flow_Based_Market_Results_Get(0, TSO_Market, TSO_Problem);
 //	//std::cin.get();
 }
