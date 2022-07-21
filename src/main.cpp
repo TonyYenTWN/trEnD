@@ -53,27 +53,26 @@ int main(){
 	std::cout << "Set time: " << duration.count() << " microseconds" << "\n\n";
 
 	// Bid-filtering in DSOs
-	#pragma omp parallel
+	//#pragma omp parallel
 	{
-		#pragma omp for schedule(dynamic)
-		for(int DSO_iter = 0; DSO_iter < 5; ++ DSO_iter){
-		//for(int DSO_iter = 0; DSO_iter < DSO_Markets.size(); ++ DSO_iter){
-//			std::cout << "--------------------------------------------------------------------------------------------------------------\n";
-//			start = std::chrono::high_resolution_clock::now();
+		//#pragma omp for schedule(dynamic)
+		//for(int DSO_iter = 0; DSO_iter < 5; ++ DSO_iter){
+		for(int DSO_iter = 0; DSO_iter < DSO_Markets.size(); ++ DSO_iter){
+			start = std::chrono::high_resolution_clock::now();
+			std::cout << DSO_iter << "-th DSO \n";
 
-//			std::cout << DSO_iter << "-th DSO \t";
-//			try{
-//				power_market::Flow_Based_Market_Optimization(0, DSO_Markets[DSO_iter], DSO_Problems[DSO_iter]);
-//			}
-//			catch(alglib::ap_error e){
-//				std::cout << e.msg;
-//			}
-//			std::cout << "\n";
+			power_market::Source_Node_Set(DSO_Markets[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter]);
+			power_market::Flow_Based_Market_Optimization(DSO_Markets[DSO_iter], DSO_Problems[DSO_iter]);
+			power_market::DSO_Market_Results_Get(DSO_Markets[DSO_iter], DSO_Problems[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter], 0);
 
-//			stop = std::chrono::high_resolution_clock::now();
-//			duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
-//			std::cout << DSO_iter << "-th DSO: \n";// << duration.count() << " microseconds" << "\n";
-//			std::cout << "--------------------------------------------------------------------------------------------------------------\n\n";
+			power_market::Sink_Node_Set(DSO_Markets[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter]);
+			power_market::Flow_Based_Market_Optimization(DSO_Markets[DSO_iter], DSO_Problems[DSO_iter]);
+			power_market::DSO_Market_Results_Get(DSO_Markets[DSO_iter], DSO_Problems[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter], 1);
+
+			stop = std::chrono::high_resolution_clock::now();
+			duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
+			std::cout << duration.count() << " microseconds" << "\n";
+			std::cout << "--------------------------------------------------------------------------------------------------------------\n\n";
 		}
 	}
 
@@ -81,12 +80,12 @@ int main(){
 	start = std::chrono::high_resolution_clock::now();
 
 	std::cout << "TSO: \n";
-	power_market::Flow_Based_Market_Optimization(0, TSO_Market, TSO_Problem);
+	power_market::Flow_Based_Market_Optimization(TSO_Market, TSO_Problem);
 
 	stop = std::chrono::high_resolution_clock::now();
 	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
 	std::cout << "TSO optimization time: " << duration.count() << " microseconds" << "\n\n";
 
-	power_market::Flow_Based_Market_Results_Get(0, TSO_Market, TSO_Problem);
+	power_market::TSO_Market_Results_Get(0, TSO_Market, TSO_Problem);
 //	//std::cin.get();
 }
