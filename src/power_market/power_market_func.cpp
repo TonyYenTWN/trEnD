@@ -129,7 +129,7 @@ void power_market::Submitted_bid_calculation(markets_inform &DSO_Markets, market
 				* Power_network_inform.plants.hydro.cap(hydro_iter) / (International_Market.merit_order_curve.col(Power_network_inform.points.bidding_zone(point_ID)).sum());
 
 			DSO_Markets[DSO_ID].submitted_supply.col(Power_network_inform.points.in_cluster_ID(point_ID)) += bid_vec;
-			TSO_Market.submitted_supply.col(node_ID) += bid_vec; // delete this later
+			//TSO_Market.submitted_supply.col(node_ID) += bid_vec; // delete this later
 		}
 		International_Market.submitted_supply.col(bz_ID) += bid_vec;
 	}
@@ -290,7 +290,6 @@ void power_market::Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlp
 	alglib::minlpsetscale(Problem, scale);
 	//alglib::minlpsetalgoipm(Problem);
 	alglib::minlpsetalgodss(Problem, 0.);
-	//Market.Problem = Problem;
 }
 
 void power_market::Flow_Based_Market_Optimization(market_inform &Market, alglib::minlpstate &Problem){
@@ -322,4 +321,15 @@ void power_market::Flow_Based_Market_Optimization(market_inform &Market, alglib:
 	alglib::minlpoptimize(Problem);
 
 //	std::cout << "function end\n";
+}
+
+void power_market::Filtered_bid_calculation(markets_inform &DSO_Markets, market_inform &TSO_Market, power_network::network_inform &Power_network_inform){
+	for(int DSO_iter = 0; DSO_iter < DSO_Markets.size(); ++ DSO_iter){
+		for(int point_iter = 0; point_iter < Power_network_inform.DSO_cluster[DSO_iter].points_ID.size(); ++ point_iter){
+			int point_ID = Power_network_inform.DSO_cluster[DSO_iter].points_ID[point_iter];
+			int node_ID = Power_network_inform.points.node(point_ID);
+			TSO_Market.submitted_supply.col(node_ID) += DSO_Markets[DSO_iter].filtered_supply.col(point_ID);
+			TSO_Market.submitted_demand.col(node_ID) += DSO_Markets[DSO_iter].filtered_demand.col(point_ID);
+		}
+	}
 }
