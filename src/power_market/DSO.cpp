@@ -140,16 +140,16 @@ void power_market::DSO_Market_Results_Get(market_inform &Market, alglib::minlpst
 
 	if(supply){
 		// Store filtered supply bids at spatial points
-		for(int node_iter = 0; node_iter < DSO_cluster.points_ID.size(); ++ node_iter){
-			int row_start = 2 * Market.network.num_vertice + node_iter * (Market.price_intervals + 2);
-			Market.filtered_supply.col(node_iter) = sol_vec.segment(row_start, Market.price_intervals + 2).array().max(0);
+		for(int point_iter = 0; point_iter < DSO_cluster.points_ID.size(); ++ point_iter){
+			int row_start = 2 * Market.network.num_vertice + point_iter * (Market.price_intervals + 2);
+			Market.filtered_supply.col(point_iter) = sol_vec.segment(row_start, Market.price_intervals + 2).array().max(0);
 		}
 	}
 	else{
 		// Store filtered demand bids at spatial points
-		for(int node_iter = 0; node_iter < DSO_cluster.points_ID.size(); ++ node_iter){
-			int row_start = 2 * Market.network.num_vertice + node_iter * (Market.price_intervals + 2);
-			Market.filtered_demand.col(node_iter) = -(sol_vec.segment(row_start, Market.price_intervals + 2).array().min(0));
+		for(int point_iter = 0; point_iter < DSO_cluster.points_ID.size(); ++ point_iter){
+			int row_start = 2 * Market.network.num_vertice + point_iter * (Market.price_intervals + 2);
+			Market.filtered_demand.col(point_iter) = -(sol_vec.segment(row_start, Market.price_intervals + 2).array().min(0));
 		}
 	}
 
