@@ -11,20 +11,14 @@
 namespace power_network{
     /** @brief Information of spatial points in the model.*/
 	struct points{
+		/**
+		* @name scale information
+		*/
 		/*@{*/
 		/** Area size of a point in square kilometers.*/
 		double point_area = 100.;
 		/** Rough spacing distance between 2 adjacent points in meters.*/
 		double grid_length = 10000.;
-		/*@{*/
-
-		/*@{*/
-		/** A matrix mapping point indexs onto x-y coordinates. Row indexs represent the x coordinates and column indexs represent the y coordinates.*/
-		Eigen::MatrixXi coordinate_grid;
-		/** Distance between the points.*/
-		Eigen::MatrixXd distance;
-		/** Covariance of the reference random fields between the points.*/
-		Eigen::SparseMatrix <double> covariance;
 		/*@{*/
 
 		/**
@@ -51,6 +45,12 @@ namespace power_network{
 		* @name geometric information
 		*/
 		/*@{*/
+		/** A matrix mapping point indexs onto x-y coordinates. Row indexs represent the x coordinates and column indexs represent the y coordinates.*/
+		Eigen::MatrixXi coordinate_grid;
+		/** Distance between the points.*/
+		Eigen::MatrixXd distance;
+		/** Covariance of the reference random fields between the points.*/
+		Eigen::SparseMatrix <double> covariance;
 		/** X-coordinate of the spatial point in European grid (ETRS89).*/
 		Eigen::VectorXd x;
 		/** Y-coordinate of the spatial point in European grid (ETRS89).*/
