@@ -12,7 +12,7 @@ Welcome to trEnD, a c++ based model of the energy transition, focusing on the en
 
 The library [ALGLIB](https://www.alglib.net/) is also used in the model, but it is already in the source codes so you need not to download it in addition.
 
-### Compiler and Settings
+### Compiler Choice and Settings
 I used compiler [TDM-GCC 9.2.0](https://jmeubank.github.io/tdm-gcc/articles/2020-03/9.2.0-release) to compile the codes on windows, but other compilers should also work. 
 
 I used [Code::Blocks](https://www.codeblocks.org/docs/main_codeblocks_en.html) for project management, and [a codeblock project file](https://github.com/TonyYenTWN/trEnD/blob/main/trEnD.cbp) is provided in the repository. Again it should be possible to use other IDEs for project management and code editing.
