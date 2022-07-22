@@ -153,9 +153,9 @@ void power_market::DSO_Market_Results_Get(market_inform &Market, alglib::minlpst
 		}
 	}
 
-	std::cout << sol_vec.segment(Market.network.num_vertice, DSO_cluster.points_ID.size()).minCoeff() << " " << sol_vec.segment(Market.network.num_vertice, DSO_cluster.points_ID.size()).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).array().abs().sum() << "\n";
-	std::cout << sol_vec.head(Market.network.num_vertice).minCoeff() << " " << sol_vec.head(Market.network.num_vertice).maxCoeff()  << "\n";
-	std::cout << sol_vec.tail(Market.network.num_edges).minCoeff() << " " << sol_vec.tail(Market.network.num_edges).maxCoeff() << "\n\n";
+//	std::cout << sol_vec.segment(Market.network.num_vertice, DSO_cluster.points_ID.size()).minCoeff() << " " << sol_vec.segment(Market.network.num_vertice, DSO_cluster.points_ID.size()).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).array().abs().sum() << "\n";
+//	std::cout << sol_vec.head(Market.network.num_vertice).minCoeff() << " " << sol_vec.head(Market.network.num_vertice).maxCoeff()  << "\n";
+//	std::cout << sol_vec.tail(Market.network.num_edges).minCoeff() << " " << sol_vec.tail(Market.network.num_edges).maxCoeff() << "\n\n";
 }
 
 //int main(){
