@@ -1,6 +1,26 @@
 // Read and write csv files
 #include "rw_csv.h"
 
+std::vector <std::string> basic::get_col_name(std::string filename, int col_num){
+	std::vector <std::string> col_names;
+	col_names.reserve(col_num);
+
+	// Read header row
+	std::ifstream in(filename);
+	std::string line;
+	std::getline(in, line);
+
+	// Seperate and read each column in the header row
+	std::stringstream sep(line);
+	std::string field;
+
+	while(std::getline(sep, field, ',')){
+		col_names.push_back(field);
+	}
+
+	return col_names;
+}
+
 std::vector <int> basic::get_file_dim(std::string filename){
 	std::ifstream in(filename);
 	std::vector <int> dim;
@@ -11,7 +31,7 @@ std::vector <int> basic::get_file_dim(std::string filename){
 		int row_ID = 0;
 		int col_ID = 0;
 
-		while(getline(in, line)){
+		while(std::getline(in, line)){
 			row_ID += 1;
 
 			if(row_ID == 1){
@@ -19,7 +39,7 @@ std::vector <int> basic::get_file_dim(std::string filename){
 		  	  	std::string field;
 		  	  	col_ID = 0;
 
-		  	  	while(getline(sep, field, ',')){
+		  	  	while(std::getline(sep, field, ',')){
 		  	  		col_ID += 1;
 			  	}
 
@@ -34,14 +54,13 @@ std::vector <int> basic::get_file_dim(std::string filename){
 	return dim;
 }
 
-// Should modify so that dimension of the csv file need not be exogeneously provided later on
 Eigen::MatrixXd basic::read_file(int num_row, int num_col, std::string filename){
 	std::ifstream in(filename);
 	Eigen::MatrixXd data(num_row, num_col);
 
 	if(in){
 	  	std::string line;
-	  	getline(in, line); // skip the first line
+	  	std::getline(in, line); // skip the first line
 	  	int row_ID = 0;
 	  	int col_ID;
 
@@ -50,8 +69,8 @@ Eigen::MatrixXd basic::read_file(int num_row, int num_col, std::string filename)
 	  	  	std::string field;
 	  	  	col_ID = 0;
 
-	  	  	while(getline(sep, field, ',')){
-	  	  		data(row_ID, col_ID) = stod(field);
+	  	  	while(std::getline(sep, field, ',')){
+	  	  		data(row_ID, col_ID) = std::stod(field);
 	  	  		col_ID += 1;
 		  	}
 
