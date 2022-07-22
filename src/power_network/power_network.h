@@ -129,6 +129,16 @@ namespace power_network{
 		/*@{*/
 	};
 
+	/** @brief Information of cross-border transmission with neighboring nations on the boundary.*/
+	struct cbt{
+		/** Names of the bidding zones included in the internationally-coupled market model.*/
+		std::vector <std::string> bz_names;
+		/** Constraint of flow exchange between bidding zones internationally-coupled market model, using NTC (net transmission capacity).
+		* Rows: bidding zones exporting power; cols: bidding zones importing power.
+		* Note the matrix can be asymmetric to capture the conditions of the bidding zones.*/
+		Eigen::MatrixXd flow_constraint;
+	};
+
 	/** @brief Power plants of a type of technology.*/
 	struct plants_per_tech{
 		Eigen::VectorXi node;
@@ -271,6 +281,7 @@ namespace power_network{
 		points points;
 		nodes nodes;
 		edges edges;
+		cbt cbt;
 		plants_all plants;
 		std::vector <DSO_cluster> DSO_cluster;
 		technical_parameters tech_parameters;
