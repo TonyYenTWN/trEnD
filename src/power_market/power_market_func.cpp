@@ -324,10 +324,8 @@ void power_market::Flow_Based_Market_Optimization(market_inform &Market, alglib:
 }
 
 void power_market::Filtered_bid_calculation(markets_inform &DSO_Markets, market_inform &TSO_Market, power_network::network_inform &Power_network_inform, std::vector <alglib::minlpstate> &DSO_Problems){
+	// Correct formula
 	for(int DSO_iter = 0; DSO_iter < DSO_Markets.size(); ++ DSO_iter){
-		std::cout << "--------------------------------------------------------------------------------------------------------------\n";
-		std::cout << DSO_iter << "-th DSO \n\n";
-
 		// Find merit order curve for filtered demand
 		Eigen::MatrixXd submitted_supply = DSO_Markets[DSO_iter].submitted_supply;
 		DSO_Markets[DSO_iter].submitted_supply = Eigen::MatrixXd::Zero(DSO_Markets[DSO_iter].price_intervals + 2, DSO_Markets[DSO_iter].num_zone);
@@ -343,12 +341,23 @@ void power_market::Filtered_bid_calculation(markets_inform &DSO_Markets, market_
 		power_market::DSO_Market_Results_Get(DSO_Markets[DSO_iter], DSO_Problems[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter], 1);
 
 		// Store the filtered results in the submitted bids of TSO
-//		std::cout << Power_network_inform.DSO_cluster[DSO_iter].points_ID.size() << "\n";
 		for(int point_iter = 0; point_iter < Power_network_inform.DSO_cluster[DSO_iter].points_ID.size(); ++ point_iter){
 			int point_ID = Power_network_inform.DSO_cluster[DSO_iter].points_ID[point_iter];
 			int node_ID = Power_network_inform.points.node(point_ID);
 			TSO_Market.submitted_supply.col(node_ID) += DSO_Markets[DSO_iter].filtered_supply.col(point_iter);
 			TSO_Market.submitted_demand.col(node_ID) += DSO_Markets[DSO_iter].filtered_demand.col(point_iter);
 		}
+		std::cout << "function 1 end\n";
 	}
+
+//	# pragma omp parallel
+//	{
+//		# pragma omp for
+//		for(int DSO_iter = 0; DSO_iter < 10; ++ DSO_iter){
+//			auto Market = DSO_Markets[0];
+//			auto Problem = DSO_Problems[0];
+//			power_market::Flow_Based_Market_Optimization(Market, Problem);
+//			std::cout << DSO_iter << "\n";
+//		}
+//	}
 }
