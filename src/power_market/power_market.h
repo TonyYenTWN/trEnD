@@ -23,27 +23,30 @@ namespace power_market{
 		int num_edges;
 		/**Node admittance matrix.*/
 		Eigen::SparseMatrix <double, Eigen::RowMajor> node_admittance_matrix;
-		/**Line capacity matrix. Term (i, j) represents the maximum power flow capacity between node #i and #j.*/
+		/**Line capacity matrix for flow based markets. Term (i, j) represents the maximum power flow capacity from node #i to #j.*/
 		Eigen::SparseMatrix <double, Eigen::RowMajor> line_capacity_matrix;
-
-		// Older variables
+		/**Dense line capacity matrix for IMO. Term (i, j) represents the maximum power flow capacity from node #i to #j.*/
+		Eigen::MatrixXd line_capacity_dense;
 		/**Compact form of the incidence matrix (0th index: start; 1st index: end).*/
 		std::vector <Eigen::Vector2i> incidence;
 		/**(Imaginary part of) admittance of each edge; used in TSO and DSOs markets.*/
 		std::vector <double> admittance;
-		/**Power flow constraints at each edge (0th col: from start to end; 1st col: from end to start).*/
+		/**Power flow constraints at each edge.*/
 		std::vector <double> power_limit;
 
-		// Delete them later
-		/**Compact form of the incidence matrix (0th col: start; 1st col: end).*/
-		Eigen::MatrixXi incidence_matrix;
-		/**(Imaginary part of) admittance of each edge; used in TSO and DSOs markets.*/
-		Eigen::VectorXd admittance_vector;
-		// Delete them later
+//		// Delete them later
+//		/**Compact form of the incidence matrix (0th col: start; 1st col: end).*/
+//		Eigen::MatrixXi incidence_matrix;
+//		/**(Imaginary part of) admittance of each edge; used in TSO and DSOs markets.*/
+//		Eigen::VectorXd admittance_vector;
+//		// Delete them later
 
 		/**Voltage constraints at each node; used in TSO and DSOs markets.*/
 		Eigen::MatrixXd voltage_constraint;
-		/**Power flow constraints at each edge (0th col: from start to end; 1st col: from end to start).*/
+		/**Power flow constraints at each edge.
+		* (For IMO) 0th col: from start to end; 1st col: from end to start.
+		* (For flow-based markets) 0th col: lower bound; 1st col: upper bound.
+		*/
 		Eigen::MatrixXd power_constraint;
 		/*@{*/
 
@@ -140,7 +143,7 @@ namespace power_market{
 #define IMO
 
 namespace power_market{
-	void International_Market_Set(market_inform&, int, std::string, std::string);
+	void International_Market_Set(market_inform&, power_network::network_inform&, int, std::string, std::string);
 	void International_Market_Optimization(int, market_inform&, bool print_result = 1);
 	void International_Market_Output(market_inform&);
 }
