@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['plants_5fall_0',['plants_all',['../db/dd7/structpower__network_1_1plants__all.html',1,'power_network']]],
-  ['plants_5fper_5ftech_1',['plants_per_tech',['../dc/d2e/structpower__network_1_1plants__per__tech.html',1,'power_network']]],
-  ['points_2',['points',['../d4/dbd/structpower__network_1_1points.html',1,'power_network']]]
+  ['network_5fgraph_0',['network_graph',['../d5/d93/structpower__market_1_1network__graph.html',1,'power_market']]],
+  ['network_5finform_1',['network_inform',['../d4/ddd/structpower__network_1_1network__inform.html',1,'power_network']]],
+  ['nodes_2',['nodes',['../d8/d02/structpower__network_1_1nodes.html',1,'power_network']]]
 ];

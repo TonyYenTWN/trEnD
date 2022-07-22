@@ -7,7 +7,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.4"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>trEnD: TSO.cpp File Reference</title>
+<title>trEnD: power_network::cbt Struct Reference</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -81,7 +81,7 @@ var searchBox = new SearchBox("searchBox", "../../search",'Search','.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('d9/dfa/TSO_8cpp.html','../../'); initResizable(); });
+$(document).ready(function(){initNavTree('de/dd4/structpower__network_1_1cbt.html','../../'); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -100,14 +100,71 @@ $(document).ready(function(){initNavTree('d9/dfa/TSO_8cpp.html','../../'); initR
 </div>
 
 <div class="header">
-  <div class="headertitle"><div class="title">TSO.cpp File Reference</div></div>
+  <div class="summary">
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="../../d7/d8f/structpower__network_1_1cbt-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">power_network::cbt Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;iostream&gt;</code><br />
-<code>#include &quot;<a class="el" href="../../db/d51/rw__csv_8h_source.html">src/basic/rw_csv.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>&quot;</code><br />
+
+<p>Information of cross-border transmission with neighboring nations on the boundary.  
+ <a href="../../de/dd4/structpower__network_1_1cbt.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a551a3729fadbde377f2cdb53f718875c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dd4/structpower__network_1_1cbt.html#a551a3729fadbde377f2cdb53f718875c">bz_names</a></td></tr>
+<tr class="separator:a551a3729fadbde377f2cdb53f718875c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63de69b13740921039d2405dc3e1ab51"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dd4/structpower__network_1_1cbt.html#a63de69b13740921039d2405dc3e1ab51">flow_constraint</a></td></tr>
+<tr class="separator:a63de69b13740921039d2405dc3e1ab51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p >Information of cross-border transmission with neighboring nations on the boundary. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00133">133</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+</div><h2 class="groupheader">Member Data Documentation</h2>
+<a id="a551a3729fadbde377f2cdb53f718875c" name="a551a3729fadbde377f2cdb53f718875c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a551a3729fadbde377f2cdb53f718875c">&#9670;&nbsp;</a></span>bz_names</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; power_network::cbt::bz_names</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Names of the bidding zones included in the internationally-coupled market model. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00135">135</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../da/de9/IMO_8cpp_source.html#l00007">power_market::International_Market_Set()</a>.</p>
+
 </div>
-<p><a href="../../d9/dfa/TSO_8cpp_source.html">Go to the source code of this file.</a></p>
+</div>
+<a id="a63de69b13740921039d2405dc3e1ab51" name="a63de69b13740921039d2405dc3e1ab51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63de69b13740921039d2405dc3e1ab51">&#9670;&nbsp;</a></span>flow_constraint</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd power_network::cbt::flow_constraint</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Constraint of flow exchange between bidding zones internationally-coupled market model, using NTC (net transmission capacity). Rows: bidding zones exporting power; cols: bidding zones importing power. Note the matrix can be asymmetric to capture the conditions of the bidding zones. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00139">139</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../da/de9/IMO_8cpp_source.html#l00007">power_market::International_Market_Set()</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li><a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a></li>
+</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.2-->

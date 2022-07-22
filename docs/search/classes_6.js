@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['smart_5fappliance_5finform_0',['smart_appliance_inform',['../d3/d7d/structsmart__appliance__inform.html',1,'']]],
-  ['sorted_5fvector_1',['sorted_vector',['../d4/dc7/structsorted__vector.html',1,'']]],
-  ['storage_5finform_2',['storage_inform',['../d3/d23/structstorage__inform.html',1,'']]]
+  ['plants_5fall_0',['plants_all',['../db/dd7/structpower__network_1_1plants__all.html',1,'power_network']]],
+  ['plants_5fper_5ftech_1',['plants_per_tech',['../dc/d2e/structpower__network_1_1plants__per__tech.html',1,'power_network']]],
+  ['points_2',['points',['../d4/dbd/structpower__network_1_1points.html',1,'power_network']]]
 ];

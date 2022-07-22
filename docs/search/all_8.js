@@ -11,8 +11,7 @@ var searchData=
   ['impedenace_5fbase_5flevels_8',['impedenace_base_levels',['../dc/dd8/structpower__network_1_1technical__parameters.html#ab22541d7420be9da0b14c7b84cd5c52e',1,'power_network::technical_parameters']]],
   ['in_5fcluster_5fid_9',['in_cluster_ID',['../d4/dbd/structpower__network_1_1points.html#a31806e3fc8fcec04162602a786aeabf8',1,'power_network::points::in_cluster_ID()'],['../d8/d02/structpower__network_1_1nodes.html#a8c556e582cae02c6d9f43c4c34196909',1,'power_network::nodes::in_cluster_ID()']]],
   ['incidence_10',['incidence',['../d5/d93/structpower__market_1_1network__graph.html#a1d0a9607568fcdfe0f3f2ca074c80acc',1,'power_market::network_graph']]],
-  ['incidence_5fmatrix_11',['incidence_matrix',['../d5/d93/structpower__market_1_1network__graph.html#a53649c617b56f1029ea1ce55cde593f3',1,'power_market::network_graph']]],
-  ['international_5fmarket_5foptimization_12',['International_Market_Optimization',['../d5/d60/namespacepower__market.html#a0754b691d2e46f0319e8954d0d72ee15',1,'power_market']]],
-  ['international_5fmarket_5foutput_13',['International_Market_Output',['../d5/d60/namespacepower__market.html#a53e17da0ec3f9445eb26b9e9ae8525ac',1,'power_market']]],
-  ['international_5fmarket_5fset_14',['International_Market_Set',['../d5/d60/namespacepower__market.html#af7f0a12cb013524bd7a17c76f9cd8b52',1,'power_market']]]
+  ['international_5fmarket_5foptimization_11',['International_Market_Optimization',['../d5/d60/namespacepower__market.html#a0754b691d2e46f0319e8954d0d72ee15',1,'power_market']]],
+  ['international_5fmarket_5foutput_12',['International_Market_Output',['../d5/d60/namespacepower__market.html#a53e17da0ec3f9445eb26b9e9ae8525ac',1,'power_market']]],
+  ['international_5fmarket_5fset_13',['International_Market_Set',['../d5/d60/namespacepower__market.html#ae566094e2b348b63a0be3cc5b4fddb38',1,'power_market']]]
 ];

@@ -1,5 +1,6 @@
 var namespacepower__network =
 [
+    [ "cbt", "de/dd4/structpower__network_1_1cbt.html", "de/dd4/structpower__network_1_1cbt" ],
     [ "DSO_cluster", "d0/df7/structpower__network_1_1DSO__cluster.html", "d0/df7/structpower__network_1_1DSO__cluster" ],
     [ "edges", "d3/d9c/structpower__network_1_1edges.html", "d3/d9c/structpower__network_1_1edges" ],
     [ "network_inform", "d4/ddd/structpower__network_1_1network__inform.html", "d4/ddd/structpower__network_1_1network__inform" ],
