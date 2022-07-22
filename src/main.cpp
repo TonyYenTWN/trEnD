@@ -25,7 +25,7 @@ int main(){
 	std::string fin_name_moc = "csv/input/power_market/merit_order_curve_q_assimilated_2021.csv";
 	std::string fin_name_demand = "csv/input/power_market/residual_load_default_forecast_2021.csv";
 	power_market::market_inform International_Market;
-	power_market::International_Market_Set(International_Market, Time, fin_name_moc, fin_name_demand);
+	power_market::International_Market_Set(International_Market, Power_network_inform, Time, fin_name_moc, fin_name_demand);
 
 	// Initialization of the TSO
 	power_market::market_inform TSO_Market;
@@ -66,5 +66,5 @@ int main(){
 	std::cout << "TSO optimization time: " << duration.count() << " microseconds" << "\n\n";
 
 	power_market::TSO_Market_Results_Get(0, TSO_Market, TSO_Problem);
-//	//std::cin.get();
 }
+//	std::cin.get();
