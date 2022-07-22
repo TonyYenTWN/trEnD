@@ -4,25 +4,48 @@
 #include "src/basic/rw_csv.h"
 #include "power_market.h"
 
-void power_market::International_Market_Set(market_inform &International_Market, int Time, std::string fin_name_moc, std::string fin_name_demand){
+void power_market::International_Market_Set(market_inform &International_Market, power_network::network_inform &Power_network_inform, int Time, std::string fin_name_moc, std::string fin_name_demand){
 	// Input Parameters of international market
 	International_Market.num_zone = 13;
 	International_Market.cross_border_zone_start = 5;
 	International_Market.time_intervals = Time;
-	International_Market.zone_names = {"NO1","NO2","NO3","NO4","NO5","DE-LU","DK1","FI","GB","NL","SE1","SE2","SE3"};
+	International_Market.zone_names = Power_network_inform.cbt.bz_names;
 	International_Market.set_bidded_price();
 	International_Market.network.num_vertice = International_Market.num_zone;
-	International_Market.network.num_edges = 15;
-	International_Market.network.incidence.reserve(International_Market.network.num_edges);
-	Eigen::MatrixXi incidence_matrix (International_Market.network.num_edges, 2);
-	incidence_matrix.col(0) << 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3;
-	incidence_matrix.col(1) << 1, 2, 4, 12, 4, 5, 6, 8, 9, 3, 4, 11, 7, 10, 11;
-	for(int edge_iter = 0; edge_iter < International_Market.network.num_edges; ++ edge_iter){
-		International_Market.network.incidence.push_back(incidence_matrix.row(edge_iter));
+	International_Market.network.line_capacity_dense = Power_network_inform.cbt.flow_constraint;
+	//std::cout << International_Market.network.line_capacity_dense << "\n\n";
+
+	// Construct incidence vector matrix
+	International_Market.network.incidence.reserve(International_Market.network.num_vertice * International_Market.network.num_vertice);
+	for(int row_iter = 0; row_iter < International_Market.network.num_vertice - 1; ++ row_iter){
+		for(int col_iter = row_iter + 1; col_iter < International_Market.network.num_vertice; ++ col_iter){
+			bool add_flag = 1 - (International_Market.network.line_capacity_dense(row_iter, col_iter) == 0.) * (International_Market.network.line_capacity_dense(col_iter, row_iter) == 0.);
+			if(add_flag){
+				International_Market.network.incidence.push_back(Eigen::Vector2i(row_iter, col_iter));
+			}
+		}
 	}
+
+	// Construct power constraint matrix
+	International_Market.network.num_edges = International_Market.network.incidence.size();
 	International_Market.network.power_constraint = Eigen::MatrixXd(International_Market.network.num_edges, 2);
-	International_Market.network.power_constraint.col(0) << 1900, 100, 500, 2130, 300, 1400, 1680, 720, 720, 300, 500, 600, 0, 650, 200;
-	International_Market.network.power_constraint.col(1) << 3400, 350, 3900, 2095, 500, 1400, 1150, 720, 720, 1100, 450, 1000, 0, 600, 250;
+	for(int edge_iter = 0; edge_iter < International_Market.network.num_edges; ++ edge_iter){
+		int row_ID = International_Market.network.incidence[edge_iter](0);
+		int col_ID = International_Market.network.incidence[edge_iter](1);
+		International_Market.network.power_constraint(edge_iter, 0) = International_Market.network.line_capacity_dense(row_ID, col_ID);
+		International_Market.network.power_constraint(edge_iter, 1) = International_Market.network.line_capacity_dense(col_ID, row_ID);
+	}
+	//std::cout << International_Market.network.power_constraint << "\n\n";
+
+//	Eigen::MatrixXi incidence_matrix (International_Market.network.num_edges, 2);
+//	incidence_matrix.col(0) << 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 3;
+//	incidence_matrix.col(1) << 1, 2, 4, 12, 4, 5, 6, 8, 9, 3, 4, 11, 7, 10, 11;
+//	for(int edge_iter = 0; edge_iter < International_Market.network.num_edges; ++ edge_iter){
+//		International_Market.network.incidence.push_back(incidence_matrix.row(edge_iter));
+//	}
+//	International_Market.network.power_constraint = Eigen::MatrixXd(International_Market.network.num_edges, 2);
+//	International_Market.network.power_constraint.col(0) << 1900, 100, 500, 2130, 300, 1400, 1680, 720, 720, 300, 500, 600, 0, 650, 200;
+//	International_Market.network.power_constraint.col(1) << 3400, 350, 3900, 2095, 500, 1400, 1150, 720, 720, 1100, 450, 1000, 0, 600, 250;
 
 	// Quantity density at each price
 	// Read inferred merit order curve data
@@ -65,15 +88,12 @@ void power_market::International_Market_Optimization(int tick, market_inform &In
 	Eigen::MatrixXd bidded_demand_export = Eigen::MatrixXd::Zero(International_Market.price_intervals + 2, International_Market.num_zone);
 	Eigen::MatrixXd bidded_supply_import = Eigen::MatrixXd::Zero(International_Market.price_intervals + 2, International_Market.num_zone);
 	Eigen::MatrixXd bidded_demand_import = Eigen::MatrixXd::Zero(International_Market.price_intervals + 2, International_Market.num_zone);
-	Eigen::MatrixXd maximum_capacity_exchange = Eigen::MatrixXd::Zero(International_Market.num_zone, International_Market.num_zone);
-	#pragma omp parallel
-	{
-		#pragma omp for
-		for(int edge_ID = 0; edge_ID < International_Market.network.num_edges; ++ edge_ID){
-			maximum_capacity_exchange(International_Market.network.incidence[edge_ID](0), International_Market.network.incidence[edge_ID](1)) = International_Market.network.power_constraint(edge_ID, 0);
-			maximum_capacity_exchange(International_Market.network.incidence[edge_ID](1), International_Market.network.incidence[edge_ID](0)) = International_Market.network.power_constraint(edge_ID, 1);
-		}
-	}
+	Eigen::MatrixXd maximum_capacity_exchange = International_Market.network.line_capacity_dense;
+//	Eigen::MatrixXd maximum_capacity_exchange = Eigen::MatrixXd::Zero(International_Market.num_zone, International_Market.num_zone);
+//	for(int edge_ID = 0; edge_ID < International_Market.network.num_edges; ++ edge_ID){
+//		maximum_capacity_exchange(International_Market.network.incidence[edge_ID](0), International_Market.network.incidence[edge_ID](1)) = International_Market.network.power_constraint(edge_ID, 0);
+//		maximum_capacity_exchange(International_Market.network.incidence[edge_ID](1), International_Market.network.incidence[edge_ID](0)) = International_Market.network.power_constraint(edge_ID, 1);
+//	}
 	Eigen::MatrixXi available_capacity_exchange;
 	Eigen::MatrixXd remaining_capacity_exchange;
 	Eigen::MatrixXd surplus_exchange;
