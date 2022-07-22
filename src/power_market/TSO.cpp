@@ -3,7 +3,7 @@
 //#include <chrono>
 //#include "../basic/LP_gpa.h"
 #include "src/basic/rw_csv.h"
-#include "src/power_network/power_network.h"
+//#include "src/power_network/power_network.h"
 #include "power_market.h"
 
 // May be useful in the future (when calculating actual ac power flow)
