@@ -3,18 +3,7 @@
 //#include <chrono>
 //#include "../basic/LP_gpa.h"
 #include "src/basic/rw_csv.h"
-//#include "src/power_network/power_network.h"
 #include "power_market.h"
-
-// May be useful in the future (when calculating actual ac power flow)
-//double impedence_conversion(Eigen::MatrixXd pu_dc_inform, double voltage){
-//	int v_iter = 0;
-//	while(pu_dc_inform(v_iter, 0) != voltage){
-//		v_iter += 1;
-//	}
-//
-//	return(pu_dc_inform(v_iter, 1));
-//}
 
 void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::network_inform &Power_network_inform, int Time){
 //	double pi = boost::math::constants::pi<double>();
