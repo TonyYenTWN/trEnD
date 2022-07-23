@@ -1,5 +1,5 @@
-# trEnD: Model for Transition of End-users and the Distribution Power Network
 ![alt text](https://github.com/TonyYenTWN/trEnD/blob/main/logos/main_logo.jpg?raw=true)
+# trEnD: Model for Transition of End-users and the Distribution Power Network
 Welcome to trEnD, a c++ based model of the energy transition, focusing on the end-users and the distribution network. The source codes are currently undergoing revision and being tested by real data of Norway in my phD project. Feel free to comment on any issues.
 
 # User Guide
