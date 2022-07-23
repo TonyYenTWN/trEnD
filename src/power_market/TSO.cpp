@@ -33,7 +33,7 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 		int to_ID = Power_network_inform.edges.to(edge_iter);
 		int voltage = Power_network_inform.edges.voltage_base(edge_iter);
 		double y_ij = 1. / Power_network_inform.edges.distance(edge_iter);
-		y_ij /= Power_network_inform.tech_parameters.z_distr_series.imag();
+		y_ij /= Power_network_inform.tech_parameter.z_trans_series.imag();
 		y_ij *= Power_network_inform.tech_parameters.impedenace_base_levels[voltage];
 		admittance(from_ID, to_ID) += y_ij ;
 		admittance(to_ID, from_ID) += y_ij ;
