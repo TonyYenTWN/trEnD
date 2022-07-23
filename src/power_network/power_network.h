@@ -133,6 +133,8 @@ namespace power_network{
 	struct cbt{
 		/** Names of the bidding zones included in the internationally-coupled market model.*/
 		std::vector <std::string> bz_names;
+		/** Nodes where power sources / sinks of bidding zones from neighbor nations are located.*/
+		Eigen::MatrixXd entry_nodes;
 		/** Constraint of flow exchange between bidding zones internationally-coupled market model, using NTC (net transmission capacity).
 		* Rows: bidding zones exporting power; cols: bidding zones importing power.
 		* Note the matrix can be asymmetric to capture the conditions of the bidding zones.*/

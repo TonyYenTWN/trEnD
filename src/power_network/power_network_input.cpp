@@ -5,12 +5,17 @@
 
 // In-file functions
 namespace {
-	void cbt_data_input(power_network::network_inform &Power_network_inform, std::string fin_cbt){
+	void cbt_data_input(power_network::network_inform &Power_network_inform, std::string fin_cbt, std::string fin_entry){
 		// Read cross-border transmission data
 		auto fin_cbt_dim = basic::get_file_dim(fin_cbt);
+		auto fin_entry_dim = basic::get_file_dim(fin_entry);
 
 		// Store bidding zone names
 		Power_network_inform.cbt.bz_names = basic::get_col_name(fin_cbt, fin_cbt_dim[1]);
+
+		// Store entry points
+		Power_network_inform.cbt.entry_nodes= basic::read_file(fin_entry_dim[0], fin_entry_dim[1], fin_entry);
+		Power_network_inform.cbt.entry_nodes = Power_network_inform.cbt.entry_nodes.array().max(0) - 1.;
 
 		// Store cbt constraints
 		Power_network_inform.cbt.flow_constraint = basic::read_file(fin_cbt_dim[0], fin_cbt_dim[1], fin_cbt);
@@ -168,6 +173,7 @@ void power_network::point_distance_cov(points &point, double lambda){
 void power_network::power_network_input_process(network_inform &Power_network_inform, std::string parent_dir){
 	auto fin_bz = parent_dir + "DSO_Bidding_Zone.csv";
 	auto fin_cbt = parent_dir + "cbt_constraint.csv";
+	auto fin_entry = parent_dir + "cbt_entry_nodes.csv";
 	auto fin_node = parent_dir + "transmission_nodes.csv";
 	auto fin_edge = parent_dir + "transmission_edges.csv";
 	auto fin_edge_simp = parent_dir + "transmission_edges_pu_simp.csv";
@@ -179,7 +185,7 @@ void power_network::power_network_input_process(network_inform &Power_network_in
 	auto fin_bz_dim = basic::get_file_dim(fin_bz);
 	auto bz_inform = basic::read_file(fin_bz_dim[0], fin_bz_dim[1], fin_bz);
 
-	cbt_data_input(Power_network_inform, fin_cbt);
+	cbt_data_input(Power_network_inform, fin_cbt, fin_entry);
 	tranmission_data_input(Power_network_inform, bz_inform, fin_node, fin_edge, fin_edge_simp);
 	points_data_input(Power_network_inform, bz_inform, fin_point, fin_point_matrix);
 	plant_data_input(Power_network_inform, fin_hydro, fin_wind);
