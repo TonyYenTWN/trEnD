@@ -7,6 +7,7 @@ Welcome to trEnD, a c++ based model of the energy transition, focusing on the en
 
 ## Compiling the Source Codes
 ### Prerequisite for Compilation
+#### External Libraries
 - [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page) libray installed
 - [Boost](https://www.boost.org/) library installed
 - The library [ALGLIB](https://www.alglib.net/) is also used in the model, but it is already in the source codes so you need not to download it in addition.
