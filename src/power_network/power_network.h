@@ -200,7 +200,7 @@ namespace power_network{
 		/** Cutoff voltage level of the transmission network.*/
 		int voltage_cutoff_trans = 132;
 		/** Voltage level of connection between the transmission and the distribution network.*/
-		int voltage_cutoff_connection = 40;
+		int voltage_cutoff_connection = 66;
 		/** Cutoff voltage level of the distribution network.*/
 		int voltage_cutoff_distr = 20;
 		/*@{*/
