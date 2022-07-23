@@ -9,8 +9,7 @@ Welcome to trEnD, a c++ based model of the energy transition, focusing on the en
 ### Prerequisite for Compilation
 - [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page) libray installed
 - [Boost](https://www.boost.org/) library installed
-
-The library [ALGLIB](https://www.alglib.net/) is also used in the model, but it is already in the source codes so you need not to download it in addition.
+- The library [ALGLIB](https://www.alglib.net/) is also used in the model, but it is already in the source codes so you need not to download it in addition.
 
 ### Compiler Choice and Settings
 I use compiler [TDM-GCC 9.2.0](https://jmeubank.github.io/tdm-gcc/articles/2020-03/9.2.0-release) to compile the codes on windows, but other compilers should also work. 
