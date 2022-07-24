@@ -116,6 +116,10 @@ $(document).ready(function(){initNavTree('de/dd4/structpower__network_1_1cbt.htm
 Public Attributes</h2></td></tr>
 <tr class="memitem:a551a3729fadbde377f2cdb53f718875c"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dd4/structpower__network_1_1cbt.html#a551a3729fadbde377f2cdb53f718875c">bz_names</a></td></tr>
 <tr class="separator:a551a3729fadbde377f2cdb53f718875c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22c6da9de52c289212a480129c5f8898"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dd4/structpower__network_1_1cbt.html#a22c6da9de52c289212a480129c5f8898">entry_node_num</a></td></tr>
+<tr class="separator:a22c6da9de52c289212a480129c5f8898"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70f372699ac3a74559aae24dca2df17c"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dd4/structpower__network_1_1cbt.html#a70f372699ac3a74559aae24dca2df17c">entry_nodes</a></td></tr>
+<tr class="separator:a70f372699ac3a74559aae24dca2df17c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a63de69b13740921039d2405dc3e1ab51"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dd4/structpower__network_1_1cbt.html#a63de69b13740921039d2405dc3e1ab51">flow_constraint</a></td></tr>
 <tr class="separator:a63de69b13740921039d2405dc3e1ab51"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -143,6 +147,43 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a22c6da9de52c289212a480129c5f8898" name="a22c6da9de52c289212a480129c5f8898"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22c6da9de52c289212a480129c5f8898">&#9670;&nbsp;</a></span>entry_node_num</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXi power_network::cbt::entry_node_num</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00139">139</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../d5/dbf/power__market__func_8cpp_source.html#l00138">power_market::TSO_boundary_update()</a>.</p>
+
+</div>
+</div>
+<a id="a70f372699ac3a74559aae24dca2df17c" name="a70f372699ac3a74559aae24dca2df17c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70f372699ac3a74559aae24dca2df17c">&#9670;&nbsp;</a></span>entry_nodes</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd power_network::cbt::entry_nodes</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Nodes where power sources / sinks of bidding zones from neighbor nations are located. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00137">137</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../d5/dbf/power__market__func_8cpp_source.html#l00138">power_market::TSO_boundary_update()</a>.</p>
+
+</div>
+</div>
 <a id="a63de69b13740921039d2405dc3e1ab51" name="a63de69b13740921039d2405dc3e1ab51"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a63de69b13740921039d2405dc3e1ab51">&#9670;&nbsp;</a></span>flow_constraint</h2>
 
@@ -156,7 +197,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Constraint of flow exchange between bidding zones internationally-coupled market model, using NTC (net transmission capacity). Rows: bidding zones exporting power; cols: bidding zones importing power. Note the matrix can be asymmetric to capture the conditions of the bidding zones. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00139">139</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00143">143</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../da/de9/IMO_8cpp_source.html#l00007">power_market::International_Market_Set()</a>.</p>
 

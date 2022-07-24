@@ -15,10 +15,12 @@ var searchData=
   ['end_5fuser_5foperation_12',['end_user_operation',['../da/d19/structend__user__operation.html',1,'']]],
   ['energy_5fdemand_13',['energy_demand',['../dd/d4d/structEV__inform.html#a3cd365be8d2ec3002c0b54b817624883',1,'EV_inform']]],
   ['energy_5fscale_14',['energy_scale',['../d3/d23/structstorage__inform.html#a091c0ec08ed088ccd0b429c225250a23',1,'storage_inform']]],
-  ['eq_5forig_5fmatrix_15',['eq_orig_matrix',['../dd/dc3/structLP__constraint.html#aceaa1337356ab8ed1d36397c9eeea12d',1,'LP_constraint']]],
-  ['eq_5fvector_16',['eq_vector',['../da/d47/structLP__boundary.html#a61c8ceb1f92e22a7f7b939b64faa4789',1,'LP_boundary']]],
-  ['ev_17',['EV',['../da/d19/structend__user__operation.html#a673fbab11abd650e7b81e4ed3a760bb0',1,'end_user_operation']]],
-  ['ev_5finform_18',['EV_inform',['../dd/d4d/structEV__inform.html',1,'']]],
-  ['ev_5fschedule_19',['EV_schedule',['../dc/dc3/end-user_8cpp.html#a452c3d4e6a76b38c364149a3a70a5b6a',1,'end-user.cpp']]],
-  ['ev_5fself_5fcharging_20',['EV_self_charging',['../de/d2d/structend__user__decision.html#a1a5654edd95264d7da80b3673379a0f8',1,'end_user_decision']]]
+  ['entry_5fnode_5fnum_15',['entry_node_num',['../de/dd4/structpower__network_1_1cbt.html#a22c6da9de52c289212a480129c5f8898',1,'power_network::cbt']]],
+  ['entry_5fnodes_16',['entry_nodes',['../de/dd4/structpower__network_1_1cbt.html#a70f372699ac3a74559aae24dca2df17c',1,'power_network::cbt']]],
+  ['eq_5forig_5fmatrix_17',['eq_orig_matrix',['../dd/dc3/structLP__constraint.html#aceaa1337356ab8ed1d36397c9eeea12d',1,'LP_constraint']]],
+  ['eq_5fvector_18',['eq_vector',['../da/d47/structLP__boundary.html#a61c8ceb1f92e22a7f7b939b64faa4789',1,'LP_boundary']]],
+  ['ev_19',['EV',['../da/d19/structend__user__operation.html#a673fbab11abd650e7b81e4ed3a760bb0',1,'end_user_operation']]],
+  ['ev_5finform_20',['EV_inform',['../dd/d4d/structEV__inform.html',1,'']]],
+  ['ev_5fschedule_21',['EV_schedule',['../dc/dc3/end-user_8cpp.html#a452c3d4e6a76b38c364149a3a70a5b6a',1,'end-user.cpp']]],
+  ['ev_5fself_5fcharging_22',['EV_self_charging',['../de/d2d/structend__user__decision.html#a1a5654edd95264d7da80b3673379a0f8',1,'end_user_decision']]]
 ];
