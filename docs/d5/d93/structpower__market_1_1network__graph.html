@@ -115,12 +115,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a1ea9489a892267b3d2c8c55d90b68fc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a95b4d266f09130ccf274d1362a111d92"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d93/structpower__market_1_1network__graph.html#a95b4d266f09130ccf274d1362a111d92">num_edges</a></td></tr>
 <tr class="separator:a95b4d266f09130ccf274d1362a111d92"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8e0b793d1f4d2b452707dd1a08069c83"><td class="memItemLeft" align="right" valign="top">Eigen::SparseMatrix&lt; double, Eigen::RowMajor &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d93/structpower__market_1_1network__graph.html#a8e0b793d1f4d2b452707dd1a08069c83">node_admittance_matrix</a></td></tr>
-<tr class="separator:a8e0b793d1f4d2b452707dd1a08069c83"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad550533f08cb0ec7377c591dcb46f855"><td class="memItemLeft" align="right" valign="top">Eigen::SparseMatrix&lt; double, Eigen::RowMajor &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d93/structpower__market_1_1network__graph.html#ad550533f08cb0ec7377c591dcb46f855">line_capacity_matrix</a></td></tr>
-<tr class="separator:ad550533f08cb0ec7377c591dcb46f855"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4e63b7ffc054dbc308c19c4ac6871023"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d93/structpower__market_1_1network__graph.html#a4e63b7ffc054dbc308c19c4ac6871023">line_capacity_dense</a></td></tr>
-<tr class="separator:a4e63b7ffc054dbc308c19c4ac6871023"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22496b175dabfff9f9e20b7cdfb8bb6b"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d93/structpower__market_1_1network__graph.html#a22496b175dabfff9f9e20b7cdfb8bb6b">line_capacity_matrix</a></td></tr>
+<tr class="separator:a22496b175dabfff9f9e20b7cdfb8bb6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1d0a9607568fcdfe0f3f2ca074c80acc"><td class="memItemLeft" align="right" valign="top">std::vector&lt; Eigen::Vector2i &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d93/structpower__market_1_1network__graph.html#a1d0a9607568fcdfe0f3f2ca074c80acc">incidence</a></td></tr>
 <tr class="separator:a1d0a9607568fcdfe0f3f2ca074c80acc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3f99d1f7d20cb44d0ebd1fadf28fbee3"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d93/structpower__market_1_1network__graph.html#a3f99d1f7d20cb44d0ebd1fadf28fbee3">admittance</a></td></tr>
@@ -155,7 +151,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >(Imaginary part of) admittance of each edge; used in TSO and DSOs markets. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00033">33</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00029">29</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d5/dbf/power__market__func_8cpp_source.html#l00162">power_market::Flow_Based_Market_LP_Set()</a>, and <a class="el" href="../../d9/dfa/TSO_8cpp_source.html#l00008">power_market::TSO_Market_Set()</a>.</p>
 
@@ -174,7 +170,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Power flow across each edge; a positive value indicates flowing from start to end. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00051">51</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00047">47</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../da/de9/IMO_8cpp_source.html#l00064">power_market::International_Market_Optimization()</a>, <a class="el" href="../../da/de9/IMO_8cpp_source.html#l00007">power_market::International_Market_Set()</a>, <a class="el" href="../../d5/dbf/power__market__func_8cpp_source.html#l00138">power_market::TSO_boundary_update()</a>, <a class="el" href="../../d9/dfa/TSO_8cpp_source.html#l00069">power_market::TSO_Market_Results_Get()</a>, and <a class="el" href="../../d9/dfa/TSO_8cpp_source.html#l00008">power_market::TSO_Market_Set()</a>.</p>
 
@@ -193,7 +189,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Voltage at each vertex. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00053">53</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00049">49</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d9/dfa/TSO_8cpp_source.html#l00069">power_market::TSO_Market_Results_Get()</a>, and <a class="el" href="../../d9/dfa/TSO_8cpp_source.html#l00008">power_market::TSO_Market_Set()</a>.</p>
 
@@ -212,62 +208,28 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Compact form of the incidence matrix (0th index: start; 1st index: end). </p>
 
-<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00031">31</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00027">27</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d5/dbf/power__market__func_8cpp_source.html#l00162">power_market::Flow_Based_Market_LP_Set()</a>, <a class="el" href="../../da/de9/IMO_8cpp_source.html#l00064">power_market::International_Market_Optimization()</a>, <a class="el" href="../../da/de9/IMO_8cpp_source.html#l00007">power_market::International_Market_Set()</a>, <a class="el" href="../../d5/dbf/power__market__func_8cpp_source.html#l00138">power_market::TSO_boundary_update()</a>, and <a class="el" href="../../d9/dfa/TSO_8cpp_source.html#l00008">power_market::TSO_Market_Set()</a>.</p>
 
 </div>
 </div>
-<a id="a4e63b7ffc054dbc308c19c4ac6871023" name="a4e63b7ffc054dbc308c19c4ac6871023"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4e63b7ffc054dbc308c19c4ac6871023">&#9670;&nbsp;</a></span>line_capacity_dense</h2>
+<a id="a22496b175dabfff9f9e20b7cdfb8bb6b" name="a22496b175dabfff9f9e20b7cdfb8bb6b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22496b175dabfff9f9e20b7cdfb8bb6b">&#9670;&nbsp;</a></span>line_capacity_matrix</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">Eigen::MatrixXd power_market::network_graph::line_capacity_dense</td>
+          <td class="memname">Eigen::MatrixXd power_market::network_graph::line_capacity_matrix</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Dense line capacity matrix for IMO. Term (i, j) represents the maximum power flow capacity from node #i to #j. </p>
-
-<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00029">29</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../da/de9/IMO_8cpp_source.html#l00064">power_market::International_Market_Optimization()</a>, and <a class="el" href="../../da/de9/IMO_8cpp_source.html#l00007">power_market::International_Market_Set()</a>.</p>
-
-</div>
-</div>
-<a id="ad550533f08cb0ec7377c591dcb46f855" name="ad550533f08cb0ec7377c591dcb46f855"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad550533f08cb0ec7377c591dcb46f855">&#9670;&nbsp;</a></span>line_capacity_matrix</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">Eigen::SparseMatrix&lt;double, Eigen::RowMajor&gt; power_market::network_graph::line_capacity_matrix</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p >Line capacity matrix for flow based markets. Term (i, j) represents the maximum power flow capacity from node #i to #j. </p>
-
-<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00027">27</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
-
-</div>
-</div>
-<a id="a8e0b793d1f4d2b452707dd1a08069c83" name="a8e0b793d1f4d2b452707dd1a08069c83"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8e0b793d1f4d2b452707dd1a08069c83">&#9670;&nbsp;</a></span>node_admittance_matrix</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">Eigen::SparseMatrix&lt;double, Eigen::RowMajor&gt; power_market::network_graph::node_admittance_matrix</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p >Node admittance matrix. </p>
+<p >Line capacity matrix for IMO. Term (i, j) represents the maximum power flow capacity from node #i to #j. </p>
 
 <p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00025">25</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../da/de9/IMO_8cpp_source.html#l00064">power_market::International_Market_Optimization()</a>, and <a class="el" href="../../da/de9/IMO_8cpp_source.html#l00007">power_market::International_Market_Set()</a>.</p>
 
 </div>
 </div>
@@ -322,7 +284,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Power flow constraints at each edge. (For IMO) 0th col: from start to end; 1st col: from end to start. (For flow-based markets) 0th col: lower bound; 1st col: upper bound. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00043">43</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00039">39</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d5/dbf/power__market__func_8cpp_source.html#l00162">power_market::Flow_Based_Market_LP_Set()</a>, <a class="el" href="../../d5/dbf/power__market__func_8cpp_source.html#l00316">power_market::Flow_Based_Market_Optimization()</a>, <a class="el" href="../../da/de9/IMO_8cpp_source.html#l00007">power_market::International_Market_Set()</a>, and <a class="el" href="../../d9/dfa/TSO_8cpp_source.html#l00008">power_market::TSO_Market_Set()</a>.</p>
 
@@ -341,7 +303,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Power flow constraints at each edge. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00035">35</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00031">31</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
 
 </div>
 </div>
@@ -358,7 +320,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Voltage constraints at each node; used in TSO and DSOs markets. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00038">38</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00034">34</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../d5/dbf/power__market__func_8cpp_source.html#l00162">power_market::Flow_Based_Market_LP_Set()</a>, <a class="el" href="../../d5/dbf/power__market__func_8cpp_source.html#l00316">power_market::Flow_Based_Market_Optimization()</a>, and <a class="el" href="../../d9/dfa/TSO_8cpp_source.html#l00008">power_market::TSO_Market_Set()</a>.</p>
 
