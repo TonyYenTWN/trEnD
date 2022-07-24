@@ -12,13 +12,13 @@ void power_market::International_Market_Set(market_inform &International_Market,
 	International_Market.zone_names = Power_network_inform.cbt.bz_names;
 	International_Market.set_bidded_price();
 	International_Market.network.num_vertice = International_Market.num_zone;
-	International_Market.network.line_capacity_dense = Power_network_inform.cbt.flow_constraint;
+	International_Market.network.line_capacity_matrix = Power_network_inform.cbt.flow_constraint;
 
 	// Construct incidence vector matrix
 	International_Market.network.incidence.reserve(International_Market.network.num_vertice * International_Market.network.num_vertice);
 	for(int row_iter = 0; row_iter < International_Market.network.num_vertice - 1; ++ row_iter){
 		for(int col_iter = row_iter + 1; col_iter < International_Market.network.num_vertice; ++ col_iter){
-			bool add_flag = 1 - (International_Market.network.line_capacity_dense(row_iter, col_iter) == 0.) * (International_Market.network.line_capacity_dense(col_iter, row_iter) == 0.);
+			bool add_flag = 1 - (International_Market.network.line_capacity_matrix(row_iter, col_iter) == 0.) * (International_Market.network.line_capacity_matrix(col_iter, row_iter) == 0.);
 			if(add_flag){
 				International_Market.network.incidence.push_back(Eigen::Vector2i(row_iter, col_iter));
 			}
@@ -31,8 +31,8 @@ void power_market::International_Market_Set(market_inform &International_Market,
 	for(int edge_iter = 0; edge_iter < International_Market.network.num_edges; ++ edge_iter){
 		int row_ID = International_Market.network.incidence[edge_iter](0);
 		int col_ID = International_Market.network.incidence[edge_iter](1);
-		International_Market.network.power_constraint(edge_iter, 0) = International_Market.network.line_capacity_dense(row_ID, col_ID);
-		International_Market.network.power_constraint(edge_iter, 1) = International_Market.network.line_capacity_dense(col_ID, row_ID);
+		International_Market.network.power_constraint(edge_iter, 0) = International_Market.network.line_capacity_matrix(row_ID, col_ID);
+		International_Market.network.power_constraint(edge_iter, 1) = International_Market.network.line_capacity_matrix(col_ID, row_ID);
 	}
 
 	// Quantity density at each price
@@ -76,7 +76,7 @@ void power_market::International_Market_Optimization(int tick, market_inform &In
 	Eigen::MatrixXd bidded_demand_export = Eigen::MatrixXd::Zero(International_Market.price_intervals + 2, International_Market.num_zone);
 	Eigen::MatrixXd bidded_supply_import = Eigen::MatrixXd::Zero(International_Market.price_intervals + 2, International_Market.num_zone);
 	Eigen::MatrixXd bidded_demand_import = Eigen::MatrixXd::Zero(International_Market.price_intervals + 2, International_Market.num_zone);
-	Eigen::MatrixXd maximum_capacity_exchange = International_Market.network.line_capacity_dense;
+	Eigen::MatrixXd maximum_capacity_exchange = International_Market.network.line_capacity_matrix;
 	Eigen::MatrixXi available_capacity_exchange;
 	Eigen::MatrixXd remaining_capacity_exchange;
 	Eigen::MatrixXd surplus_exchange;

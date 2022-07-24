@@ -21,12 +21,8 @@ namespace power_market{
 		int num_vertice;
 		/**Number of edges (lines) in the power network of the market.*/
 		int num_edges;
-		/**Node admittance matrix.*/
-		Eigen::SparseMatrix <double, Eigen::RowMajor> node_admittance_matrix;
-		/**Line capacity matrix for flow based markets. Term (i, j) represents the maximum power flow capacity from node #i to #j.*/
-		Eigen::SparseMatrix <double, Eigen::RowMajor> line_capacity_matrix;
-		/**Dense line capacity matrix for IMO. Term (i, j) represents the maximum power flow capacity from node #i to #j.*/
-		Eigen::MatrixXd line_capacity_dense;
+		/**Line capacity matrix for IMO. Term (i, j) represents the maximum power flow capacity from node #i to #j.*/
+		Eigen::MatrixXd line_capacity_matrix;
 		/**Compact form of the incidence matrix (0th index: start; 1st index: end).*/
 		std::vector <Eigen::Vector2i> incidence;
 		/**(Imaginary part of) admittance of each edge; used in TSO and DSOs markets.*/
