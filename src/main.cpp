@@ -48,6 +48,9 @@ int main(){
 	// Ideal market clearing in IMO
 	power_market::International_Market_Optimization(0, International_Market, 0);
 
+	// Set cross-border transmission as boundary conditions of TSO
+	power_market::TSO_boundary_update(0, TSO_Market, International_Market, Power_network_inform);
+
 	stop = std::chrono::high_resolution_clock::now();
 	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
 	std::cout << "Set time: " << duration.count() << " microseconds" << "\n\n";
