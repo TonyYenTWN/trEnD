@@ -18,6 +18,8 @@ std::vector <std::string> basic::get_col_name(std::string filename, int col_num)
 		col_names.push_back(field);
 	}
 
+	// Close file
+	in.close();
 	return col_names;
 }
 
@@ -51,6 +53,7 @@ std::vector <int> basic::get_file_dim(std::string filename){
 	}
 
 	std::reverse(dim.begin(), dim.end());
+	in.close();
 	return dim;
 }
 
@@ -78,7 +81,9 @@ Eigen::MatrixXd basic::read_file(int num_row, int num_col, std::string filename)
 		}
   	}
 
-  return data;
+  	// Close file
+	in.close();
+	return data;
 }
 
 void basic::write_file(Eigen::MatrixXd data, std::string filename, std::vector<std::string> col_name){
