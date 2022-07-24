@@ -92,7 +92,7 @@ void power_market::Submitted_bid_calculation(markets_inform &DSO_Markets, market
 		// nominal demand currently wrong in processed files, should change them and then multiply area of a point later
 
 		DSO_Markets[DSO_ID].submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, Power_network_inform.points.in_cluster_ID(point_iter)) = bid_quan;
-		//TSO_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, node_ID) += bid_quan; // delete this later
+		//TSO_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, node_ID) += bid_quan; // comment this if DSO filters local bids
 		International_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, bz_ID) += bid_quan;
 	}
 
@@ -129,9 +129,30 @@ void power_market::Submitted_bid_calculation(markets_inform &DSO_Markets, market
 				* Power_network_inform.plants.hydro.cap(hydro_iter) / (International_Market.merit_order_curve.col(Power_network_inform.points.bidding_zone(point_ID)).sum());
 
 			DSO_Markets[DSO_ID].submitted_supply.col(Power_network_inform.points.in_cluster_ID(point_ID)) += bid_vec;
-			//TSO_Market.submitted_supply.col(node_ID) += bid_vec; // delete this later
+			//TSO_Market.submitted_supply.col(node_ID) += bid_vec; // comment this if DSO filters local bids
 		}
 		International_Market.submitted_supply.col(bz_ID) += bid_vec;
+	}
+}
+
+void power_market::TSO_boundary_update(int tick, market_inform &TSO_Market, market_inform &International_Market, power_network::network_inform &Power_network_inform){
+	// Store cross-border transmission flow as inflexible supply / demand at entry nodes of TSO
+	for(int edge_iter = 0; edge_iter < International_Market.network.num_edges; ++ edge_iter){
+		if(International_Market.network.incidence[edge_iter](1) < International_Market.cross_border_zone_start){
+			continue;
+		}
+		bool sink_flag = International_Market.network.confirmed_power(tick, edge_iter) >= 0.;
+		int price_ID = sink_flag * (International_Market.price_intervals + 2);
+		double source = -sink_flag * International_Market.network.confirmed_power(tick, edge_iter);
+		double sink = sink_flag * International_Market.network.confirmed_power(tick, edge_iter);
+
+		int zone_ID = International_Market.network.incidence[edge_iter](1) - International_Market.cross_border_zone_start;
+		int node_num = Power_network_inform.cbt.entry_node_num[zone_ID];
+		for(int node_iter = 0; node_iter < node_num; ++ node_iter){
+			int node_ID = Power_network_inform.cbt.entry_nodes(zone_ID, node_iter);
+			TSO_Market.submitted_supply(price_ID, node_ID) += source / node_num;
+			TSO_Market.submitted_demand(price_ID, node_ID) += sink / node_num;
+		}
 	}
 }
 
@@ -323,7 +344,7 @@ void power_market::Flow_Based_Market_Optimization(market_inform &Market, alglib:
 //	std::cout << "function end\n";
 }
 
-void power_market::Filtered_bid_calculation(markets_inform &DSO_Markets, market_inform &TSO_Market, power_network::network_inform &Power_network_inform, std::vector <alglib::minlpstate> &DSO_Problems){
+void power_market::Filtered_bid_calculation(markets_inform &DSO_Markets, market_inform &TSO_Market,  power_network::network_inform &Power_network_inform, std::vector <alglib::minlpstate> &DSO_Problems){
 	// Correct formula
 	for(int DSO_iter = 0; DSO_iter < DSO_Markets.size(); ++ DSO_iter){
 		// Find merit order curve for filtered demand
