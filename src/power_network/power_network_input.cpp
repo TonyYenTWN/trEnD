@@ -14,8 +14,20 @@ namespace {
 		Power_network_inform.cbt.bz_names = basic::get_col_name(fin_cbt, fin_cbt_dim[1]);
 
 		// Store entry points
-		Power_network_inform.cbt.entry_nodes= basic::read_file(fin_entry_dim[0], fin_entry_dim[1], fin_entry);
+		Power_network_inform.cbt.entry_nodes = basic::read_file(fin_entry_dim[0], fin_entry_dim[1], fin_entry);
+		Power_network_inform.cbt.entry_nodes = Power_network_inform.cbt.entry_nodes.rightCols(fin_entry_dim[1] - 1);
 		Power_network_inform.cbt.entry_nodes = Power_network_inform.cbt.entry_nodes.array().max(0) - 1.;
+
+		// Find number of entry nodes for each bidding zones
+		Power_network_inform.cbt.entry_node_num = Eigen::VectorXi::Zero(fin_entry_dim[0]);
+		for(int zone_iter = 0; zone_iter < fin_entry_dim[0]; ++ zone_iter){
+			for(int node_iter = 0; node_iter < fin_entry_dim[1] - 1; ++ node_iter){
+				if(Power_network_inform.cbt.entry_nodes(zone_iter, node_iter) < 0.){
+					break;
+				}
+				Power_network_inform.cbt.entry_node_num(zone_iter) += 1;
+			}
+		}
 
 		// Store cbt constraints
 		Power_network_inform.cbt.flow_constraint = basic::read_file(fin_cbt_dim[0], fin_cbt_dim[1], fin_cbt);

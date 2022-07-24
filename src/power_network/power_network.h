@@ -135,6 +135,8 @@ namespace power_network{
 		std::vector <std::string> bz_names;
 		/** Nodes where power sources / sinks of bidding zones from neighbor nations are located.*/
 		Eigen::MatrixXd entry_nodes;
+		/***/
+		Eigen::VectorXi entry_node_num;
 		/** Constraint of flow exchange between bidding zones internationally-coupled market model, using NTC (net transmission capacity).
 		* Rows: bidding zones exporting power; cols: bidding zones importing power.
 		* Note the matrix can be asymmetric to capture the conditions of the bidding zones.*/
