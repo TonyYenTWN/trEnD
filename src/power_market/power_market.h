@@ -50,6 +50,19 @@ namespace power_market{
 		/*@{*/
 	};
 
+	/**Information of the control reserve market*/
+	struct control_reserve_inform{
+		Eigen::MatrixXd confirmed_positive;
+		Eigen::MatrixXd confirmed_negative;
+		Eigen::MatrixXd activated_positive;
+		Eigen::MatrixXd activated_negative;
+
+		Eigen::MatrixXd submitted_positive_supply;
+		Eigen::MatrixXd submitted_positive_demand;
+		Eigen::MatrixXd submitted_negative_supply;
+		Eigen::MatrixXd submitted_negative_demand;
+	};
+
 	/**Information of the power market.*/
 	struct market_inform{
 		// Input parameters
@@ -95,6 +108,7 @@ namespace power_market{
 		// Mixed Substructure
 		/**Information of the corresponding power network of the market.*/
 		network_graph network;
+		control_reserve_inform control_reserve;
 
 		// Functions
 		/**Set the bidding prices of the power market.*/
