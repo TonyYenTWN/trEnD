@@ -121,17 +121,17 @@ void power_market::TSO_Market_control_reserve(int tick, market_inform &Market, a
 	Market.control_reserve.available_ratio_supply = Eigen::MatrixXd::Ones(Market.price_intervals + 2, Market.num_zone);
 	Market.control_reserve.available_ratio_demand = Eigen::MatrixXd::Ones(Market.price_intervals + 2, Market.num_zone);
 
-	Eigen::MatrixXd imbalance = Eigen::MatrixXd::Zero(Market.price_intervals + 2, Market.num_zone);
+	Eigen::MatrixXd imbalance_demand = Eigen::MatrixXd::Zero(Market.price_intervals + 2, Market.num_zone);
 	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
 		for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter){
 			if(Market.bidded_price(price_iter) >= Market.confirmed_price(tick, node_iter) || price_iter == Market.price_intervals + 1){
 					if(Market.confirmed_price_ratio(tick, node_iter) < 0.){
-						imbalance(price_iter, node_iter) = .05 * Market.confirmed_price_ratio(tick, node_iter)* Market.submitted_demand(price_iter, node_iter);
+						imbalance_demand(price_iter, node_iter) = -.05 * Market.confirmed_price_ratio(tick, node_iter)* Market.submitted_demand(price_iter, node_iter);
 					}
 					break;
 			}
 			else{
-				imbalance(price_iter, node_iter) = -.05 * Market.submitted_demand(price_iter, node_iter);
+				imbalance_demand(price_iter, node_iter) = .05 * Market.submitted_demand(price_iter, node_iter);
 			}
 		}
 	}
@@ -149,6 +149,7 @@ void power_market::TSO_Market_control_reserve(int tick, market_inform &Market, a
 		int row_start = 2 * Market.network.num_vertice + node_iter * (Market.price_intervals + 2);
 		Eigen::VectorXd origin_point = (1. - Market.control_reserve.available_ratio_supply.col(node_iter).array()) * Market.submitted_supply.col(node_iter).array();
 		origin_point = origin_point.array() - (1. - Market.control_reserve.available_ratio_demand.col(node_iter).array()) * Market.submitted_demand.col(node_iter).array();
+		origin_point = origin_point.array() - imbalance_demand.col(node_iter).array();
 		bound_box.middleRows(row_start, Market.price_intervals + 2).col(0) = origin_point.array() - Market.control_reserve.available_ratio_demand.col(node_iter).array() * Market.submitted_demand.col(node_iter).array();
 		bound_box.middleRows(row_start, Market.price_intervals + 2).col(1) = origin_point.array() + Market.control_reserve.available_ratio_supply.col(node_iter).array() * Market.submitted_supply.col(node_iter).array();
 	}
@@ -190,7 +191,7 @@ void power_market::TSO_Market_control_reserve(int tick, market_inform &Market, a
 					Market.actual_price_ratio(tick, node_iter) /= Market.submitted_supply(price_iter, node_iter);
 				}
 				else{
-					Market.actual_price_ratio(tick, node_iter) /= Market.submitted_demand(price_iter, node_iter);
+					Market.actual_price_ratio(tick, node_iter) /= Market.submitted_demand(price_iter, node_iter) - imbalance_demand(price_iter, node_iter);
 				}
 				break;
 			}

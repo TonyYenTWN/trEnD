@@ -56,7 +56,7 @@ int main(){
 	std::cout << "Set time: " << duration.count() << " microseconds" << "\n\n";
 
 	// Bid-filtering in DSOs
-	//power_market::Filtered_bid_calculation(DSO_Markets, TSO_Market, Power_network_inform, DSO_Problems);
+	power_market::Filtered_bid_calculation(DSO_Markets, TSO_Market, Power_network_inform, DSO_Problems);
 
 	// Re-dispatch + tertiary control reserve in TSO
 	start = std::chrono::high_resolution_clock::now();
