@@ -143,6 +143,8 @@ void power_market::TSO_Market_control_reserve(int tick, market_inform &Market, a
 	int variable_num = Market.network.num_vertice * (Market.price_intervals + 4) + Market.network.num_edges;
 	Eigen::MatrixXd bound_box(variable_num, 2);
 	bound_box.topRows(Market.network.num_vertice) = Market.network.voltage_constraint;
+	bound_box.middleRows(Market.network.num_vertice, Market.network.num_vertice).col(0) = Eigen::VectorXd::Constant(Market.network.num_vertice, -std::numeric_limits<double>::infinity());
+	bound_box.middleRows(Market.network.num_vertice, Market.network.num_vertice).col(1) = Eigen::VectorXd::Constant(Market.network.num_vertice, std::numeric_limits<double>::infinity());
 	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
 		int row_start = 2 * Market.network.num_vertice + node_iter * (Market.price_intervals + 2);
 		Eigen::VectorXd origin_point = (1. - Market.control_reserve.available_ratio_supply.col(node_iter).array()) * Market.submitted_supply.col(node_iter).array();
@@ -150,8 +152,7 @@ void power_market::TSO_Market_control_reserve(int tick, market_inform &Market, a
 		bound_box.middleRows(row_start, Market.price_intervals + 2).col(0) = origin_point.array() - Market.control_reserve.available_ratio_demand.col(node_iter).array() * Market.submitted_demand.col(node_iter).array();
 		bound_box.middleRows(row_start, Market.price_intervals + 2).col(1) = origin_point.array() + Market.control_reserve.available_ratio_supply.col(node_iter).array() * Market.submitted_supply.col(node_iter).array();
 	}
-	bound_box.middleRows(Market.network.num_vertice, Market.network.num_vertice).col(0) = Eigen::VectorXd::Constant(Market.network.num_vertice, -std::numeric_limits<double>::infinity());
-	bound_box.middleRows(Market.network.num_vertice, Market.network.num_vertice).col(1) = Eigen::VectorXd::Constant(Market.network.num_vertice, std::numeric_limits<double>::infinity());
+	bound_box.bottomRows(Market.network.num_edges) = Market.network.power_constraint;
 
 	// Bounds of box constraints
 	alglib::real_1d_array lb_box;
@@ -196,7 +197,7 @@ void power_market::TSO_Market_control_reserve(int tick, market_inform &Market, a
 		}
 	}
 
-//	std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).array().abs().sum() << "\n";
-//	std::cout << sol_vec.head(Market.network.num_vertice).minCoeff() << " " << sol_vec.head(Market.network.num_vertice).maxCoeff()  << "\n";
-//	std::cout << sol_vec.tail(Market.network.num_edges).minCoeff() << " " << sol_vec.tail(Market.network.num_edges).maxCoeff() << "\n\n";
+	std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).array().abs().sum() << "\n";
+	std::cout << sol_vec.head(Market.network.num_vertice).minCoeff() << " " << sol_vec.head(Market.network.num_vertice).maxCoeff()  << "\n";
+	std::cout << sol_vec.tail(Market.network.num_edges).minCoeff() << " " << sol_vec.tail(Market.network.num_edges).maxCoeff() << "\n\n";
 }
