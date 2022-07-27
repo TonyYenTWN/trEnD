@@ -1,10 +1,16 @@
 var structpower__market_1_1market__inform =
 [
     [ "set_bidded_price", "d8/d2d/structpower__market_1_1market__inform.html#af07973c669a21c453cad7361dce84c6b", null ],
+    [ "actual_demand", "d8/d2d/structpower__market_1_1market__inform.html#a3b26eb5aeda136e1d91d26e75fea66fc", null ],
+    [ "actual_price", "d8/d2d/structpower__market_1_1market__inform.html#a58d913c10faa3146d855ac339a7482f0", null ],
+    [ "actual_price_ratio", "d8/d2d/structpower__market_1_1market__inform.html#a8b8d97d4ce5314c03c561133d03c39d0", null ],
+    [ "actual_supply", "d8/d2d/structpower__market_1_1market__inform.html#a3899b6e804bdcef6c1b80274626c3f5a", null ],
     [ "bidded_price", "d8/d2d/structpower__market_1_1market__inform.html#a663890a2da0257b2073b42eb9a4c0610", null ],
     [ "confirmed_demand", "d8/d2d/structpower__market_1_1market__inform.html#a68f403078be3ee2b652dcec06b4be658", null ],
     [ "confirmed_price", "d8/d2d/structpower__market_1_1market__inform.html#a964d942acbb1428413dac48e4600b2b1", null ],
+    [ "confirmed_price_ratio", "d8/d2d/structpower__market_1_1market__inform.html#a915b4909939adc5e150ffd4ab1b3a747", null ],
     [ "confirmed_supply", "d8/d2d/structpower__market_1_1market__inform.html#ae2a4426636b19185f4a8d2f78047106d", null ],
+    [ "control_reserve", "d8/d2d/structpower__market_1_1market__inform.html#aaa2083100092cdc675082e38d59e762b", null ],
     [ "cross_border_zone_start", "d8/d2d/structpower__market_1_1market__inform.html#a5c2a87921f88721ac93dd97a8ca23f97", null ],
     [ "demand_default", "d8/d2d/structpower__market_1_1market__inform.html#a7054870cb2c77fe4b3b2e4b6257a0b4b", null ],
     [ "filtered_demand", "d8/d2d/structpower__market_1_1market__inform.html#a0eea96cdf59fbf9aa98b0cfbd72e9e89", null ],

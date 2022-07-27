@@ -1,5 +1,6 @@
 var power__market_8h =
 [
+    [ "power_market::control_reserve_inform", "d1/df3/structpower__market_1_1control__reserve__inform.html", "d1/df3/structpower__market_1_1control__reserve__inform" ],
     [ "power_market::market_inform", "d8/d2d/structpower__market_1_1market__inform.html", "d8/d2d/structpower__market_1_1market__inform" ],
     [ "power_market::network_graph", "d5/d93/structpower__market_1_1network__graph.html", "d5/d93/structpower__market_1_1network__graph" ],
     [ "DSO", "db/d56/power__market_8h.html#a074e1ec61026c1e79874b090a095ac14", null ],
@@ -22,6 +23,7 @@ var power__market_8h =
     [ "Source_Node_Set", "db/d56/power__market_8h.html#ae1e8fa9cb87172cb82028b0ddcf838d4", null ],
     [ "Submitted_bid_calculation", "db/d56/power__market_8h.html#aed2659c34831bd285a4d210d1ff9b08c", null ],
     [ "TSO_boundary_update", "db/d56/power__market_8h.html#af5b224f3d0c0c210ed0c66cc8140c5b1", null ],
+    [ "TSO_Market_control_reserve", "db/d56/power__market_8h.html#af66c5b3ce15a73f36aecbd9bb236341a", null ],
     [ "TSO_Market_Results_Get", "db/d56/power__market_8h.html#ac071507e193ed4c20579a682961bcd14", null ],
     [ "TSO_Market_Set", "db/d56/power__market_8h.html#adff40f938d2d4deba55dfc4779c01300", null ]
 ];

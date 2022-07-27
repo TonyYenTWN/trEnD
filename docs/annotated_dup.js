@@ -1,6 +1,7 @@
 var annotated_dup =
 [
     [ "power_market", "d5/d60/namespacepower__market.html", [
+      [ "control_reserve_inform", "d1/df3/structpower__market_1_1control__reserve__inform.html", "d1/df3/structpower__market_1_1control__reserve__inform" ],
       [ "market_inform", "d8/d2d/structpower__market_1_1market__inform.html", "d8/d2d/structpower__market_1_1market__inform" ],
       [ "network_graph", "d5/d93/structpower__market_1_1network__graph.html", "d5/d93/structpower__market_1_1network__graph" ]
     ] ],
