@@ -64,6 +64,8 @@ int main(){
 	std::cout << "TSO: \n";
 	power_market::Flow_Based_Market_Optimization(TSO_Market, TSO_Problem);
 
+	power_market::TSO_Market_control_reserve(0, TSO_Market, TSO_Problem);
+
 	stop = std::chrono::high_resolution_clock::now();
 	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
 	std::cout << "TSO optimization time: " << duration.count() << " microseconds" << "\n\n";
