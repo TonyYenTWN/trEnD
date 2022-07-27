@@ -52,11 +52,13 @@ namespace power_market{
 
 	/**Information of the control reserve market*/
 	struct control_reserve_inform{
-		Eigen::MatrixXd confirmed_positive;
-		Eigen::MatrixXd confirmed_negative;
+		//Eigen::MatrixXd confirmed_positive;
+		//Eigen::MatrixXd confirmed_negative;
 		Eigen::MatrixXd activated_positive;
 		Eigen::MatrixXd activated_negative;
 
+		Eigen::MatrixXd available_ratio_supply;
+		Eigen::MatrixXd available_ratio_demand;
 		Eigen::MatrixXd submitted_positive_supply;
 		Eigen::MatrixXd submitted_positive_demand;
 		Eigen::MatrixXd submitted_negative_supply;
@@ -92,6 +94,10 @@ namespace power_market{
 		Eigen::MatrixXd submitted_supply;
 		/**Demand bid submitted in the bidding zones.*/
 		Eigen::MatrixXd submitted_demand;
+		/**Filtered supply bids from DSOs forwarding to TSO before redispatch.*/
+		Eigen::MatrixXd filtered_supply;
+		/**Filtered demand bids from DSOs forwarding to TSO before redispatch.*/
+		Eigen::MatrixXd filtered_demand;
 
 		// Output Variables
 		/**Confirmed supply quantity of the market.*/
@@ -100,10 +106,20 @@ namespace power_market{
 		Eigen::MatrixXd confirmed_demand;
 		/**Confirmed market clearing price of the market.*/
 		Eigen::MatrixXd confirmed_price;
-		/**Filtered supply bids from DSOs forwarding to TSO before redispatch.*/
-		Eigen::MatrixXd filtered_supply;
-		/**Filtered demand bids from DSOs forwarding to TSO before redispatch.*/
-		Eigen::MatrixXd filtered_demand;
+		/**Ratio of supply or demand confirmed at marginal price:
+		* -1: 100% demand; 1: 100% supply.
+		*/
+		Eigen::MatrixXd confirmed_price_ratio;
+		/**Actual supply quantity (after real time control reserve activation) of the market.*/
+		Eigen::MatrixXd actual_supply;
+		/**Actual demand quantity (after real time control reserve activation) of the market.*/
+		Eigen::MatrixXd actual_demand;
+		/** Market clearing price after control reserve activation of the market.*/
+		Eigen::MatrixXd actual_price;
+		/**Ratio of supply or demand confirmed at marginal price:
+		* -1: 100% demand; 1: 100% supply.
+		*/
+		Eigen::MatrixXd actual_price_ratio;
 
 		// Mixed Substructure
 		/**Information of the corresponding power network of the market.*/
@@ -161,6 +177,7 @@ namespace power_market{
 namespace power_market{
 	void TSO_Market_Set(market_inform&, power_network::network_inform&, int);
 	void TSO_Market_Results_Get(int, market_inform&, alglib::minlpstate&);
+	void TSO_Market_control_reserve(int, market_inform&, alglib::minlpstate&);
 }
 
 #endif
