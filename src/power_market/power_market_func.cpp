@@ -103,7 +103,7 @@ void power_market::Submitted_bid_calculation(markets_inform &DSO_Markets, market
 		int node_ID;
 		Eigen::VectorXd bid_vec;
 
-		// High voltage power plants connect directly to transmission netwrok
+		// High voltage power plants connect directly to transmission network
 		if(Power_network_inform.plants.hydro.cap(hydro_iter) >= 20.){
 			node_ID = Power_network_inform.plants.hydro.node(hydro_iter);
 			DSO_ID = Power_network_inform.nodes.cluster(node_ID);

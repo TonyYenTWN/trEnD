@@ -56,7 +56,7 @@ int main(){
 	std::cout << "Set time: " << duration.count() << " microseconds" << "\n\n";
 
 	// Bid-filtering in DSOs
-	power_market::Filtered_bid_calculation(DSO_Markets, TSO_Market, Power_network_inform, DSO_Problems);
+	//power_market::Filtered_bid_calculation(DSO_Markets, TSO_Market, Power_network_inform, DSO_Problems);
 
 	// Re-dispatch + tertiary control reserve in TSO
 	start = std::chrono::high_resolution_clock::now();
@@ -64,12 +64,13 @@ int main(){
 	std::cout << "TSO: \n";
 	power_market::Flow_Based_Market_Optimization(TSO_Market, TSO_Problem);
 
-	power_market::TSO_Market_control_reserve(0, TSO_Market, TSO_Problem);
-
 	stop = std::chrono::high_resolution_clock::now();
 	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
 	std::cout << "TSO optimization time: " << duration.count() << " microseconds" << "\n\n";
 
 	power_market::TSO_Market_Results_Get(0, TSO_Market, TSO_Problem);
+
+	power_market::TSO_Market_control_reserve(0, TSO_Market, TSO_Problem);
+
 }
 //	std::cin.get();

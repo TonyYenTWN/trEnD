@@ -111,6 +111,11 @@ void power_market::TSO_Market_Results_Get(int tick, market_inform &Market, algli
 }
 
 void power_market::TSO_Market_control_reserve(int tick, market_inform &Market, alglib::minlpstate &Problem){
+	// Temporary setting!!
+	Market.control_reserve.available_ratio_supply = Eigen::MatrixXd::Ones(Market.price_intervals + 2, Market.num_zone);
+	Market.control_reserve.available_ratio_demand = Eigen::MatrixXd::Ones(Market.price_intervals + 2, Market.num_zone);
+	// Temporary setting!!
+
 	// -------------------------------------------------------------------------------
 	// Update bounds for box constraints
 	// -------------------------------------------------------------------------------
