@@ -34,6 +34,7 @@
 		<Linker>
 			<Add option="-static-libgcc -fopenmp -s" />
 		</Linker>
+		<Unit filename="src/agent/end-user.h" />
 		<Unit filename="src/alglib/alglibinternal.cpp" />
 		<Unit filename="src/alglib/alglibinternal.h" />
 		<Unit filename="src/alglib/alglibmisc.cpp" />
