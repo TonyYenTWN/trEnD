@@ -24,7 +24,7 @@ Remember to add the project's top-level directory (the directory which stores th
 # Documentation of Source Codes
 Below is a summary of what the source codes do, categorized by the subfolders in [src](https://github.com/TonyYenTWN/trEnD/tree/main/src) folder. The full documentation can be found at [the github-pages of this repository](https://tonyyentwn.github.io/trEnD).
 
-- [agent_operational](https://github.com/TonyYenTWN/trEnD/tree/main/src/agent_operational): source codes for the operation strategies of relevant agents in the model.
+- [agent](https://github.com/TonyYenTWN/trEnD/tree/main/src/agent_operational): source codes for the operation strategies of relevant agents in the model.
 - [alglib](https://github.com/TonyYenTWN/trEnD/tree/main/src/alglib): source codes from the external library [ALGLIB](https://www.alglib.net/).
 - [basic](https://github.com/TonyYenTWN/trEnD/tree/main/src/basic): source codes for generic functions and headers.
 - [power_market](https://github.com/TonyYenTWN/trEnD/tree/main/src/power_market): source codes for the market clearing at different levels.
