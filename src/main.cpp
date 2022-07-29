@@ -43,7 +43,8 @@ int main(){
 
 	// Re-initialization of submitted bids in DSOs and TSOs
 	std::string fin_point_demand = "csv/processed/spatial_field/nominal_mean_demand_field_10km_annual_mean.csv";
-	power_market::Submitted_bid_calculation(DSO_Markets, TSO_Market, International_Market, Power_network_inform, fin_point_demand);
+	bool DSO_filter_flag = 0;
+	power_market::Submitted_bid_calculation(DSO_Markets, TSO_Market, International_Market, Power_network_inform, fin_point_demand, DSO_filter_flag);
 
 	// Ideal market clearing in IMO
 	power_market::International_Market_Optimization(0, International_Market, 0);
@@ -56,7 +57,9 @@ int main(){
 	std::cout << "Set time: " << duration.count() << " microseconds" << "\n\n";
 
 	// Bid-filtering in DSOs
-	power_market::Filtered_bid_calculation(DSO_Markets, TSO_Market, Power_network_inform, DSO_Problems);
+	if(DSO_filter_flag){
+		power_market::Filtered_bid_calculation(DSO_Markets, TSO_Market, Power_network_inform, DSO_Problems);
+	}
 
 	// Re-dispatch + tertiary control reserve in TSO
 	start = std::chrono::high_resolution_clock::now();

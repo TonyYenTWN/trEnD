@@ -69,7 +69,7 @@ void power_market::Market_clearing_nodal(int tick, market_inform &Market, Eigen:
 // ------------------------------------------------------------------------------------------------
 // Functions involving all markets
 // ------------------------------------------------------------------------------------------------
-void power_market::Submitted_bid_calculation(markets_inform &DSO_Markets, market_inform &TSO_Market, market_inform &International_Market, power_network::network_inform &Power_network_inform, std::string fin_point_demand){
+void power_market::Submitted_bid_calculation(markets_inform &DSO_Markets, market_inform &TSO_Market, market_inform &International_Market, power_network::network_inform &Power_network_inform, std::string fin_point_demand, bool DSO_filter_flag){
 	// Calculation of submit bids at the beginning of each time slice
 	auto fin_point_demand_dim = basic::get_file_dim(fin_point_demand);
 	auto point_demand_inform = basic::read_file(fin_point_demand_dim[0], fin_point_demand_dim[1], fin_point_demand);
@@ -92,8 +92,12 @@ void power_market::Submitted_bid_calculation(markets_inform &DSO_Markets, market
 		// nominal demand currently wrong in processed files, should change them and then multiply area of a point later
 
 		DSO_Markets[DSO_ID].submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, Power_network_inform.points.in_cluster_ID(point_iter)) = bid_quan;
-		//TSO_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, node_ID) += bid_quan; // comment this if DSO filters local bids
 		International_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, bz_ID) += bid_quan;
+
+		// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
+		if(!DSO_filter_flag){
+			TSO_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, node_ID) += bid_quan;
+		}
 	}
 
 	// Supply at each point (LV power plants) / node (HV power plants)
@@ -129,7 +133,11 @@ void power_market::Submitted_bid_calculation(markets_inform &DSO_Markets, market
 				* Power_network_inform.plants.hydro.cap(hydro_iter) / (International_Market.merit_order_curve.col(Power_network_inform.points.bidding_zone(point_ID)).sum());
 
 			DSO_Markets[DSO_ID].submitted_supply.col(Power_network_inform.points.in_cluster_ID(point_ID)) += bid_vec;
-			//TSO_Market.submitted_supply.col(node_ID) += bid_vec; // comment this if DSO filters local bids
+
+			// If DSOs do not filter local bids, supply from LV buses is directly added to the nodes in the TSO
+			if(!DSO_filter_flag){
+				TSO_Market.submitted_supply.col(node_ID) += bid_vec;
+			}
 		}
 		International_Market.submitted_supply.col(bz_ID) += bid_vec;
 	}

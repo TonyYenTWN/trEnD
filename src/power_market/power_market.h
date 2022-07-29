@@ -149,7 +149,7 @@ namespace power_market{
 namespace power_market{
 	void Market_Initialization(market_inform&);
 	void Market_clearing_nodal(int, market_inform&, Eigen::VectorXi&, Eigen::MatrixXd&, Eigen::MatrixXd&);
-	void Submitted_bid_calculation(markets_inform&, market_inform&, market_inform&, power_network::network_inform&, std::string);
+	void Submitted_bid_calculation(markets_inform&, market_inform&, market_inform&, power_network::network_inform&, std::string, bool DSO_filter_flag = 0);
 	void TSO_boundary_update(int, market_inform&, market_inform&, power_network::network_inform&);
 	void Flow_Based_Market_LP_Set(market_inform&, alglib::minlpstate &);
 	void Flow_Based_Market_Optimization(market_inform&, alglib::minlpstate&);
