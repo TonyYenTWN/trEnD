@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['main_0',['main',['../dc/dc3/end-user_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4',1,'main():&#160;end-user.cpp'],['../df/d0a/main_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4',1,'main():&#160;main.cpp'],['../d5/d41/power__market__proc_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4',1,'main():&#160;power_market_proc.cpp'],['../da/d6b/area__demand_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4',1,'main():&#160;area_demand.cpp']]],
+  ['main_0',['main',['../df/d0a/main_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4',1,'main():&#160;main.cpp'],['../d5/d41/power__market__proc_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4',1,'main():&#160;power_market_proc.cpp'],['../da/d6b/area__demand_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4',1,'main():&#160;area_demand.cpp']]],
   ['main_2ecpp_1',['main.cpp',['../df/d0a/main_8cpp.html',1,'']]],
   ['map_2',['MAP',['../d5/da0/basic__definitions_8h.html#a4e58380df1435929cc191b5b4ba99cd5',1,'basic_definitions.h']]],
   ['market_5fclearing_5fnodal_3',['Market_clearing_nodal',['../d5/d60/namespacepower__market.html#a755ae411445242da0b6477044211695d',1,'power_market']]],

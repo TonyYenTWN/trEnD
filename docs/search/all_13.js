@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['value_0',['value',['../d4/dc7/structsorted__vector.html#ac941e3d1d30b459f89972c2f85b9a502',1,'sorted_vector']]],
+  ['value_0',['value',['../de/dbe/structagent_1_1sorted__vector.html#ac0e47f6e8e86f4b36d5c3ccead54051a',1,'agent::sorted_vector']]],
   ['variables_5fnum_1',['Variables_num',['../de/d62/structLP__object.html#a707335024f405f984a5cda5d531d47c8',1,'LP_object']]],
   ['varying_5fvector_2',['varying_vector',['../d5/daa/structLP__objective.html#ae4d0be0c1b24c6b9760a01a8892eee57',1,'LP_objective']]],
   ['vector_3',['VECTOR',['../d5/da0/basic__definitions_8h.html#ac6e89954deaa373db52a91ac6db50884',1,'basic_definitions.h']]],

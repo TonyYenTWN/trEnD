@@ -1,5 +1,6 @@
 var namespaces_dup =
 [
+    [ "agent", "d2/d00/namespaceagent.html", "d2/d00/namespaceagent" ],
     [ "basic", "de/dbb/namespacebasic.html", [
       [ "get_col_name", "de/dbb/namespacebasic.html#a11ea1d6640d0bbd0d337cbfb5204b8a7", null ],
       [ "get_file_dim", "de/dbb/namespacebasic.html#a27f0ca57a03561dbb4cdad6525cc6bbb", null ],

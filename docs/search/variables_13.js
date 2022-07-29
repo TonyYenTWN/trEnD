@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['value_0',['value',['../d4/dc7/structsorted__vector.html#ac941e3d1d30b459f89972c2f85b9a502',1,'sorted_vector']]],
+  ['value_0',['value',['../de/dbe/structagent_1_1sorted__vector.html#ac0e47f6e8e86f4b36d5c3ccead54051a',1,'agent::sorted_vector']]],
   ['variables_5fnum_1',['Variables_num',['../de/d62/structLP__object.html#a707335024f405f984a5cda5d531d47c8',1,'LP_object']]],
   ['varying_5fvector_2',['varying_vector',['../d5/daa/structLP__objective.html#ae4d0be0c1b24c6b9760a01a8892eee57',1,'LP_objective']]],
   ['voltage_5fbase_3',['voltage_base',['../d8/d02/structpower__network_1_1nodes.html#a80d2a503b492d1633297fadad3d37302',1,'power_network::nodes::voltage_base()'],['../d3/d9c/structpower__network_1_1edges.html#a8d2079dcfaaf3bcd619753bdb6f0b883',1,'power_network::edges::voltage_base()']]],

@@ -16,7 +16,7 @@ var namespacepower__market =
     [ "Market_Initialization", "d5/d60/namespacepower__market.html#a3aaf51815c60ec67d4f4884ef57f5e3e", null ],
     [ "Sink_Node_Set", "d5/d60/namespacepower__market.html#ad26010bbf64104749407f8a3b2fdd581", null ],
     [ "Source_Node_Set", "d5/d60/namespacepower__market.html#ae1e8fa9cb87172cb82028b0ddcf838d4", null ],
-    [ "Submitted_bid_calculation", "d5/d60/namespacepower__market.html#aed2659c34831bd285a4d210d1ff9b08c", null ],
+    [ "Submitted_bid_calculation", "d5/d60/namespacepower__market.html#ab05e1c5399a402918322b462d7232965", null ],
     [ "TSO_boundary_update", "d5/d60/namespacepower__market.html#af5b224f3d0c0c210ed0c66cc8140c5b1", null ],
     [ "TSO_Market_control_reserve", "d5/d60/namespacepower__market.html#af66c5b3ce15a73f36aecbd9bb236341a", null ],
     [ "TSO_Market_Results_Get", "d5/d60/namespacepower__market.html#ac071507e193ed4c20579a682961bcd14", null ],
