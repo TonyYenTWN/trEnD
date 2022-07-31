@@ -209,6 +209,31 @@ void power_network::power_network_input_process(network_inform &Power_network_in
 	Power_network_inform.tech_parameters.set_level_maps(Power_network_inform.nodes);
 }
 
+void spatial_field::spatial_field_store(power_network::network_inform &Power_network_inform, std::string fin_demand, int Time){
+	int row_num = Power_network_inform.points.bidding_zone.rows();
+	Power_network_inform.points.nominal_mean_demand_field = Eigen::MatrixXd(row_num, Time);
+
+	//for(int tick = 0; tick < Time; ++ tick){
+	for(int tick = 0; tick < 24; ++ tick){
+		// Find zeros before the number
+		int count_zeros = 0;
+		int tick_temp = tick;
+		std::string digit_zeros;
+		while(int (tick_temp / 10) != 0){
+			count_zeros += 1;
+			tick_temp /= 10;
+		}
+		for(int item = 0; item < 5 - count_zeros; ++item){
+			digit_zeros += std::to_string(0);
+		}
+
+		// File name with enumeration
+		std::string fin_demand_temp = fin_demand + digit_zeros + std::to_string(tick) + ".csv";
+
+		Power_network_inform.points.nominal_mean_demand_field.col(tick) = basic::read_file(row_num, 1, fin_demand_temp);
+	}
+}
+
 //int main(){
 //	network_inform Power_network_inform;
 //	power_network_input_process(Power_network_inform);

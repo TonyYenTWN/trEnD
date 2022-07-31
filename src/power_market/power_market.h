@@ -4,6 +4,7 @@
 #ifndef MARKET_OBJECT
 #define MARKET_OBJECT
 
+#include "src/agent/end-user.h"
 #include "src/alglib/optimization.h"
 #include "src/basic/basic_definitions.h"
 #include "src/basic/eigen_sparse.h"
@@ -188,6 +189,7 @@ namespace power_market{
 
 namespace power_market{
 	void DSO_Markets_Set(markets_inform&, power_network::network_inform&, int);
+	std::vector <std::vector <agent::end_user::operation>> DSO_agents_set(markets_inform&, power_network::network_inform&);
 	void Source_Node_Set(market_inform&, power_network::DSO_cluster&);
 	void Sink_Node_Set(market_inform&, power_network::DSO_cluster&);
 	void DSO_Market_Results_Get(market_inform&, alglib::minlpstate&, power_network::DSO_cluster&, bool supply = 1);

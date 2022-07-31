@@ -39,6 +39,8 @@ namespace power_network{
 		/*@{*/
 		/** Population density at the spatial point.*/
 		Eigen::VectorXd population_density;
+		/** Time series of mean electricity demand profile at each spatial points.*/
+		Eigen::MatrixXd nominal_mean_demand_field;
 		/*@{*/
 
 		/**
@@ -301,6 +303,10 @@ namespace power_network{
 
 	// Function for reading the files
 	void power_network_input_process(network_inform&, std::string parent_dir);
+}
+
+namespace spatial_field{
+	void spatial_field_store(power_network::network_inform&, std::string, int);
 }
 
 #endif
