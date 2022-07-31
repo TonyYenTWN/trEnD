@@ -17,11 +17,12 @@ int main(){
 	start = std::chrono::high_resolution_clock::now();
 
 	// Initialization of power network information
+	int Time = 8760;
 	power_network::network_inform Power_network_inform;
 	power_network::power_network_input_process(Power_network_inform, "csv/input/power_network/");
+	spatial_field::spatial_field_store(Power_network_inform, "csv/processed/spatial_field/nominal_mean_demand_field_10km_ts_", Time);
 
 	// Initialization of the IMO
-	int Time = 8760;
 	std::string fin_name_moc = "csv/input/power_market/merit_order_curve_q_assimilated_2021.csv";
 	std::string fin_name_demand = "csv/input/power_market/residual_load_default_forecast_2021.csv";
 	power_market::market_inform International_Market;

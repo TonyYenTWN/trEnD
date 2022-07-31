@@ -118,6 +118,15 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 	}
 }
 
+std::vector <std::vector <agent::end_user::operation>> power_market::DSO_agents_set(markets_inform &DSO_Markets, power_network::network_inform &Power_network_inform){
+	std::vector <std::vector <agent::end_user::operation>> end_user_profiles(Power_network_inform.points.bidding_zone.rows());
+	int sample_num = 3;
+	for(int point_iter = 0; point_iter < end_user_profiles.size(); ++ point_iter){
+		end_user_profiles[point_iter] = std::vector <agent::end_user::operation> (sample_num);
+	}
+	return end_user_profiles;
+}
+
 void power_market::Source_Node_Set(market_inform &DSO_Market, power_network::DSO_cluster &DSO_cluster){
 	for(int node_iter = 0; node_iter < DSO_cluster.nodes_ID.size(); ++ node_iter){
 		DSO_Market.submitted_demand.col(DSO_cluster.points_ID.size() + node_iter)	= Eigen::VectorXd::Zero(DSO_Market.price_intervals + 2);

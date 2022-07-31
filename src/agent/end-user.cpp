@@ -1,16 +1,52 @@
-//// Source file for end-user operational strategy
+// Source file for end-user operational strategy
 //#include <iostream>
-////#include <chrono>
+//#include <chrono>
 //#include "../basic/Basic_Definitions.h"
-////#include "../basic/LP_gpa.cpp"
+//#include "../basic/LP_gpa.cpp"
 //#include "../basic/LP_gpa_fast.cpp"
-//
+#include "end-user.h"
+
+agent::sorted_vector agent::sort(Eigen::VectorXd original){
+	// Sort of vector
+ 	std::vector<int> item_seq(original.size());
+ 	std::iota(item_seq.begin(), item_seq.end(), 0);
+ 	std::sort(item_seq.begin(), item_seq.end(), [&](int i,int j){return original(i) < original(j);});
+
+ 	// Output of vector
+ 	agent::sorted_vector result;
+ 	result.id = Eigen::VectorXi(original.size());
+ 	result.value = Eigen::VectorXd(original.size());
+ 	for(int item_ID = 0; item_ID < original.size(); ++ item_ID){
+ 		result.id(item_ID) = item_seq[item_ID];
+ 		result.value(item_ID) = original(item_seq[item_ID]);
+	}
+
+	return(result);
+}
+
+void agent::end_user::smart_appliance_schedule(agent::sorted_vector sorted_tariff, Eigen::VectorXd normalized_default_demand_profile, agent::end_user::smart_appliance_inform &result){
+	// Initialization
+	double total_flex_demand_energy = result.scale * normalized_default_demand_profile.sum() + result.unfulfilled_demand;
+	double flex_demand_capacity_max = total_flex_demand_energy / normalized_default_demand_profile.size() / result.flexibility_factor;
+	int flex_demand_duration = int(result.flexibility_factor * normalized_default_demand_profile.size());
+	if(double(result.flexibility_factor * normalized_default_demand_profile.size() - flex_demand_duration) != 0){
+		flex_demand_duration += 1;
+	}
+
+	// Schedule the demand to low price periods
+	result.normalized_scheduled_profile = Eigen::VectorXd::Zero(normalized_default_demand_profile.size());
+	for(int tick = 0; tick < flex_demand_duration - 1; ++ tick){
+		result.normalized_scheduled_profile(sorted_tariff.id(tick)) = flex_demand_capacity_max;
+	}
+	result.normalized_scheduled_profile(sorted_tariff.id(flex_demand_duration - 1)) = total_flex_demand_energy - (flex_demand_duration - 1) * flex_demand_capacity_max;
+}
+
 //struct end_user_decision{
 //	bool dynamic_tariff;
 //	bool smart_appliance;
 //	bool PV_BESS;
 //	bool EV_self_charging;
-//	bool reverse_flow;										// Whether the end-user can inject power flow back to grid; false when active_flex is false
+//	bool reverse_flow;									// Whether the end-user can inject power flow back to grid; false when active_flex is false
 //	bool active_flex;										// Whether the end-user can provide flexibility to the aggregator; false when dynamic_tariff is false, or when end-user does not have PV + BESS, EV, or smart appliance
 //};
 //

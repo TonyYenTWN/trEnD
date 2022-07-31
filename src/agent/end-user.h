@@ -1,4 +1,5 @@
 // Header file for operation and investment of end-user
+#include "src/basic/basic_definitions.h"
 
 namespace agent{
 	namespace end_user{
@@ -147,6 +148,8 @@ namespace agent{
 	};
 
 	// Functions
+	namespace end_user{
+		void smart_appliance_schedule(sorted_vector, Eigen::VectorXd, smart_appliance_inform&);
+	}
 	sorted_vector sort(Eigen::VectorXd);
-	void smart_appliance_schedule(sorted_vector, Eigen::VectorXd, double, smart_appliance_inform&);
 }
