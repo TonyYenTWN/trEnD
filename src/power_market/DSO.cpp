@@ -118,11 +118,25 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 	}
 }
 
-std::vector <std::vector <agent::end_user::operation>> power_market::DSO_agents_set(markets_inform &DSO_Markets, power_network::network_inform &Power_network_inform){
+std::vector <std::vector <agent::end_user::operation>> power_market::DSO_agents_set(int tick, markets_inform &DSO_Markets, power_network::network_inform &Power_network_inform){
 	std::vector <std::vector <agent::end_user::operation>> end_user_profiles(Power_network_inform.points.bidding_zone.rows());
 	int sample_num = 3;
 	for(int point_iter = 0; point_iter < end_user_profiles.size(); ++ point_iter){
 		end_user_profiles[point_iter] = std::vector <agent::end_user::operation> (sample_num);
+	}
+
+	// Initialization of forecast demand profile
+	if(tick == 0){
+		for(int point_iter = 0; point_iter < end_user_profiles.size(); ++ point_iter){
+			for(int sample_iter = 0; point_iter < sample_num; ++ sample_iter){
+				end_user_profiles[point_iter][sample_iter].normalized_default_demand_profile = (Power_network_inform.points.nominal_mean_demand_field.row(point_iter)).head(24);
+				std::cout << (Power_network_inform.points.nominal_mean_demand_field.row(point_iter)).head(24)<< "\n\n";
+			}
+		}
+	}
+	// Shift the profile one time step further
+	else{
+
 	}
 	return end_user_profiles;
 }
