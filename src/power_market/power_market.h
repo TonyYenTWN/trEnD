@@ -166,6 +166,7 @@ namespace power_market{
 namespace power_market{
 	void International_Market_Set(market_inform&, power_network::network_inform&, int, std::string, std::string);
 	void International_Market_Optimization(int, market_inform&, bool print_result = 1);
+	void International_Market_Price_Estimation(int, market_inform&, power_network::network_inform&);
 	void International_Market_Output(market_inform&);
 }
 

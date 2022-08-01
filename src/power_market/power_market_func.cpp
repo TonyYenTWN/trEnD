@@ -67,7 +67,7 @@ void power_market::Market_clearing_nodal(int tick, market_inform &Market, Eigen:
 }
 
 // ------------------------------------------------------------------------------------------------
-// Functions involving all markets
+// Functions involving multiple markets
 // ------------------------------------------------------------------------------------------------
 void power_market::Submitted_bid_calculation(markets_inform &DSO_Markets, market_inform &TSO_Market, market_inform &International_Market, power_network::network_inform &Power_network_inform, std::string fin_point_demand, bool DSO_filter_flag){
 	// Calculation of submit bids at the beginning of each time slice
@@ -112,13 +112,14 @@ void power_market::Submitted_bid_calculation(markets_inform &DSO_Markets, market
 			node_ID = Power_network_inform.plants.hydro.node(hydro_iter);
 			DSO_ID = Power_network_inform.nodes.cluster(node_ID);
 			bz_ID = Power_network_inform.nodes.bidding_zone(node_ID);
-			bid_vec = International_Market.merit_order_curve.col(Power_network_inform.nodes.bidding_zone(node_ID))
-				* Power_network_inform.plants.hydro.cap(hydro_iter) / (International_Market.merit_order_curve.col(Power_network_inform.nodes.bidding_zone(node_ID)).sum());
+			bid_vec = International_Market.merit_order_curve.col(Power_network_inform.nodes.bidding_zone(node_ID));
+			bid_vec *= Power_network_inform.plants.hydro.cap(hydro_iter);
+			bid_vec /= (International_Market.merit_order_curve.col(Power_network_inform.nodes.bidding_zone(node_ID)).sum());
 
 			DSO_Markets[DSO_ID].submitted_supply.col(Power_network_inform.DSO_cluster[DSO_ID].points_ID.size() + Power_network_inform.nodes.in_cluster_ID(node_ID)) += bid_vec;
 			TSO_Market.submitted_supply.col(node_ID) += bid_vec;
 		}
-		// Low voltage power plants feed into distribution netwrok
+		// Low voltage power plants feed into distribution network
 		else{
 			int x_ID = int((Power_network_inform.plants.hydro.x(hydro_iter) - Power_network_inform.points.x.minCoeff()) / Power_network_inform.points.grid_length + .5);
 			int y_ID = int((Power_network_inform.plants.hydro.y(hydro_iter) - Power_network_inform.points.y.minCoeff()) / Power_network_inform.points.grid_length + .5);
@@ -129,8 +130,9 @@ void power_market::Submitted_bid_calculation(markets_inform &DSO_Markets, market
 			node_ID = Power_network_inform.points.node(point_ID);
 			DSO_ID = Power_network_inform.nodes.cluster(node_ID);
 			bz_ID = Power_network_inform.nodes.bidding_zone(node_ID);
-			bid_vec = International_Market.merit_order_curve.col(Power_network_inform.points.bidding_zone(point_ID))
-				* Power_network_inform.plants.hydro.cap(hydro_iter) / (International_Market.merit_order_curve.col(Power_network_inform.points.bidding_zone(point_ID)).sum());
+			bid_vec = International_Market.merit_order_curve.col(Power_network_inform.points.bidding_zone(point_ID));
+			bid_vec	*= Power_network_inform.plants.hydro.cap(hydro_iter);
+			bid_vec	/= (International_Market.merit_order_curve.col(Power_network_inform.points.bidding_zone(point_ID)).sum());
 
 			DSO_Markets[DSO_ID].submitted_supply.col(Power_network_inform.points.in_cluster_ID(point_ID)) += bid_vec;
 

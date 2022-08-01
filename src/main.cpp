@@ -42,6 +42,9 @@ int main(){
 		power_market::Flow_Based_Market_LP_Set(DSO_Markets[DSO_iter], DSO_Problems[DSO_iter]);
 	}
 
+	// Initial estimation of market clearing price in the IMO
+	power_market::International_Market_Price_Estimation(0, International_Market, Power_network_inform);
+
 	// Bidding strategies of end-users
 	auto end_user_profiles = power_market::DSO_agents_set(0, DSO_Markets, Power_network_inform);
 

@@ -4,6 +4,60 @@
 #include "src/basic/rw_csv.h"
 #include "power_market.h"
 
+namespace{
+	void International_Market_Submitted_bid_calculation(int tick, power_market::market_inform &International_Market, power_network::network_inform &Power_network_inform){
+		// Initialize submit bids of markets
+		power_market::Market_Initialization(International_Market);
+
+		// Demand at each point are 100% inflexible
+		for(int point_iter = 0; point_iter < Power_network_inform.points.bidding_zone.size(); ++ point_iter){
+			int node_ID = Power_network_inform.points.node(point_iter);
+			int DSO_ID = Power_network_inform.nodes.cluster(node_ID);
+			int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
+			double bid_quan = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick);
+			bid_quan *= Power_network_inform.points.population_density(point_iter);
+			// bid_quan *= Power_network_inform.points.point_area;
+			// nominal demand currently wrong in processed files, should change them and then multiply area of a point later
+
+			International_Market.submitted_demand(International_Market.price_intervals + 1, bz_ID) += bid_quan;
+		}
+
+		// Supply at each point (LV power plants) / node (HV power plants)
+		for(int hydro_iter = 0; hydro_iter < Power_network_inform.plants.hydro.node.size(); ++ hydro_iter){
+			int bz_ID;
+			int DSO_ID;
+			int node_ID;
+			Eigen::VectorXd bid_vec;
+
+			// High voltage power plants connect directly to transmission network
+			if(Power_network_inform.plants.hydro.cap(hydro_iter) >= 20.){
+				node_ID = Power_network_inform.plants.hydro.node(hydro_iter);
+				DSO_ID = Power_network_inform.nodes.cluster(node_ID);
+				bz_ID = Power_network_inform.nodes.bidding_zone(node_ID);
+				bid_vec = International_Market.merit_order_curve.col(Power_network_inform.nodes.bidding_zone(node_ID));
+				bid_vec *= Power_network_inform.plants.hydro.cap(hydro_iter);
+				bid_vec /= (International_Market.merit_order_curve.col(Power_network_inform.nodes.bidding_zone(node_ID)).sum());
+			}
+			// Low voltage power plants feed into distribution network
+			else{
+				int x_ID = int((Power_network_inform.plants.hydro.x(hydro_iter) - Power_network_inform.points.x.minCoeff()) / Power_network_inform.points.grid_length + .5);
+				int y_ID = int((Power_network_inform.plants.hydro.y(hydro_iter) - Power_network_inform.points.y.minCoeff()) / Power_network_inform.points.grid_length + .5);
+				int point_ID = Power_network_inform.points.coordinate_grid(x_ID, y_ID);
+				if(point_ID == -1){
+					continue;
+				}
+				node_ID = Power_network_inform.points.node(point_ID);
+				DSO_ID = Power_network_inform.nodes.cluster(node_ID);
+				bz_ID = Power_network_inform.nodes.bidding_zone(node_ID);
+				bid_vec = International_Market.merit_order_curve.col(Power_network_inform.points.bidding_zone(point_ID));
+				bid_vec	*= Power_network_inform.plants.hydro.cap(hydro_iter);
+				bid_vec	/= (International_Market.merit_order_curve.col(Power_network_inform.points.bidding_zone(point_ID)).sum());
+			}
+			International_Market.submitted_supply.col(bz_ID) += bid_vec;
+		}
+	}
+}
+
 void power_market::International_Market_Set(market_inform &International_Market, power_network::network_inform &Power_network_inform, int Time, std::string fin_name_moc, std::string fin_name_demand){
 	// Input Parameters of international market
 	International_Market.num_zone = 13;
@@ -98,6 +152,8 @@ void power_market::International_Market_Optimization(int tick, market_inform &In
 	bidded_demand = International_Market.submitted_demand;
 
 	// Initial market clearing within each bidding zones
+	International_Market.confirmed_demand.row(tick) = Eigen::VectorXd::Zero(International_Market.num_zone);
+	International_Market.confirmed_supply.row(tick) = Eigen::VectorXd::Zero(International_Market.num_zone);
 	default_price_ID = Eigen::VectorXi(International_Market.num_zone);
 	power_market::Market_clearing_nodal(tick, International_Market, default_price_ID, bidded_supply, bidded_demand);
 
@@ -348,6 +404,23 @@ void power_market::International_Market_Optimization(int tick, market_inform &In
 void power_market::International_Market_Output(market_inform &International_Market){
 	std::string fout_name = "output/IMO_confirmed_price.csv";
 	basic::write_file(International_Market.confirmed_price, fout_name, International_Market.zone_names);
+}
+
+void power_market::International_Market_Price_Estimation(int tick, power_market::market_inform &International_Market, power_network::network_inform &Power_network_inform){
+	// Initialization of forecast market clearing price
+	if(tick == 0){
+		for(int tock = 0; tock < 24; ++ tock){
+			International_Market_Submitted_bid_calculation(tock, International_Market, Power_network_inform);
+			International_Market_Optimization(tock, International_Market, 0);
+		}
+
+		std::cout << International_Market.confirmed_price.topRows(24) << "\n\n";
+	}
+	// Find the profile one time step further
+	else{
+		International_Market_Submitted_bid_calculation(tick + 23, International_Market, Power_network_inform);
+		International_Market_Optimization(tick + 23, International_Market, 0);
+	}
 }
 
 //int main(){
