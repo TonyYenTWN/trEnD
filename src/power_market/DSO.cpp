@@ -128,9 +128,8 @@ std::vector <std::vector <agent::end_user::operation>> power_market::DSO_agents_
 	// Initialization of forecast demand profile
 	if(tick == 0){
 		for(int point_iter = 0; point_iter < end_user_profiles.size(); ++ point_iter){
-			for(int sample_iter = 0; point_iter < sample_num; ++ sample_iter){
+			for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
 				end_user_profiles[point_iter][sample_iter].normalized_default_demand_profile = (Power_network_inform.points.nominal_mean_demand_field.row(point_iter)).head(24);
-				std::cout << (Power_network_inform.points.nominal_mean_demand_field.row(point_iter)).head(24)<< "\n\n";
 			}
 		}
 	}
