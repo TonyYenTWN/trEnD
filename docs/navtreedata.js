@@ -57,7 +57,7 @@ var NAVTREEINDEX =
 [
 "annotated.html",
 "d8/d2d/structpower__market_1_1market__inform.html#a0eea96cdf59fbf9aa98b0cfbd72e9e89",
-"de/dbe/structagent_1_1sorted__vector.html"
+"de/dbb/namespacebasic.html#a3b5e94658defb15a24da0abf9e216c7e"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
