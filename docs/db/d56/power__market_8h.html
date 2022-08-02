@@ -109,7 +109,8 @@ $(document).ready(function(){initNavTree('db/d56/power__market_8h.html','../../'
   <div class="headertitle"><div class="title">power_market.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;src/alglib/optimization.h&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="../../d2/d8b/end-user_8h_source.html">src/agent/end-user.h</a>&quot;</code><br />
+<code>#include &quot;src/alglib/optimization.h&quot;</code><br />
 <code>#include &quot;<a class="el" href="../../d5/da0/basic__definitions_8h_source.html">src/basic/basic_definitions.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="../../d9/d42/eigen__sparse_8h_source.html">src/basic/eigen_sparse.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="../../d9/dde/power__network_8h_source.html">src/power_network/power_network.h</a>&quot;</code><br />
@@ -150,6 +151,10 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ab6b034dc6419d580e96fab08b3a8ee5d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; <a class="el" href="../../d3/d9b/structagent_1_1end__user_1_1profile.html">agent::end_user::profile</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d60/namespacepower__market.html#ab6b034dc6419d580e96fab08b3a8ee5d">power_market::DSO_agents_set</a> (markets_inform &amp;, market_inform &amp;, <a class="el" href="../../d4/ddd/structpower__network_1_1network__inform.html">power_network::network_inform</a> &amp;)</td></tr>
+<tr class="separator:ab6b034dc6419d580e96fab08b3a8ee5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e1577ab6d27b62741e1f52addca4850"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d60/namespacepower__market.html#a5e1577ab6d27b62741e1f52addca4850">power_market::DSO_agents_update</a> (int, std::vector&lt; std::vector&lt; <a class="el" href="../../d3/d9b/structagent_1_1end__user_1_1profile.html">agent::end_user::profile</a> &gt; &gt; &amp;, markets_inform &amp;, <a class="el" href="../../d4/ddd/structpower__network_1_1network__inform.html">power_network::network_inform</a> &amp;)</td></tr>
+<tr class="separator:a5e1577ab6d27b62741e1f52addca4850"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1f7c10b9a1ac8928ca5a54d2cfc482d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d60/namespacepower__market.html#a1f7c10b9a1ac8928ca5a54d2cfc482d7">power_market::DSO_Market_Results_Get</a> (market_inform &amp;, alglib::minlpstate &amp;, <a class="el" href="../../d0/df7/structpower__network_1_1DSO__cluster.html">power_network::DSO_cluster</a> &amp;, bool supply=1)</td></tr>
 <tr class="separator:a1f7c10b9a1ac8928ca5a54d2cfc482d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33e114e901ed9959e3bf88c5fd7c2547"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d60/namespacepower__market.html#a33e114e901ed9959e3bf88c5fd7c2547">power_market::DSO_Markets_Set</a> (markets_inform &amp;, <a class="el" href="../../d4/ddd/structpower__network_1_1network__inform.html">power_network::network_inform</a> &amp;, int)</td></tr>
@@ -164,6 +169,10 @@ Functions</h2></td></tr>
 <tr class="separator:a0754b691d2e46f0319e8954d0d72ee15"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a53e17da0ec3f9445eb26b9e9ae8525ac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d60/namespacepower__market.html#a53e17da0ec3f9445eb26b9e9ae8525ac">power_market::International_Market_Output</a> (market_inform &amp;)</td></tr>
 <tr class="separator:a53e17da0ec3f9445eb26b9e9ae8525ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6717b4b13ef71a614b0604cd85c7c80"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d60/namespacepower__market.html#ae6717b4b13ef71a614b0604cd85c7c80">power_market::International_Market_Price_Estimation</a> (int, market_inform &amp;, <a class="el" href="../../d4/ddd/structpower__network_1_1network__inform.html">power_network::network_inform</a> &amp;)</td></tr>
+<tr class="separator:ae6717b4b13ef71a614b0604cd85c7c80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1b46acf99b0313d44594bd00fb00de94"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="../../de/dbe/structagent_1_1sorted__vector.html">agent::sorted_vector</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d60/namespacepower__market.html#a1b46acf99b0313d44594bd00fb00de94">power_market::International_Market_Price_Sorted</a> (int, market_inform &amp;)</td></tr>
+<tr class="separator:a1b46acf99b0313d44594bd00fb00de94"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae566094e2b348b63a0be3cc5b4fddb38"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d60/namespacepower__market.html#ae566094e2b348b63a0be3cc5b4fddb38">power_market::International_Market_Set</a> (market_inform &amp;, <a class="el" href="../../d4/ddd/structpower__network_1_1network__inform.html">power_network::network_inform</a> &amp;, int, std::string, std::string)</td></tr>
 <tr class="separator:ae566094e2b348b63a0be3cc5b4fddb38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a755ae411445242da0b6477044211695d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d60/namespacepower__market.html#a755ae411445242da0b6477044211695d">power_market::Market_clearing_nodal</a> (int, market_inform &amp;, Eigen::VectorXi &amp;, Eigen::MatrixXd &amp;, Eigen::MatrixXd &amp;)</td></tr>
@@ -198,7 +207,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00187">187</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00190">190</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
 
 </div>
 </div>
@@ -214,7 +223,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00163">163</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00164">164</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
 
 </div>
 </div>
@@ -246,7 +255,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00147">147</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00148">148</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
 
 </div>
 </div>
@@ -262,7 +271,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00175">175</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/d56/power__market_8h_source.html#l00178">178</a> of file <a class="el" href="../../db/d56/power__market_8h_source.html">power_market.h</a>.</p>
 
 </div>
 </div>

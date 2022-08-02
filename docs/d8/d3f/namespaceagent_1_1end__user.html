@@ -101,7 +101,8 @@ $(document).ready(function(){initNavTree('d8/d3f/namespaceagent_1_1end__user.htm
 
 <div class="header">
   <div class="summary">
-<a href="#nested-classes">Classes</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">agent::end_user Namespace Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -120,13 +121,61 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d54/structagent_1_1end__user_1_1operation.html">operation</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Information of the operation strategies of an end-user.  <a href="../../df/d54/structagent_1_1end__user_1_1operation.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d9b/structagent_1_1end__user_1_1profile.html">profile</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dd0/structagent_1_1end__user_1_1smart__appliance__inform.html">smart_appliance_inform</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Information of smart appliance of an end-user.  <a href="../../d3/dd0/structagent_1_1end__user_1_1smart__appliance__inform.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dfa/structagent_1_1end__user_1_1storage__inform.html">storage_inform</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Information of battery storage system of an end-user.  <a href="../../d3/dfa/structagent_1_1end__user_1_1storage__inform.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a80bb9d48b2ee3e305a610b599f066fe8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d3f/namespaceagent_1_1end__user.html#a80bb9d48b2ee3e305a610b599f066fe8">smart_appliance_schedule</a> (<a class="el" href="../../de/dbe/structagent_1_1sorted__vector.html">sorted_vector</a>, Eigen::VectorXd, <a class="el" href="../../d3/dd0/structagent_1_1end__user_1_1smart__appliance__inform.html">smart_appliance_inform</a> &amp;)</td></tr>
+<tr class="separator:a80bb9d48b2ee3e305a610b599f066fe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Function Documentation</h2>
+<a id="a80bb9d48b2ee3e305a610b599f066fe8" name="a80bb9d48b2ee3e305a610b599f066fe8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80bb9d48b2ee3e305a610b599f066fe8">&#9670;&nbsp;</a></span>smart_appliance_schedule()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void agent::end_user::smart_appliance_schedule </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../de/dbe/structagent_1_1sorted__vector.html">agent::sorted_vector</a>&#160;</td>
+          <td class="paramname"><em>sorted_tariff</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">Eigen::VectorXd&#160;</td>
+          <td class="paramname"><em>normalized_default_demand_profile</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d3/dd0/structagent_1_1end__user_1_1smart__appliance__inform.html">smart_appliance_inform</a> &amp;&#160;</td>
+          <td class="paramname"><em>result</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../dc/dc3/end-user_8cpp_source.html#l00027">27</a> of file <a class="el" href="../../dc/dc3/end-user_8cpp_source.html">end-user.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00031">agent::end_user::smart_appliance_inform::flexibility_factor</a>, <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00151">agent::sorted_vector::id</a>, <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00047">agent::end_user::smart_appliance_inform::normalized_scheduled_profile</a>, <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00027">agent::end_user::smart_appliance_inform::scale</a>, and <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00039">agent::end_user::smart_appliance_inform::unfulfilled_demand</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../d5/d56/DSO_8cpp_source.html#l00121">power_market::DSO_agents_set()</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.2-->

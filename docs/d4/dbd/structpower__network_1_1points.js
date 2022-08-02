@@ -9,6 +9,7 @@ var structpower__network_1_1points =
     [ "lat", "d4/dbd/structpower__network_1_1points.html#ab637d272fc9ff7fbba44d0d38d8d85d0", null ],
     [ "lon", "d4/dbd/structpower__network_1_1points.html#a0c11586df60acd9f3966801957138440", null ],
     [ "node", "d4/dbd/structpower__network_1_1points.html#af5352178fcb4224558c45762f5b9e370", null ],
+    [ "nominal_mean_demand_field", "d4/dbd/structpower__network_1_1points.html#a976401b3721077253c8c41ca0e4a5d26", null ],
     [ "point_area", "d4/dbd/structpower__network_1_1points.html#ae2fd226757e8c20ac9c2349bad1d9e00", null ],
     [ "population_density", "d4/dbd/structpower__network_1_1points.html#ad87de87c3072f5ae6926e9d70aaec9d0", null ],
     [ "x", "d4/dbd/structpower__network_1_1points.html#ad0129ca9a7d9a5fec1e0af235409c0e8", null ],
