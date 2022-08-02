@@ -41,6 +41,10 @@ void agent::end_user::smart_appliance_schedule(agent::sorted_vector sorted_tarif
 	result.normalized_scheduled_profile(sorted_tariff.id(flex_demand_duration - 1)) = total_flex_demand_energy - (flex_demand_duration - 1) * flex_demand_capacity_max;
 }
 
+void agent::end_user::storage_schedule_LP(Eigen::VectorXd subscept_tariff, storage_inform &result, bool fixed_end){
+
+}
+
 //struct end_user_decision{
 //	bool dynamic_tariff;
 //	bool smart_appliance;

@@ -119,6 +119,9 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 }
 
 agent::end_user::profiles power_market::DSO_agents_set(markets_inform &DSO_Markets, market_inform &International_Market, power_network::network_inform &Power_network_inform){
+	int foresight_time = agent::parameters::foresight_time();
+	double residential_ratio = agent::parameters::residential_ratio();
+
 	agent::end_user::profiles end_user_profiles(Power_network_inform.points.bidding_zone.rows());
 	int sample_num = 3;
 	for(int point_iter = 0; point_iter < end_user_profiles.size(); ++ point_iter){
@@ -134,12 +137,17 @@ agent::end_user::profiles power_market::DSO_agents_set(markets_inform &DSO_Marke
 			int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
 
 			// Normalized default demand profile in a 24 hour timeframe
-			end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile = (Power_network_inform.points.nominal_mean_demand_field.row(point_iter)).head(24);
+			end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile = residential_ratio * (Power_network_inform.points.nominal_mean_demand_field.row(point_iter)).head(24);
 
 			// Smart appliance
 			end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale = .2;
 			end_user_profiles[point_iter][sample_iter].operation.smart_appliance.flexibility_factor = .5;
 			agent::end_user::smart_appliance_schedule(expected_price_sorted[bz_ID], end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile, end_user_profiles[point_iter][sample_iter].operation.smart_appliance);
+
+			// Update schedule profile
+			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile = end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile;
+			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile *= (1. - end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale);
+			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile = end_user_profiles[point_iter][sample_iter].operation.smart_appliance.normalized_scheduled_profile;
 		}
 	}
 

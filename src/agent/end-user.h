@@ -2,6 +2,18 @@
 #include "src/basic/basic_definitions.h"
 
 namespace agent{
+	namespace parameters{
+		static inline int foresight_time(){
+			int value = 24;
+			return value;
+		}
+
+		static inline double residential_ratio(){
+			double value = 1.;
+			return value;
+		}
+	}
+
 	namespace end_user{
 		/** @brief Decision variables representing possible investment combinations of an end-user.*/
 		struct decision{
@@ -160,6 +172,7 @@ namespace agent{
 	// Functions
 	namespace end_user{
 		void smart_appliance_schedule(sorted_vector, Eigen::VectorXd, smart_appliance_inform&);
+		void storage_schedule_LP(Eigen::VectorXd, storage_inform&, bool fixed_end = 0);
 	}
 	sorted_vector sort(Eigen::VectorXd);
 }
