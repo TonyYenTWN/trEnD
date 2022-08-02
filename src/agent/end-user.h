@@ -140,6 +140,11 @@ namespace agent{
 			EV_inform EV;
 			/*@{*/
 		};
+
+		struct profile{
+			investment investment;
+			operation operation;
+		};
 	}
 
 	struct sorted_vector{

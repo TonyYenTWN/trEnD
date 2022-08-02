@@ -118,26 +118,36 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 	}
 }
 
-std::vector <std::vector <agent::end_user::operation>> power_market::DSO_agents_set(int tick, markets_inform &DSO_Markets, power_network::network_inform &Power_network_inform){
-	std::vector <std::vector <agent::end_user::operation>> end_user_profiles(Power_network_inform.points.bidding_zone.rows());
+std::vector <std::vector <agent::end_user::profile>> power_market::DSO_agents_set(markets_inform &DSO_Markets, market_inform &International_Market, power_network::network_inform &Power_network_inform){
+	std::vector <std::vector <agent::end_user::profile>> end_user_profiles(Power_network_inform.points.bidding_zone.rows());
 	int sample_num = 3;
 	for(int point_iter = 0; point_iter < end_user_profiles.size(); ++ point_iter){
-		end_user_profiles[point_iter] = std::vector <agent::end_user::operation> (sample_num);
+		end_user_profiles[point_iter] = std::vector <agent::end_user::profile> (sample_num);
 	}
 
-	// Initialization of forecast demand profile
-	if(tick == 0){
-		for(int point_iter = 0; point_iter < end_user_profiles.size(); ++ point_iter){
-			for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
-				end_user_profiles[point_iter][sample_iter].normalized_default_demand_profile = (Power_network_inform.points.nominal_mean_demand_field.row(point_iter)).head(24);
-			}
+	// Initialization of forecast price profile
+	auto expected_price_sorted = power_market::International_Market_Price_Sorted(0, International_Market);
+
+	// Initialization of forecast demand profile and operation strategies
+	for(int point_iter = 0; point_iter < end_user_profiles.size(); ++ point_iter){
+		for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
+			int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
+
+			// Normalized default demand profile in a 24 hour timeframe
+			end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile = (Power_network_inform.points.nominal_mean_demand_field.row(point_iter)).head(24);
+
+			// Smart appliance
+			end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale = .2;
+			end_user_profiles[point_iter][sample_iter].operation.smart_appliance.flexibility_factor = .5;
+			agent::end_user::smart_appliance_schedule(expected_price_sorted[bz_ID], end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile, end_user_profiles[point_iter][sample_iter].operation.smart_appliance);
 		}
 	}
-	// Shift the profile one time step further
-	else{
 
-	}
 	return end_user_profiles;
+}
+
+void power_market::DSO_agents_update(int tick, std::vector <std::vector <agent::end_user::profile>> &end_user_profiles, markets_inform &DSO_Markets, power_network::network_inform &Power_network_inform){
+
 }
 
 void power_market::Source_Node_Set(market_inform &DSO_Market, power_network::DSO_cluster &DSO_cluster){
