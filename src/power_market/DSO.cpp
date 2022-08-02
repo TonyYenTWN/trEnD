@@ -118,8 +118,8 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 	}
 }
 
-std::vector <std::vector <agent::end_user::profile>> power_market::DSO_agents_set(markets_inform &DSO_Markets, market_inform &International_Market, power_network::network_inform &Power_network_inform){
-	std::vector <std::vector <agent::end_user::profile>> end_user_profiles(Power_network_inform.points.bidding_zone.rows());
+agent::end_user::profiles power_market::DSO_agents_set(markets_inform &DSO_Markets, market_inform &International_Market, power_network::network_inform &Power_network_inform){
+	agent::end_user::profiles end_user_profiles(Power_network_inform.points.bidding_zone.rows());
 	int sample_num = 3;
 	for(int point_iter = 0; point_iter < end_user_profiles.size(); ++ point_iter){
 		end_user_profiles[point_iter] = std::vector <agent::end_user::profile> (sample_num);
@@ -146,7 +146,7 @@ std::vector <std::vector <agent::end_user::profile>> power_market::DSO_agents_se
 	return end_user_profiles;
 }
 
-void power_market::DSO_agents_update(int tick, std::vector <std::vector <agent::end_user::profile>> &end_user_profiles, markets_inform &DSO_Markets, power_network::network_inform &Power_network_inform){
+void power_market::DSO_agents_update(int tick, agent::end_user::profiles &end_user_profiles, markets_inform &DSO_Markets, power_network::network_inform &Power_network_inform){
 
 }
 

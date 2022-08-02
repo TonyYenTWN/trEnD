@@ -146,6 +146,10 @@ namespace agent{
 			investment investment;
 			operation operation;
 		};
+
+		/** @brief A 2D vector of end-user profiles. The 1st dimension represents the spatial points,
+		* the 2nd represents the samples at the point.*/
+		typedef std::vector <std::vector <profile>> profiles;
 	}
 
 	struct sorted_vector{

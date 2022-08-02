@@ -191,8 +191,8 @@ namespace power_market{
 
 namespace power_market{
 	void DSO_Markets_Set(markets_inform&, power_network::network_inform&, int);
-	std::vector <std::vector <agent::end_user::profile>> DSO_agents_set(markets_inform&, market_inform&, power_network::network_inform&);
-	void DSO_agents_update(int, std::vector <std::vector <agent::end_user::profile>>&, markets_inform&, power_network::network_inform&);
+	agent::end_user::profiles DSO_agents_set(markets_inform&, market_inform&, power_network::network_inform&);
+	void DSO_agents_update(int, agent::end_user::profiles&, markets_inform&, power_network::network_inform&);
 	void Source_Node_Set(market_inform&, power_network::DSO_cluster&);
 	void Sink_Node_Set(market_inform&, power_network::DSO_cluster&);
 	void DSO_Market_Results_Get(market_inform&, alglib::minlpstate&, power_network::DSO_cluster&, bool supply = 1);
