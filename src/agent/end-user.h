@@ -141,6 +141,7 @@ namespace agent{
 			/*@{*/
 		};
 
+		/** @brief Complete profile of an end-user.*/
 		struct profile{
 			investment investment;
 			operation operation;
