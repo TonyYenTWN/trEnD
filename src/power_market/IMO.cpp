@@ -406,21 +406,29 @@ void power_market::International_Market_Output(market_inform &International_Mark
 	basic::write_file(International_Market.confirmed_price, fout_name, International_Market.zone_names);
 }
 
-void power_market::International_Market_Price_Estimation(int tick, power_market::market_inform &International_Market, power_network::network_inform &Power_network_inform){
+void power_market::International_Market_Price_Estimation(int tick, market_inform &International_Market, power_network::network_inform &Power_network_inform){
 	// Initialization of forecast market clearing price
 	if(tick == 0){
 		for(int tock = 0; tock < 24; ++ tock){
 			International_Market_Submitted_bid_calculation(tock, International_Market, Power_network_inform);
 			International_Market_Optimization(tock, International_Market, 0);
 		}
-
-		std::cout << International_Market.confirmed_price.topRows(24) << "\n\n";
 	}
 	// Find the profile one time step further
 	else{
 		International_Market_Submitted_bid_calculation(tick + 23, International_Market, Power_network_inform);
 		International_Market_Optimization(tick + 23, International_Market, 0);
 	}
+}
+
+std::vector <agent::sorted_vector> power_market::International_Market_Price_Sorted(int tick,  market_inform &International_Market){
+	std::vector <agent::sorted_vector> expected_price_sorted(International_Market.cross_border_zone_start);
+	for(int zone_iter = 0; zone_iter < expected_price_sorted.size(); ++ zone_iter){
+		Eigen::VectorXd expected_price = (International_Market.confirmed_price.col(zone_iter)).segment(tick, 24);
+		expected_price_sorted[zone_iter] = agent::sort(expected_price);
+	}
+
+	return expected_price_sorted;
 }
 
 //int main(){
