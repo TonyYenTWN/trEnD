@@ -6,7 +6,7 @@ var searchData=
   ['dso_3',['DSO',['../db/d56/power__market_8h.html#a074e1ec61026c1e79874b090a095ac14',1,'power_market.h']]],
   ['dso_2ecpp_4',['DSO.cpp',['../d5/d56/DSO_8cpp.html',1,'']]],
   ['dso_5fagents_5fset_5',['DSO_agents_set',['../d5/d60/namespacepower__market.html#a906b8072532036c67e451ec387944988',1,'power_market']]],
-  ['dso_5fagents_5fupdate_6',['DSO_agents_update',['../d5/d60/namespacepower__market.html#a92b5cf51fab8b2c711c64849974eaa25',1,'power_market']]],
+  ['dso_5fagents_5fupdate_6',['DSO_agents_update',['../d5/d60/namespacepower__market.html#ae12906f0bcc8fa358216e54c4dabc964',1,'power_market']]],
   ['dso_5fcluster_7',['DSO_cluster',['../d4/ddd/structpower__network_1_1network__inform.html#a2eb793baafa124069579ac6a046a5e29',1,'power_network::network_inform::DSO_cluster()'],['../d0/df7/structpower__network_1_1DSO__cluster.html',1,'power_network::DSO_cluster']]],
   ['dso_5fmarket_5fresults_5fget_8',['DSO_Market_Results_Get',['../d5/d60/namespacepower__market.html#a1f7c10b9a1ac8928ca5a54d2cfc482d7',1,'power_market']]],
   ['dso_5fmarkets_5fset_9',['DSO_Markets_Set',['../d5/d60/namespacepower__market.html#a33e114e901ed9959e3bf88c5fd7c2547',1,'power_market']]],

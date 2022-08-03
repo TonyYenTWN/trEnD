@@ -142,6 +142,8 @@ Typedefs</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:a80bb9d48b2ee3e305a610b599f066fe8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d3f/namespaceagent_1_1end__user.html#a80bb9d48b2ee3e305a610b599f066fe8">smart_appliance_schedule</a> (<a class="el" href="../../de/dbe/structagent_1_1sorted__vector.html">sorted_vector</a>, Eigen::VectorXd, <a class="el" href="../../d3/dd0/structagent_1_1end__user_1_1smart__appliance__inform.html">smart_appliance_inform</a> &amp;)</td></tr>
 <tr class="separator:a80bb9d48b2ee3e305a610b599f066fe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ab5fe3d1d93a9b97219b82dc2a753c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d3f/namespaceagent_1_1end__user.html#a1ab5fe3d1d93a9b97219b82dc2a753c2">storage_schedule_LP</a> (Eigen::VectorXd, <a class="el" href="../../d3/dfa/structagent_1_1end__user_1_1storage__inform.html">storage_inform</a> &amp;, bool fixed_end=0)</td></tr>
+<tr class="separator:a1ab5fe3d1d93a9b97219b82dc2a753c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Typedef Documentation</h2>
 <a id="a43276480df5494a489b2905cf75a2412" name="a43276480df5494a489b2905cf75a2412"></a>
@@ -158,7 +160,7 @@ Functions</h2></td></tr>
 
 <p>A 2D vector of end-user profiles. The 1st dimension represents the spatial points, the 2nd represents the samples at the point. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00152">152</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00167">167</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
 
 </div>
 </div>
@@ -197,9 +199,43 @@ Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../dc/dc3/end-user_8cpp_source.html#l00027">27</a> of file <a class="el" href="../../dc/dc3/end-user_8cpp_source.html">end-user.cpp</a>.</p>
 
-<p class="reference">References <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00031">agent::end_user::smart_appliance_inform::flexibility_factor</a>, <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00156">agent::sorted_vector::id</a>, <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00047">agent::end_user::smart_appliance_inform::normalized_scheduled_profile</a>, <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00027">agent::end_user::smart_appliance_inform::scale</a>, and <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00039">agent::end_user::smart_appliance_inform::unfulfilled_demand</a>.</p>
+<p class="reference">References <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00043">agent::end_user::smart_appliance_inform::flexibility_factor</a>, <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00171">agent::sorted_vector::id</a>, <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00059">agent::end_user::smart_appliance_inform::normalized_scheduled_profile</a>, <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00039">agent::end_user::smart_appliance_inform::scale</a>, and <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00051">agent::end_user::smart_appliance_inform::unfulfilled_demand</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d5/d56/DSO_8cpp_source.html#l00121">power_market::DSO_agents_set()</a>.</p>
+</div>
+</div>
+<a id="a1ab5fe3d1d93a9b97219b82dc2a753c2" name="a1ab5fe3d1d93a9b97219b82dc2a753c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ab5fe3d1d93a9b97219b82dc2a753c2">&#9670;&nbsp;</a></span>storage_schedule_LP()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void agent::end_user::storage_schedule_LP </td>
+          <td>(</td>
+          <td class="paramtype">Eigen::VectorXd&#160;</td>
+          <td class="paramname"><em>subscept_tariff</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../d3/dfa/structagent_1_1end__user_1_1storage__inform.html">storage_inform</a> &amp;&#160;</td>
+          <td class="paramname"><em>result</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>fixed_end</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../dc/dc3/end-user_8cpp_source.html#l00044">44</a> of file <a class="el" href="../../dc/dc3/end-user_8cpp_source.html">end-user.cpp</a>.</p>
 
 </div>
 </div>
