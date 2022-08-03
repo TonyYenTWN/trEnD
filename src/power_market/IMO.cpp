@@ -407,24 +407,28 @@ void power_market::International_Market_Output(market_inform &International_Mark
 }
 
 void power_market::International_Market_Price_Estimation(int tick, market_inform &International_Market, power_network::network_inform &Power_network_inform){
+	int foresight_time = agent::parameters::foresight_time();
+
 	// Initialization of forecast market clearing price
 	if(tick == 0){
-		for(int tock = 0; tock < 24; ++ tock){
+		for(int tock = 0; tock < foresight_time; ++ tock){
 			International_Market_Submitted_bid_calculation(tock, International_Market, Power_network_inform);
 			International_Market_Optimization(tock, International_Market, 0);
 		}
 	}
 	// Find the profile one time step further
 	else{
-		International_Market_Submitted_bid_calculation(tick + 23, International_Market, Power_network_inform);
-		International_Market_Optimization(tick + 23, International_Market, 0);
+		International_Market_Submitted_bid_calculation(tick + foresight_time - 1, International_Market, Power_network_inform);
+		International_Market_Optimization(tick + foresight_time - 1, International_Market, 0);
 	}
 }
 
 std::vector <agent::sorted_vector> power_market::International_Market_Price_Sorted(int tick,  market_inform &International_Market){
 	std::vector <agent::sorted_vector> expected_price_sorted(International_Market.cross_border_zone_start);
+	int foresight_time = agent::parameters::foresight_time();
+
 	for(int zone_iter = 0; zone_iter < expected_price_sorted.size(); ++ zone_iter){
-		Eigen::VectorXd expected_price = (International_Market.confirmed_price.col(zone_iter)).segment(tick, 24);
+		Eigen::VectorXd expected_price = (International_Market.confirmed_price.col(zone_iter)).segment(tick, foresight_time);
 		expected_price_sorted[zone_iter] = agent::sort(expected_price);
 	}
 

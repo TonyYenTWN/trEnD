@@ -150,9 +150,9 @@ namespace power_market{
 namespace power_market{
 	void Market_Initialization(market_inform&);
 	void Market_clearing_nodal(int, market_inform&, Eigen::VectorXi&, Eigen::MatrixXd&, Eigen::MatrixXd&);
-	void Submitted_bid_calculation(markets_inform&, market_inform&, market_inform&, power_network::network_inform&, std::string, bool DSO_filter_flag = 0);
+	void Submitted_bid_calculation(agent::end_user::profiles&, markets_inform&, market_inform&, market_inform&, power_network::network_inform&, std::string, bool DSO_filter_flag = 0);
 	void TSO_boundary_update(int, market_inform&, market_inform&, power_network::network_inform&);
-	void Flow_Based_Market_LP_Set(market_inform&, alglib::minlpstate &);
+	void Flow_Based_Market_LP_Set(market_inform&, alglib::minlpstate&);
 	void Flow_Based_Market_Optimization(market_inform&, alglib::minlpstate&);
 	void Filtered_bid_calculation(markets_inform&, market_inform&, power_network::network_inform&, std::vector <alglib::minlpstate>&);
 }
@@ -192,7 +192,7 @@ namespace power_market{
 namespace power_market{
 	void DSO_Markets_Set(markets_inform&, power_network::network_inform&, int);
 	agent::end_user::profiles DSO_agents_set(markets_inform&, market_inform&, power_network::network_inform&);
-	void DSO_agents_update(int, agent::end_user::profiles&, markets_inform&, power_network::network_inform&);
+	void DSO_agents_update(int, agent::end_user::profiles&, markets_inform&, market_inform&, power_network::network_inform&);
 	void Source_Node_Set(market_inform&, power_network::DSO_cluster&);
 	void Sink_Node_Set(market_inform&, power_network::DSO_cluster&);
 	void DSO_Market_Results_Get(market_inform&, alglib::minlpstate&, power_network::DSO_cluster&, bool supply = 1);

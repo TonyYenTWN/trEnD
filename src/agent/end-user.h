@@ -125,6 +125,9 @@ namespace agent{
 			* @name input parameters
 			*/
 			/*@{*/
+			/** Weight of the sample representing the population distribution.
+			* Summation at a sample point equals to 1.*/
+			double weight;
 			/** Scale of the PV system = capacity / normalized default base value of demand*/
 			double PV_scale;
 			/** Default demand profile; normalized to nominal value (kWh per hour per person)*/
@@ -139,8 +142,8 @@ namespace agent{
 			/*@{*/
 			Eigen::VectorXd normalized_scheduled_residual_demand_inflex_profile;
 			Eigen::VectorXd normalized_scheduled_residual_demand_flex_profile;
-			Eigen::VectorXd normalized_scheduled_pos_cr_profile;
-			Eigen::VectorXd normalized_scheduled_neg_cr_profile;
+			//Eigen::VectorXd normalized_scheduled_pos_cr_profile;
+			//Eigen::VectorXd normalized_scheduled_neg_cr_profile;
 			/*@{*/
 
 			/**

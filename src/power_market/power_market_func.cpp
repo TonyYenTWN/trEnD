@@ -69,10 +69,10 @@ void power_market::Market_clearing_nodal(int tick, market_inform &Market, Eigen:
 // ------------------------------------------------------------------------------------------------
 // Functions involving multiple markets
 // ------------------------------------------------------------------------------------------------
-void power_market::Submitted_bid_calculation(markets_inform &DSO_Markets, market_inform &TSO_Market, market_inform &International_Market, power_network::network_inform &Power_network_inform, std::string fin_point_demand, bool DSO_filter_flag){
+void power_market::Submitted_bid_calculation(agent::end_user::profiles &end_user_profiles, markets_inform &DSO_Markets, market_inform &TSO_Market, market_inform &International_Market, power_network::network_inform &Power_network_inform, std::string fin_point_demand, bool DSO_filter_flag){
 	// Calculation of submit bids at the beginning of each time slice
-	auto fin_point_demand_dim = basic::get_file_dim(fin_point_demand);
-	auto point_demand_inform = basic::read_file(fin_point_demand_dim[0], fin_point_demand_dim[1], fin_point_demand);
+//	auto fin_point_demand_dim = basic::get_file_dim(fin_point_demand);
+//	auto point_demand_inform = basic::read_file(fin_point_demand_dim[0], fin_point_demand_dim[1], fin_point_demand);
 
 	// Initialize submit bids of markets
 	Market_Initialization(International_Market);
@@ -84,20 +84,52 @@ void power_market::Submitted_bid_calculation(markets_inform &DSO_Markets, market
 	}
 
 	// Trivial case: demand at each point are 100% inflexible
+	int sample_num = end_user_profiles[0].size();
 	for(int point_iter = 0; point_iter < Power_network_inform.points.bidding_zone.size(); ++ point_iter){
 		int node_ID = Power_network_inform.points.node(point_iter);
 		int DSO_ID = Power_network_inform.nodes.cluster(node_ID);
 		int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
-		double bid_quan = point_demand_inform(point_iter, 0) * Power_network_inform.points.population_density(point_iter); //* Power_network_inform.points.point_area;
-		// nominal demand currently wrong in processed files, should change them and then multiply area of a point later
 
-		DSO_Markets[DSO_ID].submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, Power_network_inform.points.in_cluster_ID(point_iter)) = bid_quan;
-		International_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, bz_ID) += bid_quan;
+		for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
+			double bid_inflex_quan = end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile(0);
+			bid_inflex_quan *= end_user_profiles[point_iter][sample_iter].operation.weight;
+			bid_inflex_quan *= Power_network_inform.points.population_density(point_iter); //* Power_network_inform.points.point_area;
+			// nominal demand currently wrong in processed files, should change them and then multiply area of a point later
 
-		// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
-		if(!DSO_filter_flag){
-			TSO_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, node_ID) += bid_quan;
+			double bid_flex_quan = end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile(0);
+			bid_flex_quan *= end_user_profiles[point_iter][sample_iter].operation.weight;
+			bid_flex_quan *= Power_network_inform.points.population_density(point_iter); //* Power_network_inform.points.point_area;
+			// nominal demand currently wrong in processed files, should change them and then multiply area of a point later
+
+			// Updating inflexible bids; if quantity is positive (negative -> update supply bids)
+			DSO_Markets[DSO_ID].submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, Power_network_inform.points.in_cluster_ID(point_iter)) = bid_inflex_quan;
+			International_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, bz_ID) += bid_inflex_quan;
+
+			// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
+			if(!DSO_filter_flag){
+				TSO_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, node_ID) += bid_inflex_quan;
+			}
+
+			// Updating flexible bids; if quantity is positive (negative -> update supply bids)
+			DSO_Markets[DSO_ID].submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, Power_network_inform.points.in_cluster_ID(point_iter)) = bid_flex_quan;
+			International_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, bz_ID) += bid_flex_quan;
+
+			// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
+			if(!DSO_filter_flag){
+				TSO_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, node_ID) += bid_flex_quan;
+			}
 		}
+
+//		double bid_quan = point_demand_inform(point_iter, 0) * Power_network_inform.points.population_density(point_iter); //* Power_network_inform.points.point_area;
+//		// nominal demand currently wrong in processed files, should change them and then multiply area of a point later
+//
+//		DSO_Markets[DSO_ID].submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, Power_network_inform.points.in_cluster_ID(point_iter)) = bid_quan;
+//		International_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, bz_ID) += bid_quan;
+//
+//		// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
+//		if(!DSO_filter_flag){
+//			TSO_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, node_ID) += bid_quan;
+//		}
 	}
 
 	// Supply at each point (LV power plants) / node (HV power plants)
