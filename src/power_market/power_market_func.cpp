@@ -213,8 +213,6 @@ void power_market::Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlp
 	// Set matrix for general constraints
 	// -------------------------------------------------------------------------------
 	// Construct node admittance matrix
-	double tol = 1E-16;
-	//double tol = 0.;
 	std::vector <Eigen::TripletXd> Y_n_trip;
 	Y_n_trip.reserve(2 * Market.network.num_edges + Market.network.num_vertice);
 	Eigen::SparseMatrix <double, Eigen::RowMajor> Y_n(Market.network.num_vertice, Market.network.num_vertice);

@@ -1,5 +1,7 @@
 // Header file for operation and investment of end-user
+#include "src/alglib/optimization.h"
 #include "src/basic/basic_definitions.h"
+#include "src/basic/eigen_sparse.h"
 
 namespace agent{
 	namespace parameters{
@@ -67,15 +69,22 @@ namespace agent{
 			*/
 			/*@{*/
 			/** Scale of energy level of storage (kWh per person).*/
-			double energy_scale;
+			double energy_scale = 1.;
 			/** Scale of capacity level of storage (kW per person).*/
-			double capacity_scale;
+			double capacity_scale = .1;
 			/** Conversion efficiency of charge / discharge.*/
-			double efficiency;
+			double efficiency = .95;
 			/** Initial state of charge level.*/
 			double soc_ini;
 			/** Final state of charge level.*/
 			double soc_final;
+			/*@{*/
+
+			/**
+			* @name process parameters
+			*/
+			/*@{*/
+			alglib::minlpstate Problem;
 			/*@{*/
 
 			/**
@@ -141,7 +150,11 @@ namespace agent{
 			*/
 			/*@{*/
 			Eigen::VectorXd normalized_scheduled_residual_demand_inflex_profile;
+			Eigen::VectorXd normalized_confirmed_residual_demand_inflex_profile;
+			Eigen::VectorXd normalized_actual_residual_demand_inflex_profile;
 			Eigen::VectorXd normalized_scheduled_residual_demand_flex_profile;
+			Eigen::VectorXd normalized_confirmed_residual_demand_flex_profile;
+			Eigen::VectorXd normalized_actual_residual_demand_flex_profile;
 			//Eigen::VectorXd normalized_scheduled_pos_cr_profile;
 			//Eigen::VectorXd normalized_scheduled_neg_cr_profile;
 			/*@{*/
@@ -175,7 +188,8 @@ namespace agent{
 	// Functions
 	namespace end_user{
 		void smart_appliance_schedule(sorted_vector, Eigen::VectorXd, smart_appliance_inform&);
-		void storage_schedule_LP(Eigen::VectorXd, storage_inform&, bool fixed_end = 0);
+		alglib::minlpstate storage_schedule_LP_mold(int);
+		void storage_schedule_LP_optimize(sorted_vector, storage_inform&, bool fixed_end = 0);
 	}
 	sorted_vector sort(Eigen::VectorXd);
 }

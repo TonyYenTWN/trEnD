@@ -41,111 +41,63 @@ void agent::end_user::smart_appliance_schedule(agent::sorted_vector sorted_tarif
 	result.normalized_scheduled_profile(sorted_tariff.id(flex_demand_duration - 1)) = total_flex_demand_energy - (flex_demand_duration - 1) * flex_demand_capacity_max;
 }
 
-void agent::end_user::storage_schedule_LP(Eigen::VectorXd subscept_tariff, storage_inform &result, bool fixed_end){
+alglib::minlpstate agent::end_user::storage_schedule_LP_mold(int foresight_time){
+	alglib::minlpstate Problem;
+
+	// -------------------------------------------------------------------------------
+	// LP Solver initialization for BESS schedule
+	// Warm-up once and reuse for the rest of time slices
+	// Variables are sorted as {s_i, q_dc(0), q_ch(0), s(0), ...}
+	// -------------------------------------------------------------------------------
+
+	// -------------------------------------------------------------------------------
+	// Set matrix for general constraints
+	// -------------------------------------------------------------------------------
+	// Generate sparse matrix for general equality constraints of dynamic equation
+	int constrant_num = foresight_time;
+	int variable_num = 3 * foresight_time + 1;
+	Eigen::VectorXpd non_zero_num = Eigen::VectorXpd::Constant(constrant_num, 4);
+	alglib::integer_1d_array row_sizes_general;
+	row_sizes_general.setcontent(non_zero_num.size(), non_zero_num.data());
+	alglib::sparsematrix constraint_general;
+	alglib::sparsecreatecrs(constrant_num, variable_num, row_sizes_general, constraint_general);
+
+	// Fill in the coefficients for the sparse matrix
+	for(int row_iter = 0; row_iter < constrant_num; ++ row_iter){
+		int s_prev_ID = 3 * row_iter;
+		int q_dc_ID = 3 * row_iter + 1;
+		int q_ch_ID = 3 * row_iter + 2;
+		int s_ID = 3 * row_iter + 3;
+
+		alglib::sparseset(constraint_general, row_iter, s_prev_ID, -1.);
+		alglib::sparseset(constraint_general, row_iter, q_dc_ID, 1.);
+		alglib::sparseset(constraint_general, row_iter, q_ch_ID, -1.);
+		alglib::sparseset(constraint_general, row_iter, s_ID, 1.);
+	}
+
+	// -------------------------------------------------------------------------------
+	// Set bounds for general constraints
+	// -------------------------------------------------------------------------------
+	Eigen::MatrixXd bound_general = Eigen::MatrixXd::Zero(constrant_num, 2);
+	alglib::real_1d_array lb_general;
+	alglib::real_1d_array ub_general;
+	lb_general.setcontent(bound_general.rows(), bound_general.col(0).data());
+	ub_general.setcontent(bound_general.rows(), bound_general.col(1).data());
+
+	// -------------------------------------------------------------------------------
+	// Set the LP problem object
+	// -------------------------------------------------------------------------------
+	alglib::minlpcreate(variable_num, Problem);
+	alglib::minlpsetlc2(Problem, constraint_general, lb_general, ub_general, constrant_num);
+	//alglib::minlpsetalgoipm(Problem);
+	alglib::minlpsetalgodss(Problem, 0.);
+	return Problem;
+}
+
+void agent::end_user::storage_schedule_LP_optimize(sorted_vector, storage_inform &result, bool fixed_end){
 
 }
 
-//struct end_user_decision{
-//	bool dynamic_tariff;
-//	bool smart_appliance;
-//	bool PV_BESS;
-//	bool EV_self_charging;
-//	bool reverse_flow;									// Whether the end-user can inject power flow back to grid; false when active_flex is false
-//	bool active_flex;										// Whether the end-user can provide flexibility to the aggregator; false when dynamic_tariff is false, or when end-user does not have PV + BESS, EV, or smart appliance
-//};
-//
-//struct smart_appliance_inform{
-//	// Input parameters
-//	double scale;											// Indicates how much ratio of the total demand in the time interval can be shifted around flexibly; assuming the default is constant profile before shifting
-//	double flexibility_factor;								// Indicates how flexible the smart appliances are; e.g. 1 / 2 = can concentrate the demand within half of the time interval
-//
-//	// Output variables
-//	Eigen::VectorXd normalized_scheduled_profile;
-//};
-//
-//struct storage_inform{
-//	// Input parameters
-//	double energy_scale;									// kWh per person
-//	double capacity_scale;									// kW per person
-//	double efficiency;
-//	double soc_ini;
-//	double soc_final;
-//
-//	// Output variables
-//	Eigen::VectorXd normalized_scheduled_capacity_profile;
-//	Eigen::VectorXd normalized_scheduled_soc_profile;
-//};
-//
-//struct EV_inform{
-//	// Input parameters
-//	double energy_demand;									// kWh per person per hour of usage
-//	Eigen::VectorXi usage_default_period;					// The time intervals when EV is actually used
-//	Eigen::VectorXi house_default_period;					// The time intervals when EV is parked in the house
-//
-//	// Mixed Substructure
-//	storage_inform BESS;
-//};
-//
-//struct end_user_operation{
-//	// Input parameters
-//	int point_ID;
-//	end_user_decision decision;
-//	double PV_scale;										// Unless mentioned otherwise, all the scaling factor = capacity / normalized default base value
-//	Eigen::VectorXd normalized_default_demand_profile;		// Normalized to nominal value (kWh per hour per person)
-//	Eigen::VectorXd normalized_default_PV_profile;			// Normalized with the same base as demand
-//
-//	// Output variables
-//	Eigen::VectorXd normalized_scheduled_residual_demand_inflex_profile;
-//	Eigen::VectorXd normalized_scheduled_residual_demand_flex_profile;
-//	Eigen::VectorXd normalized_scheduled_pos_cr_profile;
-//	Eigen::VectorXd normalized_scheduled_neg_cr_profile;
-//
-//	// Mixed Substructure
-//	smart_appliance_inform smart_appliance;
-//	storage_inform BESS;
-//	EV_inform EV;
-//};
-//
-//struct sorted_vector{
-//	Eigen::VectorXi id;
-//	Eigen::VectorXd value;
-//};
-//
-//sorted_vector sort(Eigen::VectorXd original){
-//	// Sort of vector
-// 	std::vector<int> item_seq(original.size());
-// 	std::iota(item_seq.begin(), item_seq.end(), 0);
-// 	std::sort(item_seq.begin(), item_seq.end(), [&](int i,int j){return original(i) < original(j);});
-//
-// 	// Output of vector
-// 	sorted_vector result;
-// 	result.id = Eigen::VectorXi(original.size());
-// 	result.value = Eigen::VectorXd(original.size());
-// 	for(int item_ID = 0; item_ID < original.size(); ++ item_ID){
-// 		result.id(item_ID) = item_seq[item_ID];
-// 		result.value(item_ID) = original(item_seq[item_ID]);
-//	}
-//
-//	return(result);
-//}
-//
-//void smart_appliance_schedule(sorted_vector sorted_tariff, Eigen::VectorXd normalized_default_demand_profile, double residual_unfulfilled_demand, smart_appliance_inform &result){
-//	// Initialization
-//	double total_flex_demand_energy = result.scale * normalized_default_demand_profile.sum() + residual_unfulfilled_demand;
-//	double flex_demand_capacity_max = total_flex_demand_energy / normalized_default_demand_profile.size() / result.flexibility_factor;
-//	int flex_demand_duration = int(result.flexibility_factor * normalized_default_demand_profile.size());
-//	if(double(result.flexibility_factor * normalized_default_demand_profile.size() - flex_demand_duration) != 0){
-//		flex_demand_duration += 1;
-//	}
-//
-//	// Schedule the demand to low price periods
-//	result.normalized_scheduled_profile = Eigen::VectorXd::Zero(normalized_default_demand_profile.size());
-//	for(int tick = 0; tick < flex_demand_duration - 1; ++ tick){
-//		result.normalized_scheduled_profile(sorted_tariff.id(tick)) = flex_demand_capacity_max;
-//	}
-//	result.normalized_scheduled_profile(sorted_tariff.id(flex_demand_duration - 1)) = total_flex_demand_energy - (flex_demand_duration - 1) * flex_demand_capacity_max;
-//}
-//
 //void storage_schedule_LP(Eigen::VectorXd subscept_tariff, storage_inform &result, bool fixed_end = 0){
 //	LP_object Problem;
 //
