@@ -189,7 +189,7 @@ namespace agent{
 	namespace end_user{
 		void smart_appliance_schedule(sorted_vector, Eigen::VectorXd, smart_appliance_inform&);
 		alglib::minlpstate storage_schedule_LP_mold(int);
-		void storage_schedule_LP_optimize(sorted_vector, storage_inform&, bool fixed_end = 0);
+		void storage_schedule_LP_optimize(int, sorted_vector, storage_inform&, bool fixed_end = 0);
 	}
 	sorted_vector sort(Eigen::VectorXd);
 }

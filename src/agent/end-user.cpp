@@ -94,8 +94,52 @@ alglib::minlpstate agent::end_user::storage_schedule_LP_mold(int foresight_time)
 	return Problem;
 }
 
-void agent::end_user::storage_schedule_LP_optimize(sorted_vector, storage_inform &result, bool fixed_end){
+void agent::end_user::storage_schedule_LP_optimize(int foresight_time, sorted_vector expected_price_sorted, storage_inform &result, bool fixed_end){
+	int variable_num = 3 * foresight_time + 1;
 
+	// -------------------------------------------------------------------------------
+	// Set bounds for box constraints
+	// -------------------------------------------------------------------------------
+	Eigen::MatrixXd bound_box(variable_num, 2);
+	bound_box.row(0) << result.soc_ini, result.soc_ini;
+	for(int tick = 0; tick < foresight_time; ++ tick){
+		int q_dc_ID = 3 * tick + 1;
+		int q_ch_ID = 3 * tick + 2;
+		int s_ID = 3 * tick + 3;
+
+		bound_box.row(q_dc_ID) << 0, result.capacity_scale;
+		bound_box.row(q_ch_ID) << 0, result.capacity_scale;
+		bound_box.row(s_ID) << 0, result.energy_scale;
+	}
+	bound_box.row(3 * foresight_time) << fixed_end * result.soc_final, fixed_end * result.soc_final + (1 - fixed_end) * result.energy_scale;
+
+	// Bounds of box constraints
+	alglib::real_1d_array lb_box;
+	alglib::real_1d_array ub_box;
+	lb_box.setcontent(bound_box.rows(), bound_box.col(0).data());
+	ub_box.setcontent(bound_box.rows(), bound_box.col(1).data());
+	alglib::minlpsetbc(result.Problem, lb_box, ub_box);
+
+	// -------------------------------------------------------------------------------
+	// Set objective coefficients of variables
+	// -------------------------------------------------------------------------------
+	Eigen::VectorXd obj_vec = Eigen::VectorXd::Zero(variable_num);
+	for(int tick = 0; tick < foresight_time; ++ tick){
+		int tick_ID = expected_price_sorted.id[tick];
+		int q_dc_ID = 3 * tick_ID + 1;
+		int q_ch_ID = 3 * tick_ID + 2;
+
+		obj_vec(q_dc_ID) = -expected_price_sorted.value[tick] * result.efficiency;
+		obj_vec(q_ch_ID) = expected_price_sorted.value[tick] / result.efficiency;
+	}
+	alglib::real_1d_array obj_coeff;
+	obj_coeff.setcontent(obj_vec.size(), obj_vec.data());
+	alglib::minlpsetcost(result.Problem, obj_coeff);
+
+	// -------------------------------------------------------------------------------
+	// Solve the problem
+	// -------------------------------------------------------------------------------
+	alglib::minlpoptimize(result.Problem);
 }
 
 //void storage_schedule_LP(Eigen::VectorXd subscept_tariff, storage_inform &result, bool fixed_end = 0){

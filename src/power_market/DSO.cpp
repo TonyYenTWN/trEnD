@@ -151,6 +151,7 @@ agent::end_user::profiles power_market::DSO_agents_set(markets_inform &DSO_Marke
 			// BESS
 			end_user_profiles[point_iter][sample_iter].operation.BESS.soc_ini = .5 * end_user_profiles[point_iter][sample_iter].operation.BESS.energy_scale;
 			end_user_profiles[point_iter][sample_iter].operation.BESS.Problem = Problem;
+			agent::end_user::storage_schedule_LP_optimize(foresight_time, expected_price_sorted[bz_ID], end_user_profiles[point_iter][sample_iter].operation.BESS);
 
 			// Update schedule profile
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile = end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile;
