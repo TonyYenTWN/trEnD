@@ -137,9 +137,24 @@ void agent::end_user::storage_schedule_LP_optimize(int foresight_time, sorted_ve
 	alglib::minlpsetcost(result.Problem, obj_coeff);
 
 	// -------------------------------------------------------------------------------
-	// Solve the problem
+	// Solve the problem and store the results
 	// -------------------------------------------------------------------------------
 	alglib::minlpoptimize(result.Problem);
+	alglib::real_1d_array sol;
+	alglib::minlpreport rep;
+	alglib::minlpresults(result.Problem, sol, rep);
+	Eigen::VectorXd sol_vec = Eigen::Map <Eigen::VectorXd> (sol.getcontent(), sol.length());
+
+	result.normalized_scheduled_capacity_profile = Eigen::VectorXd(variable_num);
+	result.normalized_scheduled_soc_profile = Eigen::VectorXd(variable_num);
+	for(int tick = 0; tick < foresight_time; ++ tick){
+		int q_dc_ID = 3 * tick + 1;
+		int q_ch_ID = 3 * tick + 2;
+		int s_ID = 3 * tick + 3;
+
+		result.normalized_scheduled_capacity_profile(tick) = sol_vec(q_dc_ID) - sol_vec(q_ch_ID);
+		result.normalized_scheduled_soc_profile(tick) = sol_vec(s_ID);
+	}
 }
 
 //void storage_schedule_LP(Eigen::VectorXd subscept_tariff, storage_inform &result, bool fixed_end = 0){
