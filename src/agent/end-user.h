@@ -69,9 +69,9 @@ namespace agent{
 			*/
 			/*@{*/
 			/** Scale of energy level of storage (kWh per person).*/
-			double energy_scale = 1.;
+			double energy_scale = .01;
 			/** Scale of capacity level of storage (kW per person).*/
-			double capacity_scale = .1;
+			double capacity_scale = .001;
 			/** Conversion efficiency of charge / discharge.*/
 			double efficiency = .95;
 			/** Initial state of charge level.*/

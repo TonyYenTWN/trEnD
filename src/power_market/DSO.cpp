@@ -157,6 +157,7 @@ agent::end_user::profiles power_market::DSO_agents_set(markets_inform &DSO_Marke
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile = end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile;
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile *= (1. - end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale);
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile = end_user_profiles[point_iter][sample_iter].operation.smart_appliance.normalized_scheduled_profile;
+			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile -= end_user_profiles[point_iter][sample_iter].operation.BESS.normalized_scheduled_capacity_profile;
 			//std::cout << end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile.transpose() << "\n";
 			//std::cout << end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile.transpose() << "\n\n";
 		}

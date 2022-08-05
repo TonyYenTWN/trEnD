@@ -47,32 +47,45 @@ alglib::minlpstate agent::end_user::storage_schedule_LP_mold(int foresight_time)
 	// -------------------------------------------------------------------------------
 	// LP Solver initialization for BESS schedule
 	// Warm-up once and reuse for the rest of time slices
-	// Variables are sorted as {s_i, q_dc(0), q_ch(0), s(0), ...}
+	// Variables are sorted as {s_i, q_self(0), q_sell(0), q_dc(0), q_ch(0), s(0), ...}
 	// -------------------------------------------------------------------------------
 
 	// -------------------------------------------------------------------------------
 	// Set matrix for general constraints
 	// -------------------------------------------------------------------------------
 	// Generate sparse matrix for general equality constraints of dynamic equation
-	int constrant_num = foresight_time;
-	int variable_num = 3 * foresight_time + 1;
-	Eigen::VectorXpd non_zero_num = Eigen::VectorXpd::Constant(constrant_num, 4);
+	int constrant_num = 2 * foresight_time;
+	int variable_num = 5 * foresight_time + 1;
+	Eigen::VectorXpd non_zero_num(constrant_num);
+	non_zero_num << Eigen::VectorXpd::Constant(foresight_time, 4), Eigen::VectorXpd::Constant(foresight_time, 3);
 	alglib::integer_1d_array row_sizes_general;
 	row_sizes_general.setcontent(non_zero_num.size(), non_zero_num.data());
 	alglib::sparsematrix constraint_general;
 	alglib::sparsecreatecrs(constrant_num, variable_num, row_sizes_general, constraint_general);
 
 	// Fill in the coefficients for the sparse matrix
-	for(int row_iter = 0; row_iter < constrant_num; ++ row_iter){
-		int s_prev_ID = 3 * row_iter;
-		int q_dc_ID = 3 * row_iter + 1;
-		int q_ch_ID = 3 * row_iter + 2;
-		int s_ID = 3 * row_iter + 3;
+	// -s(t - 1) + q_dc(t) - q_ch(t) + s(t) = 0
+	for(int row_iter = 0; row_iter < foresight_time; ++ row_iter){
+		int s_prev_ID = 5 * row_iter;
+		int q_dc_ID = 5 * row_iter + 3;
+		int q_ch_ID = 5 * row_iter + 4;
+		int s_ID = 5 * row_iter + 5;
 
 		alglib::sparseset(constraint_general, row_iter, s_prev_ID, -1.);
 		alglib::sparseset(constraint_general, row_iter, q_dc_ID, 1.);
 		alglib::sparseset(constraint_general, row_iter, q_ch_ID, -1.);
 		alglib::sparseset(constraint_general, row_iter, s_ID, 1.);
+	}
+	// q_self(t) + q_sell(t) - q_dc(t) = 0
+	for(int row_iter = 0; row_iter < foresight_time; ++ row_iter){
+		int row_ID = foresight_time + row_iter;
+		int q_self_ID = 5 * row_iter + 1;
+		int q_sell_ID = 5 * row_iter + 2;
+		int q_dc_ID = 5 * row_iter + 3;
+
+		alglib::sparseset(constraint_general, row_ID, q_self_ID, 1.);
+		alglib::sparseset(constraint_general, row_ID, q_sell_ID, 1.);
+		alglib::sparseset(constraint_general, row_ID, q_dc_ID, -1.);
 	}
 
 	// -------------------------------------------------------------------------------
@@ -95,7 +108,7 @@ alglib::minlpstate agent::end_user::storage_schedule_LP_mold(int foresight_time)
 }
 
 void agent::end_user::storage_schedule_LP_optimize(int foresight_time, sorted_vector expected_price_sorted, storage_inform &result, bool fixed_end){
-	int variable_num = 3 * foresight_time + 1;
+	int variable_num = 5 * foresight_time + 1;
 
 	// -------------------------------------------------------------------------------
 	// Set bounds for box constraints
@@ -103,15 +116,19 @@ void agent::end_user::storage_schedule_LP_optimize(int foresight_time, sorted_ve
 	Eigen::MatrixXd bound_box(variable_num, 2);
 	bound_box.row(0) << result.soc_ini, result.soc_ini;
 	for(int tick = 0; tick < foresight_time; ++ tick){
-		int q_dc_ID = 3 * tick + 1;
-		int q_ch_ID = 3 * tick + 2;
-		int s_ID = 3 * tick + 3;
+		int q_self_ID = 5 * tick + 1;
+		int q_sell_ID = 5 * tick + 2;
+		int q_dc_ID = 5 * tick + 3;
+		int q_ch_ID = 5 * tick + 4;
+		int s_ID = 5 * tick + 5;
 
+		bound_box.row(q_self_ID) << 0, result.capacity_scale;
+		bound_box.row(q_sell_ID) << 0, result.capacity_scale;
 		bound_box.row(q_dc_ID) << 0, result.capacity_scale;
 		bound_box.row(q_ch_ID) << 0, result.capacity_scale;
 		bound_box.row(s_ID) << 0, result.energy_scale;
 	}
-	bound_box.row(3 * foresight_time) << fixed_end * result.soc_final, fixed_end * result.soc_final + (1 - fixed_end) * result.energy_scale;
+	bound_box.bottomRows(1) << fixed_end * result.soc_final, fixed_end * result.soc_final + (1 - fixed_end) * result.energy_scale;
 
 	// Bounds of box constraints
 	alglib::real_1d_array lb_box;
@@ -126,10 +143,12 @@ void agent::end_user::storage_schedule_LP_optimize(int foresight_time, sorted_ve
 	Eigen::VectorXd obj_vec = Eigen::VectorXd::Zero(variable_num);
 	for(int tick = 0; tick < foresight_time; ++ tick){
 		int tick_ID = expected_price_sorted.id[tick];
-		int q_dc_ID = 3 * tick_ID + 1;
-		int q_ch_ID = 3 * tick_ID + 2;
+		int q_self_ID = 5 * tick_ID + 1;
+		int q_sell_ID = 5 * tick_ID + 2;
+		int q_ch_ID = 5 * tick_ID + 4;
 
-		obj_vec(q_dc_ID) = -expected_price_sorted.value[tick] * result.efficiency;
+		obj_vec(q_self_ID) = -expected_price_sorted.value[tick] * result.efficiency;
+		obj_vec(q_sell_ID) = -expected_price_sorted.value[tick] * result.efficiency;
 		obj_vec(q_ch_ID) = expected_price_sorted.value[tick] / result.efficiency;
 	}
 	alglib::real_1d_array obj_coeff;
@@ -148,9 +167,9 @@ void agent::end_user::storage_schedule_LP_optimize(int foresight_time, sorted_ve
 	result.normalized_scheduled_capacity_profile = Eigen::VectorXd::Zero(foresight_time);
 	result.normalized_scheduled_soc_profile = Eigen::VectorXd::Zero(foresight_time);
 	for(int tick = 0; tick < foresight_time; ++ tick){
-		int q_dc_ID = 3 * tick + 1;
-		int q_ch_ID = 3 * tick + 2;
-		int s_ID = 3 * tick + 3;
+		int q_dc_ID = 5 * tick + 3;
+		int q_ch_ID = 5 * tick + 4;
+		int s_ID = 5 * tick + 5;
 
 		result.normalized_scheduled_capacity_profile(tick) = sol_vec(q_dc_ID) - sol_vec(q_ch_ID);
 		result.normalized_scheduled_soc_profile(tick) = sol_vec(s_ID);
