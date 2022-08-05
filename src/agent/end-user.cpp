@@ -145,8 +145,8 @@ void agent::end_user::storage_schedule_LP_optimize(int foresight_time, sorted_ve
 	alglib::minlpresults(result.Problem, sol, rep);
 	Eigen::VectorXd sol_vec = Eigen::Map <Eigen::VectorXd> (sol.getcontent(), sol.length());
 
-	result.normalized_scheduled_capacity_profile = Eigen::VectorXd(variable_num);
-	result.normalized_scheduled_soc_profile = Eigen::VectorXd(variable_num);
+	result.normalized_scheduled_capacity_profile = Eigen::VectorXd::Zero(foresight_time);
+	result.normalized_scheduled_soc_profile = Eigen::VectorXd::Zero(foresight_time);
 	for(int tick = 0; tick < foresight_time; ++ tick){
 		int q_dc_ID = 3 * tick + 1;
 		int q_ch_ID = 3 * tick + 2;
@@ -154,6 +154,7 @@ void agent::end_user::storage_schedule_LP_optimize(int foresight_time, sorted_ve
 
 		result.normalized_scheduled_capacity_profile(tick) = sol_vec(q_dc_ID) - sol_vec(q_ch_ID);
 		result.normalized_scheduled_soc_profile(tick) = sol_vec(s_ID);
+		//std::cout << result.normalized_scheduled_capacity_profile.transpose() << "\n\n";
 	}
 }
 
