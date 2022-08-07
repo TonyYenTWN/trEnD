@@ -108,7 +108,9 @@ $(document).ready(function(){initNavTree('d2/d8b/end-user_8h.html','../../'); in
   <div class="headertitle"><div class="title">end-user.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="../../d5/da0/basic__definitions_8h_source.html">src/basic/basic_definitions.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;src/alglib/optimization.h&quot;</code><br />
+<code>#include &quot;<a class="el" href="../../d5/da0/basic__definitions_8h_source.html">src/basic/basic_definitions.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="../../d9/d42/eigen__sparse_8h_source.html">src/basic/eigen_sparse.h</a>&quot;</code><br />
 </div>
 <p><a href="../../d2/d8b/end-user_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -159,8 +161,10 @@ Functions</h2></td></tr>
 <tr class="separator:a80bb9d48b2ee3e305a610b599f066fe8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03e096d663464ad06c2563c401d7ce83"><td class="memItemLeft" align="right" valign="top">sorted_vector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d00/namespaceagent.html#a03e096d663464ad06c2563c401d7ce83">agent::sort</a> (Eigen::VectorXd)</td></tr>
 <tr class="separator:a03e096d663464ad06c2563c401d7ce83"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1ab5fe3d1d93a9b97219b82dc2a753c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d3f/namespaceagent_1_1end__user.html#a1ab5fe3d1d93a9b97219b82dc2a753c2">agent::end_user::storage_schedule_LP</a> (Eigen::VectorXd, storage_inform &amp;, bool fixed_end=0)</td></tr>
-<tr class="separator:a1ab5fe3d1d93a9b97219b82dc2a753c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6eb2228d59708556b675a728f7c0b681"><td class="memItemLeft" align="right" valign="top">alglib::minlpstate&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d3f/namespaceagent_1_1end__user.html#a6eb2228d59708556b675a728f7c0b681">agent::end_user::storage_schedule_LP_mold</a> (int)</td></tr>
+<tr class="separator:a6eb2228d59708556b675a728f7c0b681"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcd0351a9315f49ffa5350623ebc12a1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d3f/namespaceagent_1_1end__user.html#abcd0351a9315f49ffa5350623ebc12a1">agent::end_user::storage_schedule_LP_optimize</a> (int, sorted_vector, storage_inform &amp;, bool fixed_end=0)</td></tr>
+<tr class="separator:abcd0351a9315f49ffa5350623ebc12a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->

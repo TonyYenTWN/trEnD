@@ -114,16 +114,19 @@ $(document).ready(function(){initNavTree('d3/dfa/structagent_1_1end__user_1_1sto
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr><td colspan="2"><div class="groupHeader">input parameters</div></td></tr>
-<tr class="memitem:ac6d73f838f5cedf86a8c81d989db5ff9"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dfa/structagent_1_1end__user_1_1storage__inform.html#ac6d73f838f5cedf86a8c81d989db5ff9">energy_scale</a></td></tr>
+<tr class="memitem:ac6d73f838f5cedf86a8c81d989db5ff9"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dfa/structagent_1_1end__user_1_1storage__inform.html#ac6d73f838f5cedf86a8c81d989db5ff9">energy_scale</a> = .01</td></tr>
 <tr class="separator:ac6d73f838f5cedf86a8c81d989db5ff9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac6775c7be884cec6abf721969e677443"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dfa/structagent_1_1end__user_1_1storage__inform.html#ac6775c7be884cec6abf721969e677443">capacity_scale</a></td></tr>
+<tr class="memitem:ac6775c7be884cec6abf721969e677443"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dfa/structagent_1_1end__user_1_1storage__inform.html#ac6775c7be884cec6abf721969e677443">capacity_scale</a> = .001</td></tr>
 <tr class="separator:ac6775c7be884cec6abf721969e677443"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acdffe3bad2b95fb3e332bb4b16859d54"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dfa/structagent_1_1end__user_1_1storage__inform.html#acdffe3bad2b95fb3e332bb4b16859d54">efficiency</a></td></tr>
+<tr class="memitem:acdffe3bad2b95fb3e332bb4b16859d54"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dfa/structagent_1_1end__user_1_1storage__inform.html#acdffe3bad2b95fb3e332bb4b16859d54">efficiency</a> = .95</td></tr>
 <tr class="separator:acdffe3bad2b95fb3e332bb4b16859d54"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4bebc6c1970c0aac36fb24e354bbe9ed"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dfa/structagent_1_1end__user_1_1storage__inform.html#a4bebc6c1970c0aac36fb24e354bbe9ed">soc_ini</a></td></tr>
 <tr class="separator:a4bebc6c1970c0aac36fb24e354bbe9ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28b0592907d27ce6ce934286f4eb17dd"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dfa/structagent_1_1end__user_1_1storage__inform.html#a28b0592907d27ce6ce934286f4eb17dd">soc_final</a></td></tr>
 <tr class="separator:a28b0592907d27ce6ce934286f4eb17dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader">process parameters</div></td></tr>
+<tr class="memitem:a6506751c7d8bcf25fb0f33582333e8c3"><td class="memItemLeft" align="right" valign="top">alglib::minlpstate&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dfa/structagent_1_1end__user_1_1storage__inform.html#a6506751c7d8bcf25fb0f33582333e8c3">Problem</a></td></tr>
+<tr class="separator:a6506751c7d8bcf25fb0f33582333e8c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">output variables</div></td></tr>
 <tr class="memitem:a6f388da9306544ae08836f8ae985d492"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dfa/structagent_1_1end__user_1_1storage__inform.html#a6f388da9306544ae08836f8ae985d492">normalized_scheduled_capacity_profile</a></td></tr>
 <tr class="separator:a6f388da9306544ae08836f8ae985d492"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -133,7 +136,7 @@ Public Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Information of battery storage system of an end-user. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00064">64</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00066">66</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
 <a id="ac6775c7be884cec6abf721969e677443" name="ac6775c7be884cec6abf721969e677443"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac6775c7be884cec6abf721969e677443">&#9670;&nbsp;</a></span>capacity_scale</h2>
@@ -142,13 +145,13 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double agent::end_user::storage_inform::capacity_scale</td>
+          <td class="memname">double agent::end_user::storage_inform::capacity_scale = .001</td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p >Scale of capacity level of storage (kW per person). </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00072">72</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00074">74</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
 
 </div>
 </div>
@@ -159,13 +162,13 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double agent::end_user::storage_inform::efficiency</td>
+          <td class="memname">double agent::end_user::storage_inform::efficiency = .95</td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p >Conversion efficiency of charge / discharge. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00074">74</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00076">76</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
 
 </div>
 </div>
@@ -176,13 +179,13 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double agent::end_user::storage_inform::energy_scale</td>
+          <td class="memname">double agent::end_user::storage_inform::energy_scale = .01</td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p >Scale of energy level of storage (kWh per person). </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00070">70</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00072">72</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
 
 </div>
 </div>
@@ -199,7 +202,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Normalized schedule profile for battery storage capacity (kWh per hour per person). </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00086">86</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00095">95</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
 
 </div>
 </div>
@@ -216,7 +219,23 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Normalized schedule profile for battery storage state of charge level (kWh). </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00088">88</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00097">97</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
+
+</div>
+</div>
+<a id="a6506751c7d8bcf25fb0f33582333e8c3" name="a6506751c7d8bcf25fb0f33582333e8c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6506751c7d8bcf25fb0f33582333e8c3">&#9670;&nbsp;</a></span>Problem</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">alglib::minlpstate agent::end_user::storage_inform::Problem</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00087">87</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
 
 </div>
 </div>
@@ -233,7 +252,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Final state of charge level. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00078">78</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00080">80</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
 
 </div>
 </div>
@@ -250,7 +269,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Initial state of charge level. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00076">76</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00078">78</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
 
 </div>
 </div>

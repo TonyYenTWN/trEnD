@@ -2,6 +2,10 @@ var structagent_1_1end__user_1_1operation =
 [
     [ "BESS", "df/d54/structagent_1_1end__user_1_1operation.html#ab48e5bed6eb1c9677c668ae85b3b3fdb", null ],
     [ "EV", "df/d54/structagent_1_1end__user_1_1operation.html#ae760c56e74406f14196198f57463e4aa", null ],
+    [ "normalized_actual_residual_demand_flex_profile", "df/d54/structagent_1_1end__user_1_1operation.html#a18edae7d62399161edabda2a1dabe7d9", null ],
+    [ "normalized_actual_residual_demand_inflex_profile", "df/d54/structagent_1_1end__user_1_1operation.html#a821e9f61e728c6909b6afabafb082ed5", null ],
+    [ "normalized_confirmed_residual_demand_flex_profile", "df/d54/structagent_1_1end__user_1_1operation.html#ae495cd3df293d0feb62dfc631de1f2e9", null ],
+    [ "normalized_confirmed_residual_demand_inflex_profile", "df/d54/structagent_1_1end__user_1_1operation.html#abf82516720b1e86b30da76200c452bfd", null ],
     [ "normalized_default_demand_profile", "df/d54/structagent_1_1end__user_1_1operation.html#a9d8e6dd9985c678630c08c3155b9c471", null ],
     [ "normalized_default_PV_profile", "df/d54/structagent_1_1end__user_1_1operation.html#a1cf19e249088e3593c404ffccc6ff3d2", null ],
     [ "normalized_scheduled_residual_demand_flex_profile", "df/d54/structagent_1_1end__user_1_1operation.html#afa1ebcf41cd2fbf1952d33d102619951", null ],

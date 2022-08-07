@@ -11,5 +11,6 @@ var end_user_8h =
     [ "profiles", "d2/d8b/end-user_8h.html#a43276480df5494a489b2905cf75a2412", null ],
     [ "smart_appliance_schedule", "d2/d8b/end-user_8h.html#a80bb9d48b2ee3e305a610b599f066fe8", null ],
     [ "sort", "d2/d8b/end-user_8h.html#a03e096d663464ad06c2563c401d7ce83", null ],
-    [ "storage_schedule_LP", "d2/d8b/end-user_8h.html#a1ab5fe3d1d93a9b97219b82dc2a753c2", null ]
+    [ "storage_schedule_LP_mold", "d2/d8b/end-user_8h.html#a6eb2228d59708556b675a728f7c0b681", null ],
+    [ "storage_schedule_LP_optimize", "d2/d8b/end-user_8h.html#abcd0351a9315f49ffa5350623ebc12a1", null ]
 ];

@@ -19,12 +19,13 @@ var searchData=
   ['spatial_5ffield_16',['spatial_field',['../d9/d64/namespacespatial__field.html',1,'']]],
   ['spatial_5ffield_5fstore_17',['spatial_field_store',['../d9/d64/namespacespatial__field.html#a660bc61075ae2d2ad5b1c34ad53dc4d1',1,'spatial_field']]],
   ['storage_5finform_18',['storage_inform',['../d3/dfa/structagent_1_1end__user_1_1storage__inform.html',1,'agent::end_user']]],
-  ['storage_5fschedule_5flp_19',['storage_schedule_LP',['../d8/d3f/namespaceagent_1_1end__user.html#a1ab5fe3d1d93a9b97219b82dc2a753c2',1,'agent::end_user']]],
-  ['submitted_5fbid_5fcalculation_20',['Submitted_bid_calculation',['../d5/d60/namespacepower__market.html#a45c019f3de2691cca6e5b3d2d9b818a1',1,'power_market']]],
-  ['submitted_5fdemand_21',['submitted_demand',['../d8/d2d/structpower__market_1_1market__inform.html#af221f0fa9d5a3c448cdcb5f269636736',1,'power_market::market_inform']]],
-  ['submitted_5fnegative_5fdemand_22',['submitted_negative_demand',['../d1/df3/structpower__market_1_1control__reserve__inform.html#abc6097ec25a2b0eec8e9326426eb2b08',1,'power_market::control_reserve_inform']]],
-  ['submitted_5fnegative_5fsupply_23',['submitted_negative_supply',['../d1/df3/structpower__market_1_1control__reserve__inform.html#a8ace1eff95511546d57c27a2efeec0c3',1,'power_market::control_reserve_inform']]],
-  ['submitted_5fpositive_5fdemand_24',['submitted_positive_demand',['../d1/df3/structpower__market_1_1control__reserve__inform.html#ad76e920bea0e5c37c120d5fba6dc2aa6',1,'power_market::control_reserve_inform']]],
-  ['submitted_5fpositive_5fsupply_25',['submitted_positive_supply',['../d1/df3/structpower__market_1_1control__reserve__inform.html#a41fd03e9fa2b4be4f5ab973f458797c3',1,'power_market::control_reserve_inform']]],
-  ['submitted_5fsupply_26',['submitted_supply',['../d8/d2d/structpower__market_1_1market__inform.html#ada30720245d62f903b33773fe1682038',1,'power_market::market_inform']]]
+  ['storage_5fschedule_5flp_5fmold_19',['storage_schedule_LP_mold',['../d8/d3f/namespaceagent_1_1end__user.html#a6eb2228d59708556b675a728f7c0b681',1,'agent::end_user']]],
+  ['storage_5fschedule_5flp_5foptimize_20',['storage_schedule_LP_optimize',['../d8/d3f/namespaceagent_1_1end__user.html#abcd0351a9315f49ffa5350623ebc12a1',1,'agent::end_user']]],
+  ['submitted_5fbid_5fcalculation_21',['Submitted_bid_calculation',['../d5/d60/namespacepower__market.html#a45c019f3de2691cca6e5b3d2d9b818a1',1,'power_market']]],
+  ['submitted_5fdemand_22',['submitted_demand',['../d8/d2d/structpower__market_1_1market__inform.html#af221f0fa9d5a3c448cdcb5f269636736',1,'power_market::market_inform']]],
+  ['submitted_5fnegative_5fdemand_23',['submitted_negative_demand',['../d1/df3/structpower__market_1_1control__reserve__inform.html#abc6097ec25a2b0eec8e9326426eb2b08',1,'power_market::control_reserve_inform']]],
+  ['submitted_5fnegative_5fsupply_24',['submitted_negative_supply',['../d1/df3/structpower__market_1_1control__reserve__inform.html#a8ace1eff95511546d57c27a2efeec0c3',1,'power_market::control_reserve_inform']]],
+  ['submitted_5fpositive_5fdemand_25',['submitted_positive_demand',['../d1/df3/structpower__market_1_1control__reserve__inform.html#ad76e920bea0e5c37c120d5fba6dc2aa6',1,'power_market::control_reserve_inform']]],
+  ['submitted_5fpositive_5fsupply_26',['submitted_positive_supply',['../d1/df3/structpower__market_1_1control__reserve__inform.html#a41fd03e9fa2b4be4f5ab973f458797c3',1,'power_market::control_reserve_inform']]],
+  ['submitted_5fsupply_27',['submitted_supply',['../d8/d2d/structpower__market_1_1market__inform.html#ada30720245d62f903b33773fe1682038',1,'power_market::market_inform']]]
 ];
