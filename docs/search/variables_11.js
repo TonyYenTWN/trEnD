@@ -1,8 +1,5 @@
 var searchData=
 [
-  ['tech_5fparameters_0',['tech_parameters',['../d4/ddd/structpower__network_1_1network__inform.html#a778f0df60b1668e99b11aa46b455eea6',1,'power_network::network_inform']]],
-  ['theta_5flimit_1',['theta_limit',['../dc/dd8/structpower__network_1_1technical__parameters.html#a183af4264522a9d0668a0282e9344ba3',1,'power_network::technical_parameters']]],
-  ['time_5fintervals_2',['time_intervals',['../d8/d2d/structpower__market_1_1market__inform.html#a55a6f4eb29012716ca077ac3502617e0',1,'power_market::market_inform']]],
-  ['to_3',['to',['../d3/d9c/structpower__network_1_1edges.html#ae7844ae7d747cd776f3e141396c8b220',1,'power_network::edges']]],
-  ['type_4',['type',['../dc/d2e/structpower__network_1_1plants__per__tech.html#a1373d252449a8d00955669a89864eb89',1,'power_network::plants_per_tech']]]
+  ['unfulfilled_5fdemand_0',['unfulfilled_demand',['../d3/dd0/structagent_1_1end__user_1_1smart__appliance__inform.html#aec913bff88549ea43f9ede76b8c97368',1,'agent::end_user::smart_appliance_inform']]],
+  ['usage_5fdefault_5fperiod_1',['usage_default_period',['../da/d92/structagent_1_1end__user_1_1EV__inform.html#a304efde733a06c524755ef67d5cd9bbc',1,'agent::end_user::EV_inform']]]
 ];

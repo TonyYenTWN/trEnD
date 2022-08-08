@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['map_0',['MAP',['../d5/da0/basic__definitions_8h.html#a4e58380df1435929cc191b5b4ba99cd5',1,'basic_definitions.h']]],
-  ['market_5fobject_1',['MARKET_OBJECT',['../db/d56/power__market_8h.html#a75ade5072001662f3dd76d55e651155e',1,'power_market.h']]]
+  ['network_5fobject_0',['NETWORK_OBJECT',['../d9/dde/power__network_8h.html#a234a9d06a433e6815e1affa4d4bb14a1',1,'power_network.h']]],
+  ['numeric_1',['NUMERIC',['../d5/da0/basic__definitions_8h.html#a1046572de30f68fa0b1d2ed02124f876',1,'basic_definitions.h']]]
 ];

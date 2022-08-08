@@ -16,9 +16,8 @@ var searchData=
   ['energy_5fscale_13',['energy_scale',['../d3/dfa/structagent_1_1end__user_1_1storage__inform.html#ac6d73f838f5cedf86a8c81d989db5ff9',1,'agent::end_user::storage_inform']]],
   ['entry_5fnode_5fnum_14',['entry_node_num',['../de/dd4/structpower__network_1_1cbt.html#a22c6da9de52c289212a480129c5f8898',1,'power_network::cbt']]],
   ['entry_5fnodes_15',['entry_nodes',['../de/dd4/structpower__network_1_1cbt.html#a70f372699ac3a74559aae24dca2df17c',1,'power_network::cbt']]],
-  ['eq_5forig_5fmatrix_16',['eq_orig_matrix',['../dd/dc3/structLP__constraint.html#aceaa1337356ab8ed1d36397c9eeea12d',1,'LP_constraint']]],
-  ['eq_5fvector_17',['eq_vector',['../da/d47/structLP__boundary.html#a61c8ceb1f92e22a7f7b939b64faa4789',1,'LP_boundary']]],
-  ['ev_18',['EV',['../df/d54/structagent_1_1end__user_1_1operation.html#ae760c56e74406f14196198f57463e4aa',1,'agent::end_user::operation']]],
-  ['ev_5finform_19',['EV_inform',['../da/d92/structagent_1_1end__user_1_1EV__inform.html',1,'agent::end_user']]],
-  ['ev_5fself_5fcharging_20',['EV_self_charging',['../d1/de8/structagent_1_1end__user_1_1decision.html#a6ba65e7f8fc9e3c3c75f73d337b91230',1,'agent::end_user::decision']]]
+  ['ev_16',['EV',['../df/d54/structagent_1_1end__user_1_1operation.html#ae760c56e74406f14196198f57463e4aa',1,'agent::end_user::operation']]],
+  ['ev_5finform_17',['EV_inform',['../da/d92/structagent_1_1end__user_1_1EV__inform.html',1,'agent::end_user']]],
+  ['ev_5fschedule_18',['EV_schedule',['../d8/d3f/namespaceagent_1_1end__user.html#ab931c84643a38c6c448fdc2f75414c90',1,'agent::end_user']]],
+  ['ev_5fself_5fcharging_19',['EV_self_charging',['../d1/de8/structagent_1_1end__user_1_1decision.html#a6ba65e7f8fc9e3c3c75f73d337b91230',1,'agent::end_user::decision']]]
 ];

@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['weight_0',['weight',['../df/d54/structagent_1_1end__user_1_1operation.html#a5c890b5a5167a2cb16adbcf4fc5c0378',1,'agent::end_user::operation']]],
-  ['wind_1',['wind',['../db/dd7/structpower__network_1_1plants__all.html#aa0d1e183fa110a59e07f8ac8f428b943',1,'power_network::plants_all']]]
+  ['x_0',['x',['../d4/dbd/structpower__network_1_1points.html#ad0129ca9a7d9a5fec1e0af235409c0e8',1,'power_network::points::x()'],['../d8/d02/structpower__network_1_1nodes.html#afc2e15776f8cf733a5c48fcf6c1a7867',1,'power_network::nodes::x()'],['../dc/d2e/structpower__network_1_1plants__per__tech.html#a3ac96777bab375abd8db8f3ca98869cf',1,'power_network::plants_per_tech::x()']]]
 ];

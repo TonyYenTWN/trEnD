@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['geodist_0',['geodist',['../d9/d64/namespacespatial__field.html#a6ed9b59869392f44a0ca31520223e79f',1,'spatial_field']]],
-  ['get_5fcol_5fname_1',['get_col_name',['../de/dbb/namespacebasic.html#a11ea1d6640d0bbd0d337cbfb5204b8a7',1,'basic']]],
-  ['get_5ffile_5fdim_2',['get_file_dim',['../de/dbb/namespacebasic.html#a27f0ca57a03561dbb4cdad6525cc6bbb',1,'basic']]]
+  ['filtered_5fbid_5fcalculation_0',['Filtered_bid_calculation',['../d5/d60/namespacepower__market.html#a406c5e5f7b8c24f26063c94b1fd97dcb',1,'power_market']]],
+  ['flow_5fbased_5fmarket_5flp_5fset_1',['Flow_Based_Market_LP_Set',['../d5/d60/namespacepower__market.html#a0557dcec734d9f05dd56f7e5b5220164',1,'power_market']]],
+  ['flow_5fbased_5fmarket_5foptimization_2',['Flow_Based_Market_Optimization',['../d5/d60/namespacepower__market.html#aceb4f113b1d5e4c84596916d46833f4f',1,'power_market']]]
 ];

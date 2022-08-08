@@ -9,6 +9,7 @@ var end_user_8h =
     [ "agent::sorted_vector", "de/dbe/structagent_1_1sorted__vector.html", "de/dbe/structagent_1_1sorted__vector" ],
     [ "agent::end_user::storage_inform", "d3/dfa/structagent_1_1end__user_1_1storage__inform.html", "d3/dfa/structagent_1_1end__user_1_1storage__inform" ],
     [ "profiles", "d2/d8b/end-user_8h.html#a43276480df5494a489b2905cf75a2412", null ],
+    [ "EV_schedule", "d2/d8b/end-user_8h.html#ab931c84643a38c6c448fdc2f75414c90", null ],
     [ "smart_appliance_schedule", "d2/d8b/end-user_8h.html#a80bb9d48b2ee3e305a610b599f066fe8", null ],
     [ "sort", "d2/d8b/end-user_8h.html#a03e096d663464ad06c2563c401d7ce83", null ],
     [ "storage_schedule_LP_mold", "d2/d8b/end-user_8h.html#a6eb2228d59708556b675a728f7c0b681", null ],

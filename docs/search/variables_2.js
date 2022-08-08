@@ -10,11 +10,8 @@ var searchData=
   ['confirmed_5fprice_5fratio_7',['confirmed_price_ratio',['../d8/d2d/structpower__market_1_1market__inform.html#a915b4909939adc5e150ffd4ab1b3a747',1,'power_market::market_inform']]],
   ['confirmed_5fsupply_8',['confirmed_supply',['../d8/d2d/structpower__market_1_1market__inform.html#ae2a4426636b19185f4a8d2f78047106d',1,'power_market::market_inform']]],
   ['confirmed_5fvoltage_9',['confirmed_voltage',['../d5/d93/structpower__market_1_1network__graph.html#a34a6ae837ef4b26317f5bd4ab52c8ad4',1,'power_market::network_graph']]],
-  ['constraint_10',['Constraint',['../de/d62/structLP__object.html#a9a50f1dd5c1b89b678bf46ff48bfd6e5',1,'LP_object']]],
-  ['constraints_5feq_5fnum_11',['Constraints_eq_num',['../de/d62/structLP__object.html#a9c2a14dac8cd4bbd04c0815d051d11bf',1,'LP_object']]],
-  ['constraints_5fie_5fnum_12',['Constraints_ie_num',['../de/d62/structLP__object.html#ae9e7a0ede13f2c9ec218007c718e6f74',1,'LP_object']]],
-  ['control_5freserve_13',['control_reserve',['../d8/d2d/structpower__market_1_1market__inform.html#aaa2083100092cdc675082e38d59e762b',1,'power_market::market_inform']]],
-  ['coordinate_5fgrid_14',['coordinate_grid',['../d4/dbd/structpower__network_1_1points.html#abcf011019fd7122997060ba8904c9a05',1,'power_network::points']]],
-  ['covariance_15',['covariance',['../d4/dbd/structpower__network_1_1points.html#a94f36cb55bdbfe267393633d32edddef',1,'power_network::points']]],
-  ['cross_5fborder_5fzone_5fstart_16',['cross_border_zone_start',['../d8/d2d/structpower__market_1_1market__inform.html#a5c2a87921f88721ac93dd97a8ca23f97',1,'power_market::market_inform']]]
+  ['control_5freserve_10',['control_reserve',['../d8/d2d/structpower__market_1_1market__inform.html#aaa2083100092cdc675082e38d59e762b',1,'power_market::market_inform']]],
+  ['coordinate_5fgrid_11',['coordinate_grid',['../d4/dbd/structpower__network_1_1points.html#abcf011019fd7122997060ba8904c9a05',1,'power_network::points']]],
+  ['covariance_12',['covariance',['../d4/dbd/structpower__network_1_1points.html#a94f36cb55bdbfe267393633d32edddef',1,'power_network::points']]],
+  ['cross_5fborder_5fzone_5fstart_13',['cross_border_zone_start',['../d8/d2d/structpower__market_1_1market__inform.html#a5c2a87921f88721ac93dd97a8ca23f97',1,'power_market::market_inform']]]
 ];

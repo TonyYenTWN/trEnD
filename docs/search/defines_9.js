@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['omp_0',['OMP',['../d5/da0/basic__definitions_8h.html#a70961aa05357419a449bf2070cf4c3c6',1,'basic_definitions.h']]]
+  ['power_5fmarket_0',['POWER_MARKET',['../db/d56/power__market_8h.html#a30e4fc263909c91cf4c491e92ab1bb08',1,'power_market.h']]]
 ];

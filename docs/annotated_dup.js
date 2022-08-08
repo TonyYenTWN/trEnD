@@ -30,11 +30,5 @@ var annotated_dup =
     ] ],
     [ "spatial_field", "d9/d64/namespacespatial__field.html", [
       [ "Earth_Constant", "d4/d89/classspatial__field_1_1Earth__Constant.html", "d4/d89/classspatial__field_1_1Earth__Constant" ]
-    ] ],
-    [ "LP_boundary", "da/d47/structLP__boundary.html", "da/d47/structLP__boundary" ],
-    [ "LP_constraint", "dd/dc3/structLP__constraint.html", "dd/dc3/structLP__constraint" ],
-    [ "LP_matrix_solver", "d1/df0/structLP__matrix__solver.html", "d1/df0/structLP__matrix__solver" ],
-    [ "LP_object", "de/d62/structLP__object.html", "de/d62/structLP__object" ],
-    [ "LP_objective", "d5/daa/structLP__objective.html", "d5/daa/structLP__objective" ],
-    [ "LP_solution", "df/da4/structLP__solution.html", "df/da4/structLP__solution" ]
+    ] ]
 ];

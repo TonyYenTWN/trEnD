@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['lp_5fgpa_0',['LP_GPA',['../da/d45/LP__gpa_8h.html#ae6be32e9b4c26926fb3851a1a3fa1c31',1,'LP_gpa.h']]]
+  ['map_0',['MAP',['../d5/da0/basic__definitions_8h.html#a4e58380df1435929cc191b5b4ba99cd5',1,'basic_definitions.h']]],
+  ['market_5fobject_1',['MARKET_OBJECT',['../db/d56/power__market_8h.html#a75ade5072001662f3dd76d55e651155e',1,'power_market.h']]]
 ];
