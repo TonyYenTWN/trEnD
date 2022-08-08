@@ -70,17 +70,38 @@ int main(){
 
 	// Re-dispatch + tertiary control reserve in TSO
 	start = std::chrono::high_resolution_clock::now();
-
 	std::cout << "TSO: \n";
+
 	power_market::Flow_Based_Market_Optimization(TSO_Market, TSO_Problem);
+	power_market::TSO_Market_Results_Get(0, TSO_Market, TSO_Problem);
+	power_market::TSO_Market_control_reserve(0, TSO_Market, TSO_Problem);
 
 	stop = std::chrono::high_resolution_clock::now();
 	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
 	std::cout << "TSO optimization time: " << duration.count() << " microseconds" << "\n\n";
 
-	power_market::TSO_Market_Results_Get(0, TSO_Market, TSO_Problem);
+	// Test for later rounds
+	start = std::chrono::high_resolution_clock::now();
 
-	power_market::TSO_Market_control_reserve(0, TSO_Market, TSO_Problem);
+	power_market::International_Market_Price_Estimation(1, International_Market, Power_network_inform);
+	power_market::DSO_agents_update(1, end_user_profiles, TSO_Market, International_Market, Power_network_inform);
+	power_market::Submitted_bid_calculation(end_user_profiles, DSO_Markets, TSO_Market, International_Market, Power_network_inform, fin_point_demand, DSO_filter_flag);
+	power_market::International_Market_Optimization(1, International_Market, 0);
+	power_market::TSO_boundary_update(1, TSO_Market, International_Market, Power_network_inform);
 
+	stop = std::chrono::high_resolution_clock::now();
+	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
+	std::cout << "Set time: " << duration.count() << " microseconds" << "\n\n";
+
+	start = std::chrono::high_resolution_clock::now();
+	std::cout << "TSO: \n";
+
+	power_market::Flow_Based_Market_Optimization(TSO_Market, TSO_Problem);
+	power_market::TSO_Market_Results_Get(1, TSO_Market, TSO_Problem);
+	power_market::TSO_Market_control_reserve(1, TSO_Market, TSO_Problem);
+
+	stop = std::chrono::high_resolution_clock::now();
+	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
+	std::cout << "TSO optimization time: " << duration.count() << " microseconds" << "\n\n";
 }
 //	std::cin.get();
