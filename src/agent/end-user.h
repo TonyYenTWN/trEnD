@@ -10,6 +10,11 @@ namespace agent{
 			return value;
 		}
 
+		static inline int sample_num(){
+			int value = 3;
+			return value;
+		}
+
 		static inline double residential_ratio(){
 			double value = 1.;
 			return value;
@@ -149,6 +154,10 @@ namespace agent{
 			* @name output variables
 			*/
 			/*@{*/
+			double supply_inflex_price;
+			double supply_flex_price;
+			double demand_inflex_price;
+			double demand_flex_price;
 			Eigen::VectorXd normalized_scheduled_residual_demand_inflex_profile;
 			Eigen::VectorXd normalized_confirmed_residual_demand_inflex_profile;
 			Eigen::VectorXd normalized_actual_residual_demand_inflex_profile;

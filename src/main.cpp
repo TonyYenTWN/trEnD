@@ -46,7 +46,7 @@ int main(){
 	power_market::International_Market_Price_Estimation(0, International_Market, Power_network_inform);
 
 	// Bidding strategies of end-users
-	auto end_user_profiles = power_market::DSO_agents_set(DSO_Markets, International_Market, Power_network_inform);
+	auto end_user_profiles = power_market::DSO_agents_set(International_Market, Power_network_inform);
 
 	// Re-initialization of submitted bids in DSOs and TSOs
 	std::string fin_point_demand = "csv/processed/spatial_field/nominal_mean_demand_field_10km_annual_mean.csv";
