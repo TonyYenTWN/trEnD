@@ -153,7 +153,7 @@ agent::end_user::profiles power_market::DSO_agents_set(market_inform &Internatio
 			end_user_profiles[point_iter][sample_iter].operation.BESS.Problem = Problem;
 			agent::end_user::storage_schedule_LP_optimize(foresight_time, expected_price_sorted[bz_ID], end_user_profiles[point_iter][sample_iter].operation.BESS);
 
-			// Update schedule profile
+			// Update schedule profile and prices
 			end_user_profiles[point_iter][sample_iter].operation.supply_inflex_price = International_Market.price_range_inflex(0);
 			end_user_profiles[point_iter][sample_iter].operation.supply_flex_price = International_Market.price_range_inflex(0);
 			end_user_profiles[point_iter][sample_iter].operation.demand_inflex_price = International_Market.price_range_inflex(1);
@@ -203,8 +203,23 @@ void power_market::DSO_agents_update(int tick, agent::end_user::profiles &end_us
 					demand_gap -= reduction;
 				}
 			}
-		}
 
+			// Supply settlement
+			// Order of reduction: BESS discharge, EV discharge, inflexible supply
+			double marginal_supply = 0.;
+			marginal_supply += (node_price == end_user_profiles[point_iter][sample_iter].operation.supply_flex_price) * (end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile(0) < 0.) * end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile(0);
+			marginal_supply += (node_price == end_user_profiles[point_iter][sample_iter].operation.supply_inflex_price) * (end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile(0) < 0.) * end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile(0);
+			double supply_gap = (1. - TSO_Market.actual_price_ratio(tick - 1, node_ID)) * marginal_supply;
+			supply_gap += (node_price > end_user_profiles[point_iter][sample_iter].operation.supply_flex_price) * (end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile(0) < 0.) * end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile(0);
+			supply_gap += (node_price > end_user_profiles[point_iter][sample_iter].operation.supply_inflex_price) * (end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile(0) < 0.) * end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile(0);
+
+			if(supply_gap > 0.){
+				// Reduce BESS charge
+				double reduction = std::min(supply_gap, end_user_profiles[point_iter][sample_iter].operation.BESS.capacity_scale + end_user_profiles[point_iter][sample_iter].operation.BESS.normalized_scheduled_capacity_profile(0));
+				end_user_profiles[point_iter][sample_iter].operation.BESS.soc_ini += reduction;
+				supply_gap -= reduction;
+			}
+		}
 	}
 
 	// Renew the expected price and demand profiles
@@ -231,10 +246,18 @@ void power_market::DSO_agents_update(int tick, agent::end_user::profiles &end_us
 			end_user_profiles[point_iter][sample_iter].operation.smart_appliance.flexibility_factor = .5;
 			agent::end_user::smart_appliance_schedule(expected_price_sorted[bz_ID], end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile, end_user_profiles[point_iter][sample_iter].operation.smart_appliance);
 
-			// Update schedule profile
+			// BESS
+			agent::end_user::storage_schedule_LP_optimize(foresight_time, expected_price_sorted[bz_ID], end_user_profiles[point_iter][sample_iter].operation.BESS);
+
+			// Update schedule profile and prices
+			end_user_profiles[point_iter][sample_iter].operation.supply_inflex_price = International_Market.price_range_inflex(0);
+			end_user_profiles[point_iter][sample_iter].operation.supply_flex_price = International_Market.price_range_inflex(0);
+			end_user_profiles[point_iter][sample_iter].operation.demand_inflex_price = International_Market.price_range_inflex(1);
+			end_user_profiles[point_iter][sample_iter].operation.demand_flex_price = International_Market.price_range_inflex(1);
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile = end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile;
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile *= (1. - end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale);
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile = end_user_profiles[point_iter][sample_iter].operation.smart_appliance.normalized_scheduled_profile;
+			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile -= end_user_profiles[point_iter][sample_iter].operation.BESS.normalized_scheduled_capacity_profile;
 		}
 	}
 }
