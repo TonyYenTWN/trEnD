@@ -188,6 +188,7 @@ void agent::end_user::EV_schedule(int foresight_time, sorted_vector expected_pri
 
 		// Set fixed end and optimize BESS schedule of the EV
 		result.BESS.soc_final = result.BESS.energy_scale;
+		result.BESS.Problem = storage_schedule_LP_mold(tick);
 		storage_schedule_LP_optimize(tick, expected_price_sorted, result.BESS, 1);
 	}
 }

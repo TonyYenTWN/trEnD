@@ -148,7 +148,11 @@ agent::end_user::profiles power_market::DSO_agents_set(market_inform &Internatio
 			end_user_profiles[point_iter][sample_iter].operation.smart_appliance.flexibility_factor = .5;
 			agent::end_user::smart_appliance_schedule(expected_price_sorted[bz_ID], end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile, end_user_profiles[point_iter][sample_iter].operation.smart_appliance);
 
-
+			// EV
+			end_user_profiles[point_iter][sample_iter].operation.EV.BESS.soc_ini = .5 * end_user_profiles[point_iter][sample_iter].operation.EV.BESS.energy_scale;
+			end_user_profiles[point_iter][sample_iter].operation.EV.usage_default_period = Eigen::VectorXi::Zero(foresight_time);
+			end_user_profiles[point_iter][sample_iter].operation.EV.house_default_period = Eigen::VectorXi::Ones(foresight_time);
+			agent::end_user::EV_schedule(foresight_time, expected_price_sorted[bz_ID], end_user_profiles[point_iter][sample_iter].operation.EV);
 
 			// BESS
 			end_user_profiles[point_iter][sample_iter].operation.BESS.soc_ini = .5 * end_user_profiles[point_iter][sample_iter].operation.BESS.energy_scale;
@@ -160,13 +164,14 @@ agent::end_user::profiles power_market::DSO_agents_set(market_inform &Internatio
 			end_user_profiles[point_iter][sample_iter].operation.supply_flex_price_ID = 0;
 			end_user_profiles[point_iter][sample_iter].operation.demand_inflex_price_ID = International_Market.price_intervals + 1;
 			end_user_profiles[point_iter][sample_iter].operation.demand_flex_price_ID = International_Market.price_intervals + 1;
-			end_user_profiles[point_iter][sample_iter].operation.supply_inflex_price = International_Market.price_range_inflex(0);
-			end_user_profiles[point_iter][sample_iter].operation.supply_flex_price = International_Market.price_range_inflex(0);
-			end_user_profiles[point_iter][sample_iter].operation.demand_inflex_price = International_Market.price_range_inflex(1);
-			end_user_profiles[point_iter][sample_iter].operation.demand_flex_price = International_Market.price_range_inflex(1);
+			end_user_profiles[point_iter][sample_iter].operation.supply_inflex_price = International_Market.bidded_price(end_user_profiles[point_iter][sample_iter].operation.supply_inflex_price_ID);
+			end_user_profiles[point_iter][sample_iter].operation.supply_flex_price = International_Market.bidded_price(end_user_profiles[point_iter][sample_iter].operation.supply_flex_price_ID);
+			end_user_profiles[point_iter][sample_iter].operation.demand_inflex_price = International_Market.bidded_price(end_user_profiles[point_iter][sample_iter].operation.demand_inflex_price_ID);
+			end_user_profiles[point_iter][sample_iter].operation.demand_flex_price = International_Market.bidded_price(end_user_profiles[point_iter][sample_iter].operation.demand_flex_price_ID);
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile = end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile;
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile *= (1. - end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale);
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile = end_user_profiles[point_iter][sample_iter].operation.smart_appliance.normalized_scheduled_profile;
+			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile -= end_user_profiles[point_iter][sample_iter].operation.EV.BESS.normalized_scheduled_capacity_profile;
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile -= end_user_profiles[point_iter][sample_iter].operation.BESS.normalized_scheduled_capacity_profile;
 			//std::cout << end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile.transpose() << "\n";
 			//std::cout << end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile.transpose() << "\n\n";
@@ -185,6 +190,7 @@ void power_market::DSO_agents_update(int tick, agent::end_user::profiles &end_us
 
 		for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
 			end_user_profiles[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand = 0.;
+			end_user_profiles[point_iter][sample_iter].operation.EV.BESS.soc_ini -= end_user_profiles[point_iter][sample_iter].operation.EV.BESS.normalized_scheduled_capacity_profile(0);
 			end_user_profiles[point_iter][sample_iter].operation.BESS.soc_ini -= end_user_profiles[point_iter][sample_iter].operation.BESS.normalized_scheduled_capacity_profile(0);
 
 			// Demand settlement
@@ -204,10 +210,18 @@ void power_market::DSO_agents_update(int tick, agent::end_user::profiles &end_us
 				demand_gap -= reduction;
 
 				if(demand_gap > 0.){
-					// Reduce smart appliance
-					reduction = std::min(demand_gap, end_user_profiles[point_iter][sample_iter].operation.smart_appliance.normalized_scheduled_profile(0));
-					end_user_profiles[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand += reduction;
+					// Reduce EV charge
+					reduction = std::min(demand_gap, end_user_profiles[point_iter][sample_iter].operation.EV.BESS.capacity_scale - end_user_profiles[point_iter][sample_iter].operation.EV.BESS.normalized_scheduled_capacity_profile(0));
+					end_user_profiles[point_iter][sample_iter].operation.EV.BESS.soc_ini -= reduction;
+					end_user_profiles[point_iter][sample_iter].operation.EV.BESS.normalized_scheduled_capacity_profile(0) += reduction;
 					demand_gap -= reduction;
+
+					if(demand_gap > 0.){
+						// Reduce smart appliance
+						reduction = std::min(demand_gap, end_user_profiles[point_iter][sample_iter].operation.smart_appliance.normalized_scheduled_profile(0));
+						end_user_profiles[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand += reduction;
+						demand_gap -= reduction;
+					}
 				}
 			}
 
@@ -226,6 +240,14 @@ void power_market::DSO_agents_update(int tick, agent::end_user::profiles &end_us
 				end_user_profiles[point_iter][sample_iter].operation.BESS.soc_ini += reduction;
 				end_user_profiles[point_iter][sample_iter].operation.BESS.normalized_scheduled_capacity_profile(0) -= reduction;
 				supply_gap -= reduction;
+
+				if(supply_gap > 0.){
+					// Reduce EV charge
+					reduction = std::min(supply_gap, end_user_profiles[point_iter][sample_iter].operation.EV.BESS.capacity_scale + end_user_profiles[point_iter][sample_iter].operation.EV.BESS.normalized_scheduled_capacity_profile(0));
+					end_user_profiles[point_iter][sample_iter].operation.EV.BESS.soc_ini += reduction;
+					end_user_profiles[point_iter][sample_iter].operation.EV.BESS.normalized_scheduled_capacity_profile(0) -= reduction;
+					supply_gap -= reduction;
+				}
 			}
 		}
 	}
@@ -254,6 +276,11 @@ void power_market::DSO_agents_update(int tick, agent::end_user::profiles &end_us
 			end_user_profiles[point_iter][sample_iter].operation.smart_appliance.flexibility_factor = .5;
 			agent::end_user::smart_appliance_schedule(expected_price_sorted[bz_ID], end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile, end_user_profiles[point_iter][sample_iter].operation.smart_appliance);
 
+			// EV
+			end_user_profiles[point_iter][sample_iter].operation.EV.usage_default_period = Eigen::VectorXi::Zero(foresight_time);
+			end_user_profiles[point_iter][sample_iter].operation.EV.house_default_period = Eigen::VectorXi::Ones(foresight_time);
+			agent::end_user::EV_schedule(foresight_time, expected_price_sorted[bz_ID], end_user_profiles[point_iter][sample_iter].operation.EV);
+
 			// BESS
 			agent::end_user::storage_schedule_LP_optimize(foresight_time, expected_price_sorted[bz_ID], end_user_profiles[point_iter][sample_iter].operation.BESS);
 
@@ -265,6 +292,7 @@ void power_market::DSO_agents_update(int tick, agent::end_user::profiles &end_us
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile = end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile;
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile *= (1. - end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale);
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile = end_user_profiles[point_iter][sample_iter].operation.smart_appliance.normalized_scheduled_profile;
+			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile -= end_user_profiles[point_iter][sample_iter].operation.EV.BESS.normalized_scheduled_capacity_profile;
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile -= end_user_profiles[point_iter][sample_iter].operation.BESS.normalized_scheduled_capacity_profile;
 		}
 	}
