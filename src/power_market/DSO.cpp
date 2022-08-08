@@ -148,12 +148,18 @@ agent::end_user::profiles power_market::DSO_agents_set(market_inform &Internatio
 			end_user_profiles[point_iter][sample_iter].operation.smart_appliance.flexibility_factor = .5;
 			agent::end_user::smart_appliance_schedule(expected_price_sorted[bz_ID], end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile, end_user_profiles[point_iter][sample_iter].operation.smart_appliance);
 
+
+
 			// BESS
 			end_user_profiles[point_iter][sample_iter].operation.BESS.soc_ini = .5 * end_user_profiles[point_iter][sample_iter].operation.BESS.energy_scale;
 			end_user_profiles[point_iter][sample_iter].operation.BESS.Problem = Problem;
 			agent::end_user::storage_schedule_LP_optimize(foresight_time, expected_price_sorted[bz_ID], end_user_profiles[point_iter][sample_iter].operation.BESS);
 
 			// Update schedule profile and prices
+			end_user_profiles[point_iter][sample_iter].operation.supply_inflex_price_ID = 0;
+			end_user_profiles[point_iter][sample_iter].operation.supply_flex_price_ID = 0;
+			end_user_profiles[point_iter][sample_iter].operation.demand_inflex_price_ID = International_Market.price_intervals + 1;
+			end_user_profiles[point_iter][sample_iter].operation.demand_flex_price_ID = International_Market.price_intervals + 1;
 			end_user_profiles[point_iter][sample_iter].operation.supply_inflex_price = International_Market.price_range_inflex(0);
 			end_user_profiles[point_iter][sample_iter].operation.supply_flex_price = International_Market.price_range_inflex(0);
 			end_user_profiles[point_iter][sample_iter].operation.demand_inflex_price = International_Market.price_range_inflex(1);
@@ -194,6 +200,7 @@ void power_market::DSO_agents_update(int tick, agent::end_user::profiles &end_us
 				// Reduce BESS charge
 				double reduction = std::min(demand_gap, end_user_profiles[point_iter][sample_iter].operation.BESS.capacity_scale - end_user_profiles[point_iter][sample_iter].operation.BESS.normalized_scheduled_capacity_profile(0));
 				end_user_profiles[point_iter][sample_iter].operation.BESS.soc_ini -= reduction;
+				end_user_profiles[point_iter][sample_iter].operation.BESS.normalized_scheduled_capacity_profile(0) += reduction;
 				demand_gap -= reduction;
 
 				if(demand_gap > 0.){
@@ -217,6 +224,7 @@ void power_market::DSO_agents_update(int tick, agent::end_user::profiles &end_us
 				// Reduce BESS charge
 				double reduction = std::min(supply_gap, end_user_profiles[point_iter][sample_iter].operation.BESS.capacity_scale + end_user_profiles[point_iter][sample_iter].operation.BESS.normalized_scheduled_capacity_profile(0));
 				end_user_profiles[point_iter][sample_iter].operation.BESS.soc_ini += reduction;
+				end_user_profiles[point_iter][sample_iter].operation.BESS.normalized_scheduled_capacity_profile(0) -= reduction;
 				supply_gap -= reduction;
 			}
 		}

@@ -102,21 +102,23 @@ void power_market::Submitted_bid_calculation(agent::end_user::profiles &end_user
 			// nominal demand currently wrong in processed files, should change them and then multiply area of a point later
 
 			// Updating inflexible bids; if quantity is positive (negative -> update supply bids)
-			DSO_Markets[DSO_ID].submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, Power_network_inform.points.in_cluster_ID(point_iter)) = bid_inflex_quan;
-			International_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, bz_ID) += bid_inflex_quan;
+			int price_inflex_ID = end_user_profiles[point_iter][sample_iter].operation.demand_inflex_price_ID;
+			DSO_Markets[DSO_ID].submitted_demand(price_inflex_ID, Power_network_inform.points.in_cluster_ID(point_iter)) = bid_inflex_quan;
+			International_Market.submitted_demand(price_inflex_ID, bz_ID) += bid_inflex_quan;
 
 			// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
 			if(!DSO_filter_flag){
-				TSO_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, node_ID) += bid_inflex_quan;
+				TSO_Market.submitted_demand(price_inflex_ID, node_ID) += bid_inflex_quan;
 			}
 
 			// Updating flexible bids; if quantity is positive (negative -> update supply bids)
-			DSO_Markets[DSO_ID].submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, Power_network_inform.points.in_cluster_ID(point_iter)) = bid_flex_quan;
-			International_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, bz_ID) += bid_flex_quan;
+			int price_flex_ID = end_user_profiles[point_iter][sample_iter].operation.demand_flex_price_ID;
+			DSO_Markets[DSO_ID].submitted_demand(price_flex_ID, Power_network_inform.points.in_cluster_ID(point_iter)) = bid_flex_quan;
+			International_Market.submitted_demand(price_flex_ID, bz_ID) += bid_flex_quan;
 
 			// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
 			if(!DSO_filter_flag){
-				TSO_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, node_ID) += bid_flex_quan;
+				TSO_Market.submitted_demand(price_flex_ID, node_ID) += bid_flex_quan;
 			}
 		}
 

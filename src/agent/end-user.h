@@ -154,6 +154,10 @@ namespace agent{
 			* @name output variables
 			*/
 			/*@{*/
+			int supply_inflex_price_ID;
+			int supply_flex_price_ID;
+			int demand_inflex_price_ID;
+			int demand_flex_price_ID;
 			double supply_inflex_price;
 			double supply_flex_price;
 			double demand_inflex_price;
