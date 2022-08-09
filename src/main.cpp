@@ -1,10 +1,4 @@
 // Source file for the main procedure of the power market clearing
-#include <iostream>
-#include <omp.h>
-#include <chrono>
-//#include "../basic/LP_gpa.h"
-#include "basic/rw_csv.h"
-#include "alglib/optimization.h"
 #include "power_network/power_network.h"
 #include "power_market/power_market.h"
 

@@ -20,7 +20,7 @@ namespace spatial_field{
 			double Earth_Ecc = pow(2 * Earth_flat - pow(Earth_flat, 2), .5);
 	};
 
-	// Functions for calculation of the geodestic
+	// Functions for calculation of the geostatistic
 	double geodist(Eigen::Vector2d, Eigen::Vector2d);
 }
 

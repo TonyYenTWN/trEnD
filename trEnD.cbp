@@ -70,6 +70,8 @@
 		<Unit filename="src/power_network/power_network_input.cpp" />
 		<Unit filename="src/spatial_field/geostat.cpp" />
 		<Unit filename="src/spatial_field/geostat.h" />
+		<Unit filename="src/spatial_field/spatial_field.cpp" />
+		<Unit filename="src/spatial_field/spatial_field.h" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

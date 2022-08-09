@@ -1,6 +1,4 @@
 // Source file for the main procedure of the power market clearing
-#include "src/basic/rw_csv.h"
-#include "src/alglib/optimization.h"
 #include "src/power_network/power_network.h"
 #include "src/power_market/power_market.h"
 
