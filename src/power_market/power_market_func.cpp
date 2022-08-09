@@ -1,6 +1,4 @@
 // Source file for the functions of the power market
-//#include "../basic/alglib/optimization.h"
-//#include "../power_network/power_network.h"
 #include "power_market.h"
 
 // ------------------------------------------------------------------------------------------------
@@ -69,11 +67,7 @@ void power_market::Market_clearing_nodal(int tick, market_inform &Market, Eigen:
 // ------------------------------------------------------------------------------------------------
 // Functions involving multiple markets
 // ------------------------------------------------------------------------------------------------
-void power_market::Submitted_bid_calculation(agent::end_user::profiles &end_user_profiles, markets_inform &DSO_Markets, market_inform &TSO_Market, market_inform &International_Market, power_network::network_inform &Power_network_inform, std::string fin_point_demand, bool DSO_filter_flag){
-	// Calculation of submit bids at the beginning of each time slice
-//	auto fin_point_demand_dim = basic::get_file_dim(fin_point_demand);
-//	auto point_demand_inform = basic::read_file(fin_point_demand_dim[0], fin_point_demand_dim[1], fin_point_demand);
-
+void power_market::Submitted_bid_calculation(agent::end_user::profiles &end_user_profiles, markets_inform &DSO_Markets, market_inform &TSO_Market, market_inform &International_Market, power_network::network_inform &Power_network_inform, bool DSO_filter_flag){
 	// Initialize submit bids of markets
 	Market_Initialization(International_Market);
 	Market_Initialization(TSO_Market);
@@ -121,17 +115,6 @@ void power_market::Submitted_bid_calculation(agent::end_user::profiles &end_user
 				TSO_Market.submitted_demand(price_flex_ID, node_ID) += bid_flex_quan;
 			}
 		}
-
-//		double bid_quan = point_demand_inform(point_iter, 0) * Power_network_inform.points.population_density(point_iter); //* Power_network_inform.points.point_area;
-//		// nominal demand currently wrong in processed files, should change them and then multiply area of a point later
-//
-//		DSO_Markets[DSO_ID].submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, Power_network_inform.points.in_cluster_ID(point_iter)) = bid_quan;
-//		International_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, bz_ID) += bid_quan;
-//
-//		// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
-//		if(!DSO_filter_flag){
-//			TSO_Market.submitted_demand(DSO_Markets[DSO_ID].price_intervals + 1, node_ID) += bid_quan;
-//		}
 	}
 
 	// Supply at each point (LV power plants) / node (HV power plants)

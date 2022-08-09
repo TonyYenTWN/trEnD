@@ -9,99 +9,103 @@
 #include "power_market/power_market.h"
 
 int main(){
-	auto start = std::chrono::high_resolution_clock::now();
-	auto stop = std::chrono::high_resolution_clock::now();
-	auto duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
-	std::cout << "Current time: " << duration.count() << " microseconds" << "\n\n";
-
-	start = std::chrono::high_resolution_clock::now();
-
-	// Initialization of power network information
-	int Time = 8760;
 	power_network::network_inform Power_network_inform;
-	power_network::power_network_input_process(Power_network_inform, "csv/input/power_network/");
-	spatial_field::spatial_field_store(Power_network_inform, "csv/processed/spatial_field/nominal_mean_demand_field_10km_ts_", Time);
+	power_market::market_whole_inform Power_market_inform;
 
-	// Initialization of the IMO
-	std::string fin_name_moc = "csv/input/power_market/merit_order_curve_q_assimilated_2021.csv";
-	std::string fin_name_demand = "csv/input/power_market/residual_load_default_forecast_2021.csv";
-	power_market::market_inform International_Market;
-	power_market::International_Market_Set(International_Market, Power_network_inform, Time, fin_name_moc, fin_name_demand);
+	power_market::power_market_process_set(Power_network_inform, Power_market_inform, 0);
 
-	// Initialization of the TSO
-	power_market::market_inform TSO_Market;
-	power_market::TSO_Market_Set(TSO_Market, Power_network_inform, Time);
-	alglib::minlpstate TSO_Problem;
-	power_market::Flow_Based_Market_LP_Set(TSO_Market, TSO_Problem);
-
-	// Initialization of the DSO
-	power_market::markets_inform DSO_Markets;
-	power_market::DSO_Markets_Set(DSO_Markets, Power_network_inform, Time);
-	std::vector <alglib::minlpstate> DSO_Problems (DSO_Markets.size());
-	for(int DSO_iter = 0; DSO_iter < DSO_Markets.size(); ++ DSO_iter){
-		power_market::Flow_Based_Market_LP_Set(DSO_Markets[DSO_iter], DSO_Problems[DSO_iter]);
-	}
-
-	// Initial estimation of market clearing price in the IMO
-	power_market::International_Market_Price_Estimation(0, International_Market, Power_network_inform);
-
-	// Bidding strategies of end-users
-	auto end_user_profiles = power_market::DSO_agents_set(International_Market, Power_network_inform);
-
-	// Re-initialization of submitted bids in DSOs and TSOs
-	std::string fin_point_demand = "csv/processed/spatial_field/nominal_mean_demand_field_10km_annual_mean.csv";
-	bool DSO_filter_flag = 0;
-	power_market::Submitted_bid_calculation(end_user_profiles, DSO_Markets, TSO_Market, International_Market, Power_network_inform, fin_point_demand, DSO_filter_flag);
-
-	// Ideal market clearing in IMO
-	power_market::International_Market_Optimization(0, International_Market, 0);
-
-	// Set cross-border transmission as boundary conditions of TSO
-	power_market::TSO_boundary_update(0, TSO_Market, International_Market, Power_network_inform);
-
-	stop = std::chrono::high_resolution_clock::now();
-	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
-	std::cout << "Set time: " << duration.count() << " microseconds" << "\n\n";
-
-	// Bid-filtering in DSOs
-	if(DSO_filter_flag){
-		power_market::Filtered_bid_calculation(DSO_Markets, TSO_Market, Power_network_inform, DSO_Problems);
-	}
-
-	// Re-dispatch + tertiary control reserve in TSO
-	start = std::chrono::high_resolution_clock::now();
-	std::cout << "TSO: \n";
-
-	power_market::Flow_Based_Market_Optimization(TSO_Market, TSO_Problem);
-	power_market::TSO_Market_Results_Get(0, TSO_Market, TSO_Problem);
-	power_market::TSO_Market_control_reserve(0, TSO_Market, TSO_Problem);
-
-	stop = std::chrono::high_resolution_clock::now();
-	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
-	std::cout << "TSO optimization time: " << duration.count() << " microseconds" << "\n\n";
-
-	// Test for later rounds
-	start = std::chrono::high_resolution_clock::now();
-
-	power_market::International_Market_Price_Estimation(1, International_Market, Power_network_inform);
-	power_market::DSO_agents_update(1, end_user_profiles, TSO_Market, International_Market, Power_network_inform);
-	power_market::Submitted_bid_calculation(end_user_profiles, DSO_Markets, TSO_Market, International_Market, Power_network_inform, fin_point_demand, DSO_filter_flag);
-	power_market::International_Market_Optimization(1, International_Market, 0);
-	power_market::TSO_boundary_update(1, TSO_Market, International_Market, Power_network_inform);
-
-	stop = std::chrono::high_resolution_clock::now();
-	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
-	std::cout << "Set time: " << duration.count() << " microseconds" << "\n\n";
-
-	start = std::chrono::high_resolution_clock::now();
-	std::cout << "TSO: \n";
-
-	power_market::Flow_Based_Market_Optimization(TSO_Market, TSO_Problem);
-	power_market::TSO_Market_Results_Get(1, TSO_Market, TSO_Problem);
-	power_market::TSO_Market_control_reserve(1, TSO_Market, TSO_Problem);
-
-	stop = std::chrono::high_resolution_clock::now();
-	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
-	std::cout << "TSO optimization time: " << duration.count() << " microseconds" << "\n\n";
+//	auto start = std::chrono::high_resolution_clock::now();
+//	auto stop = std::chrono::high_resolution_clock::now();
+//	auto duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
+//	std::cout << "Current time: " << duration.count() << " microseconds" << "\n\n";
+//
+//	start = std::chrono::high_resolution_clock::now();
+//
+//	// Initialization of power network information
+//	int Time = 8760;
+//	power_network::network_inform Power_network_inform;
+//	power_network::power_network_input_process(Power_network_inform, "csv/input/power_network/");
+//	spatial_field::spatial_field_store(Power_network_inform, "csv/processed/spatial_field/nominal_mean_demand_field_10km_ts_", Time);
+//
+//	// Initialization of the IMO
+//	std::string fin_name_moc = "csv/input/power_market/merit_order_curve_q_assimilated_2021.csv";
+//	std::string fin_name_demand = "csv/input/power_market/residual_load_default_forecast_2021.csv";
+//	power_market::market_inform International_Market;
+//	power_market::International_Market_Set(International_Market, Power_network_inform, Time, fin_name_moc, fin_name_demand);
+//
+//	// Initialization of the TSO
+//	power_market::market_inform TSO_Market;
+//	power_market::TSO_Market_Set(TSO_Market, Power_network_inform, Time);
+//	alglib::minlpstate TSO_Problem;
+//	power_market::Flow_Based_Market_LP_Set(TSO_Market, TSO_Problem);
+//
+//	// Initialization of the DSO
+//	power_market::markets_inform DSO_Markets;
+//	power_market::DSO_Markets_Set(DSO_Markets, Power_network_inform, Time);
+//	std::vector <alglib::minlpstate> DSO_Problems (DSO_Markets.size());
+//	for(int DSO_iter = 0; DSO_iter < DSO_Markets.size(); ++ DSO_iter){
+//		power_market::Flow_Based_Market_LP_Set(DSO_Markets[DSO_iter], DSO_Problems[DSO_iter]);
+//	}
+//
+//	// Initial estimation of market clearing price in the IMO
+//	power_market::International_Market_Price_Estimation(0, International_Market, Power_network_inform);
+//
+//	// Bidding strategies of end-users
+//	auto end_user_profiles = power_market::DSO_agents_set(International_Market, Power_network_inform);
+//
+//	// Re-initialization of submitted bids in DSOs and TSOs
+//	bool DSO_filter_flag = 0;
+//	power_market::Submitted_bid_calculation(end_user_profiles, DSO_Markets, TSO_Market, International_Market, Power_network_inform, DSO_filter_flag);
+//
+//	// Ideal market clearing in IMO
+//	power_market::International_Market_Optimization(0, International_Market, 0);
+//
+//	// Set cross-border transmission as boundary conditions of TSO
+//	power_market::TSO_boundary_update(0, TSO_Market, International_Market, Power_network_inform);
+//
+//	stop = std::chrono::high_resolution_clock::now();
+//	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
+//	std::cout << "Set time: " << duration.count() << " microseconds" << "\n\n";
+//
+//	// Bid-filtering in DSOs
+//	if(DSO_filter_flag){
+//		power_market::Filtered_bid_calculation(DSO_Markets, TSO_Market, Power_network_inform, DSO_Problems);
+//	}
+//
+//	// Re-dispatch + tertiary control reserve in TSO
+//	start = std::chrono::high_resolution_clock::now();
+//	std::cout << "TSO: \n";
+//
+//	power_market::Flow_Based_Market_Optimization(TSO_Market, TSO_Problem);
+//	power_market::TSO_Market_Results_Get(0, TSO_Market, TSO_Problem);
+//	power_market::TSO_Market_control_reserve(0, TSO_Market, TSO_Problem);
+//
+//	stop = std::chrono::high_resolution_clock::now();
+//	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
+//	std::cout << "TSO optimization time: " << duration.count() << " microseconds" << "\n\n";
+//
+//	// Test for later rounds
+//	start = std::chrono::high_resolution_clock::now();
+//
+//	power_market::International_Market_Price_Estimation(1, International_Market, Power_network_inform);
+//	power_market::DSO_agents_update(1, end_user_profiles, TSO_Market, International_Market, Power_network_inform);
+//	power_market::Submitted_bid_calculation(end_user_profiles, DSO_Markets, TSO_Market, International_Market, Power_network_inform, DSO_filter_flag);
+//	power_market::International_Market_Optimization(1, International_Market, 0);
+//	power_market::TSO_boundary_update(1, TSO_Market, International_Market, Power_network_inform);
+//
+//	stop = std::chrono::high_resolution_clock::now();
+//	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
+//	std::cout << "Set time: " << duration.count() << " microseconds" << "\n\n";
+//
+//	start = std::chrono::high_resolution_clock::now();
+//	std::cout << "TSO: \n";
+//
+//	power_market::Flow_Based_Market_Optimization(TSO_Market, TSO_Problem);
+//	power_market::TSO_Market_Results_Get(1, TSO_Market, TSO_Problem);
+//	power_market::TSO_Market_control_reserve(1, TSO_Market, TSO_Problem);
+//
+//	stop = std::chrono::high_resolution_clock::now();
+//	duration = std::chrono::duration_cast <std::chrono::microseconds> (stop - start);
+//	std::cout << "TSO optimization time: " << duration.count() << " microseconds" << "\n\n";
 }
 //	std::cin.get();

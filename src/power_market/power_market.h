@@ -11,6 +11,13 @@
 #include "src/power_network/power_network.h"
 
 namespace power_market{
+	namespace parameters{
+		static inline int Time(){
+			int value = 8760;
+			return value;
+		}
+	}
+
 	// Power market objects
 	/** Information of the corresponding power network of the market.*/
 	struct network_graph{
@@ -66,7 +73,7 @@ namespace power_market{
 		Eigen::MatrixXd submitted_negative_demand;
 	};
 
-	/**Information of the power market.*/
+	/**Information of a power market.*/
 	struct market_inform{
 		// Input parameters
 		/**Number of bidding zones / nodes in the market.*/
@@ -139,6 +146,19 @@ namespace power_market{
 
 	/**A vector of power markets. This type is used in setting the DSO markets.*/
 	typedef std::vector <market_inform> markets_inform;
+
+	/**A vector of LP problems of power markets. This type is used in setting the LP for DSO markets.*/
+	typedef std::vector <alglib::minlpstate> Problems;
+
+	/**Information of the entire power market landscape.*/
+	struct market_whole_inform{
+		market_inform International_Market;
+		market_inform TSO_Market;
+		alglib::minlpstate TSO_Problem;
+		markets_inform DSO_Markets;
+		Problems DSO_Problems;
+		agent::end_user::profiles end_user_profiles;
+	};
 }
 
 #endif
@@ -150,11 +170,12 @@ namespace power_market{
 namespace power_market{
 	void Market_Initialization(market_inform&);
 	void Market_clearing_nodal(int, market_inform&, Eigen::VectorXi&, Eigen::MatrixXd&, Eigen::MatrixXd&);
-	void Submitted_bid_calculation(agent::end_user::profiles&, markets_inform&, market_inform&, market_inform&, power_network::network_inform&, std::string, bool DSO_filter_flag = 0);
+	void Submitted_bid_calculation(agent::end_user::profiles&, markets_inform&, market_inform&, market_inform&, power_network::network_inform&, bool);
 	void TSO_boundary_update(int, market_inform&, market_inform&, power_network::network_inform&);
 	void Flow_Based_Market_LP_Set(market_inform&, alglib::minlpstate&);
 	void Flow_Based_Market_Optimization(market_inform&, alglib::minlpstate&);
 	void Filtered_bid_calculation(markets_inform&, market_inform&, power_network::network_inform&, std::vector <alglib::minlpstate>&);
+	void power_market_process_set(power_network::network_inform&, market_whole_inform&, bool);
 }
 
 #endif
