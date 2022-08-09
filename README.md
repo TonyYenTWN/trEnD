@@ -12,6 +12,8 @@ Welcome to trEnD, a c++ based model of the energy transition, focusing on the en
 
 The library [ALGLIB](https://www.alglib.net/) is also used in the model, but it is already in the source codes so you need not to download it in addition.
 
+Once compilation is complete, the input csv files, source files,object files and binary file will take about 100 MB of space.
+
 ### Compiler Choice and Settings
 I use [TDM-GCC 9.2.0](https://jmeubank.github.io/tdm-gcc/articles/2020-03/9.2.0-release) to compile the codes on windows, but other compilers should also work.
 
