@@ -65,6 +65,7 @@
 		<Unit filename="src/power_market/TSO.cpp" />
 		<Unit filename="src/power_market/power_market.h" />
 		<Unit filename="src/power_market/power_market_func.cpp" />
+		<Unit filename="src/power_market/power_market_proc.cpp" />
 		<Unit filename="src/power_network/power_network.h" />
 		<Unit filename="src/power_network/power_network_input.cpp" />
 		<Unit filename="src/spatial_field/geostat.cpp" />
