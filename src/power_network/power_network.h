@@ -305,8 +305,4 @@ namespace power_network{
 	void power_network_input_process(network_inform&, std::string parent_dir);
 }
 
-namespace spatial_field{
-	void spatial_field_store(power_network::network_inform&, std::string, int);
-}
-
 #endif

@@ -1,12 +1,11 @@
 // Source file for the main procedure of the power market clearing
-#include "src/power_network/power_network.h"
 #include "src/power_market/power_market.h"
+#include "src/spatial_field/spatial_field.h"
 
 void power_market::power_market_process_set(power_network::network_inform &Power_network_inform, market_whole_inform &Power_market_inform, bool DSO_filter_flag){
 	int Time = parameters::Time();
 
-	// Initialization of power network information
-	power_network::power_network_input_process(Power_network_inform, "csv/input/power_network/");
+	// Initialization of processed mean demand field
 	spatial_field::spatial_field_store(Power_network_inform, "csv/processed/spatial_field/nominal_mean_demand_field_10km_ts_", Time);
 
 	// Initialization of the IMO

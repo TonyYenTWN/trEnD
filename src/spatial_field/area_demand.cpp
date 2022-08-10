@@ -98,7 +98,7 @@ int main(){
 	// Uncomment this section to run the code for non-linear case
 	// Initialization of constants, vectors, and Matrixs
 	int count;
-	double alpha_iteration = 1;
+	double alpha_iteration = 1.;
 	Eigen::VectorXd mu_0 = Eigen::VectorXd::LinSpaced(num_row, mu_0_mean, mu_0_mean); 
 	Eigen::VectorXd x_0(num_row);
 	#pragma omp parallel
