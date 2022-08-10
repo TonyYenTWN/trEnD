@@ -11,6 +11,5 @@ var power__network_8h =
     [ "power_network::technical_parameters", "dc/dd8/structpower__network_1_1technical__parameters.html", "dc/dd8/structpower__network_1_1technical__parameters" ],
     [ "NETWORK_OBJECT", "d9/dde/power__network_8h.html#a234a9d06a433e6815e1affa4d4bb14a1", null ],
     [ "point_distance_cov", "d9/dde/power__network_8h.html#a4b6a21877e715342c8c684b927f2672e", null ],
-    [ "power_network_input_process", "d9/dde/power__network_8h.html#a7b618914786ca0d322b51b456244c0d4", null ],
-    [ "spatial_field_store", "d9/dde/power__network_8h.html#a660bc61075ae2d2ad5b1c34ad53dc4d1", null ]
+    [ "power_network_input_process", "d9/dde/power__network_8h.html#a7b618914786ca0d322b51b456244c0d4", null ]
 ];

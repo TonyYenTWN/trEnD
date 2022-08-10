@@ -1,7 +1,14 @@
 var searchData=
 [
-  ['tso_5fboundary_5fupdate_0',['TSO_boundary_update',['../d5/d60/namespacepower__market.html#af5b224f3d0c0c210ed0c66cc8140c5b1',1,'power_market']]],
-  ['tso_5fmarket_5fcontrol_5freserve_1',['TSO_Market_control_reserve',['../d5/d60/namespacepower__market.html#af66c5b3ce15a73f36aecbd9bb236341a',1,'power_market']]],
-  ['tso_5fmarket_5fresults_5fget_2',['TSO_Market_Results_Get',['../d5/d60/namespacepower__market.html#ac071507e193ed4c20579a682961bcd14',1,'power_market']]],
-  ['tso_5fmarket_5fset_3',['TSO_Market_Set',['../d5/d60/namespacepower__market.html#adff40f938d2d4deba55dfc4779c01300',1,'power_market']]]
+  ['set_5fbidded_5fprice_0',['set_bidded_price',['../d8/d2d/structpower__market_1_1market__inform.html#af07973c669a21c453cad7361dce84c6b',1,'power_market::market_inform']]],
+  ['set_5flevel_5fmaps_1',['set_level_maps',['../dc/dd8/structpower__network_1_1technical__parameters.html#ab01b42cec67a914ee5b819c205724241',1,'power_network::technical_parameters']]],
+  ['set_5fline_5fdensity_2',['set_line_density',['../d4/ddd/structpower__network_1_1network__inform.html#af6bd1c7405213c61efce7f71c5122dfc',1,'power_network::network_inform']]],
+  ['sink_5fnode_5fset_3',['Sink_Node_Set',['../d5/d60/namespacepower__market.html#ad26010bbf64104749407f8a3b2fdd581',1,'power_market']]],
+  ['smart_5fappliance_5fschedule_4',['smart_appliance_schedule',['../d8/d3f/namespaceagent_1_1end__user.html#a80bb9d48b2ee3e305a610b599f066fe8',1,'agent::end_user']]],
+  ['sort_5',['sort',['../d2/d00/namespaceagent.html#a03e096d663464ad06c2563c401d7ce83',1,'agent']]],
+  ['source_5fnode_5fset_6',['Source_Node_Set',['../d5/d60/namespacepower__market.html#ae1e8fa9cb87172cb82028b0ddcf838d4',1,'power_market']]],
+  ['spatial_5ffield_5fstore_7',['spatial_field_store',['../d9/d64/namespacespatial__field.html#a660bc61075ae2d2ad5b1c34ad53dc4d1',1,'spatial_field']]],
+  ['storage_5fschedule_5flp_5fmold_8',['storage_schedule_LP_mold',['../d8/d3f/namespaceagent_1_1end__user.html#a6eb2228d59708556b675a728f7c0b681',1,'agent::end_user']]],
+  ['storage_5fschedule_5flp_5foptimize_9',['storage_schedule_LP_optimize',['../d8/d3f/namespaceagent_1_1end__user.html#abcd0351a9315f49ffa5350623ebc12a1',1,'agent::end_user']]],
+  ['submitted_5fbid_5fcalculation_10',['Submitted_bid_calculation',['../d5/d60/namespacepower__market.html#ae8fbe0bb3bda42914047dd012a057f48',1,'power_market']]]
 ];

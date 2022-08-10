@@ -13,6 +13,8 @@ var searchData=
   ['dso_5fagents_5fupdate_10',['DSO_agents_update',['../d5/d60/namespacepower__market.html#a3b707d36ca100993e14b9a70836f53fb',1,'power_market']]],
   ['dso_5fcluster_11',['DSO_cluster',['../d4/ddd/structpower__network_1_1network__inform.html#a2eb793baafa124069579ac6a046a5e29',1,'power_network::network_inform::DSO_cluster()'],['../d0/df7/structpower__network_1_1DSO__cluster.html',1,'power_network::DSO_cluster']]],
   ['dso_5fmarket_5fresults_5fget_12',['DSO_Market_Results_Get',['../d5/d60/namespacepower__market.html#a1f7c10b9a1ac8928ca5a54d2cfc482d7',1,'power_market']]],
-  ['dso_5fmarkets_5fset_13',['DSO_Markets_Set',['../d5/d60/namespacepower__market.html#a33e114e901ed9959e3bf88c5fd7c2547',1,'power_market']]],
-  ['dynamic_5ftariff_14',['dynamic_tariff',['../d1/de8/structagent_1_1end__user_1_1decision.html#a0897677ed6fff349bf470a54c1941f25',1,'agent::end_user::decision']]]
+  ['dso_5fmarkets_13',['DSO_Markets',['../da/d16/structpower__market_1_1market__whole__inform.html#abb54f725e0e7ec0760f29c101bc456e5',1,'power_market::market_whole_inform']]],
+  ['dso_5fmarkets_5fset_14',['DSO_Markets_Set',['../d5/d60/namespacepower__market.html#a33e114e901ed9959e3bf88c5fd7c2547',1,'power_market']]],
+  ['dso_5fproblems_15',['DSO_Problems',['../da/d16/structpower__market_1_1market__whole__inform.html#a2f228baffe77bfd0a4043e4d4a4be6ad',1,'power_market::market_whole_inform']]],
+  ['dynamic_5ftariff_16',['dynamic_tariff',['../d1/de8/structagent_1_1end__user_1_1decision.html#a0897677ed6fff349bf470a54c1941f25',1,'agent::end_user::decision']]]
 ];

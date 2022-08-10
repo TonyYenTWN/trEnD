@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['point_5fdistance_5fcov_0',['point_distance_cov',['../d8/dcc/namespacepower__network.html#a4b6a21877e715342c8c684b927f2672e',1,'power_network']]],
-  ['power_5fnetwork_5finput_5fprocess_1',['power_network_input_process',['../d8/dcc/namespacepower__network.html#a7b618914786ca0d322b51b456244c0d4',1,'power_network']]]
+  ['nominal_5fdemand_5finference_0',['nominal_demand_inference',['../d9/d64/namespacespatial__field.html#af448af80872365788eb4092958c06f59',1,'spatial_field']]],
+  ['norm_5fdist_1',['norm_dist',['../da/d6b/area__demand_8cpp.html#a6384debfddc963ad4d3505915ebbf65e',1,'area_demand.cpp']]]
 ];
