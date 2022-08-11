@@ -8,7 +8,7 @@ int main(){
 	power_network::network_inform Power_network_inform;
 	power_network::power_network_input_process(Power_network_inform, "csv/input/power_network/");
 
-	auto demand = spatial_field::nominal_demand_inference(Power_network_inform);
+	spatial_field::nominal_demand_inference(Power_network_inform);
 
 	power_market::market_whole_inform Power_market_inform;
 	//power_market::power_market_process_set(Power_network_inform, Power_market_inform, 0);

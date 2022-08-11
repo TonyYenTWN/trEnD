@@ -10,9 +10,9 @@
 #include "geostat.h"
 
 namespace spatial_field{
-	void BME_area(power_network::network_inform&, Eigen::SparseMatrix <double>&, Eigen::MatrixXd&);
+	void BME(power_network::network_inform&, Eigen::SparseMatrix <double>&, Eigen::MatrixXd&);
 
-	Eigen::VectorXd nominal_demand_inference(power_network::network_inform&);
+	void nominal_demand_inference(power_network::network_inform&);
 
 	void spatial_field_store(power_network::network_inform&, std::string, int);
 }
