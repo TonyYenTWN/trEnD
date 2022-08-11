@@ -133,7 +133,19 @@ void spatial_field::BME(power_network::network_inform &Power_network_inform, Eig
 		}
 
 		// Output normalized mean demand field
-
+		int count_zeros = 0;
+		int tick_temp = tick;
+		std::string digit_zeros;
+		while(int (tick_temp / 10) != 0){
+			count_zeros += 1;
+			tick_temp /= 10;
+		}
+		for(int item = 0; item < 5 - count_zeros; ++item){
+			digit_zeros += std::to_string(0);
+		}
+		fout_name = "csv/processed/spatial_field/nominal_mean_demand_field_10km_ts_" + digit_zeros + std::to_string(tick) + ".csv";
+		basic::write_file(mu, fout_name, col_name);
+		digit_zeros.clear();
 	}
 }
 
