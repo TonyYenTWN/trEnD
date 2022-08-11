@@ -31,7 +31,6 @@ void spatial_field::BME_area(power_network::network_inform &Power_network_inform
 	// Weibull Distribution using Gaussian Copula
 	// ---------------------------------------------------------------------
 	// Initialization of constants, vectors, and matrices
-	int count;
 	double alpha_iteration = 1.;
 	Eigen::VectorXd mu_0 = Eigen::VectorXd::Constant(point_num, mu_0_mean);
 	Eigen::VectorXd x_0(point_num);
@@ -39,33 +38,41 @@ void spatial_field::BME_area(power_network::network_inform &Power_network_inform
 		x_0(item) = quantile(norm_dist, 1. - exp(-pow(mu_0(item) / mu_0_mean, 2.)));
 	}
 	Eigen::VectorXd mu_inv_0(point_num);
-	Eigen::VectorXd lambda(bz_num);
 
-//	// Iterations
-//	count = 0;
-//	while(count < 5000 && dmu_0.lpNorm<Eigen::Infinity>() > tol){
-//		Eigen::VectorXd Conversion_vec(point_num);
-//
-//		for(int item = 0; item < point_num; ++ item){
-//			Conversion_vec(item) = .5 * mu_0_mean * pow((-log(1. - cdf(norm_dist, x_0(item)))), -.5) * pow(1. - cdf(norm_dist, x_0(item)), -1.) * pdf(norm_dist, x_0(item));
-//		}
-//		Eigen::SparseMatrix <double> Conversion_Mat_1 = Conversion_vec.asDiagonal();
-//		Eigen::SparseMatrix <double> Conversion_Mat_2 = Conversion_Mat_1 * Constraint;
-//
-//		lambda = (Conversion_Mat_2.transpose() * Covariance_Points * Conversion_Mat_2).colPivHouseholderQr().solve(Demand_0 - Constraint.transpose() * mu_0 + Conversion_Mat_2.transpose() * x_0);
-//		Eigen::VectorXd dx_0 = Covariance_Points * Conversion_Mat_2 * lambda - x_0;
-//		x_0 += alpha_iteration * dx_0;
-//
-//		Eigen::VectorXd dmu_0(point_num);
-//		for(int item = 0; item < point_num; ++ item){
-//			dmu_0(item) = mu_0_mean * pow(-log(1. - cdf(norm_dist, x_0(item))), .5) - mu_0(item);
-//			mu_0(item) += dmu_0(item);
-//		}
-//		mu_inv_0 = pow(mu_0.array(), -1.);
-//		dmu_0 *= mu_inv_0;
-//
-//		count += 1;
-//	}
+	// Iterations
+	int count = 0;
+	Eigen::VectorXd dmu_0 = Eigen::VectorXd::Constant(point_num, 1.);
+	Eigen::SparseLU <Eigen::SparseMatrix <double>, Eigen::COLAMDOrdering<int>> solver;
+	while(count < 5000 && dmu_0.lpNorm<Eigen::Infinity>() > tol){
+		std::cout << count << ":\t" << dmu_0.lpNorm<Eigen::Infinity>() << "\n";
+
+		Eigen::SparseMatrix <double> Conversion_Mat_1(point_num, point_num);
+		std::vector<Eigen::TripletXd> Conversion_Mat_1_Trip;
+		Conversion_Mat_1.reserve(point_num);
+
+		for(int item = 0; item < point_num; ++ item){
+			double diff_x = .5 * mu_0_mean * pow((-log(1. - cdf(norm_dist, x_0(item)))), -.5) * pow(1. - cdf(norm_dist, x_0(item)), -1.) * pdf(norm_dist, x_0(item));
+			Conversion_Mat_1_Trip.push_back(Eigen::TripletXd(item, item, diff_x));
+		}
+		Conversion_Mat_1.setFromTriplets(Conversion_Mat_1_Trip.begin(), Conversion_Mat_1_Trip.end());
+
+		Eigen::SparseMatrix <double> Conversion_Mat_2 = Conversion_Mat_1 * Constraint;
+
+		solver.compute(Conversion_Mat_2.transpose() * Power_network_inform.points.covariance * Conversion_Mat_2);
+		Eigen::VectorXd lambda = solver.solve(x_0_mean - Constraint.transpose() * mu_0 + Conversion_Mat_2.transpose() * x_0);
+		Eigen::VectorXd dx_0 = Power_network_inform.points.covariance * Conversion_Mat_2 * lambda - x_0;
+		x_0 += alpha_iteration * dx_0;
+
+		Eigen::VectorXd dmu_0(point_num);
+		for(int item = 0; item < point_num; ++ item){
+			dmu_0(item) = mu_0_mean * pow(-log(1. - cdf(norm_dist, x_0(item))), .5) - mu_0(item);
+			mu_0(item) += dmu_0(item);
+		}
+		mu_inv_0 = pow(mu_0.array(), -1.);
+		dmu_0 *= mu_inv_0;
+
+		count += 1;
+	}
 }
 
 Eigen::VectorXd spatial_field::nominal_demand_inference(power_network::network_inform &Power_network_inform){
