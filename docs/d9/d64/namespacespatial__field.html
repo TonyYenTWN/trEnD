@@ -118,6 +118,8 @@ Functions</h2></td></tr>
 <tr class="separator:afd0f1eb5aee6ac5604295c9dc769a63d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6ed9b59869392f44a0ca31520223e79f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d64/namespacespatial__field.html#a6ed9b59869392f44a0ca31520223e79f">geodist</a> (Eigen::Vector2d, Eigen::Vector2d)</td></tr>
 <tr class="separator:a6ed9b59869392f44a0ca31520223e79f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70e4c0c0e9b298d5861f12ba50674c59"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d64/namespacespatial__field.html#a70e4c0c0e9b298d5861f12ba50674c59">imbalance_inference</a> (<a class="el" href="../../d4/ddd/structpower__network_1_1network__inform.html">power_network::network_inform</a> &amp;)</td></tr>
+<tr class="separator:a70e4c0c0e9b298d5861f12ba50674c59"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad45ef64f8330c4b5a4e61fa9004bb968"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d64/namespacespatial__field.html#ad45ef64f8330c4b5a4e61fa9004bb968">nominal_demand_inference</a> (<a class="el" href="../../d4/ddd/structpower__network_1_1network__inform.html">power_network::network_inform</a> &amp;)</td></tr>
 <tr class="separator:ad45ef64f8330c4b5a4e61fa9004bb968"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a660bc61075ae2d2ad5b1c34ad53dc4d1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d64/namespacespatial__field.html#a660bc61075ae2d2ad5b1c34ad53dc4d1">spatial_field_store</a> (<a class="el" href="../../d4/ddd/structpower__network_1_1network__inform.html">power_network::network_inform</a> &amp;, std::string, int)</td></tr>
@@ -198,6 +200,30 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a70e4c0c0e9b298d5861f12ba50674c59" name="a70e4c0c0e9b298d5861f12ba50674c59"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70e4c0c0e9b298d5861f12ba50674c59">&#9670;&nbsp;</a></span>imbalance_inference()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void spatial_field::imbalance_inference </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d4/ddd/structpower__network_1_1network__inform.html">power_network::network_inform</a> &amp;&#160;</td>
+          <td class="paramname"><em>Power_network_inform</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../db/d05/spatial__field_8cpp_source.html#l00178">178</a> of file <a class="el" href="../../db/d05/spatial__field_8cpp_source.html">spatial_field.cpp</a>.</p>
+
+<p class="reference">References <a class="el" href="../../d9/dde/power__network_8h_source.html#l00029">power_network::points::bidding_zone</a>, <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html#l00026">basic::get_file_dim()</a>, <a class="el" href="../../d9/dde/power__network_8h_source.html#l00287">power_network::network_inform::points</a>, and <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html#l00060">basic::read_file()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../df/d0a/main_8cpp_source.html#l00006">main()</a>.</p>
+
+</div>
+</div>
 <a id="ad45ef64f8330c4b5a4e61fa9004bb968" name="ad45ef64f8330c4b5a4e61fa9004bb968"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad45ef64f8330c4b5a4e61fa9004bb968">&#9670;&nbsp;</a></span>nominal_demand_inference()</h2>
 
@@ -217,8 +243,6 @@ Functions</h2></td></tr>
 <p class="definition">Definition at line <a class="el" href="../../db/d05/spatial__field_8cpp_source.html#l00152">152</a> of file <a class="el" href="../../db/d05/spatial__field_8cpp_source.html">spatial_field.cpp</a>.</p>
 
 <p class="reference">References <a class="el" href="../../d9/dde/power__network_8h_source.html#l00029">power_network::points::bidding_zone</a>, <a class="el" href="../../db/d05/spatial__field_8cpp_source.html#l00005">BME()</a>, <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html#l00026">basic::get_file_dim()</a>, <a class="el" href="../../d9/dde/power__network_8h_source.html#l00019">power_network::points::point_area</a>, <a class="el" href="../../d9/dde/power__network_8h_source.html#l00287">power_network::network_inform::points</a>, <a class="el" href="../../d9/dde/power__network_8h_source.html#l00041">power_network::points::population_density</a>, and <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html#l00060">basic::read_file()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../df/d0a/main_8cpp_source.html#l00006">main()</a>.</p>
 
 </div>
 </div>
@@ -254,7 +278,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../db/d05/spatial__field_8cpp_source.html#l00179">179</a> of file <a class="el" href="../../db/d05/spatial__field_8cpp_source.html">spatial_field.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../db/d05/spatial__field_8cpp_source.html#l00189">189</a> of file <a class="el" href="../../db/d05/spatial__field_8cpp_source.html">spatial_field.cpp</a>.</p>
 
 </div>
 </div>
