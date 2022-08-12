@@ -153,7 +153,7 @@ void spatial_field::nominal_demand_inference(power_network::network_inform &Powe
 	int bz_num = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
 	int point_num = Power_network_inform.points.bidding_zone.size();
 
-	// Read electricity demand data;
+	// Read electricity demand data
 	std::string fin_demand = "csv/input/spatial_field/demand_actual_2021.csv";
 	auto fin_demand_dim = basic::get_file_dim(fin_demand);
 	auto Demand_ts = basic::read_file(fin_demand_dim[0], fin_demand_dim[1], fin_demand);
@@ -173,6 +173,16 @@ void spatial_field::nominal_demand_inference(power_network::network_inform &Powe
 
 	// Spatial field inference
 	BME(Power_network_inform, Constraint, Demand_ts);
+}
+
+void spatial_field::imbalance_inference(power_network::network_inform &Power_network_inform){
+	int bz_num = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
+	int point_num = Power_network_inform.points.bidding_zone.size();
+
+	// Read actual imbalance data
+	std::string fin_imbalance = "csv/input/power_market/control_reserve_activated_2021.csv";
+	auto fin_imbalance_dim = basic::get_file_dim(fin_imbalance);
+	auto Imbalnce_ts = basic::read_file(fin_imbalance_dim[0], fin_imbalance_dim[1], fin_imbalance);
 }
 
 // Function that stores processed mean demand field

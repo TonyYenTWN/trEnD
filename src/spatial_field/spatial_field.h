@@ -14,6 +14,8 @@ namespace spatial_field{
 
 	void nominal_demand_inference(power_network::network_inform&);
 
+	void imbalance_inference(power_network::network_inform&);
+
 	void spatial_field_store(power_network::network_inform&, std::string, int);
 }
 
