@@ -10,12 +10,22 @@
 #include "geostat.h"
 
 namespace spatial_field{
+	// Spatial field objects
+	struct inference_inform{
+		double alpha_iteration;
+		boost::math::normal norm_dist = boost::math::normal(0.0, 1.0);
+		Eigen::VectorXd mu_mean;
+		Eigen::VectorXd mu_scale;
+		Eigen::VectorXd x_scale;
+		Eigen::VectorXd mu;
+		Eigen::VectorXd x;
+	};
+
+	// Functions
+	void BME_copula(inference_inform, power_network::network_inform&, Eigen::SparseMatrix <double>&, Eigen::MatrixXd&);
 	void BME(power_network::network_inform&, Eigen::SparseMatrix <double>&, Eigen::MatrixXd&);
-
 	void nominal_demand_inference(power_network::network_inform&);
-
 	void imbalance_inference(power_network::network_inform&);
-
 	void spatial_field_store(power_network::network_inform&, std::string, int);
 }
 

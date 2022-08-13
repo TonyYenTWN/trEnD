@@ -1,6 +1,10 @@
 // Main source file for inference of spatial fields
 
 #include "src/spatial_field/spatial_field.h"
+void spatial_field::BME_copula(inference_inform inform, power_network::network_inform &Power_network_inform, Eigen::SparseMatrix <double> &Constraint, Eigen::MatrixXd &mu_ts){
+
+}
+
 
 void spatial_field::BME(power_network::network_inform &Power_network_inform, Eigen::SparseMatrix <double> &Constraint, Eigen::MatrixXd &mu_ts){
 	int bz_num = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
@@ -152,6 +156,8 @@ void spatial_field::BME(power_network::network_inform &Power_network_inform, Eig
 void spatial_field::nominal_demand_inference(power_network::network_inform &Power_network_inform){
 	int bz_num = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
 	int point_num = Power_network_inform.points.bidding_zone.size();
+	int Time = power_market::parameters::Time();
+	double pi = boost::math::constants::pi<double>();
 
 	// Read electricity demand data
 	std::string fin_demand = "csv/input/spatial_field/demand_actual_2021.csv";
@@ -171,8 +177,24 @@ void spatial_field::nominal_demand_inference(power_network::network_inform &Powe
 
 	Constraint.setFromTriplets(Constraint_Trip.begin(), Constraint_Trip.end());
 
-	// Spatial field inference
-	BME(Power_network_inform, Constraint, Demand_ts);
+	// ------------------------------------------------------------------------------------------------------------------------------------------
+	// Infer the annual average of the normalized mean demand field
+	// ------------------------------------------------------------------------------------------------------------------------------------------
+	// Initialization of parameters
+	inference_inform nominal_demand;
+	nominal_demand.alpha_iteration = 1.;
+	nominal_demand.mu_mean = Demand_ts.colwise().sum().tail(bz_num);
+	nominal_demand.mu_mean /= Time;
+	// Mean of weibull distribution = mu_0_scale * gamma(1 + 1 / k), here k = 2
+	double mu_0_scale = nominal_demand.mu_mean.sum() / Constraint.sum() * 2. / pow(pi, .5);
+	nominal_demand.mu_scale = Eigen::VectorXd::Constant(point_num, mu_0_scale);
+	nominal_demand.mu = Eigen::VectorXd::Constant(point_num, mu_0_scale);
+	nominal_demand.x = Eigen::VectorXd(point_num);
+	for(int item = 0; item < point_num; ++ item){
+		nominal_demand.x(item) = quantile(nominal_demand.norm_dist, 1. - exp(-pow(nominal_demand.mu(item) / nominal_demand.mu_scale(item), 2.)));
+	}
+
+	//BME(Power_network_inform, Constraint, Demand_ts);
 }
 
 void spatial_field::imbalance_inference(power_network::network_inform &Power_network_inform){

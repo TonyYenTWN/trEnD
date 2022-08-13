@@ -9,8 +9,8 @@ int main(){
 	power_network::power_network_input_process(Power_network_inform, "csv/input/power_network/");
 
 	// Spatial fields inference
-	//spatial_field::nominal_demand_inference(Power_network_inform);
-	spatial_field::imbalance_inference(Power_network_inform);
+	spatial_field::nominal_demand_inference(Power_network_inform);
+	//spatial_field::imbalance_inference(Power_network_inform);
 
 	// Power market processes
 	power_market::market_whole_inform Power_market_inform;
