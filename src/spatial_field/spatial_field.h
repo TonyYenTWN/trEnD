@@ -22,7 +22,7 @@ namespace spatial_field{
 	};
 
 	// Functions
-	void BME_copula(inference_inform, power_network::network_inform&, Eigen::SparseMatrix <double>&, Eigen::MatrixXd&);
+	void BME_copula(inference_inform, power_network::network_inform&, Eigen::SparseMatrix <double>&, Eigen::MatrixXd&, double);
 	void BME(power_network::network_inform&, Eigen::SparseMatrix <double>&, Eigen::MatrixXd&);
 	void nominal_demand_inference(power_network::network_inform&);
 	void imbalance_inference(power_network::network_inform&);

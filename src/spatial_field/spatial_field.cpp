@@ -1,8 +1,16 @@
 // Main source file for inference of spatial fields
 
 #include "src/spatial_field/spatial_field.h"
-void spatial_field::BME_copula(inference_inform inform, power_network::network_inform &Power_network_inform, Eigen::SparseMatrix <double> &Constraint, Eigen::MatrixXd &mu_ts){
+void spatial_field::BME_copula(inference_inform inform, power_network::network_inform &Power_network_inform, Eigen::SparseMatrix <double> &Constraint, Eigen::MatrixXd &mu_ts, double tol){
+	int bz_num = Constraint.cols();
+	int point_num = Constraint.rows();
 
+	// Iterations
+	int count = 0;
+	Eigen::VectorXd dmu_0 = Eigen::VectorXd::Constant(point_num, 1.);
+	while(count < 5000 && dmu_0.lpNorm<Eigen::Infinity>() > tol){
+		count += 1;
+	}
 }
 
 
@@ -194,6 +202,7 @@ void spatial_field::nominal_demand_inference(power_network::network_inform &Powe
 		nominal_demand.x(item) = quantile(nominal_demand.norm_dist, 1. - exp(-pow(nominal_demand.mu(item) / nominal_demand.mu_scale(item), 2.)));
 	}
 
+	BME_copula(nominal_demand, Power_network_inform, Constraint, Demand_ts, 1E-12);
 	//BME(Power_network_inform, Constraint, Demand_ts);
 }
 
