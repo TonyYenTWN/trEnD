@@ -7,8 +7,36 @@ void spatial_field::BME_copula(inference_inform inform, power_network::network_i
 
 	// Iterations
 	int count = 0;
-	Eigen::VectorXd dmu_0 = Eigen::VectorXd::Constant(point_num, 1.);
-	while(count < 5000 && dmu_0.lpNorm<Eigen::Infinity>() > tol){
+	Eigen::VectorXd dmu = Eigen::VectorXd::Constant(point_num, 1.);
+	while(count < 5000 && dmu.lpNorm<Eigen::Infinity>() > tol){
+		// Matrices for the linear system
+		Eigen::SparseMatrix <double> Conversion_Mat_1(point_num, point_num);
+		std::vector <Eigen::TripletXd> Conversion_Mat_1_Trip;
+		Conversion_Mat_1.reserve(point_num);
+
+		for(int item = 0; item < point_num; ++ item){
+			double diff_x = .5 * inform.mu_scale(item) * pow((-log(1. - cdf(inform.norm_dist, inform.x(item)))), -.5) * pow(1. - cdf(inform.norm_dist, inform.x(item)), -1.) * pdf(inform.norm_dist, inform.x(item));
+			Conversion_Mat_1_Trip.push_back(Eigen::TripletXd(item, item, diff_x));
+		}
+		Conversion_Mat_1.setFromTriplets(Conversion_Mat_1_Trip.begin(), Conversion_Mat_1_Trip.end());
+
+		Eigen::SparseMatrix <double> Conversion_Mat_2 = Conversion_Mat_1 * Constraint;
+
+		// Solve the linear system
+		Eigen::SparseLU <Eigen::SparseMatrix <double>, Eigen::COLAMDOrdering<int>> solver;
+		solver.compute(Conversion_Mat_2.transpose() * Power_network_inform.points.covariance * Conversion_Mat_2);
+		Eigen::VectorXd lambda = solver.solve(inform.mu_mean - Constraint.transpose() * inform.mu + Conversion_Mat_2.transpose() * inform.x);
+		Eigen::VectorXd dx = Power_network_inform.points.covariance * Conversion_Mat_2 * lambda - inform.x;
+		inform.x += inform.alpha_iteration * dx;
+
+		// Update the solution
+		for(int item = 0; item < point_num; ++ item){
+			dmu(item) = inform.mu_scale(item) * pow(-log(1. - cdf(inform.norm_dist, inform.x(item))), .5) - inform.mu(item);
+			inform.mu(item) += dmu(item);
+		}
+		Eigen::VectorXd mu_inv_0 = pow(inform.mu.array(), -1.);
+		dmu *= mu_inv_0;
+
 		count += 1;
 	}
 }
