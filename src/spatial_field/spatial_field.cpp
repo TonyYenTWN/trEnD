@@ -1,7 +1,7 @@
 // Main source file for inference of spatial fields
 
 #include "src/spatial_field/spatial_field.h"
-void spatial_field::BME_copula(inference_inform inform, power_network::network_inform &Power_network_inform, Eigen::SparseMatrix <double> &Constraint, Eigen::MatrixXd &mu_ts, double tol){
+void spatial_field::BME_copula(inference_inform &inform, power_network::network_inform &Power_network_inform, Eigen::SparseMatrix <double> &Constraint, Eigen::MatrixXd &mu_ts, double tol){
 	int bz_num = Constraint.cols();
 	int point_num = Constraint.rows();
 
@@ -230,7 +230,17 @@ void spatial_field::nominal_demand_inference(power_network::network_inform &Powe
 		nominal_demand.x(item) = quantile(nominal_demand.norm_dist, 1. - exp(-pow(nominal_demand.mu(item) / nominal_demand.mu_scale(item), 2.)));
 	}
 
+	// Inference step
 	BME_copula(nominal_demand, Power_network_inform, Constraint, Demand_ts, 1E-12);
+	std::cout << nominal_demand.mu.head(10) << "\n\n";
+
+	// Output the annual average of normalized mean demand field
+	std::string fout_name;
+	fout_name = "csv/processed/spatial_field/nominal_mean_demand_field_10km_annual_mean.csv";
+	std::vector <std::string> col_name;
+	col_name.push_back("nominal_mean_demand");
+	basic::write_file(nominal_demand.mu, fout_name, col_name);
+
 	//BME(Power_network_inform, Constraint, Demand_ts);
 }
 
