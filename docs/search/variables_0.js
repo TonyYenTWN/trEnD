@@ -8,6 +8,7 @@ var searchData=
   ['actual_5fprice_5fratio_5',['actual_price_ratio',['../d8/d2d/structpower__market_1_1market__inform.html#a8b8d97d4ce5314c03c561133d03c39d0',1,'power_market::market_inform']]],
   ['actual_5fsupply_6',['actual_supply',['../d8/d2d/structpower__market_1_1market__inform.html#a3899b6e804bdcef6c1b80274626c3f5a',1,'power_market::market_inform']]],
   ['admittance_7',['admittance',['../d5/d93/structpower__market_1_1network__graph.html#a3f99d1f7d20cb44d0ebd1fadf28fbee3',1,'power_market::network_graph']]],
-  ['available_5fratio_5fdemand_8',['available_ratio_demand',['../d1/df3/structpower__market_1_1control__reserve__inform.html#a5225cd7424fd836b9a9d3cb3356025c2',1,'power_market::control_reserve_inform']]],
-  ['available_5fratio_5fsupply_9',['available_ratio_supply',['../d1/df3/structpower__market_1_1control__reserve__inform.html#ae6364d435c273e54306a861eeb1b12eb',1,'power_market::control_reserve_inform']]]
+  ['alpha_5fiteration_8',['alpha_iteration',['../d4/dfd/structspatial__field_1_1inference__inform.html#a396793391c33c65c5084075361527cca',1,'spatial_field::inference_inform']]],
+  ['available_5fratio_5fdemand_9',['available_ratio_demand',['../d1/df3/structpower__market_1_1control__reserve__inform.html#a5225cd7424fd836b9a9d3cb3356025c2',1,'power_market::control_reserve_inform']]],
+  ['available_5fratio_5fsupply_10',['available_ratio_supply',['../d1/df3/structpower__market_1_1control__reserve__inform.html#ae6364d435c273e54306a861eeb1b12eb',1,'power_market::control_reserve_inform']]]
 ];
