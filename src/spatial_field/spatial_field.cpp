@@ -1,7 +1,7 @@
 // Main source file for inference of spatial fields
 
 #include "src/spatial_field/spatial_field.h"
-void spatial_field::BME_copula(inference_inform &inform, power_network::network_inform &Power_network_inform, Eigen::SparseMatrix <double> &Constraint, Eigen::MatrixXd &mu_ts, double tol){
+void spatial_field::BME_copula(inference_inform &inform, power_network::network_inform &Power_network_inform, Eigen::SparseMatrix <double> &Constraint, double tol){
 	int bz_num = Constraint.cols();
 	int point_num = Constraint.rows();
 
@@ -204,7 +204,6 @@ void spatial_field::nominal_demand_inference(power_network::network_inform &Powe
 	Eigen::SparseMatrix <double> Constraint (point_num, bz_num);
 	std::vector<Eigen::TripletXd> Constraint_Trip;
 	Constraint_Trip.reserve(point_num);
-
 	for(int point_iter = 0; point_iter < point_num; ++ point_iter){
 		int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
 		double value = Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area;
@@ -231,8 +230,7 @@ void spatial_field::nominal_demand_inference(power_network::network_inform &Powe
 	}
 
 	// Inference step
-	BME_copula(nominal_demand, Power_network_inform, Constraint, Demand_ts, 1E-12);
-	std::cout << nominal_demand.mu.head(10) << "\n\n";
+	BME_copula(nominal_demand, Power_network_inform, Constraint, 1E-12);
 
 	// Output the annual average of normalized mean demand field
 	std::string fout_name;
@@ -240,6 +238,42 @@ void spatial_field::nominal_demand_inference(power_network::network_inform &Powe
 	std::vector <std::string> col_name;
 	col_name.push_back("nominal_mean_demand");
 	basic::write_file(nominal_demand.mu, fout_name, col_name);
+
+	// ------------------------------------------------------------------------------------------------------------------------------------------
+	// Infer the normalized mean demand field
+	// ------------------------------------------------------------------------------------------------------------------------------------------
+	// Initialization of parameters
+	nominal_demand.alpha_iteration = .01;
+	nominal_demand.mu_scale = nominal_demand.mu * 2. / pow(pi, .5);
+	nominal_demand.x_scale = Eigen::VectorXd(point_num);
+	for(int item = 0; item < point_num; ++ item){
+		nominal_demand.x_scale(item) = quantile(nominal_demand.norm_dist, 1. - exp(-pow(1., 2.)));
+	}
+	nominal_demand.mu = nominal_demand.mu_scale;
+	nominal_demand.x = nominal_demand.x_scale;
+
+	// Run the algorithm for each time slice
+	for(int tick = 0; tick < 1; ++ tick){
+		nominal_demand.mu_mean = Demand_ts.row(tick).tail(bz_num);
+
+		// Inference step
+		BME_copula(nominal_demand, Power_network_inform, Constraint, 1E-3);
+
+		// Output normalized mean demand field
+		int count_zeros = 0;
+		int tick_temp = tick;
+		std::string digit_zeros;
+		while(int (tick_temp / 10) != 0){
+			count_zeros += 1;
+			tick_temp /= 10;
+		}
+		for(int item = 0; item < 5 - count_zeros; ++item){
+			digit_zeros += std::to_string(0);
+		}
+		fout_name = "csv/processed/spatial_field/nominal_mean_demand_field_10km_ts_" + digit_zeros + std::to_string(tick) + ".csv";
+		basic::write_file(nominal_demand.mu, fout_name, col_name);
+		digit_zeros.clear();
+	}
 
 	//BME(Power_network_inform, Constraint, Demand_ts);
 }
