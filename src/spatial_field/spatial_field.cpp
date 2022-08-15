@@ -23,9 +23,9 @@ void spatial_field::BME_copula(inference_inform &inform, power_network::network_
 		Eigen::SparseMatrix <double> Conversion_Mat_2 = Conversion_Mat_1 * Constraint;
 
 		// Solve the linear system
-		Eigen::SparseLU <Eigen::SparseMatrix <double>, Eigen::COLAMDOrdering<int>> solver;
-		solver.compute(Conversion_Mat_2.transpose() * Power_network_inform.points.covariance * Conversion_Mat_2);
-		Eigen::VectorXd lambda = solver.solve(inform.mu_mean - Constraint.transpose() * inform.mu + Conversion_Mat_2.transpose() * inform.x);
+		Eigen::MatrixXd solver = Conversion_Mat_2.transpose() * Power_network_inform.points.covariance * Conversion_Mat_2;
+		Eigen::VectorXd lambda = solver.colPivHouseholderQr().solve(inform.mu_mean - Constraint.transpose() * inform.mu + Conversion_Mat_2.transpose() * inform.x);
+
 		Eigen::VectorXd dx = Power_network_inform.points.covariance * Conversion_Mat_2 * lambda - inform.x;
 		inform.x += inform.alpha_iteration * dx;
 
