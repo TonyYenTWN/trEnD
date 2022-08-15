@@ -143,12 +143,11 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	// Inference step
 	BME_linear(imbalance, Constraint_imbalance);
 
-//	// Output the annual average of normalized mean demand field
-//	std::string fout_name;
-//	fout_name = "csv/processed/spatial_field/imbalance_field_10km_annual_mean.csv";
-//	std::vector <std::string> col_name;
-//	col_name.push_back("imbalance");
-//	basic::write_file(imbalance.mu, fout_name, col_name);
+	// Output the annual average of normalized mean demand field
+	fout_name = "csv/processed/spatial_field/imbalance_field_10km_annual_mean.csv";
+	col_name.clear();
+	col_name.push_back("imbalance");
+	basic::write_file(imbalance.mu, fout_name, col_name);
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------
 	// Infer the normalized mean demand field
@@ -181,6 +180,8 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 		for(int item = 0; item < 5 - count_zeros; ++item){
 			digit_zeros += std::to_string(0);
 		}
+		col_name.clear();
+		col_name.push_back("nominal_mean_demand");
 		fout_name = "csv/processed/spatial_field/nominal_mean_demand_field_10km_ts_" + digit_zeros + std::to_string(tick) + ".csv";
 		basic::write_file(nominal_demand.mu, fout_name, col_name);
 		digit_zeros.clear();
