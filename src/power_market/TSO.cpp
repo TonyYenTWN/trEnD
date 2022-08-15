@@ -116,26 +116,71 @@ void power_market::TSO_Market_Results_Get(int tick, market_inform &Market, algli
 	std::cout << sol_vec.tail(Market.network.num_edges).minCoeff() << " " << sol_vec.tail(Market.network.num_edges).maxCoeff() << "\n\n";
 }
 
-void power_market::TSO_Market_control_reserve(int tick, market_inform &Market, alglib::minlpstate &Problem){
+void power_market::TSO_Market_control_reserve(int tick, market_inform &Market, power_network::network_inform &Power_network_inform, alglib::minlpstate &Problem){
+	int point_num = Power_network_inform.points.bidding_zone.size();
+
 	// Temporary setting!!
 	Market.control_reserve.available_ratio_supply = Eigen::MatrixXd::Ones(Market.price_intervals + 2, Market.num_zone);
 	Market.control_reserve.available_ratio_demand = Eigen::MatrixXd::Ones(Market.price_intervals + 2, Market.num_zone);
 
+//	Eigen::MatrixXd imbalance_demand = Eigen::MatrixXd::Zero(Market.price_intervals + 2, Market.num_zone);
+//
+//	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
+//		for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter){
+//			if(Market.bidded_price(price_iter) >= Market.confirmed_price(tick, node_iter) || price_iter == Market.price_intervals + 1){
+//					if(Market.confirmed_price_ratio(tick, node_iter) < 0.){
+//						imbalance_demand(price_iter, node_iter) = -.05 * Market.confirmed_price_ratio(tick, node_iter)* Market.submitted_demand(price_iter, node_iter);
+//					}
+//					break;
+//			}
+//			else{
+//				imbalance_demand(price_iter, node_iter) = .05 * Market.submitted_demand(price_iter, node_iter);
+//			}
+//		}
+//	}
+	// Temporary setting!!
+
+	Eigen::VectorXd imbalance_sum = Eigen::VectorXd::Zero(Market.num_zone);
+	for(int point_iter = 0; point_iter < point_num; ++ point_iter){
+		int node_ID = Power_network_inform.points.node(point_iter);
+		double value = Power_network_inform.points.imbalance_field(point_iter, tick);
+		value *= Power_network_inform.points.nominal_mean_demand_field(point_iter, tick);
+		value *= Power_network_inform.points.population_density(point_iter);
+		imbalance_sum(node_ID) +=  value;
+	}
+	imbalance_sum *= Power_network_inform.points.point_area / 1000.;
+
 	Eigen::MatrixXd imbalance_demand = Eigen::MatrixXd::Zero(Market.price_intervals + 2, Market.num_zone);
 	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
+		double tol = 1E-12;
+		double imbalance_demand_ratio = .05;
+		if(abs(Market.confirmed_demand(tick, node_iter) + Market.confirmed_supply(tick, node_iter)) > tol){
+			std::cout << imbalance_sum(node_iter) / (Market.confirmed_demand(tick, node_iter) + Market.confirmed_supply(tick, node_iter)) << "\n";
+		}
+//		std::cout << imbalance_sum(node_iter) << "\t" << Market.confirmed_demand(tick, node_iter) << "\t" << Market.confirmed_supply(tick, node_iter) << "\n";
+//		std::cout << imbalance_sum(node_iter) << "\t" << Market.confirmed_demand(tick, node_iter) + Market.confirmed_supply(tick, node_iter) << "\n";
+//		double imbalance_demand_ratio = 0.;
+//		if(abs(Market.confirmed_demand(tick, node_iter)) > tol){
+			//imbalance_demand_ratio = imbalance_demand_sum(node_iter) / Market.confirmed_demand(tick, node_iter);
+//			std::cout << imbalance_sum(node_iter) / Market.confirmed_demand(tick, node_iter) << "\n";
+//			if(abs(imbalance_demand_ratio) > 1.){
+//				std::cout << imbalance_demand_ratio << "\n";
+//			}
+//		}
+//		double imbalance_demand_ratio = imbalance_demand_sum(node_iter) / Market.confirmed_demand(tick, node_iter);
+
 		for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter){
 			if(Market.bidded_price(price_iter) >= Market.confirmed_price(tick, node_iter) || price_iter == Market.price_intervals + 1){
 					if(Market.confirmed_price_ratio(tick, node_iter) < 0.){
-						imbalance_demand(price_iter, node_iter) = -.05 * Market.confirmed_price_ratio(tick, node_iter)* Market.submitted_demand(price_iter, node_iter);
+						imbalance_demand(price_iter, node_iter) = -imbalance_demand_ratio * Market.confirmed_price_ratio(tick, node_iter)* Market.submitted_demand(price_iter, node_iter);
 					}
 					break;
 			}
 			else{
-				imbalance_demand(price_iter, node_iter) = .05 * Market.submitted_demand(price_iter, node_iter);
+				imbalance_demand(price_iter, node_iter) = imbalance_demand_ratio * Market.submitted_demand(price_iter, node_iter);
 			}
 		}
 	}
-	// Temporary setting!!
 
 	// -------------------------------------------------------------------------------
 	// Update bounds for box constraints
