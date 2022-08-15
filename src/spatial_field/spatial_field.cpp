@@ -71,10 +71,10 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	// Read actual imbalance data
 	std::string fin_imbalance = "csv/input/power_market/control_reserve_activated_2021.csv";
 	auto fin_imbalance_dim = basic::get_file_dim(fin_imbalance);
-	auto Imbalnce_ts_raw = basic::read_file(fin_imbalance_dim[0], fin_imbalance_dim[1], fin_imbalance);
-	Eigen::MatrixXd Imbalnce_ts(Time, bz_num);
+	auto Imbalance_ts_raw = basic::read_file(fin_imbalance_dim[0], fin_imbalance_dim[1], fin_imbalance);
+	Eigen::MatrixXd Imbalance_ts(Time, bz_num);
 	for(int zone_iter = 0; zone_iter < bz_num; ++ zone_iter){
-		Imbalnce_ts.col(zone_iter) = Imbalnce_ts_raw.col(2 * zone_iter) - Imbalnce_ts_raw.col(2 * zone_iter + 1);
+		Imbalance_ts.col(zone_iter) = Imbalance_ts_raw.col(2 * zone_iter) - Imbalance_ts_raw.col(2 * zone_iter + 1);
 	}
 
 	// Set sparse matrix for equality constraints for nominal demand
@@ -132,8 +132,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	// ------------------------------------------------------------------------------------------------------------------------------------------
 	// Initialization of parameters
 	inference_inform imbalance;
-	imbalance.alpha_iteration = 1.;
-	imbalance.mu_mean = Imbalnce_ts.colwise().sum().tail(bz_num);
+	imbalance.mu_mean = Imbalance_ts.colwise().sum().tail(bz_num);
 	imbalance.mu_mean /= Time;
 	mu_0_scale = imbalance.mu_mean.sum() / Constraint_imbalance.sum();
 	imbalance.mu_scale = Eigen::VectorXd::Constant(point_num, mu_0_scale);
@@ -150,7 +149,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	basic::write_file(imbalance.mu, fout_name, col_name);
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------
-	// Infer the normalized mean demand field
+	// Infer the normalized mean demand / imbalance field
 	// ------------------------------------------------------------------------------------------------------------------------------------------
 	// Initialization of parameters
 	nominal_demand.alpha_iteration = .01;
@@ -161,6 +160,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	}
 	nominal_demand.mu = nominal_demand.mu_scale;
 	nominal_demand.x = nominal_demand.x_scale;
+	imbalance.mu_scale = imbalance.mu;
 
 	// Run the algorithm for each time slice
 	for(int tick = 0; tick < 1; ++ tick){
@@ -184,6 +184,28 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 		col_name.push_back("nominal_mean_demand");
 		fout_name = "csv/processed/spatial_field/nominal_mean_demand_field_10km_ts_" + digit_zeros + std::to_string(tick) + ".csv";
 		basic::write_file(nominal_demand.mu, fout_name, col_name);
+
+		// Set sparse matrix for equality constraints for imbalance
+		// must come after nominal demand!!
+		std::vector<Eigen::TripletXd> Constraint_imbalance_Trip;
+		Constraint_imbalance_Trip.reserve(point_num);
+		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
+			int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
+			double value = nominal_demand.mu(point_iter) * Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area;
+			Constraint_imbalance_Trip.push_back(Eigen::TripletXd(point_iter, bz_ID, value));
+		}
+		Constraint_imbalance.setFromTriplets(Constraint_imbalance_Trip.begin(), Constraint_imbalance_Trip.end());
+
+		imbalance.mu_mean = Imbalance_ts.row(tick).tail(bz_num);
+
+		// Inference step
+		BME_linear(imbalance, Constraint_imbalance);
+
+		// Output the annual average of normalized mean demand field
+		fout_name = "csv/processed/spatial_field/imbalance_field_10km_ts_" + digit_zeros + std::to_string(tick) + ".csv";
+		col_name.clear();
+		col_name.push_back("imbalance");
+		basic::write_file(imbalance.mu, fout_name, col_name);
 		digit_zeros.clear();
 	}
 }
