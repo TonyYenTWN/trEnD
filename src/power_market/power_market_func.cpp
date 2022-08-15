@@ -87,12 +87,12 @@ void power_market::Submitted_bid_calculation(agent::end_user::profiles &end_user
 		for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
 			double bid_inflex_quan = end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile(0);
 			bid_inflex_quan *= end_user_profiles[point_iter][sample_iter].operation.weight;
-			bid_inflex_quan *= Power_network_inform.points.population_density(point_iter); //* Power_network_inform.points.point_area;
+			bid_inflex_quan *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
 			// nominal demand currently wrong in processed files, should change them and then multiply area of a point later
 
 			double bid_flex_quan = end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile(0);
 			bid_flex_quan *= end_user_profiles[point_iter][sample_iter].operation.weight;
-			bid_flex_quan *= Power_network_inform.points.population_density(point_iter); //* Power_network_inform.points.point_area;
+			bid_flex_quan *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
 			// nominal demand currently wrong in processed files, should change them and then multiply area of a point later
 
 			// Updating inflexible bids; if quantity is positive (negative -> update supply bids)
