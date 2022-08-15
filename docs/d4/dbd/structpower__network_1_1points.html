@@ -130,6 +130,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:ad87de87c3072f5ae6926e9d70aaec9d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a976401b3721077253c8c41ca0e4a5d26"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/dbd/structpower__network_1_1points.html#a976401b3721077253c8c41ca0e4a5d26">nominal_mean_demand_field</a></td></tr>
 <tr class="separator:a976401b3721077253c8c41ca0e4a5d26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a259c00a3816b8fb17c060f63302cc51e"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/dbd/structpower__network_1_1points.html#a259c00a3816b8fb17c060f63302cc51e">imbalance_field</a></td></tr>
+<tr class="separator:a259c00a3816b8fb17c060f63302cc51e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">geometric information</div></td></tr>
 <tr class="memitem:abcf011019fd7122997060ba8904c9a05"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/dbd/structpower__network_1_1points.html#abcf011019fd7122997060ba8904c9a05">coordinate_grid</a></td></tr>
 <tr class="separator:abcf011019fd7122997060ba8904c9a05"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -166,7 +168,7 @@ Public Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00029">29</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../db/d05/spatial__field_8cpp_source.html#l00136">spatial_field::imbalance_inference()</a>, <a class="el" href="../../db/d05/spatial__field_8cpp_source.html#l00047">spatial_field::nominal_demand_inference()</a>, and <a class="el" href="../../d9/dde/power__network_8h_source.html#l00296">power_network::network_inform::set_line_density()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d9/dde/power__network_8h_source.html#l00298">power_network::network_inform::set_line_density()</a>, <a class="el" href="../../db/d05/spatial__field_8cpp_source.html#l00062">spatial_field::spatial_field_inference()</a>, and <a class="el" href="../../d9/dfa/TSO_8cpp_source.html#l00119">power_market::TSO_Market_control_reserve()</a>.</p>
 
 </div>
 </div>
@@ -183,7 +185,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >A matrix mapping point indexs onto x-y coordinates. Row indexs represent the x coordinates and column indexs represent the y coordinates. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00051">51</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00053">53</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
 </div>
 </div>
@@ -200,9 +202,9 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Covariance of the reference random fields between the points. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00055">55</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00057">57</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../db/d05/spatial__field_8cpp_source.html#l00004">spatial_field::BME_copula()</a>, and <a class="el" href="../../dc/d47/power__network__input_8cpp_source.html#l00163">power_network::point_distance_cov()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../dc/d47/power__network__input_8cpp_source.html#l00163">power_network::point_distance_cov()</a>.</p>
 
 </div>
 </div>
@@ -219,7 +221,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Distance between the points. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00053">53</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00055">55</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../dc/d47/power__network__input_8cpp_source.html#l00163">power_network::point_distance_cov()</a>.</p>
 
@@ -241,6 +243,25 @@ Public Attributes</h2></td></tr>
 <p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00021">21</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../dc/d47/power__network__input_8cpp_source.html#l00163">power_network::point_distance_cov()</a>.</p>
+
+</div>
+</div>
+<a id="a259c00a3816b8fb17c060f63302cc51e" name="a259c00a3816b8fb17c060f63302cc51e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a259c00a3816b8fb17c060f63302cc51e">&#9670;&nbsp;</a></span>imbalance_field</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd power_network::points::imbalance_field</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Time series of imbalance (MWh / MWh) field at each spatial points. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00045">45</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../d9/dfa/TSO_8cpp_source.html#l00119">power_market::TSO_Market_control_reserve()</a>.</p>
 
 </div>
 </div>
@@ -274,7 +295,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Latitude of the spatial point. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00063">63</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00065">65</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../dc/d47/power__network__input_8cpp_source.html#l00163">power_network::point_distance_cov()</a>.</p>
 
@@ -293,7 +314,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Longitude of the spatial point. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00061">61</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00063">63</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../dc/d47/power__network__input_8cpp_source.html#l00163">power_network::point_distance_cov()</a>.</p>
 
@@ -314,7 +335,7 @@ Public Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00031">31</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../d5/d56/DSO_8cpp_source.html#l00182">power_market::DSO_agents_update()</a>, and <a class="el" href="../../d5/dbf/power__market__func_8cpp_source.html#l00372">power_market::Filtered_bid_calculation()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../d5/d56/DSO_8cpp_source.html#l00182">power_market::DSO_agents_update()</a>, <a class="el" href="../../d5/dbf/power__market__func_8cpp_source.html#l00372">power_market::Filtered_bid_calculation()</a>, and <a class="el" href="../../d9/dfa/TSO_8cpp_source.html#l00119">power_market::TSO_Market_control_reserve()</a>.</p>
 
 </div>
 </div>
@@ -329,9 +350,11 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Time series of mean electricity demand profile at each spatial points. </p>
+<p >Time series of mean electricity demand (kWh / person / km^2) field at each spatial points. </p>
 
 <p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00043">43</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="../../d9/dfa/TSO_8cpp_source.html#l00119">power_market::TSO_Market_control_reserve()</a>.</p>
 
 </div>
 </div>
@@ -350,6 +373,8 @@ Public Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00019">19</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
+<p class="reference">Referenced by <a class="el" href="../../d9/dfa/TSO_8cpp_source.html#l00119">power_market::TSO_Market_control_reserve()</a>.</p>
+
 </div>
 </div>
 <a id="ad87de87c3072f5ae6926e9d70aaec9d0" name="ad87de87c3072f5ae6926e9d70aaec9d0"></a>
@@ -367,6 +392,8 @@ Public Attributes</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00041">41</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
+<p class="reference">Referenced by <a class="el" href="../../d9/dfa/TSO_8cpp_source.html#l00119">power_market::TSO_Market_control_reserve()</a>.</p>
+
 </div>
 </div>
 <a id="ad0129ca9a7d9a5fec1e0af235409c0e8" name="ad0129ca9a7d9a5fec1e0af235409c0e8"></a>
@@ -382,7 +409,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >X-coordinate of the spatial point in European grid (ETRS89). </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00057">57</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00059">59</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
 </div>
 </div>
@@ -399,7 +426,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Y-coordinate of the spatial point in European grid (ETRS89). </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00059">59</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d9/dde/power__network_8h_source.html#l00061">61</a> of file <a class="el" href="../../d9/dde/power__network_8h_source.html">power_network.h</a>.</p>
 
 </div>
 </div>

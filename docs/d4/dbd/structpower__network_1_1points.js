@@ -5,6 +5,7 @@ var structpower__network_1_1points =
     [ "covariance", "d4/dbd/structpower__network_1_1points.html#a94f36cb55bdbfe267393633d32edddef", null ],
     [ "distance", "d4/dbd/structpower__network_1_1points.html#ad84947f1c0852c4e16d8e5cd740a2762", null ],
     [ "grid_length", "d4/dbd/structpower__network_1_1points.html#a35c871e5774cdebfa9155f5669ae39c0", null ],
+    [ "imbalance_field", "d4/dbd/structpower__network_1_1points.html#a259c00a3816b8fb17c060f63302cc51e", null ],
     [ "in_cluster_ID", "d4/dbd/structpower__network_1_1points.html#a31806e3fc8fcec04162602a786aeabf8", null ],
     [ "lat", "d4/dbd/structpower__network_1_1points.html#ab637d272fc9ff7fbba44d0d38d8d85d0", null ],
     [ "lon", "d4/dbd/structpower__network_1_1points.html#a0c11586df60acd9f3966801957138440", null ],

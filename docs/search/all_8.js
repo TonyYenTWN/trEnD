@@ -1,7 +1,7 @@
 var searchData=
 [
   ['id_0',['id',['../de/dbe/structagent_1_1sorted__vector.html#a8ff7b86a581f315967e390f60720ec99',1,'agent::sorted_vector']]],
-  ['imbalance_5finference_1',['imbalance_inference',['../d9/d64/namespacespatial__field.html#a70e4c0c0e9b298d5861f12ba50674c59',1,'spatial_field']]],
+  ['imbalance_5ffield_1',['imbalance_field',['../d4/dbd/structpower__network_1_1points.html#a259c00a3816b8fb17c060f63302cc51e',1,'power_network::points']]],
   ['imo_2',['IMO',['../db/d56/power__market_8h.html#ad907407d56462a7ef82d9ccd80f056d6',1,'power_market.h']]],
   ['imo_2ecpp_3',['IMO.cpp',['../da/de9/IMO_8cpp.html',1,'']]],
   ['impedenace_5fbase_5flevels_4',['impedenace_base_levels',['../dc/dd8/structpower__network_1_1technical__parameters.html#ab22541d7420be9da0b14c7b84cd5c52e',1,'power_network::technical_parameters']]],

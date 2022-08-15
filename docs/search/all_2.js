@@ -11,9 +11,12 @@ var searchData=
   ['confirmed_5fsupply_8',['confirmed_supply',['../d8/d2d/structpower__market_1_1market__inform.html#ae2a4426636b19185f4a8d2f78047106d',1,'power_market::market_inform']]],
   ['confirmed_5fvoltage_9',['confirmed_voltage',['../d5/d93/structpower__market_1_1network__graph.html#a34a6ae837ef4b26317f5bd4ab52c8ad4',1,'power_market::network_graph']]],
   ['constant_10',['CONSTANT',['../d5/da0/basic__definitions_8h.html#aa07f83a2de5a158b8643cdc36541b711',1,'basic_definitions.h']]],
-  ['control_5freserve_11',['control_reserve',['../d8/d2d/structpower__market_1_1market__inform.html#aaa2083100092cdc675082e38d59e762b',1,'power_market::market_inform']]],
-  ['control_5freserve_5finform_12',['control_reserve_inform',['../d1/df3/structpower__market_1_1control__reserve__inform.html',1,'power_market']]],
-  ['coordinate_5fgrid_13',['coordinate_grid',['../d4/dbd/structpower__network_1_1points.html#abcf011019fd7122997060ba8904c9a05',1,'power_network::points']]],
-  ['covariance_14',['covariance',['../d4/dbd/structpower__network_1_1points.html#a94f36cb55bdbfe267393633d32edddef',1,'power_network::points']]],
-  ['cross_5fborder_5fzone_5fstart_15',['cross_border_zone_start',['../d8/d2d/structpower__market_1_1market__inform.html#a5c2a87921f88721ac93dd97a8ca23f97',1,'power_market::market_inform']]]
+  ['constraint_11',['Constraint',['../d4/dfd/structspatial__field_1_1inference__inform.html#af9c776c765c09b5d78869710b3da7ac9',1,'spatial_field::inference_inform']]],
+  ['control_5freserve_12',['control_reserve',['../d8/d2d/structpower__market_1_1market__inform.html#aaa2083100092cdc675082e38d59e762b',1,'power_market::market_inform']]],
+  ['control_5freserve_5finform_13',['control_reserve_inform',['../d1/df3/structpower__market_1_1control__reserve__inform.html',1,'power_market']]],
+  ['conversion_5fmat_5f1_14',['Conversion_Mat_1',['../d4/dfd/structspatial__field_1_1inference__inform.html#af2c980be9b51e9365482691209dccd69',1,'spatial_field::inference_inform']]],
+  ['conversion_5fmat_5f2_15',['Conversion_Mat_2',['../d4/dfd/structspatial__field_1_1inference__inform.html#a14e930b238a93f40cf9d00704d224c03',1,'spatial_field::inference_inform']]],
+  ['coordinate_5fgrid_16',['coordinate_grid',['../d4/dbd/structpower__network_1_1points.html#abcf011019fd7122997060ba8904c9a05',1,'power_network::points']]],
+  ['covariance_17',['covariance',['../d4/dbd/structpower__network_1_1points.html#a94f36cb55bdbfe267393633d32edddef',1,'power_network::points']]],
+  ['cross_5fborder_5fzone_5fstart_18',['cross_border_zone_start',['../d8/d2d/structpower__market_1_1market__inform.html#a5c2a87921f88721ac93dd97a8ca23f97',1,'power_market::market_inform']]]
 ];
