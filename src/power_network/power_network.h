@@ -39,8 +39,10 @@ namespace power_network{
 		/*@{*/
 		/** Population density at the spatial point.*/
 		Eigen::VectorXd population_density;
-		/** Time series of mean electricity demand profile at each spatial points.*/
+		/** Time series of mean electricity demand (kWh / person / km^2) field at each spatial points.*/
 		Eigen::MatrixXd nominal_mean_demand_field;
+		/** Time series of imbalance (MWh / MWh) field at each spatial points.*/
+		Eigen::MatrixXd imbalance_field;
 		/*@{*/
 
 		/**

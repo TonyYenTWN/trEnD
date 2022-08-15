@@ -1,60 +1,62 @@
 // Main source file for inference of spatial fields
 #include "src/spatial_field/spatial_field.h"
 
-void spatial_field::BME_copula(inference_inform &inform, power_network::network_inform &Power_network_inform, Eigen::SparseMatrix <double> &Constraint, double tol){
-	int bz_num = Constraint.cols();
-	int point_num = Constraint.rows();
+namespace{
+	void BME_copula(spatial_field::inference_inform &inform, power_network::network_inform &Power_network_inform, Eigen::SparseMatrix <double> &Constraint, double tol){
+		int bz_num = Constraint.cols();
+		int point_num = Constraint.rows();
 
-	// Iterations
-	int count = 0;
-	Eigen::VectorXd dmu = Eigen::VectorXd::Constant(point_num, 1.);
-	while(count < 5000 && dmu.lpNorm<Eigen::Infinity>() > tol){
-		// Matrices for the linear system
-		Eigen::SparseMatrix <double> Conversion_Mat_1(point_num, point_num);
-		std::vector <Eigen::TripletXd> Conversion_Mat_1_Trip;
-		Conversion_Mat_1.reserve(point_num);
+		// Iterations
+		int count = 0;
+		Eigen::VectorXd dmu = Eigen::VectorXd::Constant(point_num, 1.);
+		while(count < 5000 && dmu.lpNorm<Eigen::Infinity>() > tol){
+			// Matrices for the linear system
+			Eigen::SparseMatrix <double> Conversion_Mat_1(point_num, point_num);
+			std::vector <Eigen::TripletXd> Conversion_Mat_1_Trip;
+			Conversion_Mat_1.reserve(point_num);
 
-		for(int item = 0; item < point_num; ++ item){
-			double diff_x = .5 * inform.mu_scale(item) * pow((-log(1. - cdf(inform.norm_dist, inform.x(item)))), -.5) * pow(1. - cdf(inform.norm_dist, inform.x(item)), -1.) * pdf(inform.norm_dist, inform.x(item));
-			Conversion_Mat_1_Trip.push_back(Eigen::TripletXd(item, item, diff_x));
+			for(int item = 0; item < point_num; ++ item){
+				double diff_x = .5 * inform.mu_scale(item) * pow((-log(1. - cdf(inform.norm_dist, inform.x(item)))), -.5) * pow(1. - cdf(inform.norm_dist, inform.x(item)), -1.) * pdf(inform.norm_dist, inform.x(item));
+				Conversion_Mat_1_Trip.push_back(Eigen::TripletXd(item, item, diff_x));
+			}
+			Conversion_Mat_1.setFromTriplets(Conversion_Mat_1_Trip.begin(), Conversion_Mat_1_Trip.end());
+
+			Eigen::SparseMatrix <double> Conversion_Mat_2 = Conversion_Mat_1 * Constraint;
+
+			// Solve the linear system
+			Eigen::MatrixXd solver = Conversion_Mat_2.transpose() * Power_network_inform.points.covariance * Conversion_Mat_2;
+			Eigen::VectorXd lambda = solver.colPivHouseholderQr().solve(inform.mu_mean - Constraint.transpose() * inform.mu + Conversion_Mat_2.transpose() * inform.x);
+
+			Eigen::VectorXd dx = Power_network_inform.points.covariance * Conversion_Mat_2 * lambda - inform.x;
+			inform.x += inform.alpha_iteration * dx;
+
+			// Update the solution
+			for(int item = 0; item < point_num; ++ item){
+				dmu(item) = inform.mu_scale(item) * pow(-log(1. - cdf(inform.norm_dist, inform.x(item))), .5) - inform.mu(item);
+				inform.mu(item) += dmu(item);
+			}
+			Eigen::VectorXd mu_inv_0 = pow(inform.mu.array(), -1.);
+			dmu *= mu_inv_0;
+
+			count += 1;
 		}
-		Conversion_Mat_1.setFromTriplets(Conversion_Mat_1_Trip.begin(), Conversion_Mat_1_Trip.end());
-
-		Eigen::SparseMatrix <double> Conversion_Mat_2 = Conversion_Mat_1 * Constraint;
-
-		// Solve the linear system
-		Eigen::MatrixXd solver = Conversion_Mat_2.transpose() * Power_network_inform.points.covariance * Conversion_Mat_2;
-		Eigen::VectorXd lambda = solver.colPivHouseholderQr().solve(inform.mu_mean - Constraint.transpose() * inform.mu + Conversion_Mat_2.transpose() * inform.x);
-
-		Eigen::VectorXd dx = Power_network_inform.points.covariance * Conversion_Mat_2 * lambda - inform.x;
-		inform.x += inform.alpha_iteration * dx;
-
-		// Update the solution
-		for(int item = 0; item < point_num; ++ item){
-			dmu(item) = inform.mu_scale(item) * pow(-log(1. - cdf(inform.norm_dist, inform.x(item))), .5) - inform.mu(item);
-			inform.mu(item) += dmu(item);
-		}
-		Eigen::VectorXd mu_inv_0 = pow(inform.mu.array(), -1.);
-		dmu *= mu_inv_0;
-
-		count += 1;
 	}
-}
 
-void spatial_field::BME_linear(inference_inform &inform, Eigen::SparseMatrix <double> &Constraint){
-	// ---------------------------------------------------------------------
-	// MaxEnt, known covariance and mean = 0, reference equiprobable space = x
-	// COV^(-1) * x* - Constraint * lambda = 0
-	// x* = COV * Constraint * lambda
-	// Constraint^T * x* = Constraint^T * COV * Constraint * lambda = demand
-	// lambda = solve(Constraint^T * COV * Constraint, demand)
-	// ---------------------------------------------------------------------
-	// Solve the linear system
-	Eigen::VectorXd Constraint_sum = (inform.mu_scale.transpose() * Constraint).transpose();
-	Eigen::SparseLU <Eigen::SparseMatrix <double>, Eigen::COLAMDOrdering<int>> solver;
-	solver.compute(inform.Conversion_Mat_1);
-	Eigen::VectorXd lambda = solver.solve(inform.mu_mean - Constraint_sum);
-	inform.mu = inform.Conversion_Mat_2 * lambda;
+	void BME_linear(spatial_field::inference_inform &inform, Eigen::SparseMatrix <double> &Constraint){
+		// ---------------------------------------------------------------------
+		// MaxEnt, known covariance and mean = 0, reference equiprobable space = x
+		// COV^(-1) * x* - Constraint * lambda = 0
+		// x* = COV * Constraint * lambda
+		// Constraint^T * x* = Constraint^T * COV * Constraint * lambda = demand
+		// lambda = solve(Constraint^T * COV * Constraint, demand)
+		// ---------------------------------------------------------------------
+		// Solve the linear system
+		Eigen::VectorXd Constraint_sum = (inform.mu_scale.transpose() * Constraint).transpose();
+		Eigen::SparseLU <Eigen::SparseMatrix <double>, Eigen::COLAMDOrdering<int>> solver;
+		solver.compute(inform.Conversion_Mat_1);
+		Eigen::VectorXd lambda = solver.solve(inform.mu_mean - Constraint_sum);
+		inform.mu = inform.Conversion_Mat_2 * lambda;
+	}
 }
 
 void spatial_field::spatial_field_inference(power_network::network_inform &Power_network_inform){
@@ -67,6 +69,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	std::string fin_demand = "csv/input/spatial_field/demand_actual_2021.csv";
 	auto fin_demand_dim = basic::get_file_dim(fin_demand);
 	auto Demand_ts = basic::read_file(fin_demand_dim[0], fin_demand_dim[1], fin_demand);
+	Demand_ts *= 1000; // MWh -> kWh
 
 	// Read actual imbalance data
 	std::string fin_imbalance = "csv/input/power_market/control_reserve_activated_2021.csv";
@@ -122,7 +125,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	Constraint_imbalance_Trip.reserve(point_num);
 	for(int point_iter = 0; point_iter < point_num; ++ point_iter){
 		int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
-		double value = nominal_demand.mu(point_iter) * Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area;
+		double value = nominal_demand.mu(point_iter) * Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
 		Constraint_imbalance_Trip.push_back(Eigen::TripletXd(point_iter, bz_ID, value));
 	}
 	Constraint_imbalance.setFromTriplets(Constraint_imbalance_Trip.begin(), Constraint_imbalance_Trip.end());
@@ -163,7 +166,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	imbalance.mu_scale = imbalance.mu;
 
 	// Run the algorithm for each time slice
-	for(int tick = 0; tick < 1; ++ tick){
+	for(int tick = 0; tick < 24; ++ tick){
 		nominal_demand.mu_mean = Demand_ts.row(tick).tail(bz_num);
 
 		// Inference step
@@ -191,7 +194,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 		Constraint_imbalance_Trip.reserve(point_num);
 		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
 			int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
-			double value = nominal_demand.mu(point_iter) * Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area;
+			double value = nominal_demand.mu(point_iter) * Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
 			Constraint_imbalance_Trip.push_back(Eigen::TripletXd(point_iter, bz_ID, value));
 		}
 		Constraint_imbalance.setFromTriplets(Constraint_imbalance_Trip.begin(), Constraint_imbalance_Trip.end());
@@ -211,9 +214,10 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 }
 
 // Function that stores processed mean demand field
-void spatial_field::spatial_field_store(power_network::network_inform &Power_network_inform, std::string fin_demand, int Time){
+void spatial_field::spatial_field_store(power_network::network_inform &Power_network_inform, std::string fin_demand, std::string fin_imbalance, int Time){
 	int row_num = Power_network_inform.points.bidding_zone.rows();
 	Power_network_inform.points.nominal_mean_demand_field = Eigen::MatrixXd(row_num, Time);
+	Power_network_inform.points.imbalance_field = Eigen::MatrixXd(row_num, Time);
 
 	//for(int tick = 0; tick < Time; ++ tick){
 	for(int tick = 0; tick < 100; ++ tick){
@@ -231,7 +235,9 @@ void spatial_field::spatial_field_store(power_network::network_inform &Power_net
 
 		// File name with enumeration
 		std::string fin_demand_temp = fin_demand + digit_zeros + std::to_string(tick) + ".csv";
+		std::string fin_imbalance_temp = fin_imbalance + digit_zeros + std::to_string(tick) + ".csv";
 
 		Power_network_inform.points.nominal_mean_demand_field.col(tick) = basic::read_file(row_num, 1, fin_demand_temp);
+		Power_network_inform.points.imbalance_field.col(tick) = basic::read_file(row_num, 1, fin_imbalance_temp);
 	}
 }
