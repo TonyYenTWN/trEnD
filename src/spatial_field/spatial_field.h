@@ -19,13 +19,16 @@ namespace spatial_field{
 		Eigen::VectorXd x_scale;
 		Eigen::VectorXd mu;
 		Eigen::VectorXd x;
+		Eigen::SparseMatrix <double> Constraint;
+		Eigen::SparseMatrix <double> Conversion_Mat_1;
+		Eigen::SparseMatrix <double> Conversion_Mat_2;
 	};
 
 	// Functions
 	void BME_copula(inference_inform&, power_network::network_inform&, Eigen::SparseMatrix <double>&, double);
-	void BME_linear(inference_inform&, power_network::network_inform&, Eigen::SparseMatrix <double>&, double);
-	void nominal_demand_inference(power_network::network_inform&);
-	void imbalance_inference(power_network::network_inform&);
+	void BME_linear(inference_inform&, Eigen::SparseMatrix <double>&);
+	void imbalance_inference(inference_inform &, power_network::network_inform&);
+	void spatial_field_inference(power_network::network_inform&);
 	void spatial_field_store(power_network::network_inform&, std::string, int);
 }
 

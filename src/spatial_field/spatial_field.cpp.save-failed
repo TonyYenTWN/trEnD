@@ -52,10 +52,46 @@ void spatial_field::BME_linear(inference_inform &inform, Eigen::SparseMatrix <do
 	// Solve the linear system
 	Eigen::VectorXd Constraint_sum = (inform.mu_scale.transpose() * Constraint).transpose();
 	Eigen::SparseLU <Eigen::SparseMatrix <double>, Eigen::COLAMDOrdering<int>> solver;
-	solver.compute(inform.Conversion_Mat_1);
-	Eigen::VectorXd lambda = solver.solve(inform.mu_mean - Constraint_sum);
-	inform.mu = inform.Conversion_Mat_2 * lambda;
+	Eigen::VectorXd rhs = inform.mu_mean;
+	std::cout << rhs << "\n\n";
+	rhs -= Constraint_sum;
+	std::cout << rhs << "\n\n";
+//	Eigen::VectorXd lambda = solver.solve(rhs);
 }
+
+//void spatial_field::imbalance_inference(inference_inform &nominal_demand, power_network::network_inform &Power_network_inform){
+//	int bz_num = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
+//	int point_num = Power_network_inform.points.bidding_zone.size();
+//	int Time = power_market::parameters::Time();
+//
+//	// Read actual imbalance data
+//	std::string fin_imbalance = "csv/input/power_market/control_reserve_activated_2021.csv";
+//	auto fin_imbalance_dim = basic::get_file_dim(fin_imbalance);
+//	auto Imbalnce_ts = basic::read_file(fin_imbalance_dim[0], fin_imbalance_dim[1], fin_imbalance);
+//
+//	// Set sparse matrix for equality constaints
+//	Eigen::SparseMatrix <double> Constraint (point_num, bz_num);
+//	std::vector<Eigen::TripletXd> Constraint_Trip;
+//	Constraint_Trip.reserve(point_num);
+//	for(int point_iter = 0; point_iter < point_num; ++ point_iter){
+//		int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
+//		double value = nominal_demand.mu(point_iter) * Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area;
+//		Constraint_Trip.push_back(Eigen::TripletXd(point_iter, bz_ID, value));
+//	}
+//	Constraint.setFromTriplets(Constraint_Trip.begin(), Constraint_Trip.end());
+//
+//	// ------------------------------------------------------------------------------------------------------------------------------------------
+//	// Infer the annual average of the normalized mean demand field
+//	// ------------------------------------------------------------------------------------------------------------------------------------------
+//	// Initialization of parameters
+//	inference_inform imbalance;
+//	imbalance.alpha_iteration = 1.;
+//	imbalance.mu_mean = Imbalnce_ts.colwise().sum().tail(bz_num);
+//	imbalance.mu_mean /= Time;
+//
+//	// Inference step
+//	BME_linear(nominal_demand, Constraint);
+//}
 
 void spatial_field::spatial_field_inference(power_network::network_inform &Power_network_inform){
 	int bz_num = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
@@ -141,14 +177,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	imbalance.Conversion_Mat_2 = Power_network_inform.points.covariance * Constraint_imbalance;
 
 	// Inference step
-	BME_linear(imbalance, Constraint_imbalance);
-
-//	// Output the annual average of normalized mean demand field
-//	std::string fout_name;
-//	fout_name = "csv/processed/spatial_field/imbalance_field_10km_annual_mean.csv";
-//	std::vector <std::string> col_name;
-//	col_name.push_back("imbalance");
-//	basic::write_file(imbalance.mu, fout_name, col_name);
+	BME_linear(nominal_demand, Constraint_imbalance);
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------
 	// Infer the normalized mean demand field

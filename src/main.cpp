@@ -9,7 +9,12 @@ int main(){
 	power_network::power_network_input_process(Power_network_inform, "csv/input/power_network/");
 
 	// Spatial fields inference
-	spatial_field::nominal_demand_inference(Power_network_inform);
+//	bool inference_flag;
+//	std::cout << "Inference spatial fields? Yes: 1 / No: 0 ";
+//	std::cin >> inference_flag;
+//	std::cout << "\n";
+
+	spatial_field::spatial_field_inference(Power_network_inform);
 	//spatial_field::imbalance_inference(Power_network_inform);
 
 	// Power market processes
