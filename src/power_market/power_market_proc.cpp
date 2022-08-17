@@ -35,21 +35,21 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	// Initialization of submitted bids in DSOs and TSOs
 	Submitted_bid_calculation(Power_market_inform.end_user_profiles, Power_market_inform.DSO_Markets, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform, DSO_filter_flag);
 
-	// Ideal market clearing in IMO
-	International_Market_Optimization(0, Power_market_inform.International_Market, 0);
-
-	// Set cross-border transmission as boundary conditions of TSO
-	TSO_boundary_update(0, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform);
-
-	// Bid-filtering in DSOs
-	if(DSO_filter_flag){
-		Filtered_bid_calculation(Power_market_inform.DSO_Markets, Power_market_inform.TSO_Market, Power_network_inform, Power_market_inform.DSO_Problems);
-	}
-
-	// Re-dispatch + tertiary control reserve in TSO
-	Flow_Based_Market_Optimization(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
-	TSO_Market_Results_Get(0, Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
-	TSO_Market_control_reserve(0, Power_market_inform.TSO_Market, Power_network_inform, Power_market_inform.TSO_Problem);
+//	// Ideal market clearing in IMO
+//	International_Market_Optimization(0, Power_market_inform.International_Market, 0);
+//
+//	// Set cross-border transmission as boundary conditions of TSO
+//	TSO_boundary_update(0, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform);
+//
+//	// Bid-filtering in DSOs
+//	if(DSO_filter_flag){
+//		Filtered_bid_calculation(Power_market_inform.DSO_Markets, Power_market_inform.TSO_Market, Power_network_inform, Power_market_inform.DSO_Problems);
+//	}
+//
+//	// Re-dispatch + tertiary control reserve in TSO
+//	Flow_Based_Market_Optimization(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
+//	TSO_Market_Results_Get(0, Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
+//	TSO_Market_control_reserve(0, Power_market_inform.TSO_Market, Power_network_inform, Power_market_inform.TSO_Problem);
 }
 
 void power_market::power_market_process_update(power_network::network_inform &Power_network_inform, market_whole_inform &Power_market_inform, bool DSO_filter_flag){
