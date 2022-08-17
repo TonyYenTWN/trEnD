@@ -117,16 +117,16 @@ void power_market::Submitted_bid_calculation(agent::end_user::profiles &end_user
 			}
 		}
 	}
-	for(int zone_iter = 0; zone_iter < 5; ++ zone_iter){
-		std::cout << International_Market.submitted_demand.col(zone_iter).sum() << "\t";
-	}
-	std::cout << "\n\n";
-	Eigen::VectorXd demand_sum = Eigen::VectorXd::Zero(5);
-	for(int node_iter = 0; node_iter < TSO_Market.num_zone; ++ node_iter){
-		int bz_ID = Power_network_inform.nodes.bidding_zone(node_iter);
-		demand_sum(bz_ID) += TSO_Market.submitted_demand.col(node_iter).sum();
-	}
-	std::cout << demand_sum.transpose() << "\n\n";
+//	for(int zone_iter = 0; zone_iter < 5; ++ zone_iter){
+//		std::cout << International_Market.submitted_demand.col(zone_iter).sum() << "\t";
+//	}
+//	std::cout << "\n\n";
+//	Eigen::VectorXd demand_sum = Eigen::VectorXd::Zero(5);
+//	for(int node_iter = 0; node_iter < TSO_Market.num_zone; ++ node_iter){
+//		int bz_ID = Power_network_inform.nodes.bidding_zone(node_iter);
+//		demand_sum(bz_ID) += TSO_Market.submitted_demand.col(node_iter).sum();
+//	}
+//	std::cout << demand_sum.transpose() << "\n\n";
 
 	// Supply at each point (LV power plants) / node (HV power plants)
 	for(int hydro_iter = 0; hydro_iter < Power_network_inform.plants.hydro.node.size(); ++ hydro_iter){
