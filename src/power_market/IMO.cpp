@@ -236,7 +236,7 @@ void power_market::International_Market_Optimization(int tick, market_inform &In
 					}
 
 					// Check if surplus according to updated price is still positive
-					if(price_demand_ID(col_ID) > price_supply_ID(row_ID)){
+					if(price_demand_ID(col_ID) >= price_supply_ID(row_ID)){
 						// Update surplus for each possible exchange configuration
 						surplus_exchange(row_ID, col_ID) = International_Market.bidded_price(price_demand_ID(col_ID)) - International_Market.bidded_price(price_supply_ID(row_ID));
 
