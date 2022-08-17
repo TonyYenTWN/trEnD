@@ -171,6 +171,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 
 		// Inference step
 		BME_copula(nominal_demand, Power_network_inform, Constraint_demand, 1E-3);
+		//std::cout << nominal_demand.mu.transpose() * Constraint_demand << "\n\n";
 
 		// Output normalized mean demand field
 		int count_zeros = 0;

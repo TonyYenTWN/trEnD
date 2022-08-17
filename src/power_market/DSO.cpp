@@ -142,7 +142,7 @@ agent::end_user::profiles power_market::DSO_agents_set(market_inform &Internatio
 			end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile = residential_ratio * (Power_network_inform.points.nominal_mean_demand_field.row(point_iter)).head(foresight_time);
 
 			// Smart appliance
-			end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale = .2;
+			end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale = 0.;
 			end_user_profiles[point_iter][sample_iter].operation.smart_appliance.flexibility_factor = .5;
 			agent::end_user::smart_appliance_schedule(expected_price_sorted[bz_ID], end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile, end_user_profiles[point_iter][sample_iter].operation.smart_appliance);
 
