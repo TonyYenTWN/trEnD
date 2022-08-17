@@ -73,12 +73,13 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	Demand_ts *= 1000; // MWh -> kWh
 
 	// Read actual imbalance data
+	bool fin_imbalance_row_name = 1;
 	std::string fin_imbalance = "csv/input/power_market/control_reserve_activated_2021.csv";
 	auto fin_imbalance_dim = basic::get_file_dim(fin_imbalance);
 	auto Imbalance_ts_raw = basic::read_file(fin_imbalance_dim[0], fin_imbalance_dim[1], fin_imbalance);
 	Eigen::MatrixXd Imbalance_ts(Time, bz_num);
 	for(int zone_iter = 0; zone_iter < bz_num; ++ zone_iter){
-		Imbalance_ts.col(zone_iter) = Imbalance_ts_raw.col(2 * zone_iter) - Imbalance_ts_raw.col(2 * zone_iter + 1);
+		Imbalance_ts.col(zone_iter) = Imbalance_ts_raw.col(2 * zone_iter + fin_imbalance_row_name) - Imbalance_ts_raw.col(2 * zone_iter + fin_imbalance_row_name + 1);
 	}
 
 	// Set sparse matrix for equality constraints for nominal demand
@@ -146,6 +147,8 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 
 	// Inference step
 	BME_linear(imbalance, Constraint_imbalance);
+	std::cout << imbalance.mu_mean.transpose() << "\n\n";
+	std::cout << imbalance.mu.transpose() * Constraint_imbalance << "\n\n";
 
 	// Output the annual average of normalized mean demand field
 	fout_name = "csv/processed/spatial_field/imbalance_field_10km_annual_mean.csv";
@@ -206,6 +209,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 
 		// Inference step
 		BME_linear(imbalance, Constraint_imbalance);
+		std::cout << imbalance.mu.transpose() * Constraint_imbalance << "\n\n";
 
 		// Output the annual average of normalized mean demand field
 		fout_name = "csv/processed/spatial_field/imbalance_field_10km_ts_" + digit_zeros + std::to_string(tick) + ".csv";
