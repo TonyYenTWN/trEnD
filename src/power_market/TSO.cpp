@@ -142,10 +142,10 @@ void power_market::TSO_Market_control_reserve(int tick, market_inform &Market, p
 		demand_sum_default(bz_ID) += Market.submitted_demand.col(node_iter).sum();
 	}
 	Eigen::VectorXd imbalance_demand_ratio = imbalance_sum.array() / demand_sum.array();
-//	std::cout << demand_sum_default.transpose() << "\n\n";
-//	std::cout << demand_sum.transpose() << "\n\n";
-//	std::cout << imbalance_sum.transpose() << "\n\n";
-//	std::cout << imbalance_demand_ratio.transpose() << "\n\n";
+	std::cout << demand_sum_default.transpose() << "\n\n";
+	std::cout << demand_sum.transpose() << "\n\n";
+	std::cout << imbalance_sum.transpose() << "\n\n";
+	std::cout << imbalance_demand_ratio.transpose() << "\n\n";
 
 	Eigen::MatrixXd imbalance_demand = Eigen::MatrixXd::Zero(Market.price_intervals + 2, Market.num_zone);
 	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
