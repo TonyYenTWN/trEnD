@@ -25,7 +25,7 @@ namespace{
 
 			// Solve the linear system
 			Eigen::MatrixXd solver = Conversion_Mat_2.transpose() * Power_network_inform.points.covariance * Conversion_Mat_2;
-			Eigen::VectorXd lambda = solver.colPivHouseholderQr().solve(inform.mu_mean - Constraint.transpose() * inform.mu + Conversion_Mat_2.transpose() * inform.x);
+			Eigen::VectorXd lambda = solver.colPivHouseholderQr().solve(inform.mu_mean - Constraint.transpose() * inform.mu_scale);
 
 			Eigen::VectorXd dx = Power_network_inform.points.covariance * Conversion_Mat_2 * lambda - inform.x;
 			inform.x += inform.alpha_iteration * dx;
@@ -39,7 +39,6 @@ namespace{
 			dmu *= mu_inv_0;
 
 			count += 1;
-			//std::cout << inform.mu.maxCoeff() << "\n\n";
 		}
 	}
 
@@ -48,15 +47,17 @@ namespace{
 		// MaxEnt, known covariance and mean = 0, reference equiprobable space = x
 		// COV^(-1) * x* - Constraint * lambda = 0
 		// x* = COV * Constraint * lambda
-		// Constraint^T * x* = Constraint^T * COV * Constraint * lambda = demand
-		// lambda = solve(Constraint^T * COV * Constraint, demand)
+		// Constraint^T * (x* + x_0) = Constraint^T * COV * Constraint * lambda + Constraint^T * x_0 = demand
+		// lambda = solve(Constraint^T * COV * Constraint, demand - Constraint^T * x_0)
 		// ---------------------------------------------------------------------
 		// Solve the linear system
-		Eigen::VectorXd Constraint_sum = (inform.mu_scale.transpose() * Constraint).transpose();
+		Eigen::VectorXd Constraint_sum = Constraint.transpose() * inform.mu_scale;
+		//Eigen::VectorXd Constraint_sum = (inform.mu_scale.transpose() * Constraint).transpose();
 		Eigen::SparseLU <Eigen::SparseMatrix <double>, Eigen::COLAMDOrdering<int>> solver;
 		solver.compute(inform.Conversion_Mat_1);
 		Eigen::VectorXd lambda = solver.solve(inform.mu_mean - Constraint_sum);
 		inform.mu = inform.Conversion_Mat_2 * lambda;
+		inform.mu += inform.mu_scale;
 	}
 }
 
