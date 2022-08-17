@@ -9,7 +9,7 @@ int main(){
 	power_network::power_network_input_process(Power_network_inform, "csv/input/power_network/");
 
 	// Spatial fields inference
-	bool inference_flag = 1;
+	bool inference_flag = 0;
 //	std::cout << "Inference spatial fields? Yes: 1 / No: 0 ";
 //	std::cin >> inference_flag;
 //	std::cout << "\n";

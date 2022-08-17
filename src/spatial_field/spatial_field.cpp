@@ -39,6 +39,7 @@ namespace{
 			dmu *= mu_inv_0;
 
 			count += 1;
+			//std::cout << inform.mu.maxCoeff() << "\n\n";
 		}
 	}
 
@@ -90,6 +91,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 		Constraint_demand_Trip.push_back(Eigen::TripletXd(point_iter, bz_ID, value));
 	}
 	Constraint_demand.setFromTriplets(Constraint_demand_Trip.begin(), Constraint_demand_Trip.end());
+	//std::cout << Constraint_demand.topRows(10) << "\n\n";
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------
 	// Infer the annual average of the normalized mean demand field
