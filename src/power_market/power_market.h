@@ -202,7 +202,7 @@ namespace power_market{
 namespace power_market{
 	void TSO_Market_Set(market_inform&, power_network::network_inform&, int);
 	void TSO_Market_Results_Get(int, market_inform&, alglib::minlpstate&);
-	void TSO_Market_control_reserve(int, market_inform&, power_network::network_inform&, alglib::minlpstate&);
+	void TSO_Market_control_reserve(int, market_inform&, power_network::network_inform&, agent::end_user::profiles&, alglib::minlpstate&);
 }
 
 #endif

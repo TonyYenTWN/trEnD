@@ -9,7 +9,7 @@ int main(){
 	power_network::power_network_input_process(Power_network_inform, "csv/input/power_network/");
 
 	// Spatial fields inference
-	bool inference_flag = 1;
+	bool inference_flag = 0;
 //	std::cout << "Inference spatial fields? Yes: 1 / No: 0 ";
 //	std::cin >> inference_flag;
 //	std::cout << "\n";
@@ -18,8 +18,8 @@ int main(){
 	}
 
 	// Power market processes
-//	power_market::market_whole_inform Power_market_inform;
-//	power_market::power_market_process_set(Power_network_inform, Power_market_inform, 0);
-//	power_market::power_market_process_update(Power_network_inform, Power_market_inform, 0);
+	power_market::market_whole_inform Power_market_inform;
+	power_market::power_market_process_set(Power_network_inform, Power_market_inform, 0);
+	power_market::power_market_process_update(Power_network_inform, Power_market_inform, 0);
 }
 //	std::cin.get();
