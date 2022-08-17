@@ -32,7 +32,6 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr style="height: 56px;">
-  <td id="projectlogo"><img alt="Logo" src="../../main_logo_small.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">trEnD<span id="projectnumber">&#160;Documentation&#160;</span><span style="font-size: 10px"><i>pre-alpha version</i></span>
    </div>
@@ -247,7 +246,7 @@ $(document).ready(function(){initNavTree('d5/d56/DSO_8cpp_source.html','../../')
 <div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>            end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile = residential_ratio * (Power_network_inform.<a class="code hl_variable" href="../../d4/ddd/structpower__network_1_1network__inform.html#a23a7f81a7b4581cb6b9f3bfdb337fcf3">points</a>.<a class="code hl_variable" href="../../d4/dbd/structpower__network_1_1points.html#a976401b3721077253c8c41ca0e4a5d26">nominal_mean_demand_field</a>.row(point_iter)).head(foresight_time);</div>
 <div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
 <div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>            <span class="comment">// Smart appliance</span></div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>            end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale = .2;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>            end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale = 0.;</div>
 <div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>            end_user_profiles[point_iter][sample_iter].operation.smart_appliance.flexibility_factor = .5;</div>
 <div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>            <a class="code hl_function" href="../../d8/d3f/namespaceagent_1_1end__user.html#a80bb9d48b2ee3e305a610b599f066fe8">agent::end_user::smart_appliance_schedule</a>(expected_price_sorted[bz_ID], end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile, end_user_profiles[point_iter][sample_iter].operation.smart_appliance);</div>
 <div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
