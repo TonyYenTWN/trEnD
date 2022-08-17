@@ -25,8 +25,7 @@ namespace{
 
 			// Solve the linear system
 			Eigen::MatrixXd solver = Conversion_Mat_2.transpose() * Power_network_inform.points.covariance * Conversion_Mat_2;
-			Eigen::VectorXd lambda = solver.colPivHouseholderQr().solve(inform.mu_mean - Constraint.transpose() * inform.mu_scale);
-
+			Eigen::VectorXd lambda = solver.colPivHouseholderQr().solve(inform.mu_mean - Constraint.transpose() * inform.mu + Conversion_Mat_2.transpose() * inform.x);
 			Eigen::VectorXd dx = Power_network_inform.points.covariance * Conversion_Mat_2 * lambda - inform.x;
 			inform.x += inform.alpha_iteration * dx;
 
