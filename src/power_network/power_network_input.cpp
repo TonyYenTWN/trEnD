@@ -150,7 +150,7 @@ namespace {
 		for(int wind_iter = 0; wind_iter < fin_wind_dim[0]; ++ wind_iter){
 			Power_network_inform.plants.wind.node(wind_iter) = int(wind_inform(wind_iter, 0)) - 1;
 		}
-		Power_network_inform.plants.wind.cap = wind_inform.col(3);
+		Power_network_inform.plants.wind.cap = wind_inform.col(1);
 		Power_network_inform.plants.wind.x = wind_inform.col(wind_inform.cols() - 4);
 		Power_network_inform.plants.wind.y = wind_inform.col(wind_inform.cols() - 3);
 		Power_network_inform.plants.wind.lon = wind_inform.col(wind_inform.cols() - 2);
