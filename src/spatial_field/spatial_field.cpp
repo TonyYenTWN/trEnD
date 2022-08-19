@@ -82,6 +82,11 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 		Imbalance_ts.col(zone_iter) = Imbalance_ts_raw.col(2 * zone_iter + fin_imbalance_row_name) - Imbalance_ts_raw.col(2 * zone_iter + fin_imbalance_row_name + 1);
 	}
 
+	// Read onshore wind power data
+	std::string fin_wind_on = "csv/input/power_market/generation_wind_onshore_forecast_2021.csv";
+	auto fin_wind_on_dim = basic::get_file_dim(fin_wind_on);
+	auto Wind_on_ts = basic::read_file(fin_wind_on_dim[0], fin_wind_on_dim[1], fin_wind_on);
+
 	// Set sparse matrix for equality constraints for nominal demand
 	Eigen::SparseMatrix <double> Constraint_demand (point_num, bz_num);
 	std::vector<Eigen::TripletXd> Constraint_demand_Trip;
@@ -171,7 +176,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	imbalance.mu_scale = imbalance.mu;
 
 	// Run the algorithm for each time slice
-	for(int tick = 0; tick < 24; ++ tick){
+	for(int tick = 0; tick < 1; ++ tick){
 		nominal_demand.mu_mean = Demand_ts.row(tick).tail(bz_num);
 
 		// Inference step
@@ -218,6 +223,43 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 		basic::write_file(imbalance.mu, fout_name, col_name);
 		digit_zeros.clear();
 	}
+
+	// ------------------------------------------------------------------------------------------------------------------------------------------
+	// Capacity factor fields
+	// ------------------------------------------------------------------------------------------------------------------------------------------
+	// Set sparse matrix for equality constraints for nominal demand
+	Eigen::MatrixXd Constraint_wind_on_dense = Eigen::MatrixXd::Zero(point_num, bz_num);
+	for(int wind_iter = 0; wind_iter < Power_network_inform.plants.wind.node.size(); ++ wind_iter){
+		int x_ID = int((Power_network_inform.plants.wind.x(wind_iter) - Power_network_inform.points.x.minCoeff()) / Power_network_inform.points.grid_length + .5);
+		int y_ID = int((Power_network_inform.plants.wind.y(wind_iter) - Power_network_inform.points.y.minCoeff()) / Power_network_inform.points.grid_length + .5);
+		int point_ID = Power_network_inform.points.coordinate_grid(x_ID, y_ID);
+		int bz_ID = Power_network_inform.points.bidding_zone(point_ID);
+		Constraint_wind_on_dense(point_ID, bz_ID) += Power_network_inform.plants.wind.cap(wind_iter);
+	}
+	Eigen::SparseMatrix <double> Constraint_wind_on = Constraint_wind_on_dense.sparseView(1E-12);
+	std::cout << Constraint_wind_on.col(3).transpose() << "\n\n";
+	std::cout << Power_network_inform.plants.wind.cap.transpose() << "\n\n";
+
+	// ------------------------------------------------------------------------------------------------------------------------------------------
+	// Infer the annual average of onshore wind capacity factor field
+	// ------------------------------------------------------------------------------------------------------------------------------------------
+	// Initialization of parameters
+	inference_inform wind_on_cf;
+	wind_on_cf.alpha_iteration = 1.;
+	wind_on_cf.mu_mean = Wind_on_ts.colwise().sum().tail(bz_num);
+	wind_on_cf.mu_mean /= Time;
+	// Mean of weibull distribution = mu_0_scale * gamma(1 + 1 / k), here k = 2
+	mu_0_scale = wind_on_cf.mu_mean.sum() / Constraint_wind_on.sum() * 2. / pow(pi, .5);
+	wind_on_cf.mu_scale = Eigen::VectorXd::Constant(point_num, mu_0_scale);
+	wind_on_cf.mu = Eigen::VectorXd::Constant(point_num, mu_0_scale);
+	wind_on_cf.x = Eigen::VectorXd(point_num);
+	for(int item = 0; item < point_num; ++ item){
+		wind_on_cf.x(item) = quantile(wind_on_cf.norm_dist, 1. - exp(-pow(wind_on_cf.mu(item) / wind_on_cf.mu_scale(item), 2.)));
+	}
+
+	// Inference step
+	BME_copula(wind_on_cf, Power_network_inform, Constraint_wind_on, 1E-12);
+	std::cout << wind_on_cf.mu.transpose() << "\n\n";
 }
 
 // Function that stores processed mean demand field
