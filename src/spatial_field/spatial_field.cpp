@@ -289,7 +289,15 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	// Inference step
 	BME_copula(wind_on_cf, Power_network_inform, Constraint_wind_on, 1E-12);
 	//BME_linear(wind_on_cf, Constraint_wind_on);
-	//std::cout << wind_on_cf.mu.transpose() << "\n\n";
+
+	// Output the annual average of normalized mean demand field
+	std::string fout_name;
+	fout_name = "csv/processed/spatial_field/wind_onshore_cf_field_10km_annual_mean.csv";
+	std::vector <std::string> col_name;
+	col_name.push_back("wind_onshore_cf");
+	basic::write_file(wind_on_cf.mu, fout_name, col_name);
+
+
 }
 
 // Function that stores processed mean demand field
