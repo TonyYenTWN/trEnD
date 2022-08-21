@@ -67,7 +67,7 @@ void power_market::Market_clearing_nodal(int tick, market_inform &Market, Eigen:
 // ------------------------------------------------------------------------------------------------
 // Functions involving multiple markets
 // ------------------------------------------------------------------------------------------------
-void power_market::Submitted_bid_calculation(agent::end_user::profiles &end_user_profiles, markets_inform &DSO_Markets, market_inform &TSO_Market, market_inform &International_Market, power_network::network_inform &Power_network_inform, bool DSO_filter_flag){
+void power_market::Submitted_bid_calculation(int tick, agent::end_user::profiles &end_user_profiles, markets_inform &DSO_Markets, market_inform &TSO_Market, market_inform &International_Market, power_network::network_inform &Power_network_inform, bool DSO_filter_flag){
 	// Initialize submit bids of markets
 	Market_Initialization(International_Market);
 	Market_Initialization(TSO_Market);
@@ -170,6 +170,43 @@ void power_market::Submitted_bid_calculation(agent::end_user::profiles &end_user
 			}
 		}
 		International_Market.submitted_supply.col(bz_ID) += bid_vec;
+	}
+
+	for(int wind_iter = 0; wind_iter < Power_network_inform.plants.wind.node.size(); ++ wind_iter){
+		int bz_ID;
+		int DSO_ID;
+		int node_ID;
+		int x_ID = int((Power_network_inform.plants.wind.x(wind_iter) - Power_network_inform.points.x.minCoeff()) / Power_network_inform.points.grid_length + .5);
+		int y_ID = int((Power_network_inform.plants.wind.y(wind_iter) - Power_network_inform.points.y.minCoeff()) / Power_network_inform.points.grid_length + .5);
+		int point_ID = Power_network_inform.points.coordinate_grid(x_ID, y_ID);
+		if(point_ID == -1){
+			continue;
+		}
+		double bid_quan = Power_network_inform.points.wind_on_cf(point_ID, tick) * Power_network_inform.plants.wind.cap(wind_iter);
+
+		// High voltage power plants connect directly to transmission network
+		if(Power_network_inform.plants.wind.cap(wind_iter) >= 20.){
+			node_ID = Power_network_inform.plants.wind.node(wind_iter);
+			DSO_ID = Power_network_inform.nodes.cluster(node_ID);
+			bz_ID = Power_network_inform.nodes.bidding_zone(node_ID);
+
+			DSO_Markets[DSO_ID].submitted_supply(0, Power_network_inform.DSO_cluster[DSO_ID].points_ID.size() + Power_network_inform.nodes.in_cluster_ID(node_ID)) += bid_quan;
+			TSO_Market.submitted_supply(0, node_ID) += bid_quan;
+		}
+		// Low voltage power plants feed into distribution network
+		else{
+			node_ID = Power_network_inform.points.node(point_ID);
+			DSO_ID = Power_network_inform.nodes.cluster(node_ID);
+			bz_ID = Power_network_inform.nodes.bidding_zone(node_ID);
+
+			DSO_Markets[DSO_ID].submitted_supply(0, Power_network_inform.points.in_cluster_ID(point_ID)) += bid_quan;
+
+			// If DSOs do not filter local bids, supply from LV buses is directly added to the nodes in the TSO
+			if(!DSO_filter_flag){
+				TSO_Market.submitted_supply(0, node_ID) += bid_quan;
+			}
+		}
+		International_Market.submitted_supply(0, bz_ID) += bid_quan;
 	}
 }
 

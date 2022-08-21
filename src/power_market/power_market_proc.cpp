@@ -8,7 +8,8 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	// Initialization of processed spatial fields
 	std::string fin_demand_field = "csv/processed/spatial_field/nominal_mean_demand_field_10km_ts_";
 	std::string fin_imbalance_field = "csv/processed/spatial_field/imbalance_field_10km_ts_";
-	spatial_field::spatial_field_store(Power_network_inform, fin_demand_field, fin_imbalance_field, Time);
+	std::string fin_wind_on = "csv/processed/spatial_field/wind_onshore_cf_field_10km_ts_";
+	spatial_field::spatial_field_store(Power_network_inform, fin_demand_field, fin_imbalance_field, fin_wind_on, Time);
 
 	// Initialization of the IMO
 	std::string fin_name_moc = "csv/input/power_market/merit_order_curve_q_assimilated_2021.csv";
@@ -33,7 +34,7 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	Power_market_inform.end_user_profiles = DSO_agents_set(Power_market_inform.International_Market, Power_network_inform);
 
 	// Initialization of submitted bids in DSOs and TSOs
-	Submitted_bid_calculation(Power_market_inform.end_user_profiles, Power_market_inform.DSO_Markets, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform, DSO_filter_flag);
+	Submitted_bid_calculation(0, Power_market_inform.end_user_profiles, Power_market_inform.DSO_Markets, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform, DSO_filter_flag);
 
 	// Ideal market clearing in IMO
 	International_Market_Optimization(0, Power_market_inform.International_Market, 0);
@@ -58,7 +59,7 @@ void power_market::power_market_process_update(power_network::network_inform &Po
 	int tick = 1;
 	International_Market_Price_Estimation(tick, Power_market_inform.International_Market, Power_network_inform);
 	DSO_agents_update(tick, Power_market_inform.end_user_profiles, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform);
-	Submitted_bid_calculation(Power_market_inform.end_user_profiles, Power_market_inform.DSO_Markets, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform, DSO_filter_flag);
+	Submitted_bid_calculation(tick, Power_market_inform.end_user_profiles, Power_market_inform.DSO_Markets, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform, DSO_filter_flag);
 	International_Market_Optimization(tick, Power_market_inform.International_Market, 0);
 	TSO_boundary_update(tick, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform);
 
