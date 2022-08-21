@@ -8,8 +8,8 @@ var searchData=
   ['sort_5',['sort',['../d2/d00/namespaceagent.html#a03e096d663464ad06c2563c401d7ce83',1,'agent']]],
   ['source_5fnode_5fset_6',['Source_Node_Set',['../d5/d60/namespacepower__market.html#ae1e8fa9cb87172cb82028b0ddcf838d4',1,'power_market']]],
   ['spatial_5ffield_5finference_7',['spatial_field_inference',['../d9/d64/namespacespatial__field.html#aa5ad9c230d5293b3b8e67e92c5ad0441',1,'spatial_field']]],
-  ['spatial_5ffield_5fstore_8',['spatial_field_store',['../d9/d64/namespacespatial__field.html#a76e69a28610ff5a4d1fe63274ef64238',1,'spatial_field']]],
+  ['spatial_5ffield_5fstore_8',['spatial_field_store',['../d9/d64/namespacespatial__field.html#a5f23109b9bf201ab8d01e02e297771eb',1,'spatial_field']]],
   ['storage_5fschedule_5flp_5fmold_9',['storage_schedule_LP_mold',['../d8/d3f/namespaceagent_1_1end__user.html#a6eb2228d59708556b675a728f7c0b681',1,'agent::end_user']]],
   ['storage_5fschedule_5flp_5foptimize_10',['storage_schedule_LP_optimize',['../d8/d3f/namespaceagent_1_1end__user.html#abcd0351a9315f49ffa5350623ebc12a1',1,'agent::end_user']]],
-  ['submitted_5fbid_5fcalculation_11',['Submitted_bid_calculation',['../d5/d60/namespacepower__market.html#ae8fbe0bb3bda42914047dd012a057f48',1,'power_market']]]
+  ['submitted_5fbid_5fcalculation_11',['Submitted_bid_calculation',['../d5/d60/namespacepower__market.html#a732445b90146209be6e564bfa0d47123',1,'power_market']]]
 ];

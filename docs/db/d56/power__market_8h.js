@@ -29,7 +29,7 @@ var power__market_8h =
     [ "power_market_process_update", "db/d56/power__market_8h.html#afe1503599495248fb292322337c791c3", null ],
     [ "Sink_Node_Set", "db/d56/power__market_8h.html#ad26010bbf64104749407f8a3b2fdd581", null ],
     [ "Source_Node_Set", "db/d56/power__market_8h.html#ae1e8fa9cb87172cb82028b0ddcf838d4", null ],
-    [ "Submitted_bid_calculation", "db/d56/power__market_8h.html#ae8fbe0bb3bda42914047dd012a057f48", null ],
+    [ "Submitted_bid_calculation", "db/d56/power__market_8h.html#a732445b90146209be6e564bfa0d47123", null ],
     [ "TSO_boundary_update", "db/d56/power__market_8h.html#af5b224f3d0c0c210ed0c66cc8140c5b1", null ],
     [ "TSO_Market_control_reserve", "db/d56/power__market_8h.html#a4aa93d7a810b01f7cb18754ab503577d", null ],
     [ "TSO_Market_Results_Get", "db/d56/power__market_8h.html#ac071507e193ed4c20579a682961bcd14", null ],

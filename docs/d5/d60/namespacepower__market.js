@@ -25,7 +25,7 @@ var namespacepower__market =
     [ "power_market_process_update", "d5/d60/namespacepower__market.html#afe1503599495248fb292322337c791c3", null ],
     [ "Sink_Node_Set", "d5/d60/namespacepower__market.html#ad26010bbf64104749407f8a3b2fdd581", null ],
     [ "Source_Node_Set", "d5/d60/namespacepower__market.html#ae1e8fa9cb87172cb82028b0ddcf838d4", null ],
-    [ "Submitted_bid_calculation", "d5/d60/namespacepower__market.html#ae8fbe0bb3bda42914047dd012a057f48", null ],
+    [ "Submitted_bid_calculation", "d5/d60/namespacepower__market.html#a732445b90146209be6e564bfa0d47123", null ],
     [ "TSO_boundary_update", "d5/d60/namespacepower__market.html#af5b224f3d0c0c210ed0c66cc8140c5b1", null ],
     [ "TSO_Market_control_reserve", "d5/d60/namespacepower__market.html#a4aa93d7a810b01f7cb18754ab503577d", null ],
     [ "TSO_Market_Results_Get", "d5/d60/namespacepower__market.html#ac071507e193ed4c20579a682961bcd14", null ],
