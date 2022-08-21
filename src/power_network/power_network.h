@@ -43,6 +43,8 @@ namespace power_network{
 		Eigen::MatrixXd nominal_mean_demand_field;
 		/** Time series of imbalance (MWh / MWh) field at each spatial points.*/
 		Eigen::MatrixXd imbalance_field;
+		/** Time series of onshore wind capacity factor field at each spatial points.*/
+		Eigen::MatrixXd wind_on_cf;
 		/*@{*/
 
 		/**
