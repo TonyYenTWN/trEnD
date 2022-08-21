@@ -58,7 +58,7 @@ namespace{
 		Eigen::VectorXd lambda = solver.solve(inform.mu_mean - Constraint_sum);
 		inform.mu = inform.Conversion_Mat_2 * lambda;
 		inform.mu += inform.mu_scale;
-		std::cout << inform.mu.minCoeff() << "\t" << inform.mu.maxCoeff() << "\n\n";
+		//std::cout << inform.mu.minCoeff() << "\t" << inform.mu.maxCoeff() << "\n\n";
 	}
 }
 
@@ -121,6 +121,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 
 	// Inference step
 	BME_copula(nominal_demand, Power_network_inform, Constraint_demand, 1E-12);
+	std::cout << nominal_demand.mu.transpose() * Constraint_demand << "\n\n";
 
 	// Output the annual average of normalized mean demand field
 	std::string fout_name;
@@ -146,7 +147,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	// ------------------------------------------------------------------------------------------------------------------------------------------
 	// Initialization of parameters
 	inference_inform imbalance;
-	imbalance.mu_mean = Imbalance_ts.colwise().sum().segment(fin_imbalance_row_name, bz_num);
+	imbalance.mu_mean = Imbalance_ts.colwise().sum().tail(bz_num);
 	imbalance.mu_mean /= Time;
 	mu_0_scale = imbalance.mu_mean.sum() / Constraint_imbalance.sum();
 	imbalance.mu_scale = Eigen::VectorXd::Constant(point_num, mu_0_scale);
@@ -155,7 +156,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 
 	// Inference step
 	BME_linear(imbalance, Constraint_imbalance);
-	std::cout << imbalance.mu_mean.transpose() << "\n\n";
+	//std::cout << imbalance.mu_mean.transpose() << "\n\n";
 	std::cout << imbalance.mu.transpose() * Constraint_imbalance << "\n\n";
 
 	// Output the annual average of normalized mean demand field
@@ -213,7 +214,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 		}
 		Constraint_imbalance.setFromTriplets(Constraint_imbalance_Trip.begin(), Constraint_imbalance_Trip.end());
 
-		imbalance.mu_mean = Imbalance_ts.row(tick).segment(fin_imbalance_row_name, bz_num);
+		imbalance.mu_mean = Imbalance_ts.row(tick).tail(bz_num);
 
 		// Inference step
 		BME_linear(imbalance, Constraint_imbalance);
@@ -250,7 +251,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	// Initialization of parameters
 	inference_inform wind_on_cf;
 	wind_on_cf.alpha_iteration = 1.;
-	wind_on_cf.mu_mean = Wind_on_ts.colwise().sum().segment(fin_wind_on_row_name, bz_num);
+	wind_on_cf.mu_mean = (Wind_on_ts.colwise().sum()).segment(fin_wind_on_row_name, bz_num);
 	wind_on_cf.mu_mean /= Time;
 
 	// Column number 4 is redundant
@@ -275,8 +276,8 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	Redundant_col.setFromTriplets(Redundant_col_trip.begin(), Redundant_col_trip.end());
 	wind_on_cf.mu_mean = Redundant_col * wind_on_cf.mu_mean;
 	Constraint_wind_on = Constraint_wind_on * Redundant_col.transpose();
-	wind_on_cf.Conversion_Mat_1 = Constraint_wind_on.transpose() * Power_network_inform.points.covariance * Constraint_wind_on;
-	wind_on_cf.Conversion_Mat_2 = Power_network_inform.points.covariance * Constraint_wind_on;
+//	wind_on_cf.Conversion_Mat_1 = Constraint_wind_on.transpose() * Power_network_inform.points.covariance * Constraint_wind_on;
+//	wind_on_cf.Conversion_Mat_2 = Power_network_inform.points.covariance * Constraint_wind_on;
 
 	// Mean of weibull distribution = mu_0_scale * gamma(1 + 1 / k), here k = 2
 	mu_0_scale = wind_on_cf.mu_mean.sum() / Constraint_wind_on.sum() * 2. / pow(pi, .5);
@@ -289,9 +290,10 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 
 	// Inference step
 	BME_copula(wind_on_cf, Power_network_inform, Constraint_wind_on, 1E-12);
+	std::cout << wind_on_cf.mu.transpose() * Constraint_wind_on << "\n\n";
 	//BME_linear(wind_on_cf, Constraint_wind_on);
 
-	// Output the annual average of normalized mean demand field
+	// Output the annual average of onshore wind capacity factor field
 	fout_name = "csv/processed/spatial_field/wind_onshore_cf_field_10km_annual_mean.csv";
 	col_name.clear();
 	col_name.push_back("wind_onshore_cf");
@@ -311,15 +313,15 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	wind_on_cf.x = wind_on_cf.x_scale;
 
 	// Run the algorithm for each time slice
-	for(int tick = 0; tick < 1; ++ tick){
-		wind_on_cf.mu_mean = Wind_on_ts.row(tick).segment(fin_wind_on_row_name, bz_num);
+	for(int tick = 0; tick < 2; ++ tick){
+		wind_on_cf.mu_mean = (Wind_on_ts.row(tick)).segment(fin_wind_on_row_name, bz_num);
 		wind_on_cf.mu_mean = Redundant_col * wind_on_cf.mu_mean;
 
 		// Inference step
 		BME_copula(wind_on_cf, Power_network_inform, Constraint_wind_on, 1E-3);
 		std::cout << wind_on_cf.mu.transpose() * Constraint_wind_on << "\n\n";
 
-		// Output normalized mean demand field
+		// Output onshore wind capacity factor
 		int count_zeros = 0;
 		int tick_temp = tick;
 		std::string digit_zeros;
@@ -338,10 +340,11 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 }
 
 // Function that stores processed mean demand field
-void spatial_field::spatial_field_store(power_network::network_inform &Power_network_inform, std::string fin_demand, std::string fin_imbalance, int Time){
+void spatial_field::spatial_field_store(power_network::network_inform &Power_network_inform, std::string fin_demand, std::string fin_imbalance, std::string fin_wind_on, int Time){
 	int row_num = Power_network_inform.points.bidding_zone.rows();
 	Power_network_inform.points.nominal_mean_demand_field = Eigen::MatrixXd(row_num, Time);
 	Power_network_inform.points.imbalance_field = Eigen::MatrixXd(row_num, Time);
+	Power_network_inform.points.wind_on_cf = Eigen::MatrixXd(row_num, Time);
 
 	//for(int tick = 0; tick < Time; ++ tick){
 	for(int tick = 0; tick < 100; ++ tick){
@@ -360,8 +363,10 @@ void spatial_field::spatial_field_store(power_network::network_inform &Power_net
 		// File name with enumeration
 		std::string fin_demand_temp = fin_demand + digit_zeros + std::to_string(tick) + ".csv";
 		std::string fin_imbalance_temp = fin_imbalance + digit_zeros + std::to_string(tick) + ".csv";
+		std::string fin_wind_on_temp = fin_wind_on + digit_zeros + std::to_string(tick) + ".csv";
 
 		Power_network_inform.points.nominal_mean_demand_field.col(tick) = basic::read_file(row_num, 1, fin_demand_temp);
 		Power_network_inform.points.imbalance_field.col(tick) = basic::read_file(row_num, 1, fin_imbalance_temp);
+		Power_network_inform.points.wind_on_cf.col(tick) = basic::read_file(row_num, 1, fin_wind_on_temp);
 	}
 }
