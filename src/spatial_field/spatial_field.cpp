@@ -37,7 +37,7 @@ namespace{
 			Eigen::VectorXd mu_inv_0 = pow(inform.mu.array(), -1.);
 			dmu *= mu_inv_0;
 
-			std::cout << inform.mu.minCoeff() << "\t" << inform.mu.maxCoeff() << "\t" << dmu.lpNorm<Eigen::Infinity>() << "\n";
+			//std::cout << inform.mu.minCoeff() << "\t" << inform.mu.maxCoeff() << "\t" << dmu.lpNorm<Eigen::Infinity>() << "\n";
 			count += 1;
 		}
 	}
@@ -251,6 +251,32 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	wind_on_cf.alpha_iteration = 1.;
 	wind_on_cf.mu_mean = Wind_on_ts.colwise().sum().segment(fin_wind_on_row_name, bz_num);
 	wind_on_cf.mu_mean /= Time;
+
+	// Column number 4 is redundant
+	int redunant_num = 1;
+	std::map<int, int> corres_col;
+	corres_col.insert(std::pair<int, int>(0, 0));
+	corres_col.insert(std::pair<int, int>(1, 1));
+	corres_col.insert(std::pair<int, int>(2, 2));
+	corres_col.insert(std::pair<int, int>(3, 3));
+	corres_col.insert(std::pair<int, int>(4, -1));
+	Eigen::SparseMatrix <double> Redundant_col(bz_num - redunant_num, bz_num);
+	std::vector <Eigen::TripletXd> Redundant_col_trip;
+	Redundant_col_trip.reserve(bz_num - redunant_num);
+	for(int zone_iter = 0; zone_iter < bz_num; ++ zone_iter){
+		if(corres_col[zone_iter] == -1){
+			continue;
+		}
+		else{
+			Redundant_col_trip.push_back(Eigen::TripletXd(corres_col[zone_iter], zone_iter, 1.));
+		}
+	}
+	Redundant_col.setFromTriplets(Redundant_col_trip.begin(), Redundant_col_trip.end());
+	wind_on_cf.mu_mean = Redundant_col * wind_on_cf.mu_mean;
+	Constraint_wind_on = Constraint_wind_on * Redundant_col.transpose();
+	wind_on_cf.Conversion_Mat_1 = Constraint_wind_on.transpose() * Power_network_inform.points.covariance * Constraint_wind_on;
+	wind_on_cf.Conversion_Mat_2 = Power_network_inform.points.covariance * Constraint_wind_on;
+
 	// Mean of weibull distribution = mu_0_scale * gamma(1 + 1 / k), here k = 2
 	double mu_0_scale = wind_on_cf.mu_mean.sum() / Constraint_wind_on.sum() * 2. / pow(pi, .5);
 	wind_on_cf.mu_scale = Eigen::VectorXd::Constant(point_num, mu_0_scale);
@@ -259,12 +285,10 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	for(int item = 0; item < point_num; ++ item){
 		wind_on_cf.x(item) = quantile(wind_on_cf.norm_dist, 1. - exp(-pow(wind_on_cf.mu(item) / wind_on_cf.mu_scale(item), 2.)));
 	}
-	wind_on_cf.Conversion_Mat_1 = Constraint_wind_on.transpose() * Power_network_inform.points.covariance * Constraint_wind_on;
-	wind_on_cf.Conversion_Mat_2 = Power_network_inform.points.covariance * Constraint_wind_on;
 
 	// Inference step
-	//BME_copula(wind_on_cf, Power_network_inform, Constraint_wind_on, 1E-12);
-	BME_linear(wind_on_cf, Constraint_wind_on);
+	BME_copula(wind_on_cf, Power_network_inform, Constraint_wind_on, 1E-12);
+	//BME_linear(wind_on_cf, Constraint_wind_on);
 	//std::cout << wind_on_cf.mu.transpose() << "\n\n";
 }
 
