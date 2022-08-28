@@ -33,19 +33,6 @@ namespace {
 		Power_network_inform.cbt.flow_constraint = basic::read_file(fin_cbt_dim[0], fin_cbt_dim[1], fin_cbt);
 	}
 
-	void weather_station_data_input(power_network::network_inform &Power_network_inform, std::string fin_weather){
-		// Read weather station information
-		auto fin_weather_dim = basic::get_file_dim(fin_weather);
-		auto weather_inform = basic::read_file(fin_weather_dim[0], fin_weather_dim[1], fin_weather, 1);
-
-		// Organize weather station information
-		Power_network_inform.weather_stations.station_names = basic::get_row_name(fin_weather, fin_weather_dim[0]);
-		Power_network_inform.weather_stations.x = weather_inform.col(weather_inform.cols() - 4);
-		Power_network_inform.weather_stations.y = weather_inform.col(weather_inform.cols() - 3);
-		Power_network_inform.weather_stations.lon = weather_inform.col(weather_inform.cols() - 2);
-		Power_network_inform.weather_stations.lat = weather_inform.col(weather_inform.cols() - 1);
-	}
-
 	// Must read transmission data before points (DSO cluster initialize here)
 	void tranmission_data_input(power_network::network_inform &Power_network_inform, Eigen::MatrixXd bz_inform, std::string fin_node, std::string fin_edge, std::string fin_edge_simp){
 		// Read power network data
@@ -138,6 +125,29 @@ namespace {
 		//std::cout << Power_network_inform.points.distance.bottomRightCorner(5, 5) << "\n\n";
 	}
 
+	// Must read points before reading station data
+	void weather_station_data_input(power_network::network_inform &Power_network_inform, std::string fin_weather){
+		// Read weather station information
+		auto fin_weather_dim = basic::get_file_dim(fin_weather);
+		auto weather_inform = basic::read_file(fin_weather_dim[0], fin_weather_dim[1], fin_weather, 1);
+
+		// Organize weather station information
+		Power_network_inform.weather_stations.station_names = basic::get_row_name(fin_weather, fin_weather_dim[0]);
+		Power_network_inform.weather_stations.x = weather_inform.col(weather_inform.cols() - 4);
+		Power_network_inform.weather_stations.y = weather_inform.col(weather_inform.cols() - 3);
+		Power_network_inform.weather_stations.lon = weather_inform.col(weather_inform.cols() - 2);
+		Power_network_inform.weather_stations.lat = weather_inform.col(weather_inform.cols() - 1);
+
+		// Find the nearest points of weather stations
+		Power_network_inform.weather_stations.point = Eigen::VectorXi(fin_weather_dim[0]);
+		for(int station_iter = 0; station_iter < fin_weather_dim[0]; ++ station_iter){
+			int x_ID = int((Power_network_inform.weather_stations.x(station_iter) - Power_network_inform.points.x.minCoeff()) / Power_network_inform.points.grid_length + .5);
+			int y_ID = int((Power_network_inform.weather_stations.y(station_iter) - Power_network_inform.points.y.minCoeff()) / Power_network_inform.points.grid_length + .5);
+			int point_ID = Power_network_inform.points.coordinate_grid(x_ID, y_ID);
+			Power_network_inform.weather_stations.point(station_iter) = point_ID;
+		}
+	}
+
 	void plant_data_input(power_network::network_inform &Power_network_inform, std::string fin_hydro, std::string fin_wind){
 		// Read plant data
 		auto fin_hydro_dim = basic::get_file_dim(fin_hydro);
@@ -214,9 +224,9 @@ void power_network::power_network_input_process(network_inform &Power_network_in
 	auto bz_inform = basic::read_file(fin_bz_dim[0], fin_bz_dim[1], fin_bz);
 
 	cbt_data_input(Power_network_inform, fin_cbt, fin_entry);
-	weather_station_data_input(Power_network_inform, fin_weather);
 	tranmission_data_input(Power_network_inform, bz_inform, fin_node, fin_edge, fin_edge_simp);
 	points_data_input(Power_network_inform, bz_inform, fin_point, fin_point_matrix);
+	weather_station_data_input(Power_network_inform, fin_weather);
 	plant_data_input(Power_network_inform, fin_hydro, fin_wind);
 
 	// Set power line density for the distribution network

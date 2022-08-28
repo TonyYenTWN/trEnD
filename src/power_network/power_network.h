@@ -153,6 +153,8 @@ namespace power_network{
 	struct weather_stations{
 		/** Names of the weather stations.*/
 		std::vector <std::string> station_names;
+		/** Points of the weather stations.*/
+		Eigen::VectorXi point;
 
 		/** X-coordinate of the node in European grid (ETRS89).*/
 		Eigen::VectorXd x;
