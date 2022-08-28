@@ -27,7 +27,8 @@ var annotated_dup =
       [ "plants_all", "db/dd7/structpower__network_1_1plants__all.html", "db/dd7/structpower__network_1_1plants__all" ],
       [ "plants_per_tech", "dc/d2e/structpower__network_1_1plants__per__tech.html", "dc/d2e/structpower__network_1_1plants__per__tech" ],
       [ "points", "d4/dbd/structpower__network_1_1points.html", "d4/dbd/structpower__network_1_1points" ],
-      [ "technical_parameters", "dc/dd8/structpower__network_1_1technical__parameters.html", "dc/dd8/structpower__network_1_1technical__parameters" ]
+      [ "technical_parameters", "dc/dd8/structpower__network_1_1technical__parameters.html", "dc/dd8/structpower__network_1_1technical__parameters" ],
+      [ "weather_stations", "d5/de1/structpower__network_1_1weather__stations.html", "d5/de1/structpower__network_1_1weather__stations" ]
     ] ],
     [ "spatial_field", "d9/d64/namespacespatial__field.html", [
       [ "Earth_Constant", "d4/d89/classspatial__field_1_1Earth__Constant.html", "d4/d89/classspatial__field_1_1Earth__Constant" ],

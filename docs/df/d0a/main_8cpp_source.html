@@ -108,35 +108,59 @@ $(document).ready(function(){initNavTree('df/d0a/main_8cpp_source.html','../../'
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="../../db/d56/power__market_8h.html">power_market/power_market.h</a>&quot;</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="../../dc/db0/spatial__field_8h.html">src/spatial_field/spatial_field.h</a>&quot;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno"><a class="line" href="../../df/d0a/main_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4">    6</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="../../df/d0a/main_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main</a>(){</div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>    <span class="comment">// Initialization of power network information</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>    <a class="code hl_struct" href="../../d4/ddd/structpower__network_1_1network__inform.html">power_network::network_inform</a> Power_network_inform;</div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <a class="code hl_function" href="../../d8/dcc/namespacepower__network.html#a7b618914786ca0d322b51b456244c0d4">power_network::power_network_input_process</a>(Power_network_inform, <span class="stringliteral">&quot;csv/input/power_network/&quot;</span>);</div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace</span>{</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span>    <span class="keyword">struct </span>process_bool{</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>        <span class="keywordtype">bool</span> inference_flag;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>        <span class="keywordtype">bool</span> DSO_filter_flag;</div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="comment">// Spatial fields inference</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keywordtype">bool</span> inference_flag = 0;</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment">//  std::cout &lt;&lt; &quot;Inference spatial fields? Yes: 1 / No: 0 &quot;;</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment">//  std::cin &gt;&gt; inference_flag;</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment">//  std::cout &lt;&lt; &quot;\n&quot;;</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">if</span>(inference_flag){</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <a class="code hl_function" href="../../d9/d64/namespacespatial__field.html#aa5ad9c230d5293b3b8e67e92c5ad0441">spatial_field::spatial_field_inference</a>(Power_network_inform);</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    }</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="comment">// Power market processes</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_struct" href="../../da/d16/structpower__market_1_1market__whole__inform.html">power_market::market_whole_inform</a> Power_market_inform;</div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_function" href="../../d5/d60/namespacepower__market.html#ac107bbbeae7f3a185b45a603c554fb96">power_market::power_market_process_set</a>(Power_network_inform, Power_market_inform, 0);</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment">//  power_market::power_market_process_update(Power_network_inform, Power_market_inform, 0);</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>}</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="comment">//  std::cin.get();</span></div>
-<div class="ttc" id="amain_8cpp_html_ae66f6b31b5ad750f1fe042a706a4e3d4"><div class="ttname"><a href="../../df/d0a/main_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main</a></div><div class="ttdeci">int main()</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d0a/main_8cpp_source.html#l00006">main.cpp:6</a></div></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>        <span class="keywordtype">void</span> process_bool_set(){</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>            this-&gt;inference_flag = 0;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>            this-&gt;DSO_filter_flag = 1;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        }</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <span class="keywordtype">void</span> process_bool_input(){</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;Inference spatial fields? Yes: 1 / No: 0 | &quot;</span>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>            std::cin &gt;&gt; this-&gt;inference_flag;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;DSOs filter bids? Yes: 1 / No: 0 | &quot;</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>            std::cin &gt;&gt; this-&gt;DSO_filter_flag;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>            std::cout &lt;&lt; <span class="stringliteral">&quot;\n&quot;</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        }</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    };</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>}</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="../../df/d0a/main_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4">   28</a></span><span class="keywordtype">int</span> <a class="code hl_function" href="../../df/d0a/main_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main</a>(){</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <span class="comment">// Initialization of power network information</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <a class="code hl_struct" href="../../d4/ddd/structpower__network_1_1network__inform.html">power_network::network_inform</a> Power_network_inform;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <a class="code hl_function" href="../../d8/dcc/namespacepower__network.html#a7b618914786ca0d322b51b456244c0d4">power_network::power_network_input_process</a>(Power_network_inform, <span class="stringliteral">&quot;csv/input/power_network/&quot;</span>);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="comment">// Set booleans for the process</span></div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    process_bool process_par;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="comment">//process_par.process_bool_input();</span></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    process_par.process_bool_set();</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="comment">// Spatial fields inference</span></div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">if</span>(process_par.inference_flag){</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        <a class="code hl_function" href="../../d9/d64/namespacespatial__field.html#aa5ad9c230d5293b3b8e67e92c5ad0441">spatial_field::spatial_field_inference</a>(Power_network_inform);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    }</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="comment">// Power market processes</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <a class="code hl_struct" href="../../da/d16/structpower__market_1_1market__whole__inform.html">power_market::market_whole_inform</a> Power_market_inform;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <a class="code hl_function" href="../../d5/d60/namespacepower__market.html#ac107bbbeae7f3a185b45a603c554fb96">power_market::power_market_process_set</a>(Power_network_inform, Power_market_inform, process_par.DSO_filter_flag);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <a class="code hl_function" href="../../d5/d60/namespacepower__market.html#afe1503599495248fb292322337c791c3">power_market::power_market_process_update</a>(Power_network_inform, Power_market_inform, process_par.DSO_filter_flag);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>}</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span><span class="comment">//  std::cin.get();</span></div>
+<div class="ttc" id="amain_8cpp_html_ae66f6b31b5ad750f1fe042a706a4e3d4"><div class="ttname"><a href="../../df/d0a/main_8cpp.html#ae66f6b31b5ad750f1fe042a706a4e3d4">main</a></div><div class="ttdeci">int main()</div><div class="ttdef"><b>Definition:</b> <a href="../../df/d0a/main_8cpp_source.html#l00028">main.cpp:28</a></div></div>
 <div class="ttc" id="anamespacepower__market_html_ac107bbbeae7f3a185b45a603c554fb96"><div class="ttname"><a href="../../d5/d60/namespacepower__market.html#ac107bbbeae7f3a185b45a603c554fb96">power_market::power_market_process_set</a></div><div class="ttdeci">void power_market_process_set(power_network::network_inform &amp;, market_whole_inform &amp;, bool)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d41/power__market__proc_8cpp_source.html#l00005">power_market_proc.cpp:5</a></div></div>
-<div class="ttc" id="anamespacepower__network_html_a7b618914786ca0d322b51b456244c0d4"><div class="ttname"><a href="../../d8/dcc/namespacepower__network.html#a7b618914786ca0d322b51b456244c0d4">power_network::power_network_input_process</a></div><div class="ttdeci">void power_network_input_process(network_inform &amp;, std::string parent_dir)</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d47/power__network__input_8cpp_source.html#l00187">power_network_input.cpp:187</a></div></div>
+<div class="ttc" id="anamespacepower__market_html_afe1503599495248fb292322337c791c3"><div class="ttname"><a href="../../d5/d60/namespacepower__market.html#afe1503599495248fb292322337c791c3">power_market::power_market_process_update</a></div><div class="ttdeci">void power_market_process_update(power_network::network_inform &amp;, market_whole_inform &amp;, bool)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d41/power__market__proc_8cpp_source.html#l00056">power_market_proc.cpp:56</a></div></div>
+<div class="ttc" id="anamespacepower__network_html_a7b618914786ca0d322b51b456244c0d4"><div class="ttname"><a href="../../d8/dcc/namespacepower__network.html#a7b618914786ca0d322b51b456244c0d4">power_network::power_network_input_process</a></div><div class="ttdeci">void power_network_input_process(network_inform &amp;, std::string parent_dir)</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d47/power__network__input_8cpp_source.html#l00210">power_network_input.cpp:210</a></div></div>
 <div class="ttc" id="anamespacespatial__field_html_aa5ad9c230d5293b3b8e67e92c5ad0441"><div class="ttname"><a href="../../d9/d64/namespacespatial__field.html#aa5ad9c230d5293b3b8e67e92c5ad0441">spatial_field::spatial_field_inference</a></div><div class="ttdeci">void spatial_field_inference(power_network::network_inform &amp;)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d05/spatial__field_8cpp_source.html#l00065">spatial_field.cpp:65</a></div></div>
 <div class="ttc" id="apower__market_8h_html"><div class="ttname"><a href="../../db/d56/power__market_8h.html">power_market.h</a></div></div>
 <div class="ttc" id="apower__network_8h_html"><div class="ttname"><a href="../../d9/dde/power__network_8h.html">power_network.h</a></div></div>
 <div class="ttc" id="aspatial__field_8h_html"><div class="ttname"><a href="../../dc/db0/spatial__field_8h.html">spatial_field.h</a></div></div>
 <div class="ttc" id="astructpower__market_1_1market__whole__inform_html"><div class="ttname"><a href="../../da/d16/structpower__market_1_1market__whole__inform.html">power_market::market_whole_inform</a></div><div class="ttdef"><b>Definition:</b> <a href="../../db/d56/power__market_8h_source.html#l00154">power_market.h:154</a></div></div>
-<div class="ttc" id="astructpower__network_1_1network__inform_html"><div class="ttname"><a href="../../d4/ddd/structpower__network_1_1network__inform.html">power_network::network_inform</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d9/dde/power__network_8h_source.html#l00290">power_network.h:290</a></div></div>
+<div class="ttc" id="astructpower__network_1_1network__inform_html"><div class="ttname"><a href="../../d4/ddd/structpower__network_1_1network__inform.html">power_network::network_inform</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d9/dde/power__network_8h_source.html#l00307">power_network.h:307</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.9.2-->

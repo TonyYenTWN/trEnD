@@ -112,8 +112,10 @@ Functions</h2></td></tr>
 <tr class="separator:a11ea1d6640d0bbd0d337cbfb5204b8a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a27f0ca57a03561dbb4cdad6525cc6bbb"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dbb/namespacebasic.html#a27f0ca57a03561dbb4cdad6525cc6bbb">get_file_dim</a> (std::string)</td></tr>
 <tr class="separator:a27f0ca57a03561dbb4cdad6525cc6bbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3b5e94658defb15a24da0abf9e216c7e"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dbb/namespacebasic.html#a3b5e94658defb15a24da0abf9e216c7e">read_file</a> (int, int, std::string)</td></tr>
-<tr class="separator:a3b5e94658defb15a24da0abf9e216c7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d4fdfaa57e41d6f1d34d2bf0a092b10"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dbb/namespacebasic.html#a1d4fdfaa57e41d6f1d34d2bf0a092b10">get_row_name</a> (std::string, int)</td></tr>
+<tr class="separator:a1d4fdfaa57e41d6f1d34d2bf0a092b10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a737e8ccf2a68874526961884cde89381"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dbb/namespacebasic.html#a737e8ccf2a68874526961884cde89381">read_file</a> (int, int, std::string, bool row_name=0)</td></tr>
+<tr class="separator:a737e8ccf2a68874526961884cde89381"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8f9c05ee5ba9f9d151077617712d4d00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dbb/namespacebasic.html#a8f9c05ee5ba9f9d151077617712d4d00">write_file</a> (Eigen::MatrixXd, std::string, std::vector&lt; std::string &gt;)</td></tr>
 <tr class="separator:a8f9c05ee5ba9f9d151077617712d4d00"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -144,7 +146,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html#l00004">4</a> of file <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html">rw_csv.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html#l00038">38</a> of file <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html">rw_csv.cpp</a>.</p>
 
 </div>
 </div>
@@ -164,14 +166,44 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html#l00026">26</a> of file <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html">rw_csv.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html#l00004">4</a> of file <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html">rw_csv.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../dc/d47/power__network__input_8cpp_source.html#l00187">power_network::power_network_input_process()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../dc/d47/power__network__input_8cpp_source.html#l00210">power_network::power_network_input_process()</a>.</p>
 
 </div>
 </div>
-<a id="a3b5e94658defb15a24da0abf9e216c7e" name="a3b5e94658defb15a24da0abf9e216c7e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3b5e94658defb15a24da0abf9e216c7e">&#9670;&nbsp;</a></span>read_file()</h2>
+<a id="a1d4fdfaa57e41d6f1d34d2bf0a092b10" name="a1d4fdfaa57e41d6f1d34d2bf0a092b10"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d4fdfaa57e41d6f1d34d2bf0a092b10">&#9670;&nbsp;</a></span>get_row_name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::string &gt; basic::get_row_name </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>row_num</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html#l00060">60</a> of file <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html">rw_csv.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a737e8ccf2a68874526961884cde89381" name="a737e8ccf2a68874526961884cde89381"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a737e8ccf2a68874526961884cde89381">&#9670;&nbsp;</a></span>read_file()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -192,7 +224,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">std::string&#160;</td>
-          <td class="paramname"><em>filename</em>&#160;</td>
+          <td class="paramname"><em>filename</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>row_name</em> = <code>0</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -202,9 +240,9 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html#l00060">60</a> of file <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html">rw_csv.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html#l00085">85</a> of file <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html">rw_csv.cpp</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../dc/d47/power__network__input_8cpp_source.html#l00187">power_network::power_network_input_process()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="../../dc/d47/power__network__input_8cpp_source.html#l00210">power_network::power_network_input_process()</a>.</p>
 
 </div>
 </div>
@@ -240,7 +278,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html#l00089">89</a> of file <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html">rw_csv.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html#l00118">118</a> of file <a class="el" href="../../d8/de6/rw__csv_8cpp_source.html">rw_csv.cpp</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="../../da/de9/IMO_8cpp_source.html#l00404">power_market::International_Market_Output()</a>.</p>
 

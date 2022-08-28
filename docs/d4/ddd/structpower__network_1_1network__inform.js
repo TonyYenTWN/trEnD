@@ -7,5 +7,6 @@ var structpower__network_1_1network__inform =
     [ "nodes", "d4/ddd/structpower__network_1_1network__inform.html#a573e78615856af8060b0142247ec524b", null ],
     [ "plants", "d4/ddd/structpower__network_1_1network__inform.html#acbc21a3ca1d78ee62991f3c563e8d422", null ],
     [ "points", "d4/ddd/structpower__network_1_1network__inform.html#a23a7f81a7b4581cb6b9f3bfdb337fcf3", null ],
-    [ "tech_parameters", "d4/ddd/structpower__network_1_1network__inform.html#a778f0df60b1668e99b11aa46b455eea6", null ]
+    [ "tech_parameters", "d4/ddd/structpower__network_1_1network__inform.html#a778f0df60b1668e99b11aa46b455eea6", null ],
+    [ "weather_stations", "d4/ddd/structpower__network_1_1network__inform.html#af8df0edfe90f4b410b4284ef1c1f2460", null ]
 ];

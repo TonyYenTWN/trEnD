@@ -9,6 +9,7 @@ var namespacepower__network =
     [ "plants_per_tech", "dc/d2e/structpower__network_1_1plants__per__tech.html", "dc/d2e/structpower__network_1_1plants__per__tech" ],
     [ "points", "d4/dbd/structpower__network_1_1points.html", "d4/dbd/structpower__network_1_1points" ],
     [ "technical_parameters", "dc/dd8/structpower__network_1_1technical__parameters.html", "dc/dd8/structpower__network_1_1technical__parameters" ],
+    [ "weather_stations", "d5/de1/structpower__network_1_1weather__stations.html", "d5/de1/structpower__network_1_1weather__stations" ],
     [ "point_distance_cov", "d8/dcc/namespacepower__network.html#a4b6a21877e715342c8c684b927f2672e", null ],
     [ "power_network_input_process", "d8/dcc/namespacepower__network.html#a7b618914786ca0d322b51b456244c0d4", null ]
 ];

@@ -4,7 +4,8 @@ var namespaces_dup =
     [ "basic", "de/dbb/namespacebasic.html", [
       [ "get_col_name", "de/dbb/namespacebasic.html#a11ea1d6640d0bbd0d337cbfb5204b8a7", null ],
       [ "get_file_dim", "de/dbb/namespacebasic.html#a27f0ca57a03561dbb4cdad6525cc6bbb", null ],
-      [ "read_file", "de/dbb/namespacebasic.html#a3b5e94658defb15a24da0abf9e216c7e", null ],
+      [ "get_row_name", "de/dbb/namespacebasic.html#a1d4fdfaa57e41d6f1d34d2bf0a092b10", null ],
+      [ "read_file", "de/dbb/namespacebasic.html#a737e8ccf2a68874526961884cde89381", null ],
       [ "write_file", "de/dbb/namespacebasic.html#a8f9c05ee5ba9f9d151077617712d4d00", null ]
     ] ],
     [ "Eigen", "d1/d62/namespaceEigen.html", [
