@@ -11,9 +11,10 @@
 #include "src/basic/basic_definitions.h"
 
 namespace basic{
-	std::vector <std::string> get_col_name(std::string, int);
 	std::vector <int> get_file_dim(std::string);
-	Eigen::MatrixXd read_file(int, int, std::string);
+	std::vector <std::string> get_col_name(std::string, int);
+	std::vector <std::string> get_row_name(std::string, int);
+	Eigen::MatrixXd read_file(int, int, std::string, bool row_name = 0);
 	void write_file(Eigen::MatrixXd, std::string, std::vector<std::string>);
 }
 

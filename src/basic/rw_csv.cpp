@@ -1,28 +1,6 @@
 // Read and write csv files
 #include "rw_csv.h"
 
-std::vector <std::string> basic::get_col_name(std::string filename, int col_num){
-	std::vector <std::string> col_names;
-	col_names.reserve(col_num);
-
-	// Read header row
-	std::ifstream in(filename);
-	std::string line;
-	std::getline(in, line);
-
-	// Seperate and read each column in the header row
-	std::stringstream sep(line);
-	std::string field;
-
-	while(std::getline(sep, field, ',')){
-		col_names.push_back(field);
-	}
-
-	// Close file
-	in.close();
-	return col_names;
-}
-
 std::vector <int> basic::get_file_dim(std::string filename){
 	std::ifstream in(filename);
 	std::vector <int> dim;
@@ -57,9 +35,56 @@ std::vector <int> basic::get_file_dim(std::string filename){
 	return dim;
 }
 
-Eigen::MatrixXd basic::read_file(int num_row, int num_col, std::string filename){
+std::vector <std::string> basic::get_col_name(std::string filename, int col_num){
+	std::vector <std::string> col_names;
+	col_names.reserve(col_num);
+
+	// Read header row
 	std::ifstream in(filename);
-	Eigen::MatrixXd data(num_row, num_col);
+	std::string line;
+	std::getline(in, line);
+
+	// Seperate and read each column in the header row
+	std::stringstream sep(line);
+	std::string field;
+
+	while(std::getline(sep, field, ',')){
+		col_names.push_back(field);
+	}
+
+	// Close file
+	in.close();
+	return col_names;
+}
+
+std::vector <std::string> basic::get_row_name(std::string filename, int row_num){
+	std::vector <std::string> row_names;
+	row_names.reserve(row_num);
+
+	std::ifstream in(filename);
+
+	if(in){
+	  	std::string line;
+	  	std::getline(in, line); // skip the first line
+	  	int row_ID = 0;
+
+	  	while(getline(in, line)){
+	  	  	std::stringstream sep(line);
+	  	  	std::string field;
+	  	  	std::getline(sep, field, ',');
+
+			row_names.push_back(field);
+	  	}
+	}
+
+  	// Close file
+	in.close();
+	return row_names;
+}
+
+Eigen::MatrixXd basic::read_file(int num_row, int num_col, std::string filename, bool row_name){
+	std::ifstream in(filename);
+	Eigen::MatrixXd data(num_row, num_col - row_name);
 
 	if(in){
 	  	std::string line;
@@ -71,9 +96,13 @@ Eigen::MatrixXd basic::read_file(int num_row, int num_col, std::string filename)
 	  	  	std::stringstream sep(line);
 	  	  	std::string field;
 	  	  	col_ID = 0;
+	  	  	if(row_name){
+				std::getline(sep, field, ',');
+				col_ID += 1;
+	  	  	}
 
 	  	  	while(std::getline(sep, field, ',')){
-	  	  		data(row_ID, col_ID) = std::stod(field);
+	  	  		data(row_ID, col_ID - row_name) = std::stod(field);
 	  	  		col_ID += 1;
 		  	}
 
