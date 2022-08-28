@@ -276,8 +276,6 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	Redundant_col.setFromTriplets(Redundant_col_trip.begin(), Redundant_col_trip.end());
 	wind_on_cf.mu_mean = Redundant_col * wind_on_cf.mu_mean;
 	Constraint_wind_on = Constraint_wind_on * Redundant_col.transpose();
-//	wind_on_cf.Conversion_Mat_1 = Constraint_wind_on.transpose() * Power_network_inform.points.covariance * Constraint_wind_on;
-//	wind_on_cf.Conversion_Mat_2 = Power_network_inform.points.covariance * Constraint_wind_on;
 
 	// Mean of weibull distribution = mu_0_scale * gamma(1 + 1 / k), here k = 2
 	mu_0_scale = wind_on_cf.mu_mean.sum() / Constraint_wind_on.sum() * 2. / pow(pi, .5);
@@ -291,7 +289,6 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	// Inference step
 	BME_copula(wind_on_cf, Power_network_inform, Constraint_wind_on, 1E-12);
 	std::cout << wind_on_cf.mu.transpose() * Constraint_wind_on << "\n\n";
-	//BME_linear(wind_on_cf, Constraint_wind_on);
 
 	// Output the annual average of onshore wind capacity factor field
 	fout_name = "csv/processed/spatial_field/wind_onshore_cf_field_10km_annual_mean.csv";
@@ -337,6 +334,13 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 		fout_name = "csv/processed/spatial_field/wind_onshore_cf_field_10km_ts_" + digit_zeros + std::to_string(tick) + ".csv";
 		basic::write_file(wind_on_cf.mu, fout_name, col_name);
 	}
+}
+
+// Function that calculates solar radiation field
+void spatial_field::solar_radiation_inference(power_network::network_inform &Power_network_inform){
+	int point_num = Power_network_inform.points.bidding_zone.size();
+	int Time = power_market::parameters::Time();
+	double pi = boost::math::constants::pi<double>();
 }
 
 // Function that stores processed mean demand field
