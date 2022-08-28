@@ -149,6 +149,21 @@ namespace power_network{
 		Eigen::MatrixXd flow_constraint;
 	};
 
+	/** @brief Information of weather stations.*/
+	struct weather_stations{
+		/** Names of the weather stations.*/
+		std::vector <std::string> station_names;
+
+		/** X-coordinate of the node in European grid (ETRS89).*/
+		Eigen::VectorXd x;
+		/** Y-coordinate of the node in European grid (ETRS89).*/
+		Eigen::VectorXd y;
+		/** Longitude of the node.*/
+		Eigen::VectorXd lon;
+		/** Latitude of the node.*/
+		Eigen::VectorXd lat;
+	};
+
 	/** @brief Power plants of a type of technology.*/
 	struct plants_per_tech{
 		Eigen::VectorXi node;
@@ -292,6 +307,7 @@ namespace power_network{
 		nodes nodes;
 		edges edges;
 		cbt cbt;
+		weather_stations weather_stations;
 		plants_all plants;
 		std::vector <DSO_cluster> DSO_cluster;
 		technical_parameters tech_parameters;

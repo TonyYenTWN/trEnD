@@ -33,6 +33,19 @@ namespace {
 		Power_network_inform.cbt.flow_constraint = basic::read_file(fin_cbt_dim[0], fin_cbt_dim[1], fin_cbt);
 	}
 
+	void weather_station_data_input(power_network::network_inform &Power_network_inform, std::string fin_weather){
+		// Read weather station information
+		auto fin_weather_dim = basic::get_file_dim(fin_weather);
+		auto weather_inform = basic::read_file(fin_weather_dim[0], fin_weather_dim[1], fin_weather, 1);
+
+		// Organize weather station information
+		Power_network_inform.weather_stations.station_names = basic::get_row_name(fin_weather, fin_weather_dim[0]);
+		Power_network_inform.weather_stations.x = weather_inform.col(weather_inform.cols() - 4);
+		Power_network_inform.weather_stations.y = weather_inform.col(weather_inform.cols() - 3);
+		Power_network_inform.weather_stations.lon = weather_inform.col(weather_inform.cols() - 2);
+		Power_network_inform.weather_stations.lat = weather_inform.col(weather_inform.cols() - 1);
+	}
+
 	// Must read transmission data before points (DSO cluster initialize here)
 	void tranmission_data_input(power_network::network_inform &Power_network_inform, Eigen::MatrixXd bz_inform, std::string fin_node, std::string fin_edge, std::string fin_edge_simp){
 		// Read power network data
@@ -52,7 +65,7 @@ namespace {
 			Power_network_inform.DSO_cluster[cluster_iter].nodes_ID.reserve(fin_node_dim[0]);
 		}
 
-		// Organize node cata
+		// Organize node data
 		Power_network_inform.nodes.bidding_zone = Eigen::VectorXi(fin_node_dim[0]);
 		Power_network_inform.nodes.cluster = Eigen::VectorXi(fin_node_dim[0]);
 		Power_network_inform.nodes.voltage_base = Eigen::VectorXi(fin_node_dim[0]);
@@ -187,6 +200,7 @@ void power_network::point_distance_cov(points &point, double lambda){
 void power_network::power_network_input_process(network_inform &Power_network_inform, std::string parent_dir){
 	auto fin_bz = parent_dir + "DSO_Bidding_Zone.csv";
 	auto fin_cbt = parent_dir + "cbt_constraint.csv";
+	auto fin_weather = parent_dir + "solar_radiation_stations.csv";
 	auto fin_entry = parent_dir + "cbt_entry_nodes.csv";
 	auto fin_node = parent_dir + "transmission_nodes.csv";
 	auto fin_edge = parent_dir + "transmission_edges.csv";
@@ -200,6 +214,7 @@ void power_network::power_network_input_process(network_inform &Power_network_in
 	auto bz_inform = basic::read_file(fin_bz_dim[0], fin_bz_dim[1], fin_bz);
 
 	cbt_data_input(Power_network_inform, fin_cbt, fin_entry);
+	weather_station_data_input(Power_network_inform, fin_weather);
 	tranmission_data_input(Power_network_inform, bz_inform, fin_node, fin_edge, fin_edge_simp);
 	points_data_input(Power_network_inform, bz_inform, fin_point, fin_point_matrix);
 	plant_data_input(Power_network_inform, fin_hydro, fin_wind);
