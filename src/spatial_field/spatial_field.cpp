@@ -147,7 +147,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	// ------------------------------------------------------------------------------------------------------------------------------------------
 	// Initialization of parameters
 	inference_inform imbalance;
-	imbalance.mu_mean = Imbalance_ts.colwise().sum().tail(bz_num);
+	imbalance.mu_mean = Imbalance_ts.colwise().sum();
 	imbalance.mu_mean /= Time;
 	mu_0_scale = imbalance.mu_mean.sum() / Constraint_imbalance.sum();
 	imbalance.mu_scale = Eigen::VectorXd::Constant(point_num, mu_0_scale);
@@ -214,7 +214,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 		}
 		Constraint_imbalance.setFromTriplets(Constraint_imbalance_Trip.begin(), Constraint_imbalance_Trip.end());
 
-		imbalance.mu_mean = Imbalance_ts.row(tick).tail(bz_num);
+		imbalance.mu_mean = Imbalance_ts.row(tick);
 
 		// Inference step
 		BME_linear(imbalance, Constraint_imbalance);
@@ -227,10 +227,21 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 		basic::write_file(imbalance.mu, fout_name, col_name);
 		digit_zeros.clear();
 	}
+}
 
-	// ------------------------------------------------------------------------------------------------------------------------------------------
-	// Capacity factor fields
-	// ------------------------------------------------------------------------------------------------------------------------------------------
+// Function that calculates onshore wind capacity factor field
+void spatial_field::wind_on_cf_inference(power_network::network_inform &Power_network_inform){
+	int bz_num = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
+	int point_num = Power_network_inform.points.bidding_zone.size();
+	int Time = power_market::parameters::Time();
+	double pi = boost::math::constants::pi<double>();
+
+	// Read onshore wind power data
+	bool fin_wind_on_row_name = 1;
+	std::string fin_wind_on = "csv/input/power_market/generation_wind_onshore_forecast_2021.csv";
+	auto fin_wind_on_dim = basic::get_file_dim(fin_wind_on);
+	auto Wind_on_ts = basic::read_file(fin_wind_on_dim[0], fin_wind_on_dim[1], fin_wind_on);
+
 	// Set sparse matrix for equality constraints for nominal demand
 	Eigen::MatrixXd Constraint_wind_on_dense = Eigen::MatrixXd::Zero(point_num, bz_num);
 	for(int wind_iter = 0; wind_iter < Power_network_inform.plants.wind.node.size(); ++ wind_iter){
@@ -278,7 +289,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	Constraint_wind_on = Constraint_wind_on * Redundant_col.transpose();
 
 	// Mean of weibull distribution = mu_0_scale * gamma(1 + 1 / k), here k = 2
-	mu_0_scale = wind_on_cf.mu_mean.sum() / Constraint_wind_on.sum() * 2. / pow(pi, .5);
+	double mu_0_scale = wind_on_cf.mu_mean.sum() / Constraint_wind_on.sum() * 2. / pow(pi, .5);
 	wind_on_cf.mu_scale = Eigen::VectorXd::Constant(point_num, mu_0_scale);
 	wind_on_cf.mu = Eigen::VectorXd::Constant(point_num, mu_0_scale);
 	wind_on_cf.x = Eigen::VectorXd(point_num);
@@ -291,8 +302,8 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	std::cout << wind_on_cf.mu.transpose() * Constraint_wind_on << "\n\n";
 
 	// Output the annual average of onshore wind capacity factor field
-	fout_name = "csv/processed/spatial_field/wind_onshore_cf_field_10km_annual_mean.csv";
-	col_name.clear();
+	std::string fout_name = "csv/processed/spatial_field/wind_onshore_cf_field_10km_annual_mean.csv";
+	std::vector <std::string> col_name;
 	col_name.push_back("wind_onshore_cf");
 	basic::write_file(wind_on_cf.mu, fout_name, col_name);
 
@@ -341,6 +352,85 @@ void spatial_field::solar_radiation_inference(power_network::network_inform &Pow
 	int point_num = Power_network_inform.points.bidding_zone.size();
 	int Time = power_market::parameters::Time();
 	double pi = boost::math::constants::pi<double>();
+
+	// Read solar radiation data
+	std::string fin_solar = "csv/input/power_market/solar_radiation_2021.csv";
+	auto fin_solar_dim = basic::get_file_dim(fin_solar);
+	auto Solar_ts = basic::read_file(fin_solar_dim[0], fin_solar_dim[1], fin_solar);
+	bool fin_solar_row_name = 1;
+	int station_num = fin_solar_dim[1] - fin_solar_row_name;
+
+	// ------------------------------------------------------------------------------------------------------------------------------------------
+	// Infer the annual average of solar radiation field
+	// ------------------------------------------------------------------------------------------------------------------------------------------
+	// Initialization of parameters
+	Eigen::VectorXd solar_radiation_mean = Eigen::VectorXd::Zero(station_num);
+
+	for(int station_iter = 0; station_iter < station_num; ++ station_iter){
+		int col_ID = station_iter + fin_solar_row_name;
+		int tick_count = 0;
+		for(int tick = 0; tick < Time; ++ tick){
+			if(Solar_ts(tick, col_ID) < 0.){
+				continue;
+			}
+
+			solar_radiation_mean(station_iter) += Solar_ts(tick, col_ID);
+			tick_count += 1;
+		}
+		solar_radiation_mean(station_iter) /= tick_count;
+	}
+
+	// Set sparse matrix for equality constraints for solar radiation
+	Eigen::VectorXi station_freq = Eigen::VectorXi::Zero(point_num);
+	Eigen::VectorXd average_field = -Eigen::VectorXd::Ones(point_num);
+	for(int station_iter = 0; station_iter < station_num; ++ station_iter){
+		int point_ID = Power_network_inform.weather_stations.point(station_iter);
+		if(point_ID == -1){
+			continue;
+		}
+		average_field(point_ID) *= station_freq(point_ID);
+		station_freq(point_ID) += 1;
+		average_field(point_ID) += solar_radiation_mean(station_iter);
+		average_field(point_ID) /= station_freq(point_ID);
+	}
+
+	inference_inform solar_radiation;
+	solar_radiation.mu_mean = Eigen::VectorXd(station_num);
+	std::vector<Eigen::TripletXd> Constraint_solar_Trip;
+	Constraint_solar_Trip.reserve(station_num);
+	int constraint_count = 0;
+	for(int point_iter = 0; point_iter < point_num; ++ point_iter){
+		if(average_field(point_iter) < 0.){
+			continue;
+		}
+		Constraint_solar_Trip.push_back(Eigen::TripletXd(point_iter, constraint_count, 1.));
+		solar_radiation.mu_mean(constraint_count) = average_field(point_iter);
+		constraint_count += 1;
+	}
+	solar_radiation.mu_mean = solar_radiation.mu_mean.head(constraint_count);
+	std::cout << solar_radiation.mu_mean.transpose() << "\n\n";
+	Eigen::SparseMatrix <double> Constraint_solar(point_num, Constraint_solar_Trip.size());
+	Constraint_solar.setFromTriplets(Constraint_solar_Trip.begin(), Constraint_solar_Trip.end());
+
+	// Mean of weibull distribution = mu_0_scale * gamma(1 + 1 / k), here k = 2
+	double mu_0_scale = solar_radiation.mu_mean.sum() / Constraint_solar.sum() * 2. / pow(pi, .5);
+	solar_radiation.mu_scale = Eigen::VectorXd::Constant(point_num, mu_0_scale);
+	solar_radiation.mu = Eigen::VectorXd::Constant(point_num, mu_0_scale);
+	solar_radiation.x = Eigen::VectorXd(point_num);
+	for(int item = 0; item < point_num; ++ item){
+		solar_radiation.x(item) = quantile(solar_radiation.norm_dist, 1. - exp(-pow(solar_radiation.mu(item) / solar_radiation.mu_scale(item), 2.)));
+	}
+
+	// Inference step
+	BME_copula(solar_radiation, Power_network_inform, Constraint_solar, 1E-12);
+	std::cout << solar_radiation.mu.transpose() * Constraint_solar << "\n\n";
+
+//	// Output the annual average of normalized mean demand field
+//	std::string fout_name;
+//	fout_name = "csv/processed/spatial_field/solar_radiation_field_10km_annual_mean.csv";
+//	std::vector <std::string> col_name;
+//	col_name.push_back("solar_radiation");
+//	basic::write_file(solar_radiation.mu, fout_name, col_name);
 }
 
 // Function that stores processed mean demand field

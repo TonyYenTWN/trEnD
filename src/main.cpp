@@ -9,8 +9,8 @@ namespace{
 		bool DSO_filter_flag;
 
 		void process_bool_set(){
-			this->inference_flag = 0;
-			this->DSO_filter_flag = 1;
+			this->inference_flag = 1;
+			this->DSO_filter_flag = 0;
 		}
 
 		void process_bool_input(){
@@ -37,7 +37,9 @@ int main(){
 
 	// Spatial fields inference
 	if(process_par.inference_flag){
-		spatial_field::spatial_field_inference(Power_network_inform);
+		//spatial_field::spatial_field_inference(Power_network_inform);
+		//spatial_field::wind_on_cf_inference(Power_network_inform);
+		spatial_field::solar_radiation_inference(Power_network_inform);
 	}
 
 	// Power market processes

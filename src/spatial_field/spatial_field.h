@@ -29,6 +29,7 @@ namespace spatial_field{
 	//void BME_linear(inference_inform&, Eigen::SparseMatrix <double>&);
 	//void imbalance_inference(inference_inform &, power_network::network_inform&);
 	void spatial_field_inference(power_network::network_inform&);
+	void wind_on_cf_inference(power_network::network_inform&);
 	void solar_radiation_inference(power_network::network_inform&);
 	void spatial_field_store(power_network::network_inform&, std::string, std::string, std::string, int);
 }
