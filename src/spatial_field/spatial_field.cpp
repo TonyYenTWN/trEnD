@@ -9,7 +9,7 @@ namespace{
 		// Iterations
 		int count = 0;
 		Eigen::VectorXd dmu = Eigen::VectorXd::Constant(point_num, 1.);
-		std::cout << inform.mu.minCoeff() << "\t" << inform.mu.maxCoeff() << "\t" << dmu.lpNorm<Eigen::Infinity>() << "\n";
+		//std::cout << inform.mu.minCoeff() << "\t" << inform.mu.maxCoeff() << "\t" << dmu.lpNorm<Eigen::Infinity>() << "\n";
 		while(count < 5000 && dmu.lpNorm<Eigen::Infinity>() > tol){
 			// Matrices for the linear system
 			Eigen::SparseMatrix <double> Conversion_Mat_1(point_num, point_num);
@@ -38,10 +38,10 @@ namespace{
 			Eigen::VectorXd mu_inv_0 = pow(inform.mu.array(), -1.);
 			dmu *= mu_inv_0;
 
-			std::cout << inform.mu.minCoeff() << "\t" << inform.mu.maxCoeff() << "\t" << dmu.lpNorm<Eigen::Infinity>() << "\n";
+			//std::cout << inform.mu.minCoeff() << "\t" << inform.mu.maxCoeff() << "\t" << dmu.lpNorm<Eigen::Infinity>() << "\n";
 			count += 1;
 		}
-		std::cout << inform.mu.minCoeff() << "\t" << inform.mu.maxCoeff() << "\t" << dmu.lpNorm<Eigen::Infinity>() << "\n\n";
+		//std::cout << inform.mu.minCoeff() << "\t" << inform.mu.maxCoeff() << "\t" << dmu.lpNorm<Eigen::Infinity>() << "\n\n";
 	}
 
 	void BME_linear(spatial_field::estimation_inform &inform, Eigen::SparseMatrix <double> &Constraint){
@@ -54,6 +54,7 @@ namespace{
 		// ---------------------------------------------------------------------
 		// Solve the linear system
 		Eigen::VectorXd Constraint_sum = Constraint.transpose() * inform.mu_scale;
+		std::cout << Constraint_sum.transpose() << "\n\n";
 		Eigen::SparseLU <Eigen::SparseMatrix <double>, Eigen::COLAMDOrdering<int>> solver;
 		solver.compute(inform.Conversion_Mat_1);
 		Eigen::VectorXd lambda = solver.solve(inform.mu_mean - Constraint_sum);
@@ -84,12 +85,6 @@ void spatial_field::spatial_field_estimation(power_network::network_inform &Powe
 	for(int zone_iter = 0; zone_iter < bz_num; ++ zone_iter){
 		Imbalance_ts.col(zone_iter) = Imbalance_ts_raw.col(2 * zone_iter + fin_imbalance_row_name) - Imbalance_ts_raw.col(2 * zone_iter + fin_imbalance_row_name + 1);
 	}
-
-	// Read onshore wind power data
-	bool fin_wind_on_row_name = 1;
-	std::string fin_wind_on = "csv/input/power_market/generation_wind_onshore_forecast_2021.csv";
-	auto fin_wind_on_dim = basic::get_file_dim(fin_wind_on);
-	auto Wind_on_ts = basic::read_file(fin_wind_on_dim[0], fin_wind_on_dim[1], fin_wind_on);
 
 	// Set sparse matrix for equality constraints for nominal demand
 	Eigen::SparseMatrix <double> Constraint_demand (point_num, bz_num);
@@ -122,7 +117,7 @@ void spatial_field::spatial_field_estimation(power_network::network_inform &Powe
 
 	// estimation step
 	BME_copula(nominal_demand, Power_network_inform, Constraint_demand, 1E-12);
-	std::cout << nominal_demand.mu.transpose() * Constraint_demand << "\n\n";
+	//std::cout << nominal_demand.mu.transpose() * Constraint_demand << "\n\n";
 
 	// Output the annual average of normalized mean demand field
 	std::string fout_name;
@@ -152,12 +147,13 @@ void spatial_field::spatial_field_estimation(power_network::network_inform &Powe
 	imbalance.mu_mean /= Time;
 	mu_0_scale = imbalance.mu_mean.sum() / Constraint_imbalance.sum();
 	imbalance.mu_scale = Eigen::VectorXd::Constant(point_num, mu_0_scale);
+	std::cout << imbalance.mu_scale.transpose() * Constraint_imbalance << "\n\n";
 	imbalance.Conversion_Mat_1 = Constraint_imbalance.transpose() * Power_network_inform.points.covariance * Constraint_imbalance;
 	imbalance.Conversion_Mat_2 = Power_network_inform.points.covariance * Constraint_imbalance;
 
 	// estimation step
 	BME_linear(imbalance, Constraint_imbalance);
-	//std::cout << imbalance.mu_mean.transpose() << "\n\n";
+	std::cout << imbalance.mu_mean.transpose() << "\n";
 	std::cout << imbalance.mu.transpose() * Constraint_imbalance << "\n\n";
 
 	// Output the annual average of normalized mean demand field
@@ -184,9 +180,9 @@ void spatial_field::spatial_field_estimation(power_network::network_inform &Powe
 	for(int tick = 0; tick < 1; ++ tick){
 		nominal_demand.mu_mean = Demand_ts.row(tick).tail(bz_num);
 
-		// estimation step
+		// Estimation step
 		BME_copula(nominal_demand, Power_network_inform, Constraint_demand, 1E-3);
-		std::cout << nominal_demand.mu.transpose() * Constraint_demand << "\n\n";
+		//std::cout << nominal_demand.mu.transpose() * Constraint_demand << "\n\n";
 
 		// Output normalized mean demand field
 		int count_zeros = 0;
@@ -206,19 +202,23 @@ void spatial_field::spatial_field_estimation(power_network::network_inform &Powe
 
 		// Set sparse matrix for equality constraints for imbalance
 		// must come after nominal demand!!
-		std::vector<Eigen::TripletXd> Constraint_imbalance_Trip;
-		Constraint_imbalance_Trip.reserve(point_num);
+		std::vector<Eigen::TripletXd> Constraint_imbalance_temp_Trip;
+		Constraint_imbalance_temp_Trip.reserve(point_num);
 		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
 			int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
 			double value = nominal_demand.mu(point_iter) * Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
-			Constraint_imbalance_Trip.push_back(Eigen::TripletXd(point_iter, bz_ID, value));
+			Constraint_imbalance_temp_Trip.push_back(Eigen::TripletXd(point_iter, bz_ID, value));
 		}
-		Constraint_imbalance.setFromTriplets(Constraint_imbalance_Trip.begin(), Constraint_imbalance_Trip.end());
+		Constraint_imbalance.setFromTriplets(Constraint_imbalance_temp_Trip.begin(), Constraint_imbalance_temp_Trip.end());
+		imbalance.Conversion_Mat_1 = Constraint_imbalance.transpose() * Power_network_inform.points.covariance * Constraint_imbalance;
+		imbalance.Conversion_Mat_2 = Power_network_inform.points.covariance * Constraint_imbalance;
+		std::cout << imbalance.mu_scale.transpose() * Constraint_imbalance << "\n\n";
 
 		imbalance.mu_mean = Imbalance_ts.row(tick);
 
-		// estimation step
+		// Estimation step
 		BME_linear(imbalance, Constraint_imbalance);
+		std::cout << imbalance.mu_mean.transpose() << "\n";
 		std::cout << imbalance.mu.transpose() * Constraint_imbalance << "\n\n";
 
 		// Output the annual average of imbalance field
@@ -298,7 +298,7 @@ void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_n
 		wind_on_cf.x(item) = quantile(wind_on_cf.norm_dist, 1. - exp(-pow(wind_on_cf.mu(item) / wind_on_cf.mu_scale(item), 2.)));
 	}
 
-	// estimation step
+	// Estimation step
 	BME_copula(wind_on_cf, Power_network_inform, Constraint_wind_on, 1E-12);
 	std::cout << wind_on_cf.mu.transpose() * Constraint_wind_on << "\n\n";
 
@@ -422,7 +422,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 		solar_radiation.x(item) = quantile(solar_radiation.norm_dist, 1. - exp(-pow(solar_radiation.mu(item) / solar_radiation.mu_scale(item), 2.)));
 	}
 
-	// estimation step
+	// Estimation step
 	BME_copula(solar_radiation, Power_network_inform, Constraint_solar, 1E-12);
 	std::cout << solar_radiation.mu.transpose() * Constraint_solar << "\n\n";
 
