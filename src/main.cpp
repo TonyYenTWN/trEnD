@@ -5,22 +5,30 @@
 
 namespace{
 	struct process_bool{
-		bool inference_flag;
+		bool estimation_flag;
+		bool simulation_flag;
 		bool DSO_filter_flag;
 
 		void process_bool_set(){
-			this->inference_flag = 1;
+			this->estimation_flag = 1;
+			this->simulation_flag = 0;
 			this->DSO_filter_flag = 0;
 		}
 
 		void process_bool_input(){
-			std::cout << "Inference spatial fields? Yes: 1 / No: 0 | ";
-			std::cin >> this->inference_flag;
+			std::cout << "Estimate spatial fields? Yes: 1 / No: 0 | ";
+			std::cin >> this->estimation_flag;
 			std::cout << "\n";
 
-			std::cout << "DSOs filter bids? Yes: 1 / No: 0 | ";
-			std::cin >> this->DSO_filter_flag;
+			std::cout << "Simulate operation? Yes: 1 / No: 0 | ";
+			std::cin >> this->simulation_flag;
 			std::cout << "\n";
+
+			if(this->simulation_flag == 1){
+				std::cout << "DSOs filter bids? Yes: 1 / No: 0 | ";
+				std::cin >> this->DSO_filter_flag;
+				std::cout << "\n";
+			}
 		}
 	};
 }
@@ -35,16 +43,18 @@ int main(){
 	//process_par.process_bool_input();
 	process_par.process_bool_set();
 
-	// Spatial fields inference
-	if(process_par.inference_flag){
-		//spatial_field::spatial_field_inference(Power_network_inform);
-		//spatial_field::wind_on_cf_inference(Power_network_inform);
-		spatial_field::solar_radiation_inference(Power_network_inform);
+	// Spatial fields estimation
+	if(process_par.estimation_flag){
+		//spatial_field::spatial_field_estimation(Power_network_inform);
+		//spatial_field::wind_on_cf_estimation(Power_network_inform);
+		spatial_field::solar_radiation_estimation(Power_network_inform);
 	}
 
 	// Power market processes
-	power_market::market_whole_inform Power_market_inform;
-	power_market::power_market_process_set(Power_network_inform, Power_market_inform, process_par.DSO_filter_flag);
-	power_market::power_market_process_update(Power_network_inform, Power_market_inform, process_par.DSO_filter_flag);
+	if(process_par.simulation_flag){
+		power_market::market_whole_inform Power_market_inform;
+		power_market::power_market_process_set(Power_network_inform, Power_market_inform, process_par.DSO_filter_flag);
+		power_market::power_market_process_update(Power_network_inform, Power_market_inform, process_par.DSO_filter_flag);
+	}
 }
 //	std::cin.get();
