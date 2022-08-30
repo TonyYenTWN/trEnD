@@ -1,14 +1,15 @@
-// Main source file for inference of spatial fields
+// Main source file for estimation of spatial fields
 #include "src/spatial_field/spatial_field.h"
 
 namespace{
-	void BME_copula(spatial_field::inference_inform &inform, power_network::network_inform &Power_network_inform, Eigen::SparseMatrix <double> &Constraint, double tol){
+	void BME_copula(spatial_field::estimation_inform &inform, power_network::network_inform &Power_network_inform, Eigen::SparseMatrix <double> &Constraint, double tol){
 		int bz_num = Constraint.cols();
 		int point_num = Constraint.rows();
 
 		// Iterations
 		int count = 0;
 		Eigen::VectorXd dmu = Eigen::VectorXd::Constant(point_num, 1.);
+		std::cout << inform.mu.minCoeff() << "\t" << inform.mu.maxCoeff() << "\t" << dmu.lpNorm<Eigen::Infinity>() << "\n";
 		while(count < 5000 && dmu.lpNorm<Eigen::Infinity>() > tol){
 			// Matrices for the linear system
 			Eigen::SparseMatrix <double> Conversion_Mat_1(point_num, point_num);
@@ -37,13 +38,13 @@ namespace{
 			Eigen::VectorXd mu_inv_0 = pow(inform.mu.array(), -1.);
 			dmu *= mu_inv_0;
 
-			//std::cout << inform.mu.minCoeff() << "\t" << inform.mu.maxCoeff() << "\t" << dmu.lpNorm<Eigen::Infinity>() << "\n";
+			std::cout << inform.mu.minCoeff() << "\t" << inform.mu.maxCoeff() << "\t" << dmu.lpNorm<Eigen::Infinity>() << "\n";
 			count += 1;
 		}
-		//std::cout << inform.mu.minCoeff() << "\t" << inform.mu.maxCoeff() << "\t" << dmu.lpNorm<Eigen::Infinity>() << "\n";
+		std::cout << inform.mu.minCoeff() << "\t" << inform.mu.maxCoeff() << "\t" << dmu.lpNorm<Eigen::Infinity>() << "\n\n";
 	}
 
-	void BME_linear(spatial_field::inference_inform &inform, Eigen::SparseMatrix <double> &Constraint){
+	void BME_linear(spatial_field::estimation_inform &inform, Eigen::SparseMatrix <double> &Constraint){
 		// ---------------------------------------------------------------------
 		// MaxEnt, known covariance and mean = 0, reference equiprobable space = x
 		// COV^(-1) * x* - Constraint * lambda = 0
@@ -62,7 +63,7 @@ namespace{
 	}
 }
 
-void spatial_field::spatial_field_inference(power_network::network_inform &Power_network_inform){
+void spatial_field::spatial_field_estimation(power_network::network_inform &Power_network_inform){
 	int bz_num = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
 	int point_num = Power_network_inform.points.bidding_zone.size();
 	int Time = power_market::parameters::Time();
@@ -103,10 +104,10 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	//std::cout << Constraint_demand.topRows(10) << "\n\n";
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------
-	// Infer the annual average of the normalized mean demand field
+	// Estimate the annual average of the normalized mean demand field
 	// ------------------------------------------------------------------------------------------------------------------------------------------
 	// Initialization of parameters
-	inference_inform nominal_demand;
+	estimation_inform nominal_demand;
 	nominal_demand.alpha_iteration = 1.;
 	nominal_demand.mu_mean = Demand_ts.colwise().sum().tail(bz_num);
 	nominal_demand.mu_mean /= Time;
@@ -119,7 +120,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 		nominal_demand.x(item) = quantile(nominal_demand.norm_dist, 1. - exp(-pow(nominal_demand.mu(item) / nominal_demand.mu_scale(item), 2.)));
 	}
 
-	// Inference step
+	// estimation step
 	BME_copula(nominal_demand, Power_network_inform, Constraint_demand, 1E-12);
 	std::cout << nominal_demand.mu.transpose() * Constraint_demand << "\n\n";
 
@@ -143,10 +144,10 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	Constraint_imbalance.setFromTriplets(Constraint_imbalance_Trip.begin(), Constraint_imbalance_Trip.end());
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------
-	// Infer the annual average of the imbalance field
+	// Estimate the annual average of the imbalance field
 	// ------------------------------------------------------------------------------------------------------------------------------------------
 	// Initialization of parameters
-	inference_inform imbalance;
+	estimation_inform imbalance;
 	imbalance.mu_mean = Imbalance_ts.colwise().sum();
 	imbalance.mu_mean /= Time;
 	mu_0_scale = imbalance.mu_mean.sum() / Constraint_imbalance.sum();
@@ -154,7 +155,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	imbalance.Conversion_Mat_1 = Constraint_imbalance.transpose() * Power_network_inform.points.covariance * Constraint_imbalance;
 	imbalance.Conversion_Mat_2 = Power_network_inform.points.covariance * Constraint_imbalance;
 
-	// Inference step
+	// estimation step
 	BME_linear(imbalance, Constraint_imbalance);
 	//std::cout << imbalance.mu_mean.transpose() << "\n\n";
 	std::cout << imbalance.mu.transpose() * Constraint_imbalance << "\n\n";
@@ -166,7 +167,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	basic::write_file(imbalance.mu, fout_name, col_name);
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------
-	// Infer the normalized mean demand / imbalance field
+	// Estimate the normalized mean demand / imbalance field
 	// ------------------------------------------------------------------------------------------------------------------------------------------
 	// Initialization of parameters
 	nominal_demand.alpha_iteration = .01;
@@ -183,7 +184,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 	for(int tick = 0; tick < 1; ++ tick){
 		nominal_demand.mu_mean = Demand_ts.row(tick).tail(bz_num);
 
-		// Inference step
+		// estimation step
 		BME_copula(nominal_demand, Power_network_inform, Constraint_demand, 1E-3);
 		std::cout << nominal_demand.mu.transpose() * Constraint_demand << "\n\n";
 
@@ -216,7 +217,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 
 		imbalance.mu_mean = Imbalance_ts.row(tick);
 
-		// Inference step
+		// estimation step
 		BME_linear(imbalance, Constraint_imbalance);
 		std::cout << imbalance.mu.transpose() * Constraint_imbalance << "\n\n";
 
@@ -230,7 +231,7 @@ void spatial_field::spatial_field_inference(power_network::network_inform &Power
 }
 
 // Function that calculates onshore wind capacity factor field
-void spatial_field::wind_on_cf_inference(power_network::network_inform &Power_network_inform){
+void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_network_inform){
 	int bz_num = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
 	int point_num = Power_network_inform.points.bidding_zone.size();
 	int Time = power_market::parameters::Time();
@@ -257,10 +258,10 @@ void spatial_field::wind_on_cf_inference(power_network::network_inform &Power_ne
 	Eigen::SparseMatrix <double> Constraint_wind_on = Constraint_wind_on_dense.sparseView(1E-12);
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------
-	// Infer the annual average of onshore wind capacity factor field
+	// Estimate the annual average of onshore wind capacity factor field
 	// ------------------------------------------------------------------------------------------------------------------------------------------
 	// Initialization of parameters
-	inference_inform wind_on_cf;
+	estimation_inform wind_on_cf;
 	wind_on_cf.alpha_iteration = 1.;
 	wind_on_cf.mu_mean = (Wind_on_ts.colwise().sum()).segment(fin_wind_on_row_name, bz_num);
 	wind_on_cf.mu_mean /= Time;
@@ -297,7 +298,7 @@ void spatial_field::wind_on_cf_inference(power_network::network_inform &Power_ne
 		wind_on_cf.x(item) = quantile(wind_on_cf.norm_dist, 1. - exp(-pow(wind_on_cf.mu(item) / wind_on_cf.mu_scale(item), 2.)));
 	}
 
-	// Inference step
+	// estimation step
 	BME_copula(wind_on_cf, Power_network_inform, Constraint_wind_on, 1E-12);
 	std::cout << wind_on_cf.mu.transpose() * Constraint_wind_on << "\n\n";
 
@@ -308,7 +309,7 @@ void spatial_field::wind_on_cf_inference(power_network::network_inform &Power_ne
 	basic::write_file(wind_on_cf.mu, fout_name, col_name);
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------
-	// Infer onshore wind capacity factor field
+	// Estimate onshore wind capacity factor field
 	// ------------------------------------------------------------------------------------------------------------------------------------------
 	// Initialization of parameters
 	wind_on_cf.alpha_iteration = .01;
@@ -325,7 +326,7 @@ void spatial_field::wind_on_cf_inference(power_network::network_inform &Power_ne
 		wind_on_cf.mu_mean = (Wind_on_ts.row(tick)).segment(fin_wind_on_row_name, bz_num);
 		wind_on_cf.mu_mean = Redundant_col * wind_on_cf.mu_mean;
 
-		// Inference step
+		// estimation step
 		BME_copula(wind_on_cf, Power_network_inform, Constraint_wind_on, 1E-3);
 		std::cout << wind_on_cf.mu.transpose() * Constraint_wind_on << "\n\n";
 
@@ -348,7 +349,7 @@ void spatial_field::wind_on_cf_inference(power_network::network_inform &Power_ne
 }
 
 // Function that calculates solar radiation field
-void spatial_field::solar_radiation_inference(power_network::network_inform &Power_network_inform){
+void spatial_field::solar_radiation_estimation(power_network::network_inform &Power_network_inform){
 	int point_num = Power_network_inform.points.bidding_zone.size();
 	int Time = power_market::parameters::Time();
 	double pi = boost::math::constants::pi<double>();
@@ -361,7 +362,7 @@ void spatial_field::solar_radiation_inference(power_network::network_inform &Pow
 	int station_num = fin_solar_dim[1] - fin_solar_row_name;
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------
-	// Infer the annual average of solar radiation field
+	// Estimate the annual average of solar radiation field
 	// ------------------------------------------------------------------------------------------------------------------------------------------
 	// Initialization of parameters
 	Eigen::VectorXd solar_radiation_mean = Eigen::VectorXd::Zero(station_num);
@@ -394,7 +395,7 @@ void spatial_field::solar_radiation_inference(power_network::network_inform &Pow
 		average_field(point_ID) /= station_freq(point_ID);
 	}
 
-	inference_inform solar_radiation;
+	estimation_inform solar_radiation;
 	solar_radiation.mu_mean = Eigen::VectorXd(station_num);
 	std::vector<Eigen::TripletXd> Constraint_solar_Trip;
 	Constraint_solar_Trip.reserve(station_num);
@@ -421,7 +422,7 @@ void spatial_field::solar_radiation_inference(power_network::network_inform &Pow
 		solar_radiation.x(item) = quantile(solar_radiation.norm_dist, 1. - exp(-pow(solar_radiation.mu(item) / solar_radiation.mu_scale(item), 2.)));
 	}
 
-	// Inference step
+	// estimation step
 	BME_copula(solar_radiation, Power_network_inform, Constraint_solar, 1E-12);
 	std::cout << solar_radiation.mu.transpose() * Constraint_solar << "\n\n";
 
