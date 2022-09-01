@@ -396,6 +396,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 	}
 
 	estimation_inform solar_radiation;
+	solar_radiation.alpha_iteration = 1.;
 	solar_radiation.mu_mean = Eigen::VectorXd(station_num);
 	std::vector<Eigen::TripletXd> Constraint_solar_Trip;
 	Constraint_solar_Trip.reserve(station_num);
@@ -409,7 +410,6 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 		constraint_count += 1;
 	}
 	solar_radiation.mu_mean = solar_radiation.mu_mean.head(constraint_count);
-	std::cout << solar_radiation.mu_mean.transpose() << "\n\n";
 	Eigen::SparseMatrix <double> Constraint_solar(point_num, Constraint_solar_Trip.size());
 	Constraint_solar.setFromTriplets(Constraint_solar_Trip.begin(), Constraint_solar_Trip.end());
 
