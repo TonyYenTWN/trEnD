@@ -5,6 +5,7 @@
 #define MARKET_OBJECT
 
 #include "src/agent/end-user.h"
+#include "src/agent/industrial.h"
 #include "src/alglib/optimization.h"
 #include "src/basic/basic_definitions.h"
 #include "src/basic/eigen_sparse.h"

@@ -11,7 +11,7 @@ namespace{
 
 		void process_bool_set(){
 			this->estimation_flag = 1;
-			this->simulation_flag = 0;
+			this->simulation_flag = 1;
 			this->DSO_filter_flag = 0;
 		}
 
@@ -46,7 +46,7 @@ int main(){
 	// Spatial fields estimation
 	if(process_par.estimation_flag){
 		//spatial_field::spatial_field_estimation(Power_network_inform);
-		spatial_field::wind_on_cf_estimation(Power_network_inform);
+		//spatial_field::wind_on_cf_estimation(Power_network_inform);
 		//spatial_field::solar_radiation_estimation(Power_network_inform);
 	}
 
