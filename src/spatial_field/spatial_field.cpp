@@ -410,6 +410,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 		constraint_count += 1;
 	}
 	solar_radiation.mu_mean = solar_radiation.mu_mean.head(constraint_count);
+	//std::cout << solar_radiation.mu_mean.transpose() << "\n\n";
 	Eigen::SparseMatrix <double> Constraint_solar(point_num, Constraint_solar_Trip.size());
 	Constraint_solar.setFromTriplets(Constraint_solar_Trip.begin(), Constraint_solar_Trip.end());
 
@@ -426,12 +427,55 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 	BME_copula(solar_radiation, Power_network_inform, Constraint_solar, 1E-12);
 	std::cout << solar_radiation.mu.transpose() * Constraint_solar << "\n\n";
 
-//	// Output the annual average of normalized mean demand field
-//	std::string fout_name;
-//	fout_name = "csv/processed/spatial_field/solar_radiation_field_10km_annual_mean.csv";
-//	std::vector <std::string> col_name;
-//	col_name.push_back("solar_radiation");
-//	basic::write_file(solar_radiation.mu, fout_name, col_name);
+	// Output the annual average of normalized mean demand field
+	std::string fout_name;
+	fout_name = "csv/processed/spatial_field/solar_radiation_field_10km_annual_mean.csv";
+	std::vector <std::string> col_name;
+	col_name.push_back("solar_radiation");
+	basic::write_file(solar_radiation.mu, fout_name, col_name);
+
+	// ------------------------------------------------------------------------------------------------------------------------------------------
+	// Estimate solar radiation field
+	// ------------------------------------------------------------------------------------------------------------------------------------------
+	// Initialization of parameters
+	solar_radiation.alpha_iteration = .01;
+	solar_radiation.mu_scale = solar_radiation.mu * 2. / pow(pi, .5);
+	solar_radiation.x_scale = Eigen::VectorXd(point_num);
+	for(int item = 0; item < point_num; ++ item){
+		solar_radiation.x_scale(item) = quantile(solar_radiation.norm_dist, 1. - exp(-pow(1., 2.)));
+	}
+	solar_radiation.mu = solar_radiation.mu_scale;
+	solar_radiation.x = solar_radiation.x_scale;
+
+	int tick = 0;
+
+	Eigen::VectorXd solar_radiation_temp = -Eigen::VectorXd::Ones(station_num);
+	for(int station_iter = 0; station_iter < station_num; ++ station_iter){
+		int col_ID = station_iter + fin_solar_row_name;
+		if(Solar_ts(tick, col_ID) < 0.){
+			continue;
+		}
+		solar_radiation_temp(station_iter) = Solar_ts(tick, col_ID);
+	}
+	std::cout << solar_radiation_temp.transpose() << "\n\n";
+
+	// Set sparse matrix for equality constraints for solar radiation
+	Eigen::VectorXi station_freq_temp = Eigen::VectorXi::Zero(point_num);
+	Eigen::VectorXd average_field_temp = -Eigen::VectorXd::Ones(point_num);
+	for(int station_iter = 0; station_iter < station_num; ++ station_iter){
+		if(solar_radiation_temp(station_iter) < 0.){
+			continue;
+		}
+
+		int point_ID = Power_network_inform.weather_stations.point(station_iter);
+		if(point_ID == -1){
+			continue;
+		}
+		average_field_temp(point_ID) *= station_freq_temp(point_ID);
+		station_freq_temp(point_ID) += 1;
+		average_field_temp(point_ID) += solar_radiation_temp(station_iter);
+		average_field_temp(point_ID) /= station_freq_temp(point_ID);
+	}
 }
 
 // Function that stores processed mean demand field
