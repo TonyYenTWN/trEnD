@@ -77,7 +77,8 @@ void power_market::Submitted_bid_calculation(int tick, agent::end_user::profiles
 		DSO_Markets[DSO_iter].filtered_demand = DSO_Markets[DSO_iter].submitted_demand;
 	}
 
-	// Trivial case: demand at each point are 100% inflexible
+	// Demand at each point (residential) / node (industrial)
+	// Trivial case: residential demand at each point is 100% inflexible; 5% of industrial demand is flexible
 	int sample_num = end_user_profiles[0].size();
 	for(int point_iter = 0; point_iter < Power_network_inform.points.bidding_zone.size(); ++ point_iter){
 		int node_ID = Power_network_inform.points.node(point_iter);
@@ -85,16 +86,15 @@ void power_market::Submitted_bid_calculation(int tick, agent::end_user::profiles
 		int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
 		//std::cout << bz_ID << "\t" << node_ID << "\t" << Power_network_inform.nodes.bidding_zone(node_ID) << "\n";
 
+		// Residential demand
 		for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
 			double bid_inflex_quan = end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile(0);
 			bid_inflex_quan *= end_user_profiles[point_iter][sample_iter].operation.weight;
 			bid_inflex_quan *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
-			// nominal demand currently wrong in processed files, should change them and then multiply area of a point later
 
 			double bid_flex_quan = end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile(0);
 			bid_flex_quan *= end_user_profiles[point_iter][sample_iter].operation.weight;
 			bid_flex_quan *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
-			// nominal demand currently wrong in processed files, should change them and then multiply area of a point later
 
 			// Updating inflexible bids; if quantity is positive (negative -> update supply bids)
 			int price_inflex_ID = end_user_profiles[point_iter][sample_iter].operation.demand_inflex_price_ID;
@@ -116,6 +116,13 @@ void power_market::Submitted_bid_calculation(int tick, agent::end_user::profiles
 				TSO_Market.submitted_demand(price_flex_ID, node_ID) += bid_flex_quan;
 			}
 		}
+
+		// Industrial demand
+		double bid_inflex_industrial = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick);
+		bid_inflex_industrial *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
+		double bid_flex_industrial = bid_inflex_industrial;
+		bid_inflex_industrial *= 1. - agent::industrial::flexible_ratio();
+		bid_flex_industrial *= agent::industrial::flexible_ratio();
 	}
 //	for(int zone_iter = 0; zone_iter < 5; ++ zone_iter){
 //		std::cout << International_Market.submitted_demand.col(zone_iter).sum() << "\t";
