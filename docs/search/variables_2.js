@@ -10,10 +10,10 @@ var searchData=
   ['confirmed_5fprice_5fratio_7',['confirmed_price_ratio',['../d8/d2d/structpower__market_1_1market__inform.html#a915b4909939adc5e150ffd4ab1b3a747',1,'power_market::market_inform']]],
   ['confirmed_5fsupply_8',['confirmed_supply',['../d8/d2d/structpower__market_1_1market__inform.html#ae2a4426636b19185f4a8d2f78047106d',1,'power_market::market_inform']]],
   ['confirmed_5fvoltage_9',['confirmed_voltage',['../d5/d93/structpower__market_1_1network__graph.html#a34a6ae837ef4b26317f5bd4ab52c8ad4',1,'power_market::network_graph']]],
-  ['constraint_10',['Constraint',['../d4/dfd/structspatial__field_1_1inference__inform.html#af9c776c765c09b5d78869710b3da7ac9',1,'spatial_field::inference_inform']]],
+  ['constraint_10',['Constraint',['../d1/d01/structspatial__field_1_1estimation__inform.html#ac7e67c21112123d1703e007c3c06487f',1,'spatial_field::estimation_inform']]],
   ['control_5freserve_11',['control_reserve',['../d8/d2d/structpower__market_1_1market__inform.html#aaa2083100092cdc675082e38d59e762b',1,'power_market::market_inform']]],
-  ['conversion_5fmat_5f1_12',['Conversion_Mat_1',['../d4/dfd/structspatial__field_1_1inference__inform.html#af2c980be9b51e9365482691209dccd69',1,'spatial_field::inference_inform']]],
-  ['conversion_5fmat_5f2_13',['Conversion_Mat_2',['../d4/dfd/structspatial__field_1_1inference__inform.html#a14e930b238a93f40cf9d00704d224c03',1,'spatial_field::inference_inform']]],
+  ['conversion_5fmat_5f1_12',['Conversion_Mat_1',['../d1/d01/structspatial__field_1_1estimation__inform.html#acf2406f277a156872874ab69fedf7f2e',1,'spatial_field::estimation_inform']]],
+  ['conversion_5fmat_5f2_13',['Conversion_Mat_2',['../d1/d01/structspatial__field_1_1estimation__inform.html#abc26091bbffccf5ede550bd56c75780e',1,'spatial_field::estimation_inform']]],
   ['coordinate_5fgrid_14',['coordinate_grid',['../d4/dbd/structpower__network_1_1points.html#abcf011019fd7122997060ba8904c9a05',1,'power_network::points']]],
   ['covariance_15',['covariance',['../d4/dbd/structpower__network_1_1points.html#a94f36cb55bdbfe267393633d32edddef',1,'power_network::points']]],
   ['cross_5fborder_5fzone_5fstart_16',['cross_border_zone_start',['../d8/d2d/structpower__market_1_1market__inform.html#a5c2a87921f88721ac93dd97a8ca23f97',1,'power_market::market_inform']]]

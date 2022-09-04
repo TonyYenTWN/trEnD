@@ -10,7 +10,7 @@ var searchData=
   ['market_5fwhole_5finform_7',['market_whole_inform',['../da/d16/structpower__market_1_1market__whole__inform.html',1,'power_market']]],
   ['markets_5finform_8',['markets_inform',['../d5/d60/namespacepower__market.html#ae5bf82a7e636a2eda3d317cffe0dffd4',1,'power_market']]],
   ['merit_5forder_5fcurve_9',['merit_order_curve',['../d8/d2d/structpower__market_1_1market__inform.html#a4afb6a00551ccab12c8e42876db50ea0',1,'power_market::market_inform']]],
-  ['mu_10',['mu',['../d4/dfd/structspatial__field_1_1inference__inform.html#a0af397684f832b4d199bb0d5cae88c35',1,'spatial_field::inference_inform']]],
-  ['mu_5fmean_11',['mu_mean',['../d4/dfd/structspatial__field_1_1inference__inform.html#ac988dc24539f58fb36d1747e1fb8280b',1,'spatial_field::inference_inform']]],
-  ['mu_5fscale_12',['mu_scale',['../d4/dfd/structspatial__field_1_1inference__inform.html#acf43fcfd0feaaaa8ca50367fc218f2d1',1,'spatial_field::inference_inform']]]
+  ['mu_10',['mu',['../d1/d01/structspatial__field_1_1estimation__inform.html#a6e88a2d5dcdd809e4a6735bc19697132',1,'spatial_field::estimation_inform']]],
+  ['mu_5fmean_11',['mu_mean',['../d1/d01/structspatial__field_1_1estimation__inform.html#a0ef5d48a78f38099c6c2e6c302a59223',1,'spatial_field::estimation_inform']]],
+  ['mu_5fscale_12',['mu_scale',['../d1/d01/structspatial__field_1_1estimation__inform.html#ac58e41ed16388c0e533400205313eab3',1,'spatial_field::estimation_inform']]]
 ];

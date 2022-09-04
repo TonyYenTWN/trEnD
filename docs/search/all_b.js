@@ -8,7 +8,7 @@ var searchData=
   ['nodes_5',['nodes',['../d4/ddd/structpower__network_1_1network__inform.html#a573e78615856af8060b0142247ec524b',1,'power_network::network_inform::nodes()'],['../d8/d02/structpower__network_1_1nodes.html',1,'power_network::nodes']]],
   ['nodes_5fid_6',['nodes_ID',['../d0/df7/structpower__network_1_1DSO__cluster.html#afbca11109038cef3a34092dc0c6a9b58',1,'power_network::DSO_cluster']]],
   ['nominal_5fmean_5fdemand_5ffield_7',['nominal_mean_demand_field',['../d4/dbd/structpower__network_1_1points.html#a976401b3721077253c8c41ca0e4a5d26',1,'power_network::points']]],
-  ['norm_5fdist_8',['norm_dist',['../d4/dfd/structspatial__field_1_1inference__inform.html#ad581ff1d4c16ad1f5288fe4c4ebf9567',1,'spatial_field::inference_inform']]],
+  ['norm_5fdist_8',['norm_dist',['../d1/d01/structspatial__field_1_1estimation__inform.html#a09a839e712d710f990f3853e1b01892e',1,'spatial_field::estimation_inform']]],
   ['normalized_5factual_5fresidual_5fdemand_5fflex_5fprofile_9',['normalized_actual_residual_demand_flex_profile',['../df/d54/structagent_1_1end__user_1_1operation.html#a18edae7d62399161edabda2a1dabe7d9',1,'agent::end_user::operation']]],
   ['normalized_5factual_5fresidual_5fdemand_5finflex_5fprofile_10',['normalized_actual_residual_demand_inflex_profile',['../df/d54/structagent_1_1end__user_1_1operation.html#a821e9f61e728c6909b6afabafb082ed5',1,'agent::end_user::operation']]],
   ['normalized_5fconfirmed_5fresidual_5fdemand_5fflex_5fprofile_11',['normalized_confirmed_residual_demand_flex_profile',['../df/d54/structagent_1_1end__user_1_1operation.html#ae495cd3df293d0feb62dfc631de1f2e9',1,'agent::end_user::operation']]],

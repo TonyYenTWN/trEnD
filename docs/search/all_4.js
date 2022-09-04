@@ -17,8 +17,9 @@ var searchData=
   ['energy_5fscale_14',['energy_scale',['../d3/dfa/structagent_1_1end__user_1_1storage__inform.html#ac6d73f838f5cedf86a8c81d989db5ff9',1,'agent::end_user::storage_inform']]],
   ['entry_5fnode_5fnum_15',['entry_node_num',['../de/dd4/structpower__network_1_1cbt.html#a22c6da9de52c289212a480129c5f8898',1,'power_network::cbt']]],
   ['entry_5fnodes_16',['entry_nodes',['../de/dd4/structpower__network_1_1cbt.html#a70f372699ac3a74559aae24dca2df17c',1,'power_network::cbt']]],
-  ['ev_17',['EV',['../df/d54/structagent_1_1end__user_1_1operation.html#ae760c56e74406f14196198f57463e4aa',1,'agent::end_user::operation']]],
-  ['ev_5finform_18',['EV_inform',['../da/d92/structagent_1_1end__user_1_1EV__inform.html',1,'agent::end_user']]],
-  ['ev_5fschedule_19',['EV_schedule',['../d8/d3f/namespaceagent_1_1end__user.html#ab931c84643a38c6c448fdc2f75414c90',1,'agent::end_user']]],
-  ['ev_5fself_5fcharging_20',['EV_self_charging',['../d1/de8/structagent_1_1end__user_1_1decision.html#a6ba65e7f8fc9e3c3c75f73d337b91230',1,'agent::end_user::decision']]]
+  ['estimation_5finform_17',['estimation_inform',['../d1/d01/structspatial__field_1_1estimation__inform.html',1,'spatial_field']]],
+  ['ev_18',['EV',['../df/d54/structagent_1_1end__user_1_1operation.html#ae760c56e74406f14196198f57463e4aa',1,'agent::end_user::operation']]],
+  ['ev_5finform_19',['EV_inform',['../da/d92/structagent_1_1end__user_1_1EV__inform.html',1,'agent::end_user']]],
+  ['ev_5fschedule_20',['EV_schedule',['../d8/d3f/namespaceagent_1_1end__user.html#ab931c84643a38c6c448fdc2f75414c90',1,'agent::end_user']]],
+  ['ev_5fself_5fcharging_21',['EV_self_charging',['../d1/de8/structagent_1_1end__user_1_1decision.html#a6ba65e7f8fc9e3c3c75f73d337b91230',1,'agent::end_user::decision']]]
 ];

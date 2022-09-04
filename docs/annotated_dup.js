@@ -32,6 +32,6 @@ var annotated_dup =
     ] ],
     [ "spatial_field", "d9/d64/namespacespatial__field.html", [
       [ "Earth_Constant", "d4/d89/classspatial__field_1_1Earth__Constant.html", "d4/d89/classspatial__field_1_1Earth__Constant" ],
-      [ "inference_inform", "d4/dfd/structspatial__field_1_1inference__inform.html", "d4/dfd/structspatial__field_1_1inference__inform" ]
+      [ "estimation_inform", "d1/d01/structspatial__field_1_1estimation__inform.html", "d1/d01/structspatial__field_1_1estimation__inform" ]
     ] ]
 ];
