@@ -46,8 +46,8 @@ int main(){
 	// Spatial fields estimation
 	if(process_par.estimation_flag){
 		//spatial_field::spatial_field_estimation(Power_network_inform);
-		//spatial_field::wind_on_cf_estimation(Power_network_inform);
-		spatial_field::solar_radiation_estimation(Power_network_inform);
+		spatial_field::wind_on_cf_estimation(Power_network_inform);
+		//spatial_field::solar_radiation_estimation(Power_network_inform);
 	}
 
 	// Power market processes
