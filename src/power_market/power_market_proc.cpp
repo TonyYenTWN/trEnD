@@ -33,7 +33,7 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	// Bidding strategies of end-users
 	Power_market_inform.end_user_profiles = DSO_agents_set(Power_market_inform.International_Market, Power_network_inform);
 
-	// Initialization of submitted bids in DSOs and TSOs
+	// Initialization of submitted bids in DSOs, TSOs, and IMO
 	Submitted_bid_calculation(0, Power_market_inform.end_user_profiles, Power_market_inform.DSO_Markets, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform, DSO_filter_flag);
 
 	// Ideal market clearing in IMO
