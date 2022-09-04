@@ -38,7 +38,7 @@ namespace{
 			Eigen::VectorXd mu_inv_0 = pow(inform.mu.array(), -1.);
 			dmu *= mu_inv_0;
 
-			//std::cout << inform.mu.minCoeff() << "\t" << inform.mu.maxCoeff() << "\t" << dmu.lpNorm<Eigen::Infinity>() << "\n";
+			std::cout << inform.mu.minCoeff() << "\t" << inform.mu.maxCoeff() << "\t" << dmu.lpNorm<Eigen::Infinity>() << "\n";
 			count += 1;
 		}
 		//std::cout << inform.mu.minCoeff() << "\t" << inform.mu.maxCoeff() << "\t" << dmu.lpNorm<Eigen::Infinity>() << "\n\n";
@@ -312,7 +312,7 @@ void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_n
 	// Estimate onshore wind capacity factor field
 	// ------------------------------------------------------------------------------------------------------------------------------------------
 	// Initialization of parameters
-	wind_on_cf.alpha_iteration = .01;
+	wind_on_cf.alpha_iteration = .25;
 	wind_on_cf.mu_scale = wind_on_cf.mu * 2. / pow(pi, .5);
 	wind_on_cf.x_scale = Eigen::VectorXd(point_num);
 	for(int item = 0; item < point_num; ++ item){
@@ -439,7 +439,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 	// Estimate solar radiation field
 	// ------------------------------------------------------------------------------------------------------------------------------------------
 	// Initialization of parameters
-	solar_radiation.alpha_iteration = .01;
+	solar_radiation.alpha_iteration = .25;
 	solar_radiation.mu_scale = solar_radiation.mu * 2. / pow(pi, .5);
 	solar_radiation.x_scale = Eigen::VectorXd(point_num);
 	for(int item = 0; item < point_num; ++ item){
@@ -486,6 +486,9 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 		if(average_field_temp(point_iter) < 0.){
 			continue;
 		}
+		if(average_field_temp(point_iter) == 0.){
+			average_field_temp(point_iter) = 1E-3;
+		}
 		Constraint_solar_Trip_temp.push_back(Eigen::TripletXd(point_iter, constraint_count_temp, 1.));
 		solar_radiation.mu_mean(constraint_count_temp) = average_field_temp(point_iter);
 		constraint_count_temp += 1;
@@ -494,6 +497,10 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 	//std::cout << solar_radiation.mu_mean.transpose() << "\n\n";
 	Eigen::SparseMatrix <double> Constraint_solar_temp(point_num, Constraint_solar_Trip_temp.size());
 	Constraint_solar_temp.setFromTriplets(Constraint_solar_Trip_temp.begin(), Constraint_solar_Trip_temp.end());
+
+	// Estimation step
+	BME_copula(solar_radiation, Power_network_inform, Constraint_solar_temp, 1E-3);
+	std::cout << solar_radiation.mu.transpose() * Constraint_solar_temp << "\n\n";
 }
 
 // Function that stores processed mean demand field
