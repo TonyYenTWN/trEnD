@@ -380,6 +380,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 		}
 		solar_radiation_mean(station_iter) /= tick_count;
 	}
+	//std::cout << solar_radiation_mean.transpose() << "\n\n";
 
 	// Set sparse matrix for equality constraints for solar radiation
 	Eigen::VectorXi station_freq = Eigen::VectorXi::Zero(point_num);
@@ -457,7 +458,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 		}
 		solar_radiation_temp(station_iter) = Solar_ts(tick, col_ID);
 	}
-	std::cout << solar_radiation_temp.transpose() << "\n\n";
+	//std::cout << solar_radiation_temp.transpose() << "\n\n";
 
 	// Set sparse matrix for equality constraints for solar radiation
 	Eigen::VectorXi station_freq_temp = Eigen::VectorXi::Zero(point_num);
@@ -476,6 +477,23 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 		average_field_temp(point_ID) += solar_radiation_temp(station_iter);
 		average_field_temp(point_ID) /= station_freq_temp(point_ID);
 	}
+
+	std::vector<Eigen::TripletXd> Constraint_solar_Trip_temp;
+	Constraint_solar_Trip_temp.reserve(station_num);
+	solar_radiation.mu_mean = Eigen::VectorXd(station_num);
+	int constraint_count_temp = 0;
+	for(int point_iter = 0; point_iter < point_num; ++ point_iter){
+		if(average_field_temp(point_iter) < 0.){
+			continue;
+		}
+		Constraint_solar_Trip_temp.push_back(Eigen::TripletXd(point_iter, constraint_count_temp, 1.));
+		solar_radiation.mu_mean(constraint_count_temp) = average_field_temp(point_iter);
+		constraint_count_temp += 1;
+	}
+	solar_radiation.mu_mean = solar_radiation.mu_mean.head(constraint_count_temp);
+	//std::cout << solar_radiation.mu_mean.transpose() << "\n\n";
+	Eigen::SparseMatrix <double> Constraint_solar_temp(point_num, Constraint_solar_Trip_temp.size());
+	Constraint_solar_temp.setFromTriplets(Constraint_solar_Trip_temp.begin(), Constraint_solar_Trip_temp.end());
 }
 
 // Function that stores processed mean demand field
