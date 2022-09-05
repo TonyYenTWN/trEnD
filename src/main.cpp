@@ -10,8 +10,8 @@ namespace{
 		bool DSO_filter_flag;
 
 		void process_bool_set(){
-			this->estimation_flag = 1;
-			this->simulation_flag = 0;
+			this->estimation_flag = 0;
+			this->simulation_flag = 1;
 			this->DSO_filter_flag = 0;
 		}
 
@@ -47,14 +47,14 @@ int main(){
 	if(process_par.estimation_flag){
 		//spatial_field::spatial_field_estimation(Power_network_inform);
 		//spatial_field::wind_on_cf_estimation(Power_network_inform);
-		spatial_field::solar_radiation_estimation(Power_network_inform);
+		//spatial_field::solar_radiation_estimation(Power_network_inform);
 	}
 
 	// Power market processes
 	if(process_par.simulation_flag){
 		power_market::market_whole_inform Power_market_inform;
 		power_market::power_market_process_set(Power_network_inform, Power_market_inform, process_par.DSO_filter_flag);
-		power_market::power_market_process_update(Power_network_inform, Power_market_inform, process_par.DSO_filter_flag);
+		//power_market::power_market_process_update(Power_network_inform, Power_market_inform, process_par.DSO_filter_flag);
 	}
 }
 //	std::cin.get();
