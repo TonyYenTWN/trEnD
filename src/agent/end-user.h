@@ -206,10 +206,4 @@ namespace agent{
 		void EV_schedule(int, sorted_vector, EV_inform&);
 	}
 	sorted_vector sort(Eigen::VectorXd);
-	static inline double solar_cf_calculation(double solar_radiation){
-		double value = solar_radiation * .0007;
-		value = std::min(.7, value);
-		value = std::max(0., value);
-		return value;
-	};
 }

@@ -25,13 +25,16 @@ namespace spatial_field{
 	};
 
 	// Functions
-	//void BME_copula(estimation_inform&, power_network::network_inform&, Eigen::SparseMatrix <double>&, double);
-	//void BME_linear(estimation_inform&, Eigen::SparseMatrix <double>&);
-	//void imbalance_estimation(estimation_inform &, power_network::network_inform&);
 	void spatial_field_estimation(power_network::network_inform&);
 	void wind_on_cf_estimation(power_network::network_inform&);
 	void solar_radiation_estimation(power_network::network_inform&);
 	void spatial_field_store(power_network::network_inform&, std::string, std::string, std::string, std::string, int);
+	static inline double solar_cf_calculation(double solar_radiation){
+		double value = solar_radiation * .0007;
+		value = std::min(.7, value);
+		value = std::max(0., value);
+		return value;
+	};
 }
 
 #endif
