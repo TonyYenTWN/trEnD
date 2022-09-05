@@ -448,59 +448,76 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 	solar_radiation.mu = solar_radiation.mu_scale;
 	solar_radiation.x = solar_radiation.x_scale;
 
-	int tick = 0;
-
-	Eigen::VectorXd solar_radiation_temp = -Eigen::VectorXd::Ones(station_num);
-	for(int station_iter = 0; station_iter < station_num; ++ station_iter){
-		int col_ID = station_iter + fin_solar_row_name;
-		if(Solar_ts(tick, col_ID) < 0.){
-			continue;
+	// Run the algorithm for each time slice
+	for(int tick = 0; tick < 24; ++ tick){
+		Eigen::VectorXd solar_radiation_temp = -Eigen::VectorXd::Ones(station_num);
+		for(int station_iter = 0; station_iter < station_num; ++ station_iter){
+			int col_ID = station_iter + fin_solar_row_name;
+			if(Solar_ts(tick, col_ID) < 0.){
+				continue;
+			}
+			solar_radiation_temp(station_iter) = Solar_ts(tick, col_ID);
 		}
-		solar_radiation_temp(station_iter) = Solar_ts(tick, col_ID);
+		//std::cout << solar_radiation_temp.transpose() << "\n\n";
+
+		// Set sparse matrix for equality constraints for solar radiation
+		Eigen::VectorXi station_freq_temp = Eigen::VectorXi::Zero(point_num);
+		Eigen::VectorXd average_field_temp = -Eigen::VectorXd::Ones(point_num);
+		for(int station_iter = 0; station_iter < station_num; ++ station_iter){
+			if(solar_radiation_temp(station_iter) < 0.){
+				continue;
+			}
+
+			int point_ID = Power_network_inform.weather_stations.point(station_iter);
+			if(point_ID == -1){
+				continue;
+			}
+			average_field_temp(point_ID) *= station_freq_temp(point_ID);
+			station_freq_temp(point_ID) += 1;
+			average_field_temp(point_ID) += solar_radiation_temp(station_iter);
+			average_field_temp(point_ID) /= station_freq_temp(point_ID);
+		}
+
+		std::vector<Eigen::TripletXd> Constraint_solar_Trip_temp;
+		Constraint_solar_Trip_temp.reserve(station_num);
+		solar_radiation.mu_mean = Eigen::VectorXd(station_num);
+		int constraint_count_temp = 0;
+		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
+			if(average_field_temp(point_iter) < 0.){
+				continue;
+			}
+			if(average_field_temp(point_iter) == 0.){
+				average_field_temp(point_iter) = 1E-3;
+			}
+			Constraint_solar_Trip_temp.push_back(Eigen::TripletXd(point_iter, constraint_count_temp, 1.));
+			solar_radiation.mu_mean(constraint_count_temp) = average_field_temp(point_iter);
+			constraint_count_temp += 1;
+		}
+		solar_radiation.mu_mean = solar_radiation.mu_mean.head(constraint_count_temp);
+		//std::cout << solar_radiation.mu_mean.transpose() << "\n\n";
+		Eigen::SparseMatrix <double> Constraint_solar_temp(point_num, Constraint_solar_Trip_temp.size());
+		Constraint_solar_temp.setFromTriplets(Constraint_solar_Trip_temp.begin(), Constraint_solar_Trip_temp.end());
+
+		// Estimation step
+		BME_copula(solar_radiation, Power_network_inform, Constraint_solar_temp, 1E-3);
+		std::cout << solar_radiation.mu.transpose() * Constraint_solar_temp << "\n\n";
+
+		// Output onshore wind capacity factor
+		int count_zeros = 0;
+		int tick_temp = tick;
+		std::string digit_zeros;
+		while(int (tick_temp / 10) != 0){
+			count_zeros += 1;
+			tick_temp /= 10;
+		}
+		for(int item = 0; item < 5 - count_zeros; ++item){
+			digit_zeros += std::to_string(0);
+		}
+		col_name.clear();
+		col_name.push_back("solar_radiation");
+		fout_name = "csv/processed/spatial_field/solar_radiation_field_10km_ts_" + digit_zeros + std::to_string(tick) + ".csv";
+		basic::write_file(solar_radiation.mu, fout_name, col_name);
 	}
-	//std::cout << solar_radiation_temp.transpose() << "\n\n";
-
-	// Set sparse matrix for equality constraints for solar radiation
-	Eigen::VectorXi station_freq_temp = Eigen::VectorXi::Zero(point_num);
-	Eigen::VectorXd average_field_temp = -Eigen::VectorXd::Ones(point_num);
-	for(int station_iter = 0; station_iter < station_num; ++ station_iter){
-		if(solar_radiation_temp(station_iter) < 0.){
-			continue;
-		}
-
-		int point_ID = Power_network_inform.weather_stations.point(station_iter);
-		if(point_ID == -1){
-			continue;
-		}
-		average_field_temp(point_ID) *= station_freq_temp(point_ID);
-		station_freq_temp(point_ID) += 1;
-		average_field_temp(point_ID) += solar_radiation_temp(station_iter);
-		average_field_temp(point_ID) /= station_freq_temp(point_ID);
-	}
-
-	std::vector<Eigen::TripletXd> Constraint_solar_Trip_temp;
-	Constraint_solar_Trip_temp.reserve(station_num);
-	solar_radiation.mu_mean = Eigen::VectorXd(station_num);
-	int constraint_count_temp = 0;
-	for(int point_iter = 0; point_iter < point_num; ++ point_iter){
-		if(average_field_temp(point_iter) < 0.){
-			continue;
-		}
-		if(average_field_temp(point_iter) == 0.){
-			average_field_temp(point_iter) = 1E-3;
-		}
-		Constraint_solar_Trip_temp.push_back(Eigen::TripletXd(point_iter, constraint_count_temp, 1.));
-		solar_radiation.mu_mean(constraint_count_temp) = average_field_temp(point_iter);
-		constraint_count_temp += 1;
-	}
-	solar_radiation.mu_mean = solar_radiation.mu_mean.head(constraint_count_temp);
-	//std::cout << solar_radiation.mu_mean.transpose() << "\n\n";
-	Eigen::SparseMatrix <double> Constraint_solar_temp(point_num, Constraint_solar_Trip_temp.size());
-	Constraint_solar_temp.setFromTriplets(Constraint_solar_Trip_temp.begin(), Constraint_solar_Trip_temp.end());
-
-	// Estimation step
-	BME_copula(solar_radiation, Power_network_inform, Constraint_solar_temp, 1E-3);
-	std::cout << solar_radiation.mu.transpose() * Constraint_solar_temp << "\n\n";
 }
 
 // Function that stores processed mean demand field
