@@ -45,8 +45,8 @@ namespace power_network{
 		Eigen::MatrixXd imbalance_field;
 		/** Time series of onshore wind capacity factor field at each spatial points.*/
 		Eigen::MatrixXd wind_on_cf;
-		/** Time series of solar radiation (W / m^2) field at each spatial points.*/
-		Eigen::MatrixXd solar_radiation;
+		/** Time series of solar capacity factor field at each spatial points.*/
+		Eigen::MatrixXd solar_cf;
 		/*@{*/
 
 		/**
