@@ -39,7 +39,7 @@
    <div id="projectbrief">Model for transition of end-users and the distribution power network. <a href=https://github.com/TonyYenTWN/trEnD target="_blank">Github repository</a> 
    </div>
    <div style="font-size:10px; bottom:0px; right:12.5px; position:fixed; text-align: center; background-color:rgba(255, 255, 255, 0.75);">
-	  Generated with <a href=https://www.doxygen.org target="_blank">Doxygen</a> 1.9.4 and <a href=https://github.com/piconomix/doxygen-github-markdown-theme target="_blank">template provided by piconomix</a>   
+	  Generated with <a href=https://www.doxygen.org target="_blank">Doxygen</a> 1.9.4 and <a href=https://github.com/TonyYenTWN/doxygen-github-markdown-theme target="_blank">template</a> tweaked from <a href=https://github.com/piconomix/doxygen-github-markdown-theme target="_blank">piconomix</a>   
    </div>
   </td>
     <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -121,7 +121,7 @@ $(document).ready(function(){initNavTree('d2/d8b/end-user_8h_source.html','../..
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        }</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">double</span> residential_ratio(){</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>            <span class="keywordtype">double</span> value = 1.;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>            <span class="keywordtype">double</span> value = .4;</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>            <span class="keywordflow">return</span> value;</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        }</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    }</div>
@@ -311,7 +311,13 @@ $(document).ready(function(){initNavTree('d2/d8b/end-user_8h_source.html','../..
 <div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>        <span class="keywordtype">void</span> <a class="code hl_function" href="../../d8/d3f/namespaceagent_1_1end__user.html#ab931c84643a38c6c448fdc2f75414c90">EV_schedule</a>(<span class="keywordtype">int</span>, <a class="code hl_struct" href="../../de/dbe/structagent_1_1sorted__vector.html">sorted_vector</a>, EV_inform&amp;);</div>
 <div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    }</div>
 <div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    sorted_vector <a class="code hl_function" href="../../d2/d00/namespaceagent.html#a03e096d663464ad06c2563c401d7ce83">sort</a>(Eigen::VectorXd);</div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>}</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <span class="keyword">static</span> <span class="keyword">inline</span> <span class="keywordtype">double</span> solar_cf_calculation(<span class="keywordtype">double</span> solar_radiation){</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        <span class="keywordtype">double</span> value = (solar_radiation - 1.) * .0007;</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        value = std::min(.7, value);</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        value = std::max(0., value);</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        <span class="keywordflow">return</span> value;</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    };</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>}</div>
 <div class="ttc" id="abasic__definitions_8h_html"><div class="ttname"><a href="../../d5/da0/basic__definitions_8h.html">basic_definitions.h</a></div></div>
 <div class="ttc" id="aeigen__sparse_8h_html"><div class="ttname"><a href="../../d9/d42/eigen__sparse_8h.html">eigen_sparse.h</a></div></div>
 <div class="ttc" id="anamespaceagent_1_1end__user_html_a43276480df5494a489b2905cf75a2412"><div class="ttname"><a href="../../d8/d3f/namespaceagent_1_1end__user.html#a43276480df5494a489b2905cf75a2412">agent::end_user::profiles</a></div><div class="ttdeci">std::vector&lt; std::vector&lt; profile &gt; &gt; profiles</div><div class="ttdoc">A 2D vector of end-user profiles. The 1st dimension represents the spatial points,...</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d8b/end-user_8h_source.html#l00193">end-user.h:193</a></div></div>

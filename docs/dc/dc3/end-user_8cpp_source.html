@@ -39,7 +39,7 @@
    <div id="projectbrief">Model for transition of end-users and the distribution power network. <a href=https://github.com/TonyYenTWN/trEnD target="_blank">Github repository</a> 
    </div>
    <div style="font-size:10px; bottom:0px; right:12.5px; position:fixed; text-align: center; background-color:rgba(255, 255, 255, 0.75);">
-	  Generated with <a href=https://www.doxygen.org target="_blank">Doxygen</a> 1.9.4 and <a href=https://github.com/piconomix/doxygen-github-markdown-theme target="_blank">template provided by piconomix</a>   
+	  Generated with <a href=https://www.doxygen.org target="_blank">Doxygen</a> 1.9.4 and <a href=https://github.com/TonyYenTWN/doxygen-github-markdown-theme target="_blank">template</a> tweaked from <a href=https://github.com/piconomix/doxygen-github-markdown-theme target="_blank">piconomix</a>   
    </div>
   </td>
     <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -297,60 +297,6 @@ $(document).ready(function(){initNavTree('dc/dc3/end-user_8cpp_source.html','../
 <div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>        <a class="code hl_function" href="../../d8/d3f/namespaceagent_1_1end__user.html#abcd0351a9315f49ffa5350623ebc12a1">storage_schedule_LP_optimize</a>(tick, expected_price_sorted, result.<a class="code hl_variable" href="../../da/d92/structagent_1_1end__user_1_1EV__inform.html#acb90d5492f84189de62bb31de2806cd0">BESS</a>, 1);</div>
 <div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    }</div>
 <div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>}</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span> </div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span><span class="comment">//void EV_schedule(Eigen::VectorXd subscept_tariff, EV_inform &amp;result){</span></div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span><span class="comment">//  // Check if EV currently undergoes standby period at house</span></div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span><span class="comment">//  if(result.house_default_period(0) == 1){</span></div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span><span class="comment">//      int tick = 0;</span></div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span><span class="comment">//      while(result.house_default_period(tick) == 1){</span></div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span><span class="comment">//          tick += 1;</span></div>
-<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span><span class="comment">//      }</span></div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span><span class="comment">//</span></div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span><span class="comment">//      result.BESS.soc_final = result.BESS.energy_scale;</span></div>
-<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span><span class="comment">//      sorted_vector sorted_tariff = sort(subscept_tariff.head(tick));</span></div>
-<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span><span class="comment">//      //storage_schedule_naive(sorted_tariff, result.BESS);</span></div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span><span class="comment">//      storage_schedule_LP(subscept_tariff.head(tick), result.BESS, 1);</span></div>
-<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span><span class="comment">//  }</span></div>
-<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span><span class="comment">//}</span></div>
-<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span><span class="comment">//</span></div>
-<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span><span class="comment">//int main(){</span></div>
-<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span><span class="comment">//  // Test case Initialization</span></div>
-<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span><span class="comment">//  Eigen::VectorXd subscept_tariff(24);</span></div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span><span class="comment">//  subscept_tariff &lt;&lt; 1., 3., 2., 0., .1, .5, 4., 6., 8., 3., 2., 0., 1., 3., 2., 0., .1, .5, 4., 6., 8., 3., 2., 0.;</span></div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span><span class="comment">//  sorted_vector sorted_tariff = sort(subscept_tariff);</span></div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span><span class="comment">//  end_user_operation test_user;</span></div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span><span class="comment">//  test_user.normalized_default_demand_profile = Eigen::VectorXd(subscept_tariff.size());</span></div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span><span class="comment">//  test_user.normalized_default_demand_profile &lt;&lt; 1, 1.2, .8, .5, .9, 2., 3., 2.5, 1., 3., 2.5, 1., 1, 1.2, .8, .5, .9, 2., 3., 2.5, 1., 3., 2.5, 1.;</span></div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span><span class="comment">//</span></div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span><span class="comment">//  // Smart appliance test</span></div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span><span class="comment">//  test_user.smart_appliance.scale = .2;</span></div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span><span class="comment">//  test_user.smart_appliance.flexibility_factor = .5;</span></div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span><span class="comment">//  smart_appliance_schedule(sorted_tariff, test_user.normalized_default_demand_profile, 0, test_user.smart_appliance);</span></div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span><span class="comment">//  //std::cout &lt;&lt; test_user.smart_appliance.normalized_scheduled_profile.transpose() &lt;&lt; &quot;\n&quot; &lt;&lt; std::endl;</span></div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span><span class="comment">//</span></div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span><span class="comment">//  // BESS test, naive</span></div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span><span class="comment">//  test_user.BESS.energy_scale = 4.;</span></div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span><span class="comment">//  test_user.BESS.capacity_scale = 1.;</span></div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span><span class="comment">//  test_user.BESS.efficiency = .95;</span></div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span><span class="comment">//  test_user.BESS.soc_ini = 2.;</span></div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span><span class="comment">//  test_user.BESS.soc_final = 2.;</span></div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span><span class="comment">//  storage_schedule_naive(sorted_tariff, test_user.BESS);</span></div>
-<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span><span class="comment">//  std::cout &lt;&lt; test_user.BESS.normalized_scheduled_capacity_profile.transpose() &lt;&lt; &quot;\n&quot; &lt;&lt; std::endl;</span></div>
-<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span><span class="comment">//  storage_schedule_LP(subscept_tariff, test_user.BESS, 1);</span></div>
-<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span><span class="comment">//  std::cout &lt;&lt; test_user.BESS.normalized_scheduled_capacity_profile.transpose() &lt;&lt; &quot;\n\n&quot;;</span></div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span><span class="comment">//</span></div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span><span class="comment">//  // EV test</span></div>
-<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span><span class="comment">//  test_user.EV.energy_demand = 1.;</span></div>
-<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span><span class="comment">//  test_user.EV.BESS = test_user.BESS;</span></div>
-<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span><span class="comment">//  test_user.EV.usage_default_period = Eigen::VectorXi::Zero(subscept_tariff.size());</span></div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span><span class="comment">//  test_user.EV.usage_default_period(6) = 1;</span></div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span><span class="comment">//  test_user.EV.usage_default_period(17) = 1;</span></div>
-<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span><span class="comment">//  test_user.EV.house_default_period = Eigen::VectorXi::Zero(subscept_tariff.size());</span></div>
-<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span><span class="comment">//  test_user.EV.house_default_period.head(6) &lt;&lt; 1, 1, 1, 1, 1, 1;</span></div>
-<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span><span class="comment">//  test_user.EV.house_default_period.tail(6) &lt;&lt; 1, 1, 1, 1, 1, 1;</span></div>
-<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span><span class="comment">//  EV_schedule(subscept_tariff, test_user.EV);</span></div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span><span class="comment">//  std::cout &lt;&lt; test_user.EV.BESS.normalized_scheduled_capacity_profile.transpose() &lt;&lt; &quot;\n&quot;;</span></div>
-<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span><span class="comment">//}</span></div>
 <div class="ttc" id="aend-user_8h_html"><div class="ttname"><a href="../../d2/d8b/end-user_8h.html">end-user.h</a></div></div>
 <div class="ttc" id="anamespaceEigen_html_ac0d9d1187ce28ccc8e2aef867e87b9c9"><div class="ttname"><a href="../../d1/d62/namespaceEigen.html#ac0d9d1187ce28ccc8e2aef867e87b9c9">Eigen::VectorXpd</a></div><div class="ttdeci">Eigen::Matrix&lt; ptrdiff_t, Eigen::Dynamic, 1 &gt; VectorXpd</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/da0/basic__definitions_8h_source.html#l00018">basic_definitions.h:18</a></div></div>
 <div class="ttc" id="anamespaceagent_1_1end__user_html_a6eb2228d59708556b675a728f7c0b681"><div class="ttname"><a href="../../d8/d3f/namespaceagent_1_1end__user.html#a6eb2228d59708556b675a728f7c0b681">agent::end_user::storage_schedule_LP_mold</a></div><div class="ttdeci">alglib::minlpstate storage_schedule_LP_mold(int)</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/dc3/end-user_8cpp_source.html#l00044">end-user.cpp:44</a></div></div>

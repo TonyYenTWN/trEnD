@@ -14,5 +14,6 @@ var searchData=
   ['available_5fratio_5fdemand_11',['available_ratio_demand',['../d1/df3/structpower__market_1_1control__reserve__inform.html#a5225cd7424fd836b9a9d3cb3356025c2',1,'power_market::control_reserve_inform']]],
   ['available_5fratio_5fsupply_12',['available_ratio_supply',['../d1/df3/structpower__market_1_1control__reserve__inform.html#ae6364d435c273e54306a861eeb1b12eb',1,'power_market::control_reserve_inform']]],
   ['end_5fuser_13',['end_user',['../d8/d3f/namespaceagent_1_1end__user.html',1,'agent']]],
-  ['parameters_14',['parameters',['../d5/d98/namespaceagent_1_1parameters.html',1,'agent']]]
+  ['industrial_14',['industrial',['../db/d80/namespaceagent_1_1industrial.html',1,'agent']]],
+  ['parameters_15',['parameters',['../d5/d98/namespaceagent_1_1parameters.html',1,'agent']]]
 ];
