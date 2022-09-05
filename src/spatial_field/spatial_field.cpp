@@ -525,10 +525,10 @@ void spatial_field::spatial_field_store(power_network::network_inform &Power_net
 	Power_network_inform.points.nominal_mean_demand_field = Eigen::MatrixXd(row_num, Time);
 	Power_network_inform.points.imbalance_field = Eigen::MatrixXd(row_num, Time);
 	Power_network_inform.points.wind_on_cf = Eigen::MatrixXd(row_num, Time);
-	Power_network_inform.points.solar_radiation = Eigen::MatrixXd(row_num, Time);
+	Power_network_inform.points.solar_cf = Eigen::MatrixXd(row_num, Time);
 
 	//for(int tick = 0; tick < Time; ++ tick){
-	for(int tick = 0; tick < 100; ++ tick){
+	for(int tick = 0; tick < 24; ++ tick){
 		// Find zeros before the number
 		int count_zeros = 0;
 		int tick_temp = tick;
@@ -550,6 +550,10 @@ void spatial_field::spatial_field_store(power_network::network_inform &Power_net
 		Power_network_inform.points.nominal_mean_demand_field.col(tick) = basic::read_file(row_num, 1, fin_demand_temp);
 		Power_network_inform.points.imbalance_field.col(tick) = basic::read_file(row_num, 1, fin_imbalance_temp);
 		Power_network_inform.points.wind_on_cf.col(tick) = basic::read_file(row_num, 1, fin_wind_on_temp);
-		Power_network_inform.points.solar_radiation.col(tick) = basic::read_file(row_num, 1, fin_solar_temp);
+		Eigen::VectorXd solar_radiation = basic::read_file(row_num, 1, fin_solar_temp);
+
+		for(int point_iter = 0; point_iter < row_num; ++ point_iter){
+			Power_network_inform.points.solar_cf(point_iter, tick) = solar_cf_calculation(solar_radiation(point_iter));
+		}
 	}
 }
