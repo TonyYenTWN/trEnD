@@ -135,6 +135,7 @@ agent::end_user::profiles power_market::DSO_agents_set(market_inform &Internatio
 	auto Problem = agent::end_user::storage_schedule_LP_mold(foresight_time);
 	for(int point_iter = 0; point_iter < end_user_profiles.size(); ++ point_iter){
 		int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
+
 		for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
 			end_user_profiles[point_iter][sample_iter].operation.weight = weight[sample_iter];
 
@@ -143,7 +144,11 @@ agent::end_user::profiles power_market::DSO_agents_set(market_inform &Internatio
 
 			// PV
 			end_user_profiles[point_iter][sample_iter].operation.PV_scale = .01;
-
+			end_user_profiles[point_iter][sample_iter].operation.normalized_default_PV_profile = Eigen::VectorXd(foresight_time);
+			for(int tick = 0; tick < foresight_time; ++ tick){
+				end_user_profiles[point_iter][sample_iter].operation.normalized_default_PV_profile(tick) = Power_network_inform.points.solar_cf(point_iter, tick);
+				end_user_profiles[point_iter][sample_iter].operation.normalized_default_PV_profile(tick) *= end_user_profiles[point_iter][sample_iter].operation.PV_scale;
+			}
 
 			// Smart appliance
 			end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale = 0.;
@@ -172,6 +177,7 @@ agent::end_user::profiles power_market::DSO_agents_set(market_inform &Internatio
 			end_user_profiles[point_iter][sample_iter].operation.demand_flex_price = International_Market.bidded_price(end_user_profiles[point_iter][sample_iter].operation.demand_flex_price_ID);
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile = end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile;
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile *= (1. - end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale);
+			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile -= end_user_profiles[point_iter][sample_iter].operation.normalized_default_PV_profile;
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile = end_user_profiles[point_iter][sample_iter].operation.smart_appliance.normalized_scheduled_profile;
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile -= end_user_profiles[point_iter][sample_iter].operation.EV.BESS.normalized_scheduled_capacity_profile;
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile -= end_user_profiles[point_iter][sample_iter].operation.BESS.normalized_scheduled_capacity_profile;
