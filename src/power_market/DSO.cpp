@@ -141,6 +141,10 @@ agent::end_user::profiles power_market::DSO_agents_set(market_inform &Internatio
 			// Normalized default demand profile in the foresight timeframe
 			end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile = residential_ratio * (Power_network_inform.points.nominal_mean_demand_field.row(point_iter)).head(foresight_time);
 
+			// PV
+			end_user_profiles[point_iter][sample_iter].operation.PV_scale = .01;
+
+
 			// Smart appliance
 			end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale = 0.;
 			end_user_profiles[point_iter][sample_iter].operation.smart_appliance.flexibility_factor = .5;
