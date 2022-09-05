@@ -486,9 +486,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 			if(average_field_temp(point_iter) < 0.){
 				continue;
 			}
-			if(average_field_temp(point_iter) == 0.){
-				average_field_temp(point_iter) = 1.;
-			}
+			average_field_temp(point_iter) += 1.;
 			Constraint_solar_Trip_temp.push_back(Eigen::TripletXd(point_iter, constraint_count_temp, 1.));
 			solar_radiation.mu_mean(constraint_count_temp) = average_field_temp(point_iter);
 			constraint_count_temp += 1;
@@ -521,11 +519,12 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 }
 
 // Function that stores processed mean demand field
-void spatial_field::spatial_field_store(power_network::network_inform &Power_network_inform, std::string fin_demand, std::string fin_imbalance, std::string fin_wind_on, int Time){
+void spatial_field::spatial_field_store(power_network::network_inform &Power_network_inform, std::string fin_demand, std::string fin_imbalance, std::string fin_wind_on, std::string fin_solar, int Time){
 	int row_num = Power_network_inform.points.bidding_zone.rows();
 	Power_network_inform.points.nominal_mean_demand_field = Eigen::MatrixXd(row_num, Time);
 	Power_network_inform.points.imbalance_field = Eigen::MatrixXd(row_num, Time);
 	Power_network_inform.points.wind_on_cf = Eigen::MatrixXd(row_num, Time);
+	Power_network_inform.points.solar_radiation = Eigen::MatrixXd(row_num, Time);
 
 	//for(int tick = 0; tick < Time; ++ tick){
 	for(int tick = 0; tick < 100; ++ tick){
@@ -545,9 +544,11 @@ void spatial_field::spatial_field_store(power_network::network_inform &Power_net
 		std::string fin_demand_temp = fin_demand + digit_zeros + std::to_string(tick) + ".csv";
 		std::string fin_imbalance_temp = fin_imbalance + digit_zeros + std::to_string(tick) + ".csv";
 		std::string fin_wind_on_temp = fin_wind_on + digit_zeros + std::to_string(tick) + ".csv";
+		std::string fin_solar_temp = fin_solar + digit_zeros + std::to_string(tick) + ".csv";
 
 		Power_network_inform.points.nominal_mean_demand_field.col(tick) = basic::read_file(row_num, 1, fin_demand_temp);
 		Power_network_inform.points.imbalance_field.col(tick) = basic::read_file(row_num, 1, fin_imbalance_temp);
 		Power_network_inform.points.wind_on_cf.col(tick) = basic::read_file(row_num, 1, fin_wind_on_temp);
+		Power_network_inform.points.solar_radiation.col(tick) = basic::read_file(row_num, 1, fin_solar_temp);
 	}
 }

@@ -31,7 +31,7 @@ namespace spatial_field{
 	void spatial_field_estimation(power_network::network_inform&);
 	void wind_on_cf_estimation(power_network::network_inform&);
 	void solar_radiation_estimation(power_network::network_inform&);
-	void spatial_field_store(power_network::network_inform&, std::string, std::string, std::string, int);
+	void spatial_field_store(power_network::network_inform&, std::string, std::string, std::string, std::string, int);
 }
 
 #endif

@@ -9,7 +9,8 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	std::string fin_demand_field = "csv/processed/spatial_field/nominal_mean_demand_field_10km_ts_";
 	std::string fin_imbalance_field = "csv/processed/spatial_field/imbalance_field_10km_ts_";
 	std::string fin_wind_on = "csv/processed/spatial_field/wind_onshore_cf_field_10km_ts_";
-	spatial_field::spatial_field_store(Power_network_inform, fin_demand_field, fin_imbalance_field, fin_wind_on, Time);
+	std::string fin_solar = "csv/processed/spatial_field/solar_radiation_field_10km_ts_";
+	spatial_field::spatial_field_store(Power_network_inform, fin_demand_field, fin_imbalance_field, fin_wind_on, fin_solar, Time);
 
 	// Initialization of the IMO
 	std::string fin_name_moc = "csv/input/power_market/merit_order_curve_q_assimilated_2021.csv";
