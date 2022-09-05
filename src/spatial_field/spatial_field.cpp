@@ -54,7 +54,7 @@ namespace{
 		// ---------------------------------------------------------------------
 		// Solve the linear system
 		Eigen::VectorXd Constraint_sum = Constraint.transpose() * inform.mu_scale;
-		std::cout << Constraint_sum.transpose() << "\n\n";
+		//std::cout << Constraint_sum.transpose() << "\n\n";
 		Eigen::SparseLU <Eigen::SparseMatrix <double>, Eigen::COLAMDOrdering<int>> solver;
 		solver.compute(inform.Conversion_Mat_1);
 		Eigen::VectorXd lambda = solver.solve(inform.mu_mean - Constraint_sum);
@@ -117,7 +117,7 @@ void spatial_field::spatial_field_estimation(power_network::network_inform &Powe
 
 	// estimation step
 	BME_copula(nominal_demand, Power_network_inform, Constraint_demand, 1E-12);
-	//std::cout << nominal_demand.mu.transpose() * Constraint_demand << "\n\n";
+	std::cout << nominal_demand.mu.transpose() * Constraint_demand << "\n\n";
 
 	// Output the annual average of normalized mean demand field
 	std::string fout_name;
@@ -147,13 +147,13 @@ void spatial_field::spatial_field_estimation(power_network::network_inform &Powe
 	imbalance.mu_mean /= Time;
 	mu_0_scale = imbalance.mu_mean.sum() / Constraint_imbalance.sum();
 	imbalance.mu_scale = Eigen::VectorXd::Constant(point_num, mu_0_scale);
-	std::cout << imbalance.mu_scale.transpose() * Constraint_imbalance << "\n\n";
+	//std::cout << imbalance.mu_scale.transpose() * Constraint_imbalance << "\n\n";
 	imbalance.Conversion_Mat_1 = Constraint_imbalance.transpose() * Power_network_inform.points.covariance * Constraint_imbalance;
 	imbalance.Conversion_Mat_2 = Power_network_inform.points.covariance * Constraint_imbalance;
 
 	// estimation step
 	BME_linear(imbalance, Constraint_imbalance);
-	std::cout << imbalance.mu_mean.transpose() << "\n";
+	//std::cout << imbalance.mu_mean.transpose() << "\n";
 	std::cout << imbalance.mu.transpose() * Constraint_imbalance << "\n\n";
 
 	// Output the annual average of normalized mean demand field
@@ -166,7 +166,7 @@ void spatial_field::spatial_field_estimation(power_network::network_inform &Powe
 	// Estimate the normalized mean demand / imbalance field
 	// ------------------------------------------------------------------------------------------------------------------------------------------
 	// Initialization of parameters
-	nominal_demand.alpha_iteration = .01;
+	nominal_demand.alpha_iteration = 1.;
 	nominal_demand.mu_scale = nominal_demand.mu * 2. / pow(pi, .5);
 	nominal_demand.x_scale = Eigen::VectorXd(point_num);
 	for(int item = 0; item < point_num; ++ item){
@@ -177,12 +177,12 @@ void spatial_field::spatial_field_estimation(power_network::network_inform &Powe
 	imbalance.mu_scale = imbalance.mu;
 
 	// Run the algorithm for each time slice
-	for(int tick = 0; tick < 1; ++ tick){
+	for(int tick = 0; tick < 25; ++ tick){
 		nominal_demand.mu_mean = Demand_ts.row(tick).tail(bz_num);
 
 		// Estimation step
 		BME_copula(nominal_demand, Power_network_inform, Constraint_demand, 1E-3);
-		//std::cout << nominal_demand.mu.transpose() * Constraint_demand << "\n\n";
+		std::cout << nominal_demand.mu.transpose() * Constraint_demand << "\n\n";
 
 		// Output normalized mean demand field
 		int count_zeros = 0;
@@ -212,13 +212,13 @@ void spatial_field::spatial_field_estimation(power_network::network_inform &Powe
 		Constraint_imbalance.setFromTriplets(Constraint_imbalance_temp_Trip.begin(), Constraint_imbalance_temp_Trip.end());
 		imbalance.Conversion_Mat_1 = Constraint_imbalance.transpose() * Power_network_inform.points.covariance * Constraint_imbalance;
 		imbalance.Conversion_Mat_2 = Power_network_inform.points.covariance * Constraint_imbalance;
-		std::cout << imbalance.mu_scale.transpose() * Constraint_imbalance << "\n\n";
+		//std::cout << imbalance.mu_scale.transpose() * Constraint_imbalance << "\n\n";
 
 		imbalance.mu_mean = Imbalance_ts.row(tick);
 
 		// Estimation step
 		BME_linear(imbalance, Constraint_imbalance);
-		std::cout << imbalance.mu_mean.transpose() << "\n";
+		//std::cout << imbalance.mu_mean.transpose() << "\n";
 		std::cout << imbalance.mu.transpose() * Constraint_imbalance << "\n\n";
 
 		// Output the annual average of imbalance field
@@ -312,7 +312,7 @@ void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_n
 	// Estimate onshore wind capacity factor field
 	// ------------------------------------------------------------------------------------------------------------------------------------------
 	// Initialization of parameters
-	wind_on_cf.alpha_iteration = .25;
+	wind_on_cf.alpha_iteration = .5;
 	wind_on_cf.mu_scale = wind_on_cf.mu * 2. / pow(pi, .5);
 	wind_on_cf.x_scale = Eigen::VectorXd(point_num);
 	for(int item = 0; item < point_num; ++ item){
@@ -322,7 +322,7 @@ void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_n
 	wind_on_cf.x = wind_on_cf.x_scale;
 
 	// Run the algorithm for each time slice
-	for(int tick = 0; tick < 24; ++ tick){
+	for(int tick = 0; tick < 25; ++ tick){
 		wind_on_cf.mu_mean = (Wind_on_ts.row(tick)).segment(fin_wind_on_row_name, bz_num);
 		wind_on_cf.mu_mean = Redundant_col * wind_on_cf.mu_mean;
 
@@ -439,7 +439,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 	// Estimate solar radiation field
 	// ------------------------------------------------------------------------------------------------------------------------------------------
 	// Initialization of parameters
-	solar_radiation.alpha_iteration = .25;
+	solar_radiation.alpha_iteration = .5;
 	solar_radiation.mu_scale = solar_radiation.mu * 2. / pow(pi, .5);
 	solar_radiation.x_scale = Eigen::VectorXd(point_num);
 	for(int item = 0; item < point_num; ++ item){
@@ -449,7 +449,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 	solar_radiation.x = solar_radiation.x_scale;
 
 	// Run the algorithm for each time slice
-	for(int tick = 0; tick < 24; ++ tick){
+	for(int tick = 0; tick < 25; ++ tick){
 		Eigen::VectorXd solar_radiation_temp = -Eigen::VectorXd::Ones(station_num);
 		for(int station_iter = 0; station_iter < station_num; ++ station_iter){
 			int col_ID = station_iter + fin_solar_row_name;
@@ -528,7 +528,7 @@ void spatial_field::spatial_field_store(power_network::network_inform &Power_net
 	Power_network_inform.points.solar_cf = Eigen::MatrixXd(row_num, Time);
 
 	//for(int tick = 0; tick < Time; ++ tick){
-	for(int tick = 0; tick < 24; ++ tick){
+	for(int tick = 0; tick < 25; ++ tick){
 		// Find zeros before the number
 		int count_zeros = 0;
 		int tick_temp = tick;
