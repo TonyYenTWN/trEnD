@@ -277,7 +277,13 @@ void power_market::DSO_agents_update(int tick, agent::end_user::profiles &end_us
 			end_user_profiles[point_iter][sample_iter].operation.weight = weight[sample_iter];
 
 			// Normalized default demand profile in the foresight timeframe
-			end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile = residential_ratio * (Power_network_inform.points.nominal_mean_demand_field.row(point_iter)).head(foresight_time);
+			end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile.head(foresight_time - 1) = end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile.tail(foresight_time - 1);
+			end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile(foresight_time - 1) = residential_ratio * Power_network_inform.points.nominal_mean_demand_field(point_iter, tick + foresight_time - 1);
+
+			// PV
+			end_user_profiles[point_iter][sample_iter].operation.normalized_default_PV_profile.head(foresight_time - 1) = end_user_profiles[point_iter][sample_iter].operation.normalized_default_PV_profile.tail(foresight_time - 1);
+			end_user_profiles[point_iter][sample_iter].operation.normalized_default_PV_profile(foresight_time - 1) = Power_network_inform.points.solar_cf(point_iter, tick + foresight_time - 1);
+			end_user_profiles[point_iter][sample_iter].operation.normalized_default_PV_profile(foresight_time - 1) *= end_user_profiles[point_iter][sample_iter].operation.PV_scale;
 
 			// Smart appliance
 			end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale = .2;
@@ -299,6 +305,7 @@ void power_market::DSO_agents_update(int tick, agent::end_user::profiles &end_us
 			end_user_profiles[point_iter][sample_iter].operation.demand_flex_price = International_Market.price_range_inflex(1);
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile = end_user_profiles[point_iter][sample_iter].operation.normalized_default_demand_profile;
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile *= (1. - end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale);
+			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile -= end_user_profiles[point_iter][sample_iter].operation.normalized_default_PV_profile;
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile = end_user_profiles[point_iter][sample_iter].operation.smart_appliance.normalized_scheduled_profile;
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile -= end_user_profiles[point_iter][sample_iter].operation.EV.BESS.normalized_scheduled_capacity_profile;
 			end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile -= end_user_profiles[point_iter][sample_iter].operation.BESS.normalized_scheduled_capacity_profile;
