@@ -498,6 +498,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 
 		// Estimation step
 		BME_copula(solar_radiation, Power_network_inform, Constraint_solar_temp, 1E-3);
+		solar_radiation.mu = solar_radiation.mu.array() - 1.;
 		std::cout << solar_radiation.mu.transpose() * Constraint_solar_temp << "\n\n";
 
 		// Output onshore wind capacity factor
