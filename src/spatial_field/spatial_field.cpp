@@ -38,7 +38,7 @@ namespace{
 			Eigen::VectorXd mu_inv_0 = pow(inform.mu.array(), -1.);
 			dmu *= mu_inv_0;
 
-			std::cout << inform.mu.minCoeff() << "\t" << inform.mu.maxCoeff() << "\t" << dmu.lpNorm<Eigen::Infinity>() << "\n";
+			//std::cout << inform.mu.minCoeff() << "\t" << inform.mu.maxCoeff() << "\t" << dmu.lpNorm<Eigen::Infinity>() << "\n";
 			count += 1;
 		}
 		//std::cout << inform.mu.minCoeff() << "\t" << inform.mu.maxCoeff() << "\t" << dmu.lpNorm<Eigen::Infinity>() << "\n\n";
@@ -322,7 +322,7 @@ void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_n
 	wind_on_cf.x = wind_on_cf.x_scale;
 
 	// Run the algorithm for each time slice
-	for(int tick = 0; tick < 2; ++ tick){
+	for(int tick = 0; tick < 24; ++ tick){
 		wind_on_cf.mu_mean = (Wind_on_ts.row(tick)).segment(fin_wind_on_row_name, bz_num);
 		wind_on_cf.mu_mean = Redundant_col * wind_on_cf.mu_mean;
 
@@ -487,7 +487,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 				continue;
 			}
 			if(average_field_temp(point_iter) == 0.){
-				average_field_temp(point_iter) = 1E-3;
+				average_field_temp(point_iter) = 1.;
 			}
 			Constraint_solar_Trip_temp.push_back(Eigen::TripletXd(point_iter, constraint_count_temp, 1.));
 			solar_radiation.mu_mean(constraint_count_temp) = average_field_temp(point_iter);
