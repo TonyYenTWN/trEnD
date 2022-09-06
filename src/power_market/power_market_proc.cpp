@@ -14,8 +14,10 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 
 	// Initialization of the IMO
 	std::string fin_name_moc = "csv/input/power_market/merit_order_curve_q_assimilated_2021.csv";
-	std::string fin_name_demand = "csv/input/power_market/residual_load_default_forecast_2021.csv";
-	International_Market_Set(Power_market_inform.International_Market, Power_network_inform, Time, fin_name_moc, fin_name_demand);
+	//std::string fin_name_demand = "csv/input/power_market/residual_load_default_forecast_2021.csv";
+	std::string fin_name_demand = "csv/input/power_market/generation_total_forecast_2021.csv";
+	std::string fin_name_cbt = "csv/input/power_market/cbt_forecast_2021.csv";
+	International_Market_Set(Power_market_inform.International_Market, Power_network_inform, Time, fin_name_moc, fin_name_demand, fin_name_cbt);
 
 	// Initialization of the TSO
 	TSO_Market_Set(Power_market_inform.TSO_Market, Power_network_inform, Time);

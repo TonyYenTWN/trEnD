@@ -61,8 +61,6 @@ namespace power_market{
 
 	/**Information of the control reserve market*/
 	struct control_reserve_inform{
-		//Eigen::MatrixXd confirmed_positive;
-		//Eigen::MatrixXd confirmed_negative;
 		Eigen::MatrixXd activated_positive;
 		Eigen::MatrixXd activated_negative;
 
@@ -187,7 +185,7 @@ namespace power_market{
 #define IMO
 
 namespace power_market{
-	void International_Market_Set(market_inform&, power_network::network_inform&, int, std::string, std::string);
+	void International_Market_Set(market_inform&, power_network::network_inform&, int, std::string, std::string, std::string);
 	void International_Market_Optimization(int, market_inform&, bool print_result = 1);
 	void International_Market_Output(market_inform&);
 	void International_Market_Price_Estimation(int, market_inform&, power_network::network_inform&);
