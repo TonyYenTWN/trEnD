@@ -19,7 +19,7 @@ The following files can be found in the folder [power_market](https://github.com
 - [generation_wind_offshore_forecast_2021.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_market/generation_wind_offshore_forecast_2021.csv) stores the time series of  scheduled offshore wind power generation in the modeled bidding zones and their directly connected neighbors.
 - [generation_wind_onshore_forecast_2021.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_market/generation_wind_onshore_forecast_2021.csv) stores the time series of  scheduled onshore wind power generation in the modeled bidding zones and their directly connected neighbors. The data of Great Britian were extracted from [Elexon Portal](https://www.elexonportal.co.uk/).
 - [merit_order_curve_q_assimilated_2021.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_market/merit_order_curve_q_assimilated_2021.csv) stores the merit order curves of the modeled bidding zones and their directly connected neighbors. This file might not be needed in the future once merit order curves can be modeled endogeneously in the model.
-- [solar_radiation_2021.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_market/solar_radiation_2021.csv) stores the time series of solar radiation data from meteorology stations in Norway.
+- [solar_radiation_2021.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_market/solar_radiation_2021.csv) stores the time series of solar radiation data from meteorology stations in the modeled bidding zones.
 
 ### .csv Files for Power Network
 The files can be found in the folder [power_network](https://github.com/TonyYenTWN/trEnD/tree/main/csv/input/power_network). If not specifically mentioned, the time series were extracted from the [NVE dataset](https://nedlasting.nve.no/gis/).
@@ -27,7 +27,13 @@ The files can be found in the folder [power_network](https://github.com/TonyYenT
 - [DSO_Bidding_Zone.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_network/DSO_Bidding_Zone.csv) stores the bidding zones where original DSO areas from the NVE dataset are located.
 - [cbt_constraint.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_network/cbt_constraint.csv) stores the cross border transmission flow constraint between the modeled bidding zones and their directly connected neighbors. "-1" means that there are no connections between the 2 bidding zones. This dataset was inferred from [cbt_forecast_2021.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_market/cbt_forecast_2021.csv).
 - [cbt_entry_nodes.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_network/cbt_entry_nodes.csv) stores the transmission nodes where power flows from / to neighboring bidding zones injects / leaves. These transmission nodes were inferred from the transmission network graph from [PyPSA-Eur](https://pypsa-eur.readthedocs.io/).
-- [hydro_plants.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_network/hydro_plants.csv) stores the information of hydroelectric power plants in Norway.
+- [hydro_plants.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_network/hydro_plants.csv) stores the information of hydroelectric power plants in the modeled bidding zones.
+- [point_info.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_network/point_info.csv) stores the information of spatial points considered in the model.
+- [point_matrix.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_network/point_matrix.csv) stores the geometrical relations of the spatial points in [point_info.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_network/point_info.csv) with a matrix. It makes finding the neighbors of a spatial point faster.
+- [solar_radiation_stations.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_network/solar_radiation_stations.csv) stores the information of the meteorology stations in the modeled bidding zones.
+- [transmission_edges.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_network/transmission_edges.csv) stores the information of the edges of the transmission network in the modeled bidding zones.
+- [transmission_nodes.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_network/transmission_nodes.csv) stores the information of the nodes of the transmission network in the modeled bidding zones.
+- [wind_plants.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_network/wind_plants.csv) stores the information of wind power plants in the modeled bidding zones.
 
 ## Compiling the Source Codes
 ### Prerequisite for Compilation
