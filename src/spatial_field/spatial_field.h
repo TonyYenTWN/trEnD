@@ -24,11 +24,19 @@ namespace spatial_field{
 		Eigen::SparseMatrix <double> Conversion_Mat_2;
 	};
 
+	struct fin_field{
+		std::string dir;
+		std::string demand;
+		std::string imbalance;
+		std::string solar;
+		std::string wind_on;
+	};
+
 	// Functions
 	void spatial_field_estimation(power_network::network_inform&);
 	void wind_on_cf_estimation(power_network::network_inform&);
 	void solar_radiation_estimation(power_network::network_inform&);
-	void spatial_field_store(power_network::network_inform&, std::string, std::string, std::string, std::string, int);
+	void spatial_field_store(power_network::network_inform&, fin_field, int);
 	static inline double solar_cf_calculation(double solar_radiation){
 		double value = solar_radiation * .0007;
 		value = std::min(.7, value);

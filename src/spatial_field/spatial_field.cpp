@@ -520,7 +520,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 }
 
 // Function that stores processed mean demand field
-void spatial_field::spatial_field_store(power_network::network_inform &Power_network_inform, std::string fin_demand, std::string fin_imbalance, std::string fin_wind_on, std::string fin_solar, int Time){
+void spatial_field::spatial_field_store(power_network::network_inform &Power_network_inform, fin_field fin_field_processed, int Time){
 	int row_num = Power_network_inform.points.bidding_zone.rows();
 	Power_network_inform.points.nominal_mean_demand_field = Eigen::MatrixXd(row_num, Time);
 	Power_network_inform.points.imbalance_field = Eigen::MatrixXd(row_num, Time);
@@ -542,10 +542,10 @@ void spatial_field::spatial_field_store(power_network::network_inform &Power_net
 		}
 
 		// File name with enumeration
-		std::string fin_demand_temp = fin_demand + digit_zeros + std::to_string(tick) + ".csv";
-		std::string fin_imbalance_temp = fin_imbalance + digit_zeros + std::to_string(tick) + ".csv";
-		std::string fin_wind_on_temp = fin_wind_on + digit_zeros + std::to_string(tick) + ".csv";
-		std::string fin_solar_temp = fin_solar + digit_zeros + std::to_string(tick) + ".csv";
+		std::string fin_demand_temp = fin_field_processed.demand + digit_zeros + std::to_string(tick) + ".csv";
+		std::string fin_imbalance_temp = fin_field_processed.imbalance + digit_zeros + std::to_string(tick) + ".csv";
+		std::string fin_wind_on_temp = fin_field_processed.wind_on + digit_zeros + std::to_string(tick) + ".csv";
+		std::string fin_solar_temp = fin_field_processed.solar + digit_zeros + std::to_string(tick) + ".csv";
 
 		Power_network_inform.points.nominal_mean_demand_field.col(tick) = basic::read_file(row_num, 1, fin_demand_temp);
 		Power_network_inform.points.imbalance_field.col(tick) = basic::read_file(row_num, 1, fin_imbalance_temp);
