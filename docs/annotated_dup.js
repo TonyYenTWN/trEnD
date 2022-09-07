@@ -14,6 +14,7 @@ var annotated_dup =
     ] ],
     [ "power_market", "d5/d60/namespacepower__market.html", [
       [ "control_reserve_inform", "d1/df3/structpower__market_1_1control__reserve__inform.html", "d1/df3/structpower__market_1_1control__reserve__inform" ],
+      [ "fin_market", "d9/d9c/structpower__market_1_1fin__market.html", "d9/d9c/structpower__market_1_1fin__market" ],
       [ "market_inform", "d8/d2d/structpower__market_1_1market__inform.html", "d8/d2d/structpower__market_1_1market__inform" ],
       [ "market_whole_inform", "da/d16/structpower__market_1_1market__whole__inform.html", "da/d16/structpower__market_1_1market__whole__inform" ],
       [ "network_graph", "d5/d93/structpower__market_1_1network__graph.html", "d5/d93/structpower__market_1_1network__graph" ]
@@ -32,6 +33,7 @@ var annotated_dup =
     ] ],
     [ "spatial_field", "d9/d64/namespacespatial__field.html", [
       [ "Earth_Constant", "d4/d89/classspatial__field_1_1Earth__Constant.html", "d4/d89/classspatial__field_1_1Earth__Constant" ],
-      [ "estimation_inform", "d1/d01/structspatial__field_1_1estimation__inform.html", "d1/d01/structspatial__field_1_1estimation__inform" ]
+      [ "estimation_inform", "d1/d01/structspatial__field_1_1estimation__inform.html", "d1/d01/structspatial__field_1_1estimation__inform" ],
+      [ "fin_field", "d2/d48/structspatial__field_1_1fin__field.html", "d2/d48/structspatial__field_1_1fin__field" ]
     ] ]
 ];
