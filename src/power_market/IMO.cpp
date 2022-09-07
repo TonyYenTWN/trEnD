@@ -16,8 +16,7 @@ namespace{
 			int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
 			double bid_quan = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick);
 			bid_quan *= Power_network_inform.points.population_density(point_iter);
-			// bid_quan *= Power_network_inform.points.point_area;
-			// nominal demand currently wrong in processed files, should change them and then multiply area of a point later
+			bid_quan *= Power_network_inform.points.point_area / 1000.;
 
 			International_Market.submitted_demand(International_Market.price_intervals + 1, bz_ID) += bid_quan;
 		}
@@ -120,21 +119,16 @@ void power_market::International_Market_Set(market_inform &International_Market,
 		International_Market.demand_default.col(end_zone_ID) += cbt_ts.col(start_edge_ID);
 		International_Market.demand_default.col(end_zone_ID) -= cbt_ts.col(end_edge_ID);
 	}
-	//std::cout << International_Market.demand_default.topRows(5) << "\n\n";
 
 	// Calculate default residual demand profile from subtracting VRE for nations on the boundary
 	auto solar_ts_dim = basic::get_file_dim(fin_market.solar);
 	auto solar_ts = basic::read_file(solar_ts_dim[0], solar_ts_dim[1], fin_market.solar, 1);
-	//std::cout << solar_ts.topRows(24) << "\n\n";
 	auto wind_on_ts_dim = basic::get_file_dim(fin_market.wind_on);
 	auto wind_on_ts = basic::read_file(wind_on_ts_dim[0], wind_on_ts_dim[1], fin_market.wind_on, 1);
-	//std::cout << wind_on_ts.topRows(24) << "\n\n";
 	auto wind_off_ts_dim = basic::get_file_dim(fin_market.wind_off);
 	auto wind_off_ts = basic::read_file(wind_off_ts_dim[0], wind_off_ts_dim[1], fin_market.wind_off, 1);
-	//std::cout << wind_off_ts.topRows(24) << "\n\n";
 	int boundary_num = International_Market.num_zone - International_Market.cross_border_zone_start;
 	International_Market.demand_default.rightCols(boundary_num) -= solar_ts.rightCols(boundary_num) + wind_on_ts.rightCols(boundary_num) + wind_off_ts.rightCols(boundary_num);
-	//std::cout << International_Market.demand_default.topRows(5) << "\n\n";
 
 	// Initialization of process variables
 	power_market::Market_Initialization(International_Market);
