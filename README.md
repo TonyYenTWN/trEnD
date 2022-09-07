@@ -4,10 +4,12 @@ Welcome to trEnD, a c++ based model of the energy transition, focusing on the en
 
 # User Guide
 ## Preparing the Input .csv Files
-An example of the input csv files can be found [here](https://github.com/TonyYenTWN/trEnD/tree/main/csv/input). In case the model is applied for other datasets, the format of the csv files should be kept the same. Below is a list of the input .csv files and their format.
+An example of the input csv files can be found [here](https://github.com/TonyYenTWN/trEnD/tree/main/csv/input). In case the model is applied for other time periods of the same region, the format of the csv files should be kept the same. For regions where conventional thermal power plants still play a role in the power system, additional input data might be needed, and corresponding parts of the source codes might therefore have to be modified in the future. 
+
+Below is a brief summary of the input .csv files currently used in the model.
 
 ### .csv Files for Power Market
-The following files can be found in the folder [power_market](https://github.com/TonyYenTWN/trEnD/tree/main/csv/input/power_market). If not specifically mentioned, the time series extracted from [ENTSO-E Transparency Platform](https://transparency.entsoe.eu/).
+The following files can be found in the folder [power_market](https://github.com/TonyYenTWN/trEnD/tree/main/csv/input/power_market). If not specifically mentioned, the time series were extracted from [ENTSO-E Transparency Platform](https://transparency.entsoe.eu/).
 
 - [cbt_forecast_2021.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_market/cbt_forecast_2021.csv) stores the time series of scheduled cross border transmission flows of the modeled bidding zones and their directly connected neighbors. Since there can be two directions of transmission flow between 2 connected bidding zones, each connection contributes to 2 columns of time series.
 - [control_reserve_activated_2021.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_market/control_reserve_activated_2021.csv) stores the time series of activated control reserve in the modeled bidding zones. Since the activated control reserve can be both positive and negative, each bidding zone contributes to 2 columns of time series.
@@ -16,12 +18,16 @@ The following files can be found in the folder [power_market](https://github.com
 - [generation_total_forecast_2021.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_market/generation_total_forecast_2021.csv) stores the time series of  scheduled total generation in the modeled bidding zones and their directly connected neighbors.
 - [generation_wind_offshore_forecast_2021.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_market/generation_wind_offshore_forecast_2021.csv) stores the time series of  scheduled offshore wind power generation in the modeled bidding zones and their directly connected neighbors.
 - [generation_wind_onshore_forecast_2021.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_market/generation_wind_onshore_forecast_2021.csv) stores the time series of  scheduled onshore wind power generation in the modeled bidding zones and their directly connected neighbors. The data of Great Britian were extracted from [Elexon Portal](https://www.elexonportal.co.uk/).
-- [merit_order_curve_q_assimilated_2021.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_market/merit_order_curve_q_assimilated_2021.csv) stores the merit order curves of the modeled bidding zones and their directly connected neighbors.
+- [merit_order_curve_q_assimilated_2021.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_market/merit_order_curve_q_assimilated_2021.csv) stores the merit order curves of the modeled bidding zones and their directly connected neighbors. This file might not be needed in the future once merit order curves can be modeled endogeneously in the model.
 - [solar_radiation_2021.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_market/solar_radiation_2021.csv) stores the time series of solar radiation data from meteorology stations in Norway.
 
-
 ### .csv Files for Power Network
-The files can be found in the folder [power_network](https://github.com/TonyYenTWN/trEnD/tree/main/csv/input/power_network).
+The files can be found in the folder [power_network](https://github.com/TonyYenTWN/trEnD/tree/main/csv/input/power_network). If not specifically mentioned, the time series were extracted from the [NVE dataset](https://nedlasting.nve.no/gis/).
+
+- [DSO_Bidding_Zone.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_network/DSO_Bidding_Zone.csv) stores the bidding zones where original DSO areas from the NVE dataset are located.
+- [cbt_constraint.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_network/cbt_constraint.csv) stores the cross border transmission flow constraint between the modeled bidding zones and their directly connected neighbors. "-1" means that there are no connections between the 2 bidding zones. This dataset was inferred from [cbt_forecast_2021.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_market/cbt_forecast_2021.csv).
+- [cbt_entry_nodes.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_network/cbt_entry_nodes.csv) stores the transmission nodes where power flows from / to neighboring bidding zones injects / leaves. These transmission nodes were inferred from the transmission network graph from [PyPSA-Eur](https://pypsa-eur.readthedocs.io/).
+- [hydro_plants.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_network/hydro_plants.csv) stores the information of hydroelectric power plants in Norway.
 
 ## Compiling the Source Codes
 ### Prerequisite for Compilation
