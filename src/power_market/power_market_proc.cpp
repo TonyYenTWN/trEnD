@@ -6,18 +6,24 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	int Time = parameters::Time();
 
 	// Initialization of processed spatial fields
-	std::string fin_demand_field = "csv/processed/spatial_field/nominal_mean_demand_field_10km_ts_";
-	std::string fin_imbalance_field = "csv/processed/spatial_field/imbalance_field_10km_ts_";
-	std::string fin_wind_on = "csv/processed/spatial_field/wind_onshore_cf_field_10km_ts_";
-	std::string fin_solar = "csv/processed/spatial_field/solar_radiation_field_10km_ts_";
-	spatial_field::spatial_field_store(Power_network_inform, fin_demand_field, fin_imbalance_field, fin_wind_on, fin_solar, Time);
+	spatial_field::fin_field fin_field_processed;
+	fin_field_processed.dir = "csv/processed/spatial_field/";
+	fin_field_processed.demand = fin_field_processed.dir + "nominal_mean_demand_field_10km_ts_";
+	fin_field_processed.imbalance = fin_field_processed.dir + "imbalance_field_10km_ts_";
+	fin_field_processed.solar = fin_field_processed.dir + "solar_radiation_field_10km_ts_";
+	fin_field_processed.wind_on = fin_field_processed.dir + "wind_onshore_cf_field_10km_ts_";
+	spatial_field::spatial_field_store(Power_network_inform, fin_field_processed, Time);
 
 	// Initialization of the IMO
-	std::string fin_name_moc = "csv/input/power_market/merit_order_curve_q_assimilated_2021.csv";
-	//std::string fin_name_demand = "csv/input/power_market/residual_load_default_forecast_2021.csv";
-	std::string fin_name_demand = "csv/input/power_market/generation_total_forecast_2021.csv";
-	std::string fin_name_cbt = "csv/input/power_market/cbt_forecast_2021.csv";
-	International_Market_Set(Power_market_inform.International_Market, Power_network_inform, Time, fin_name_moc, fin_name_demand, fin_name_cbt);
+	fin_market fin_market;
+	fin_market.dir = "csv/input/power_market/";
+	fin_market.moc = fin_market.dir + "merit_order_curve_q_assimilated_2021.csv";
+	fin_market.demand = fin_market.dir + "generation_total_forecast_2021.csv";
+	fin_market.cbt = fin_market.dir + "cbt_forecast_2021.csv";
+	fin_market.solar= fin_market.dir + "generation_solar_forecast_2021.csv";
+	fin_market.wind_on = fin_market.dir + "generation_wind_onshore_forecast_2021.csv";
+	fin_market.wind_off = fin_market.dir + "generation_wind_offshore_forecast_2021.csv";
+	International_Market_Set(Power_market_inform.International_Market, Power_network_inform, Time, fin_market);
 
 	// Initialization of the TSO
 	TSO_Market_Set(Power_market_inform.TSO_Market, Power_network_inform, Time);

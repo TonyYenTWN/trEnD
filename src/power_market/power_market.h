@@ -185,7 +185,17 @@ namespace power_market{
 #define IMO
 
 namespace power_market{
-	void International_Market_Set(market_inform&, power_network::network_inform&, int, std::string, std::string, std::string);
+	struct fin_market{
+		std::string dir;
+		std::string moc;
+		std::string demand;
+		std::string cbt;
+		std::string wind_on;
+		std::string wind_off;
+		std::string solar;
+	};
+
+	void International_Market_Set(market_inform&, power_network::network_inform&, int, fin_market);
 	void International_Market_Optimization(int, market_inform&, bool print_result = 1);
 	void International_Market_Output(market_inform&);
 	void International_Market_Price_Estimation(int, market_inform&, power_network::network_inform&);

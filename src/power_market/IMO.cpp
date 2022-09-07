@@ -58,7 +58,7 @@ namespace{
 	}
 }
 
-void power_market::International_Market_Set(market_inform &International_Market, power_network::network_inform &Power_network_inform, int Time, std::string fin_name_moc, std::string fin_name_demand, std::string fin_name_cbt){
+void power_market::International_Market_Set(market_inform &International_Market, power_network::network_inform &Power_network_inform, int Time, fin_market fin_market){
 	// Input Parameters of international market
 	International_Market.num_zone = Power_network_inform.cbt.bz_names.size();
 	International_Market.cross_border_zone_start = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
@@ -72,12 +72,14 @@ void power_market::International_Market_Set(market_inform &International_Market,
 	International_Market.network.incidence.reserve(International_Market.network.num_vertice * International_Market.network.num_vertice);
 	for(int row_iter = 0; row_iter < International_Market.network.num_vertice - 1; ++ row_iter){
 		for(int col_iter = row_iter + 1; col_iter < International_Market.network.num_vertice; ++ col_iter){
-			bool add_flag = 1 - (International_Market.network.line_capacity_matrix(row_iter, col_iter) == 0.) * (International_Market.network.line_capacity_matrix(col_iter, row_iter) == 0.);
+			bool add_flag = 1 - (International_Market.network.line_capacity_matrix(row_iter, col_iter) < 0.) * (International_Market.network.line_capacity_matrix(col_iter, row_iter) < 0.);
 			if(add_flag){
 				International_Market.network.incidence.push_back(Eigen::Vector2i(row_iter, col_iter));
+				//std::cout << row_iter << "\t" << col_iter << "\n";
 			}
 		}
 	}
+	International_Market.network.line_capacity_matrix = Eigen::MatrixXd::Ones(International_Market.num_zone, International_Market.num_zone).array() * International_Market.network.line_capacity_matrix.array().max(0);
 
 	// Construct power constraint matrix
 	International_Market.network.num_edges = International_Market.network.incidence.size();
@@ -91,40 +93,48 @@ void power_market::International_Market_Set(market_inform &International_Market,
 
 	// Quantity density at each price
 	// Read inferred merit order curve data
-	int num_row = International_Market.price_intervals + 2;
-	int num_col = International_Market.num_zone;
-	Eigen::MatrixXd merit_order_curve_q = basic::read_file(num_row, num_col, fin_name_moc);
-	Eigen::MatrixXd diff_merit_order_curve_q = merit_order_curve_q.bottomRows(num_row - 1) - merit_order_curve_q.topRows(num_row - 1);
+	auto moc_dim = basic::get_file_dim(fin_market.moc);
+	Eigen::MatrixXd merit_order_curve_q = basic::read_file(moc_dim[0], moc_dim[1], fin_market.moc);
+	Eigen::MatrixXd diff_merit_order_curve_q = merit_order_curve_q.bottomRows(moc_dim[0] - 1) - merit_order_curve_q.topRows(moc_dim[0] - 1);
 	International_Market.merit_order_curve = merit_order_curve_q;
-	International_Market.merit_order_curve.bottomRows(num_row - 1) = diff_merit_order_curve_q;
-	International_Market.merit_order_curve = Eigen::MatrixXd::Ones(num_row, num_col).array() * International_Market.merit_order_curve.array().max(0);
+	International_Market.merit_order_curve.bottomRows(moc_dim[0] - 1) = diff_merit_order_curve_q;
+	International_Market.merit_order_curve = Eigen::MatrixXd::Ones(moc_dim[0], moc_dim[1]).array() * International_Market.merit_order_curve.array().max(0);
 
 	// Default (residual) demand time series
 	// Read default demand data
-	num_row = International_Market.time_intervals;
-	num_col = International_Market.num_zone + 1;
-	International_Market.demand_default = basic::read_file(num_row, num_col, fin_name_demand).rightCols(International_Market.num_zone);
+	auto demand_ts_dim = basic::get_file_dim(fin_market.demand);
+	International_Market.demand_default = basic::read_file(demand_ts_dim[0], demand_ts_dim[1], fin_market.demand, 1);
+
 	// Read cbt data
-	num_row = International_Market.time_intervals;
-	num_col = 2 * International_Market.network.incidence.size() + 1;
-	auto cbt_ts_dim = basic::get_file_dim(fin_name_cbt);
-	//std::cout << cbt_ts_dim[0] << "\t" << cbt_ts_dim[1] << "\n\n";
-	//auto cbt_ts = basic::read_file(cbt_ts_dim[0], cbt_ts_dim[1], fin_name_cbt).rightCols(2 * International_Market.network.incidence.size());
-	auto cbt_ts = basic::read_file(cbt_ts_dim[0], cbt_ts_dim[1], fin_name_cbt);
-	//cbt_ts = cbt_ts.rightCols(2 * International_Market.network.incidence.size());
-	//std::cout << cbt_ts.topRows(5) << "\n\n";
+	auto cbt_ts_dim = basic::get_file_dim(fin_market.cbt);
+	auto cbt_ts = basic::read_file(cbt_ts_dim[0], cbt_ts_dim[1], fin_market.cbt, 1);
 
 	// Adjusted demand profile after cbt is taken out
 	for(int edge_iter = 0; edge_iter < International_Market.network.incidence.size(); ++ edge_iter){
 		int start_zone_ID = International_Market.network.incidence[edge_iter](0);
 		int end_zone_ID = International_Market.network.incidence[edge_iter](1);
-		int start_edge_ID = 2 * edge_iter + 1;
-		int end_edge_ID = 2 * edge_iter + 2;
+		int start_edge_ID = 2 * edge_iter;
+		int end_edge_ID = 2 * edge_iter + 1;
 		International_Market.demand_default.col(start_zone_ID) -= cbt_ts.col(start_edge_ID);
 		International_Market.demand_default.col(start_zone_ID) += cbt_ts.col(end_edge_ID);
 		International_Market.demand_default.col(end_zone_ID) += cbt_ts.col(start_edge_ID);
 		International_Market.demand_default.col(end_zone_ID) -= cbt_ts.col(end_edge_ID);
 	}
+	//std::cout << International_Market.demand_default.topRows(5) << "\n\n";
+
+	// Calculate default residual demand profile from subtracting VRE for nations on the boundary
+	auto solar_ts_dim = basic::get_file_dim(fin_market.solar);
+	auto solar_ts = basic::read_file(solar_ts_dim[0], solar_ts_dim[1], fin_market.solar, 1);
+	//std::cout << solar_ts.topRows(24) << "\n\n";
+	auto wind_on_ts_dim = basic::get_file_dim(fin_market.wind_on);
+	auto wind_on_ts = basic::read_file(wind_on_ts_dim[0], wind_on_ts_dim[1], fin_market.wind_on, 1);
+	//std::cout << wind_on_ts.topRows(24) << "\n\n";
+	auto wind_off_ts_dim = basic::get_file_dim(fin_market.wind_off);
+	auto wind_off_ts = basic::read_file(wind_off_ts_dim[0], wind_off_ts_dim[1], fin_market.wind_off, 1);
+	//std::cout << wind_off_ts.topRows(24) << "\n\n";
+	int boundary_num = International_Market.num_zone - International_Market.cross_border_zone_start;
+	International_Market.demand_default.rightCols(boundary_num) -= solar_ts.rightCols(boundary_num) + wind_on_ts.rightCols(boundary_num) + wind_off_ts.rightCols(boundary_num);
+	//std::cout << International_Market.demand_default.topRows(5) << "\n\n";
 
 	// Initialization of process variables
 	power_market::Market_Initialization(International_Market);
