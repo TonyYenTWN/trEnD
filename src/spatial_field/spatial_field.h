@@ -33,7 +33,7 @@ namespace spatial_field{
 	};
 
 	// Functions
-	void spatial_field_estimation(power_network::network_inform&);
+	void demand_imbalance_estimation(power_network::network_inform&, power_market::market_inform&);
 	void wind_on_cf_estimation(power_network::network_inform&);
 	void solar_radiation_estimation(power_network::network_inform&);
 	void spatial_field_store(power_network::network_inform&, fin_field, int);

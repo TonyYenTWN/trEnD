@@ -64,16 +64,14 @@ namespace{
 	}
 }
 
-void spatial_field::spatial_field_estimation(power_network::network_inform &Power_network_inform){
+void spatial_field::demand_imbalance_estimation(power_network::network_inform &Power_network_inform, power_market::market_inform &International_Market){
 	int bz_num = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
 	int point_num = Power_network_inform.points.bidding_zone.size();
 	int Time = power_market::parameters::Time();
 	double pi = boost::math::constants::pi<double>();
 
 	// Read electricity demand data
-	std::string fin_demand = "csv/input/spatial_field/demand_actual_2021.csv";
-	auto fin_demand_dim = basic::get_file_dim(fin_demand);
-	auto Demand_ts = basic::read_file(fin_demand_dim[0], fin_demand_dim[1], fin_demand);
+	Eigen::MatrixXd Demand_ts = International_Market.demand_default.leftCols(bz_num);
 	Demand_ts *= 1000; // MWh -> kWh
 
 	// Read actual imbalance data
@@ -104,7 +102,7 @@ void spatial_field::spatial_field_estimation(power_network::network_inform &Powe
 	// Initialization of parameters
 	estimation_inform nominal_demand;
 	nominal_demand.alpha_iteration = 1.;
-	nominal_demand.mu_mean = Demand_ts.colwise().sum().tail(bz_num);
+	nominal_demand.mu_mean = Demand_ts.colwise().sum();
 	nominal_demand.mu_mean /= Time;
 	// Mean of weibull distribution = mu_0_scale * gamma(1 + 1 / k), here k = 2
 	double mu_0_scale = nominal_demand.mu_mean.sum() / Constraint_demand.sum() * 2. / pow(pi, .5);
@@ -178,7 +176,7 @@ void spatial_field::spatial_field_estimation(power_network::network_inform &Powe
 
 	// Run the algorithm for each time slice
 	for(int tick = 0; tick < 25; ++ tick){
-		nominal_demand.mu_mean = Demand_ts.row(tick).tail(bz_num);
+		nominal_demand.mu_mean = Demand_ts.row(tick);
 
 		// Estimation step
 		BME_copula(nominal_demand, Power_network_inform, Constraint_demand, 1E-3);
