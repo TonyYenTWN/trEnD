@@ -10,22 +10,22 @@ namespace{
 		bool DSO_filter_flag;
 
 		void process_bool_set(){
-			this->estimation_flag = 1;
+			this->estimation_flag = 0;
 			this->simulation_flag = 1;
-			this->DSO_filter_flag = 1;
+			this->DSO_filter_flag = 0;
 		}
 
 		void process_bool_input(){
-			std::cout << "Estimate spatial fields? Yes: 1 / No: 0 | ";
+			std::cout << "Estimate spatial fields?  Yes: 1 / No: 0 | ";
 			std::cin >> this->estimation_flag;
 			std::cout << "\n";
 
-			std::cout << "Simulate operation? Yes: 1 / No: 0 | ";
+			std::cout << "Simulate operation?       Yes: 1 / No: 0 | ";
 			std::cin >> this->simulation_flag;
 			std::cout << "\n";
 
 			if(this->simulation_flag == 1){
-				std::cout << "DSOs filter bids? Yes: 1 / No: 0 | ";
+				std::cout << "DSOs filter bids?         Yes: 1 / No: 0 | ";
 				std::cin >> this->DSO_filter_flag;
 				std::cout << "\n";
 			}
