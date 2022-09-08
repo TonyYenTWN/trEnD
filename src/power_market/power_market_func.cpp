@@ -307,10 +307,12 @@ void power_market::Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlp
 	Y_n.setFromTriplets(Y_n_trip.begin(), Y_n_trip.end());
 
 	// Generate sparse matrix for general (equality) constraints of voltage, power flow, and source / sink summation
-	int constrant_num = 2 * Market.network.num_vertice + Market.network.num_edges + 1;
+	//int constrant_num = 2 * Market.network.num_vertice + Market.network.num_edges + 1;
+	int constrant_num = 2 * Market.network.num_vertice + Market.network.num_edges;
 	int variable_num = Market.network.num_vertice * (Market.price_intervals + 4) + Market.network.num_edges;
 	Eigen::VectorXpd non_zero_num(constrant_num);
-	non_zero_num << Connection_num + Eigen::VectorXpd::Ones(Market.network.num_vertice), Eigen::VectorXpd::Constant(Market.network.num_edges, 3), Eigen::VectorXpd::Constant(Market.network.num_vertice, Market.price_intervals + 3), 1;
+	//non_zero_num << Connection_num + Eigen::VectorXpd::Ones(Market.network.num_vertice), Eigen::VectorXpd::Constant(Market.network.num_edges, 3), Eigen::VectorXpd::Constant(Market.network.num_vertice, Market.price_intervals + 3), 1;
+	non_zero_num << Connection_num + Eigen::VectorXpd::Ones(Market.network.num_vertice), Eigen::VectorXpd::Constant(Market.network.num_edges, 3), Eigen::VectorXpd::Constant(Market.network.num_vertice, Market.price_intervals + 3);
 	alglib::integer_1d_array row_sizes_general;
 	row_sizes_general.setcontent(non_zero_num.size(), non_zero_num.data());
 	alglib::sparsematrix constraint_general;
@@ -350,7 +352,7 @@ void power_market::Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlp
 	}
 
 	// Voltage at reference node
-	alglib::sparseset(constraint_general, non_zero_num.size() - 1, 0, 1.);
+	//alglib::sparseset(constraint_general, non_zero_num.size() - 1, 0, 1.);
 
 	// Check if the sparse matrix is correct
 //	std::cout << Y_n << "\n\n";
