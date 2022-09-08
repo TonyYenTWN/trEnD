@@ -1,4 +1,4 @@
-![alt text](https://github.com/TonyYenTWN/trEnD/blob/main/pic/main_logo.jpg?raw=true)
+![Logo of trEnD](https://github.com/TonyYenTWN/trEnD/blob/main/pic/main_logo.jpg?raw=true)
 # trEnD: Model for Transition of End-users and the Distribution Power Network
 Welcome to trEnD, a c++ based model of the energy transition, focusing on the end-users and the distribution network. The source codes are currently undergoing revision and being tested by real data of Norway in my phD project. Feel free to comment on any issues.
 
@@ -52,6 +52,10 @@ I use [Code::Blocks](https://www.codeblocks.org/docs/main_codeblocks_en.html) fo
 Remember to add the project's top-level directory (the directory which stores this repository) to compiler search directories when compiling. This can be done quite easily in codeblocks.
 
 ## Output Files
+
+# Workflow of the Model
+![Logo of trEnD](https://github.com/TonyYenTWN/trEnD/blob/main/pic/Model_Workflow%20-%201.jpg)
+
 
 # Documentation of Source Codes
 Below is a summary of what the source codes do, categorized by the subfolders in [src](https://github.com/TonyYenTWN/trEnD/tree/main/src) folder. The full documentation can be found at [the github-pages of this repository](https://tonyyentwn.github.io/trEnD).
