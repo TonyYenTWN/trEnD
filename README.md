@@ -54,7 +54,7 @@ Remember to add the project's top-level directory (the directory which stores th
 ## Output Files
 
 # Workflow of the Model
-![Logo of trEnD](https://github.com/TonyYenTWN/trEnD/blob/main/pic/Model_Workflow%20-%201.jpg)
+![Workflow of the model](https://raw.githubusercontent.com/TonyYenTWN/trEnD/main/pic/Model_Workflow%20-%201.jpg)
 
 
 # Documentation of Source Codes
