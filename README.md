@@ -3,13 +3,19 @@
 Welcome to trEnD, a c++ based model of the energy transition, focusing on the end-users and the distribution network. The source codes are currently undergoing revision and being tested by real data of Norway in my phD project. Feel free to comment on any issues.
 
 # Table of Contents
-1. [User Guide](https://github.com/TonyYenTWN/trEnD#user-guide)
-  1-1 [Preparing the Input .csv Files] (https://github.com/TonyYenTWN/trEnD#preparing-the-input-csv-files)
-  1-2 [Compiling the Source Codes](https://github.com/TonyYenTWN/trEnD#compiling-the-source-codes)
-  1-3 [Executing the Binary File]()
-  1-4 [Output Files]()
-2. [Workflow of the Model](https://github.com/TonyYenTWN/trEnD#workflow-of-the-model)
-3. [Documentation of Source Codes](https://github.com/TonyYenTWN/trEnD#documentation-of-source-codes)
+- [User Guide](https://github.com/TonyYenTWN/trEnD#user-guide)
+
+  - [Preparing the Input .csv Files](https://github.com/TonyYenTWN/trEnD#preparing-the-input-csv-files)
+
+  - [Compiling the Source Codes](https://github.com/TonyYenTWN/trEnD#compiling-the-source-codes)
+
+  - [Executing the Binary File](https://github.com/TonyYenTWN/trEnD#executing-the-binary-file)
+
+  - [Output .csv Files](https://github.com/TonyYenTWN/trEnD#output-csv-files)
+
+- [Workflow of the Model](https://github.com/TonyYenTWN/trEnD#workflow-of-the-model)
+
+- [Documentation of Source Codes](https://github.com/TonyYenTWN/trEnD#documentation-of-source-codes)
 
 # User Guide
 ## Preparing the Input .csv Files
