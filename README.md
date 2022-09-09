@@ -2,6 +2,15 @@
 # trEnD: Model for Transition of End-users and the Distribution Power Network
 Welcome to trEnD, a c++ based model of the energy transition, focusing on the end-users and the distribution network. The source codes are currently undergoing revision and being tested by real data of Norway in my phD project. Feel free to comment on any issues.
 
+# Table of Contents
+1. [User Guide](https://github.com/TonyYenTWN/trEnD#user-guide)
+  1-1 [Preparing the Input .csv Files] (https://github.com/TonyYenTWN/trEnD#preparing-the-input-csv-files)
+  1-2 [Compiling the Source Codes](https://github.com/TonyYenTWN/trEnD#compiling-the-source-codes)
+  1-3 [Executing the Binary File]()
+  1-4 [Output Files]()
+2. [Workflow of the Model](https://github.com/TonyYenTWN/trEnD#workflow-of-the-model)
+3. [Documentation of Source Codes](https://github.com/TonyYenTWN/trEnD#documentation-of-source-codes)
+
 # User Guide
 ## Preparing the Input .csv Files
 An example of the input csv files can be found [here](https://github.com/TonyYenTWN/trEnD/tree/main/csv/input). In case the model is applied for other time periods of the same region, the format of the csv files should be kept the same. For regions where conventional thermal power plants still play a role in the power system, additional input data might be needed, and corresponding parts of the source codes might therefore have to be modified in the future. 
@@ -51,7 +60,9 @@ I use [Code::Blocks](https://www.codeblocks.org/docs/main_codeblocks_en.html) fo
 
 Remember to add the project's top-level directory (the directory which stores this repository) to compiler search directories when compiling. This can be done quite easily in codeblocks.
 
-## Output Files
+## Executing the Binary File
+
+## Output .csv Files
 
 # Workflow of the Model
 ![Workflow of the model](https://raw.githubusercontent.com/TonyYenTWN/trEnD/main/pic/Model_Workflow%20-%201.jpg)
