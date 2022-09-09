@@ -3,19 +3,19 @@
 Welcome to trEnD, a c++ based model of the energy transition, focusing on the end-users and the distribution network. The source codes are currently undergoing revision and being tested by real data of Norway in my phD project. Feel free to comment on any issues.
 
 # Table of Contents
-- [User Guide](https://github.com/TonyYenTWN/trEnD#user-guide)
+- [User Guide](#user-guide)
 
-  - [Preparing the Input .csv Files](https://github.com/TonyYenTWN/trEnD#preparing-the-input-csv-files)
+  - [Preparing the Input .csv Files](#preparing-the-input-csv-files)
 
-  - [Compiling the Source Codes](https://github.com/TonyYenTWN/trEnD#compiling-the-source-codes)
+  - [Compiling the Source Codes](#compiling-the-source-codes)
 
-  - [Executing the Binary File](https://github.com/TonyYenTWN/trEnD#executing-the-binary-file)
+  - [Executing the Binary File](#executing-the-binary-file)
 
-  - [Output .csv Files](https://github.com/TonyYenTWN/trEnD#output-csv-files)
+  - [Output .csv Files](#output-csv-files)
 
-- [Workflow of the Model](https://github.com/TonyYenTWN/trEnD#workflow-of-the-model)
+- [Workflow of the Model](#workflow-of-the-model)
 
-- [Documentation of Source Codes](https://github.com/TonyYenTWN/trEnD#documentation-of-source-codes)
+- [Documentation of Source Codes](#documentation-of-source-codes)
 
 # User Guide
 ## Preparing the Input .csv Files
