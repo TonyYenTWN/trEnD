@@ -123,53 +123,13 @@ void power_market::TSO_Market_control_reserve(int tick, market_inform &Market, p
 	// Temporary setting!!
 	Market.control_reserve.available_ratio_supply = Eigen::MatrixXd::Ones(Market.price_intervals + 2, Market.num_zone);
 	Market.control_reserve.available_ratio_demand = Eigen::MatrixXd::Ones(Market.price_intervals + 2, Market.num_zone);
-
-//	Eigen::VectorXd imbalance_sum = Eigen::VectorXd::Zero(bz_num);
-//	for(int point_iter = 0; point_iter < point_num; ++ point_iter){
-//		int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
-//		double value = Power_network_inform.points.imbalance_field(point_iter, tick);
-//		value *= Power_network_inform.points.nominal_mean_demand_field(point_iter, tick);
-//		value *= Power_network_inform.points.population_density(point_iter);
-//		imbalance_sum(bz_ID) +=  value;
-//	}
-//	imbalance_sum *= Power_network_inform.points.point_area / 1000.;
-//
-//	Eigen::VectorXd demand_sum = Eigen::VectorXd::Zero(bz_num);
-//	Eigen::VectorXd demand_sum_default = Eigen::VectorXd::Zero(bz_num);
-//	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
-//		int bz_ID = Power_network_inform.nodes.bidding_zone(node_iter);
-//		demand_sum(bz_ID) += Market.confirmed_demand(tick, node_iter);
-//		demand_sum_default(bz_ID) += Market.submitted_demand.col(node_iter).sum();
-//	}
-//	Eigen::VectorXd imbalance_demand_ratio = imbalance_sum.array() / demand_sum.array();
-////	std::cout << demand_sum_default.transpose() << "\n\n";
-////	std::cout << demand_sum.transpose() << "\n\n";
-////	std::cout << imbalance_sum.transpose() << "\n\n";
-////	std::cout << imbalance_demand_ratio.transpose() << "\n\n";
-//
-//	Eigen::MatrixXd imbalance_demand = Eigen::MatrixXd::Zero(Market.price_intervals + 2, Market.num_zone);
-//	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
-//		int bz_ID = Power_network_inform.nodes.bidding_zone(node_iter);
-//
-//		for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter){
-//			if(Market.bidded_price(price_iter) >= Market.confirmed_price(tick, node_iter) || price_iter == Market.price_intervals + 1){
-//					if(Market.confirmed_price_ratio(tick, node_iter) < 0.){
-//						imbalance_demand(price_iter, node_iter) = -imbalance_demand_ratio(bz_ID) * Market.confirmed_price_ratio(tick, node_iter)* Market.submitted_demand(price_iter, node_iter);
-//					}
-//					break;
-//			}
-//			else{
-//				imbalance_demand(price_iter, node_iter) = imbalance_demand_ratio(bz_ID) * Market.submitted_demand(price_iter, node_iter);
-//			}
-//		}
-//	}
 	// Temporary setting!!
 
 	Eigen::VectorXd imbalance_demand_sum = Eigen::VectorXd::Zero(Market.num_zone);
 	for(int point_iter = 0; point_iter < point_num; ++ point_iter){
 		int node_ID = Power_network_inform.points.node(point_iter);
 		int sample_num = agent::parameters::sample_num();
-		double node_price = Market.actual_price(tick, node_ID);
+		double node_price = Market.confirmed_price(tick, node_ID);
 
 		for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
 			double imbalance_demand_temp = 0.;
@@ -198,8 +158,8 @@ void power_market::TSO_Market_control_reserve(int tick, market_inform &Market, p
 	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
 		imbalance_demand_ratio(node_iter) = imbalance_demand_sum(node_iter) / (Market.confirmed_demand(tick, node_iter) + 1E-16);
 	}
-//	std::cout << imbalance_demand_ratio.minCoeff() << "\t" << imbalance_demand_ratio.maxCoeff() << "\n\n";
-//	std::cout << imbalance_demand_bz_sum.transpose() << "\n\n";
+	std::cout << imbalance_demand_ratio.minCoeff() << "\t" << imbalance_demand_ratio.maxCoeff() << "\n\n";
+
 	Eigen::MatrixXd imbalance_demand = Eigen::MatrixXd::Zero(Market.price_intervals + 2, Market.num_zone);
 	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
 		for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter){
