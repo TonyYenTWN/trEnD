@@ -88,7 +88,7 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 				}
 				else{
 					DSO_Markets[DSO_iter].network.incidence.push_back(Eigen::Vector2i(row_iter, col_iter));
-					DSO_Markets[DSO_iter].network.admittance.push_back(admittance(row_iter , col_iter));
+					DSO_Markets[DSO_iter].network.admittance.push_back(admittance(row_iter, col_iter));
 					power_limit.push_back(Power_network_inform.tech_parameters.voltage_cutoff_connection);
 				}
 			}
@@ -108,11 +108,15 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 		power_market::Market_Initialization(DSO_Markets[DSO_iter]);
 
 		// Initialization of output variables
-		DSO_Markets[DSO_iter].confirmed_supply = Eigen::MatrixXd::Zero(Time, DSO_Markets[DSO_iter].num_zone);
-		DSO_Markets[DSO_iter].confirmed_demand = Eigen::MatrixXd::Zero(Time, DSO_Markets[DSO_iter].num_zone);
-		DSO_Markets[DSO_iter].confirmed_price = Eigen::MatrixXd(Time, DSO_Markets[DSO_iter].num_zone);
-		DSO_Markets[DSO_iter].network.confirmed_power = Eigen::MatrixXd(Time, DSO_Markets[DSO_iter].network.num_edges);
-		DSO_Markets[DSO_iter].network.confirmed_voltage = Eigen::MatrixXd(Time, DSO_Markets[DSO_iter].network.num_vertice);
+		DSO_Markets[DSO_iter].filtered_price_supply = Eigen::MatrixXd::Zero(Time, DSO_Markets[DSO_iter].num_zone);
+		DSO_Markets[DSO_iter].filtered_price_demand = Eigen::MatrixXd::Zero(Time, DSO_Markets[DSO_iter].num_zone);
+		DSO_Markets[DSO_iter].filtered_ratio_supply = Eigen::MatrixXd::Zero(Time, DSO_Markets[DSO_iter].num_zone);
+		DSO_Markets[DSO_iter].filtered_ratio_demand = Eigen::MatrixXd::Zero(Time, DSO_Markets[DSO_iter].num_zone);
+//		DSO_Markets[DSO_iter].confirmed_supply = Eigen::MatrixXd::Zero(Time, DSO_Markets[DSO_iter].num_zone);
+//		DSO_Markets[DSO_iter].confirmed_demand = Eigen::MatrixXd::Zero(Time, DSO_Markets[DSO_iter].num_zone);
+//		DSO_Markets[DSO_iter].confirmed_price = Eigen::MatrixXd(Time, DSO_Markets[DSO_iter].num_zone);
+//		DSO_Markets[DSO_iter].network.confirmed_power = Eigen::MatrixXd(Time, DSO_Markets[DSO_iter].network.num_edges);
+//		DSO_Markets[DSO_iter].network.confirmed_voltage = Eigen::MatrixXd(Time, DSO_Markets[DSO_iter].network.num_vertice);
 	}
 }
 
@@ -327,7 +331,7 @@ void power_market::Sink_Node_Set(market_inform &DSO_Market, power_network::DSO_c
 	}
 }
 
-void power_market::DSO_Market_Results_Get(market_inform &Market, alglib::minlpstate &Problem, power_network::DSO_cluster &DSO_cluster, bool supply){
+void power_market::DSO_Market_Results_Get(int tick, market_inform &Market, alglib::minlpstate &Problem, power_network::DSO_cluster &DSO_cluster, bool supply){
 	alglib::real_1d_array sol;
 	alglib::minlpreport rep;
 	alglib::minlpresults(Problem, sol, rep);
@@ -338,6 +342,16 @@ void power_market::DSO_Market_Results_Get(market_inform &Market, alglib::minlpst
 		for(int point_iter = 0; point_iter < DSO_cluster.points_ID.size(); ++ point_iter){
 			int row_start = 2 * Market.network.num_vertice + point_iter * (Market.price_intervals + 2);
 			Market.filtered_supply.col(point_iter) = sol_vec.segment(row_start, Market.price_intervals + 2).array().max(0);
+			Market.filtered_price_supply(tick, point_iter) = Market.bidded_price(0) + rep.lagbc[row_start];
+			Market.filtered_price_supply(tick, point_iter) = std::min(Market.filtered_price_supply(tick, point_iter), Market.price_range_inflex(1));
+			Market.filtered_price_supply(tick, point_iter) = std::max(Market.filtered_price_supply(tick, point_iter), Market.price_range_inflex(0));
+
+//			for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter ){
+//				std::cout << rep.lagbc[row_start + price_iter] << "\t";
+//			}
+//			std::cout << "\n\n";
+			//std::cout << Market.filtered_supply.col(point_iter).transpose() << "\n\n";
+			//std::cout << (Market.submitted_supply.col(point_iter) - Market.filtered_supply.col(point_iter)).transpose() << "\n\n";
 		}
 	}
 	else{
@@ -345,6 +359,14 @@ void power_market::DSO_Market_Results_Get(market_inform &Market, alglib::minlpst
 		for(int point_iter = 0; point_iter < DSO_cluster.points_ID.size(); ++ point_iter){
 			int row_start = 2 * Market.network.num_vertice + point_iter * (Market.price_intervals + 2);
 			Market.filtered_demand.col(point_iter) = -(sol_vec.segment(row_start, Market.price_intervals + 2).array().min(0));
+			Market.filtered_demand.col(point_iter) = sol_vec.segment(row_start, Market.price_intervals + 2).array().max(0);
+			Market.filtered_price_demand(tick, point_iter) = Market.bidded_price(0) + rep.lagbc[row_start];
+			Market.filtered_price_demand(tick, point_iter) = std::min(Market.filtered_price_demand(tick, point_iter), Market.price_range_inflex(1));
+			Market.filtered_price_demand(tick, point_iter) = std::max(Market.filtered_price_demand(tick, point_iter), Market.price_range_inflex(0));
+
+			//std::cout << Market.submitted_demand.col(point_iter).transpose() << "\n\n";
+			//std::cout << Market.filtered_demand.col(point_iter).transpose() << "\n\n";
+			//std::cout << (Market.submitted_demand.col(point_iter) - Market.filtered_demand.col(point_iter)).transpose() << "\n\n";
 		}
 	}
 
