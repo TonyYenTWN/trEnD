@@ -5,9 +5,16 @@
 
 namespace{
 	struct process_bool{
+		bool default_flag;
 		bool estimation_flag;
 		bool simulation_flag;
 		bool DSO_filter_flag;
+
+		void process_default_get(){
+			std::cout << "Default procedure?        Yes: 1 / No: 0 | ";
+			std::cin >> this->default_flag;
+			std::cout << "\n";
+		}
 
 		void process_bool_set(){
 			this->estimation_flag = 0;
@@ -40,8 +47,13 @@ int main(){
 
 	// Set booleans for the process
 	process_bool process_par;
-	//process_par.process_bool_input();
-	process_par.process_bool_set();
+	process_par.process_default_get();
+	if(!process_par.default_flag){
+		process_par.process_bool_input();
+	}
+	else{
+		process_par.process_bool_set();
+	}
 
 	// Set default (residual) demand time series
 	power_market::market_whole_inform Power_market_inform;
