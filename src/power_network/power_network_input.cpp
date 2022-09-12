@@ -100,11 +100,12 @@ namespace {
 		Power_network_inform.points.in_cluster_ID = Eigen::VectorXi(fin_point_dim[0]);
 		for(int point_iter = 0; point_iter < fin_point_dim[0]; ++ point_iter){
 			int node_ID = int(point_inform(point_iter, 1)) - 1;
+			int DSO_ID = Power_network_inform.nodes.cluster(node_ID);
 			int bz_ID = bz_inform(int(point_inform(point_iter, 0)) - 1, 1) - 1;
 			Power_network_inform.points.node(point_iter) = node_ID;
 			Power_network_inform.points.bidding_zone(point_iter) = bz_ID;
-			Power_network_inform.DSO_cluster[Power_network_inform.nodes.cluster(Power_network_inform.points.node(point_iter))].points_ID.push_back(point_iter);
-			Power_network_inform.points.in_cluster_ID(point_iter) = Power_network_inform.DSO_cluster[Power_network_inform.nodes.cluster(Power_network_inform.points.node(point_iter))].points_ID.size() - 1;
+			Power_network_inform.DSO_cluster[DSO_ID].points_ID.push_back(point_iter);
+			Power_network_inform.points.in_cluster_ID(point_iter) = Power_network_inform.DSO_cluster[DSO_ID].points_ID.size() - 1;
 		}
 		Power_network_inform.points.population_density = point_inform.col(2);
 		Power_network_inform.points.x = point_inform.col(point_inform.cols() - 4);
