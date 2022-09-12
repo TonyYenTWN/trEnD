@@ -107,6 +107,14 @@ namespace power_market{
 		Eigen::MatrixXd filtered_demand;
 
 		// Output Variables
+		/**Highest price of filtered supply in the DSOs.*/
+		Eigen::MatrixXd filtered_price_supply;
+		/**Lowest price of filtered demand in the DSOs.*/
+		Eigen::MatrixXd filtered_price_demand;
+		/**Ratio of filtered supply to submitted supply at the highest price in the DSOs.*/
+		Eigen::MatrixXd filtered_ratio_supply;
+		/**Ratio of filtered demand to submitted demand at the lowest price in the DSOs.*/
+		Eigen::MatrixXd filtered_ratio_demand;
 		/**Confirmed supply quantity of the market.*/
 		Eigen::MatrixXd confirmed_supply;
 		/**Confirmed demand quantity of the market.*/
@@ -173,7 +181,7 @@ namespace power_market{
 	void TSO_boundary_update(int, market_inform&, market_inform&, power_network::network_inform&);
 	void Flow_Based_Market_LP_Set(market_inform&, alglib::minlpstate&);
 	void Flow_Based_Market_Optimization(market_inform&, alglib::minlpstate&);
-	void Filtered_bid_calculation(markets_inform&, market_inform&, power_network::network_inform&, std::vector <alglib::minlpstate>&);
+	void Filtered_bid_calculation(int, markets_inform&, market_inform&, power_network::network_inform&, std::vector <alglib::minlpstate>&);
 	void default_demand_set(power_network::network_inform&, market_whole_inform&);
 	void power_market_process_set(power_network::network_inform&, market_whole_inform&, bool);
 	void power_market_process_update(power_network::network_inform&, market_whole_inform&, bool);
@@ -227,7 +235,7 @@ namespace power_market{
 	void DSO_agents_update(int, agent::end_user::profiles&, market_inform&, market_inform&, power_network::network_inform&);
 	void Source_Node_Set(market_inform&, power_network::DSO_cluster&);
 	void Sink_Node_Set(market_inform&, power_network::DSO_cluster&);
-	void DSO_Market_Results_Get(market_inform&, alglib::minlpstate&, power_network::DSO_cluster&, bool supply = 1);
+	void DSO_Market_Results_Get(int, market_inform&, alglib::minlpstate&, power_network::DSO_cluster&, bool supply = 1);
 }
 
 #endif
