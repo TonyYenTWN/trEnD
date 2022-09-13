@@ -149,13 +149,17 @@ void power_market::Submitted_bid_calculation(int tick, agent::end_user::profiles
 		// Industrial demand
 		double bid_inflex_industrial = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick);
 		bid_inflex_industrial *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
-		bid_inflex_industrial *= agent::parameters::residential_ratio();
+		bid_inflex_industrial *= 1. - agent::parameters::residential_ratio();
 		double bid_flex_industrial = bid_inflex_industrial;
 		bid_inflex_industrial *= 1. - agent::industrial::flexible_ratio();
 		bid_flex_industrial *= agent::industrial::flexible_ratio();
 		TSO_Market.submitted_demand(TSO_Market.price_intervals + 1, node_ID) += bid_inflex_industrial;
-		TSO_Market.submitted_demand.col(node_ID).segment(1, TSO_Market.price_intervals) = Eigen::VectorXd::Constant(TSO_Market.price_intervals, (double) bid_flex_industrial / TSO_Market.price_intervals);
+		TSO_Market.submitted_demand.col(node_ID).segment(1, TSO_Market.price_intervals) += Eigen::VectorXd::Constant(TSO_Market.price_intervals, (double) bid_flex_industrial / TSO_Market.price_intervals);
+		International_Market.submitted_demand(TSO_Market.price_intervals + 1, bz_ID) += bid_inflex_industrial;
+		International_Market.submitted_demand.col(bz_ID).segment(1, International_Market.price_intervals) += Eigen::VectorXd::Constant(International_Market.price_intervals, (double) bid_flex_industrial / International_Market.price_intervals);
 	}
+//	std::cout << TSO_Market.submitted_demand.sum() << "\t";
+//	std::cout << TSO_Market.submitted_supply.sum() << "\n\n";
 //	for(int zone_iter = 0; zone_iter < 5; ++ zone_iter){
 //		std::cout << International_Market.submitted_demand.col(zone_iter).sum() << "\t";
 //	}
