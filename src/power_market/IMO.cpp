@@ -198,9 +198,6 @@ void power_market::International_Market_Set(market_inform &International_Market,
 	// Set bounds for general and box constraints
 	// -------------------------------------------------------------------------------
 	Eigen::MatrixXd bound_general = Eigen::MatrixXd::Zero(constrant_num, 2);
-	Eigen::MatrixXd bound_box = Eigen::MatrixXd::Zero(variable_num, 2);
-	bound_box.col(0).head(International_Market.network.num_edges) = International_Market.network.power_constraint.col(0);
-	bound_box.col(1).head(International_Market.network.num_edges) = -International_Market.network.power_constraint.col(1);
 
 	// Bounds of general constraints
 	alglib::real_1d_array lb_general;
@@ -212,7 +209,6 @@ void power_market::International_Market_Set(market_inform &International_Market,
 	// Set scale of variables
 	// -------------------------------------------------------------------------------
 	Eigen::VectorXd scale_vec = Eigen::VectorXd::Ones(variable_num);
-	scale_vec.head(International_Market.network.num_edges) = bound_box.col(1).head(International_Market.network.num_edges) - bound_box.col(0).head(International_Market.network.num_edges);
 	alglib::real_1d_array scale;
 	scale.setcontent(scale_vec.size(), scale_vec.data());
 
@@ -231,13 +227,47 @@ void power_market::International_Market_Set(market_inform &International_Market,
 	// Set the LP problem object
 	// -------------------------------------------------------------------------------
 	alglib::minlpcreate(variable_num, IMO_Problem);
-//	alglib::minlpsetcost(IMO_Problem, obj_coeff);
-//	alglib::minlpsetlc2(IMO_Problem, constraint_general, lb_general, ub_general, constrant_num);
-//	alglib::minlpsetscale(IMO_Problem, scale);
-//	alglib::minlpsetalgodss(IMO_Problem, 0.);
+	alglib::minlpsetcost(IMO_Problem, obj_coeff);
+	alglib::minlpsetlc2(IMO_Problem, constraint_general, lb_general, ub_general, constrant_num);
+	alglib::minlpsetscale(IMO_Problem, scale);
+	alglib::minlpsetalgodss(IMO_Problem, 0.);
 }
 
-void power_market::International_Market_Optimization(int tick, market_inform &International_Market, bool print_result){
+void power_market::International_Market_Optimization(int tick, market_inform &International_Market, alglib::minlpstate &IMO_Problem, bool print_result){
+	// -------------------------------------------------------------------------------
+	// Update bounds for box constraints
+	// -------------------------------------------------------------------------------
+	int variable_num =  International_Market.network.num_edges + International_Market.network.num_vertice * (International_Market.price_intervals + 3);
+	Eigen::MatrixXd bound_box = Eigen::MatrixXd::Zero(variable_num, 2);
+	bound_box.col(0).head(International_Market.network.num_edges) = -International_Market.network.power_constraint.col(1);
+	bound_box.col(1).head(International_Market.network.num_edges) = International_Market.network.power_constraint.col(0);
+	bound_box.col(0).segment(International_Market.network.num_edges, International_Market.network.num_vertice) = Eigen::VectorXd::Constant(International_Market.network.num_vertice, -std::numeric_limits<double>::infinity());
+	bound_box.col(1).segment(International_Market.network.num_edges, International_Market.network.num_vertice) = Eigen::VectorXd::Constant(International_Market.network.num_vertice, std::numeric_limits<double>::infinity());
+	for(int node_iter = 0; node_iter < International_Market.network.num_vertice; ++ node_iter){
+		int row_start = International_Market.network.num_edges + International_Market.network.num_vertice + node_iter * (International_Market.price_intervals + 2);
+		bound_box.middleRows(row_start, International_Market.price_intervals + 2).col(0) = -International_Market.submitted_demand.col(node_iter);
+		bound_box.middleRows(row_start, International_Market.price_intervals + 2).col(1) = International_Market.submitted_supply.col(node_iter);
+	}
+	//std::cout << bound_box.topRows(International_Market.network.num_edges + International_Market.network.num_vertice + International_Market.price_intervals + 2) << "\n\n";
+
+	// Bounds of box constraints
+	alglib::real_1d_array lb_box;
+	alglib::real_1d_array ub_box;
+	lb_box.setcontent(bound_box.rows(), bound_box.col(0).data());
+	ub_box.setcontent(bound_box.rows(), bound_box.col(1).data());
+	alglib::minlpsetbc(IMO_Problem, lb_box, ub_box);
+
+	// -------------------------------------------------------------------------------
+	// Solve the problem and get results
+	// -------------------------------------------------------------------------------
+	alglib::minlpoptimize(IMO_Problem);
+	alglib::real_1d_array sol;
+	alglib::minlpreport rep;
+	alglib::minlpresults(IMO_Problem, sol, rep);
+	Eigen::VectorXd sol_vec = Eigen::Map <Eigen::VectorXd> (sol.getcontent(), sol.length());
+	std::cout << sol_vec.segment(International_Market.network.num_edges, International_Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(International_Market.network.num_edges, International_Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(International_Market.network.num_edges, International_Market.network.num_vertice).array().abs().sum() << "\n";
+	std::cout << sol_vec.head(International_Market.network.num_edges).minCoeff() << " " << sol_vec.head(International_Market.network.num_edges).maxCoeff() << "\n\n";
+
 	// Initialization of process variables
 	int type_capacity_exchange;
 	double exchange_quantity;
@@ -528,20 +558,20 @@ void power_market::International_Market_Output(market_inform &International_Mark
 	basic::write_file(International_Market.confirmed_price, fout_name, International_Market.zone_names);
 }
 
-void power_market::International_Market_Price_Estimation(int tick, market_inform &International_Market, power_network::network_inform &Power_network_inform){
+void power_market::International_Market_Price_Estimation(int tick, market_inform &International_Market, alglib::minlpstate &IMO_Problem, power_network::network_inform &Power_network_inform){
 	int foresight_time = agent::parameters::foresight_time();
 
 	// Initialization of forecast market clearing price
 	if(tick == 0){
 		for(int tock = 0; tock < foresight_time; ++ tock){
 			International_Market_Submitted_bid_calculation(tock, International_Market, Power_network_inform);
-			International_Market_Optimization(tock, International_Market, 0);
+			International_Market_Optimization(tock, International_Market, IMO_Problem, 0);
 		}
 	}
 	// Find the profile one time step further
 	else{
 		International_Market_Submitted_bid_calculation(tick + foresight_time - 1, International_Market, Power_network_inform);
-		International_Market_Optimization(tick + foresight_time - 1, International_Market, 0);
+		International_Market_Optimization(tick + foresight_time - 1, International_Market, IMO_Problem, 0);
 	}
 }
 
