@@ -362,9 +362,6 @@ void power_market::Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlp
 		}
 	}
 
-	// Voltage at reference node
-	//alglib::sparseset(constraint_general, non_zero_num.size() - 1, 0, 1.);
-
 	// Check if the sparse matrix is correct
 //	std::cout << Y_n << "\n\n";
 //	double value;
