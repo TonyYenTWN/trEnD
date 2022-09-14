@@ -41,10 +41,6 @@ namespace{
 }
 
 int main(){
-	// Initialization of power network information
-	power_network::network_inform Power_network_inform;
-	power_network::power_network_input_process(Power_network_inform, "csv/input/power_network/");
-
 	// Set booleans for the process
 	process_bool process_par;
 	process_par.process_default_get();
@@ -54,6 +50,10 @@ int main(){
 	else{
 		process_par.process_bool_set();
 	}
+
+	// Initialization of power network information
+	power_network::network_inform Power_network_inform;
+	power_network::power_network_input_process(Power_network_inform, "csv/input/power_network/");
 
 	// Set default (residual) demand time series
 	power_market::market_whole_inform Power_market_inform;
