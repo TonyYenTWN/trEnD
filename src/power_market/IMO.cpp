@@ -157,8 +157,8 @@ void power_market::International_Market_Set(market_inform &International_Market,
 	for(int edge_iter = 0; edge_iter < International_Market.network.num_edges; ++ edge_iter){
 		int from_ID = International_Market.network.incidence[edge_iter](0);
 		int to_ID = International_Market.network.incidence[edge_iter](1);
-		Constraint_trip.push_back(Eigen::TripletXd(from_ID, to_ID, -1.));
-		Constraint_trip.push_back(Eigen::TripletXd(to_ID, from_ID, 1.));
+		Constraint_trip.push_back(Eigen::TripletXd(from_ID, edge_iter, -1.));
+		Constraint_trip.push_back(Eigen::TripletXd(to_ID, edge_iter, 1.));
 		Connection_num(from_ID) += 1;
 		Connection_num(to_ID) += 1;
 	}
@@ -175,6 +175,66 @@ void power_market::International_Market_Set(market_inform &International_Market,
 			Constraint_trip.push_back(Eigen::TripletXd(row_ID, col_iter, -1.));
 		}
 	}
+
+	int constrant_num = 2 * International_Market.network.num_vertice;
+	int variable_num =  International_Market.network.num_edges + International_Market.network.num_vertice * (International_Market.price_intervals + 3);
+	Eigen::SparseMatrix <double, Eigen::RowMajor> Constraint(constrant_num, variable_num);
+	Constraint.setFromTriplets(Constraint_trip.begin(), Constraint_trip.end());
+
+	// Generate sparse matrix for general (equality) constraints nodal energy conservation and source / sink summation
+	Eigen::VectorXpd non_zero_num(constrant_num);
+	non_zero_num << Connection_num + Eigen::VectorXpd::Ones(International_Market.network.num_vertice), Eigen::VectorXpd::Constant(International_Market.network.num_vertice, International_Market.price_intervals + 3);
+	alglib::integer_1d_array row_sizes_general;
+	row_sizes_general.setcontent(non_zero_num.size(), non_zero_num.data());
+	alglib::sparsematrix constraint_general;
+	alglib::sparsecreatecrs(constrant_num, variable_num, row_sizes_general, constraint_general);
+	for(int row_iter = 0; row_iter < Constraint.outerSize(); ++ row_iter){
+		for(Eigen::SparseMatrix<double, Eigen::RowMajor>::InnerIterator inner_iter(Constraint, row_iter); inner_iter; ++ inner_iter){
+			alglib::sparseset(constraint_general, inner_iter.row(), inner_iter.col(), inner_iter.value());
+		}
+	}
+
+	// -------------------------------------------------------------------------------
+	// Set bounds for general and box constraints
+	// -------------------------------------------------------------------------------
+	Eigen::MatrixXd bound_general = Eigen::MatrixXd::Zero(constrant_num, 2);
+	Eigen::MatrixXd bound_box = Eigen::MatrixXd::Zero(variable_num, 2);
+	bound_box.col(0).head(International_Market.network.num_edges) = International_Market.network.power_constraint.col(0);
+	bound_box.col(1).head(International_Market.network.num_edges) = -International_Market.network.power_constraint.col(1);
+
+	// Bounds of general constraints
+	alglib::real_1d_array lb_general;
+	alglib::real_1d_array ub_general;
+	lb_general.setcontent(bound_general.rows(), bound_general.col(0).data());
+	ub_general.setcontent(bound_general.rows(), bound_general.col(1).data());
+
+	// -------------------------------------------------------------------------------
+	// Set scale of variables
+	// -------------------------------------------------------------------------------
+	Eigen::VectorXd scale_vec = Eigen::VectorXd::Ones(variable_num);
+	scale_vec.head(International_Market.network.num_edges) = bound_box.col(1).head(International_Market.network.num_edges) - bound_box.col(0).head(International_Market.network.num_edges);
+	alglib::real_1d_array scale;
+	scale.setcontent(scale_vec.size(), scale_vec.data());
+
+	// -------------------------------------------------------------------------------
+	// Set objective coefficients of variables
+	// -------------------------------------------------------------------------------
+	Eigen::VectorXd obj_vec = Eigen::VectorXd::Zero(variable_num);
+	for(int node_iter = 0; node_iter < International_Market.network.num_vertice; ++ node_iter){
+		int row_start = International_Market.network.num_edges + International_Market.network.num_vertice + node_iter * (International_Market.price_intervals + 2);
+		obj_vec.segment(row_start, International_Market.price_intervals + 2) = International_Market.bidded_price;
+	}
+	alglib::real_1d_array obj_coeff;
+	obj_coeff.setcontent(obj_vec.size(), obj_vec.data());
+
+	// -------------------------------------------------------------------------------
+	// Set the LP problem object
+	// -------------------------------------------------------------------------------
+	alglib::minlpcreate(variable_num, IMO_Problem);
+//	alglib::minlpsetcost(IMO_Problem, obj_coeff);
+//	alglib::minlpsetlc2(IMO_Problem, constraint_general, lb_general, ub_general, constrant_num);
+//	alglib::minlpsetscale(IMO_Problem, scale);
+//	alglib::minlpsetalgodss(IMO_Problem, 0.);
 }
 
 void power_market::International_Market_Optimization(int tick, market_inform &International_Market, bool print_result){
