@@ -160,6 +160,7 @@ namespace power_market{
 	/**Information of the entire power market landscape.*/
 	struct market_whole_inform{
 		market_inform International_Market;
+		alglib::minlpstate IMO_Problem;
 		market_inform TSO_Market;
 		alglib::minlpstate TSO_Problem;
 		markets_inform DSO_Markets;
@@ -204,7 +205,7 @@ namespace power_market{
 		std::string solar;
 	};
 
-	void International_Market_Set(market_inform&, power_network::network_inform&, int, fin_market);
+	void International_Market_Set(market_inform&, alglib::minlpstate&, power_network::network_inform&, int, fin_market);
 	void International_Market_Optimization(int, market_inform&, bool print_result = 1);
 	void International_Market_Output(market_inform&);
 	void International_Market_Price_Estimation(int, market_inform&, power_network::network_inform&);

@@ -57,7 +57,7 @@ namespace{
 	}
 }
 
-void power_market::International_Market_Set(market_inform &International_Market, power_network::network_inform &Power_network_inform, int Time, fin_market fin_market){
+void power_market::International_Market_Set(market_inform &International_Market, alglib::minlpstate &IMO_Problem, power_network::network_inform &Power_network_inform, int Time, fin_market fin_market){
 	// Input Parameters of international market
 	International_Market.num_zone = Power_network_inform.cbt.bz_names.size();
 	International_Market.cross_border_zone_start = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
@@ -138,6 +138,43 @@ void power_market::International_Market_Set(market_inform &International_Market,
 	International_Market.confirmed_demand = Eigen::MatrixXd::Zero(Time, International_Market.num_zone);
 	International_Market.confirmed_price = Eigen::MatrixXd(Time, International_Market.num_zone);
 	International_Market.network.confirmed_power = Eigen::MatrixXd(Time, International_Market.network.num_edges);
+
+	// Update alglib object for optimization
+	// -------------------------------------------------------------------------------
+	// Set matrix for general constraints
+	// -------------------------------------------------------------------------------
+	// Variables are sorted as {F}, {S}, {S}_0, {S}_1, {S}_2, ..., {I}
+	// {F} are power flows across the edges
+	// {S}_i is the set of source / sink at node #i at different price levels
+	std::vector <Eigen::TripletXd> Constraint_trip;
+	Constraint_trip.reserve(International_Market.network.num_vertice * (International_Market.price_intervals + 4)  + 2 * International_Market.network.num_edges);
+	Eigen::VectorXpd Connection_num = Eigen::VectorXpd::Zero(International_Market.network.num_vertice);
+	// Constraint for energy conservation
+	for(int node_iter = 0; node_iter < International_Market.network.num_vertice; ++ node_iter){
+		int col_ID =  International_Market.network.num_edges + node_iter;
+		Constraint_trip.push_back(Eigen::TripletXd(node_iter, col_ID, 1.));
+	}
+	for(int edge_iter = 0; edge_iter < International_Market.network.num_edges; ++ edge_iter){
+		int from_ID = International_Market.network.incidence[edge_iter](0);
+		int to_ID = International_Market.network.incidence[edge_iter](1);
+		Constraint_trip.push_back(Eigen::TripletXd(from_ID, to_ID, -1.));
+		Constraint_trip.push_back(Eigen::TripletXd(to_ID, from_ID, 1.));
+		Connection_num(from_ID) += 1;
+		Connection_num(to_ID) += 1;
+	}
+
+	// Rows for source / sink summation at each node
+	for(int node_iter = 0; node_iter < International_Market.network.num_vertice; ++ node_iter){
+		int row_ID =  International_Market.network.num_vertice + node_iter;
+		int col_ID =  International_Market.network.num_edges + node_iter;
+		Constraint_trip.push_back(Eigen::TripletXd(row_ID, col_ID, 1.));
+
+		int col_start =  International_Market.network.num_edges + International_Market.network.num_vertice + node_iter * (International_Market.price_intervals + 2);
+		int col_end = col_start + International_Market.price_intervals + 1;
+		for(int col_iter = col_start; col_iter <= col_end; ++ col_iter){
+			Constraint_trip.push_back(Eigen::TripletXd(row_ID, col_iter, -1.));
+		}
+	}
 }
 
 void power_market::International_Market_Optimization(int tick, market_inform &International_Market, bool print_result){

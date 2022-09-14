@@ -155,8 +155,8 @@ void power_market::Submitted_bid_calculation(int tick, agent::end_user::profiles
 		bid_flex_industrial *= agent::industrial::flexible_ratio();
 		TSO_Market.submitted_demand(TSO_Market.price_intervals + 1, node_ID) += bid_inflex_industrial;
 		TSO_Market.submitted_demand.col(node_ID).segment(1, TSO_Market.price_intervals) += Eigen::VectorXd::Constant(TSO_Market.price_intervals, (double) bid_flex_industrial / TSO_Market.price_intervals);
-		International_Market.submitted_demand(TSO_Market.price_intervals + 1, bz_ID) += bid_inflex_industrial;
-		International_Market.submitted_demand.col(bz_ID).segment(1, International_Market.price_intervals) += Eigen::VectorXd::Constant(International_Market.price_intervals, (double) bid_flex_industrial / International_Market.price_intervals);
+		//International_Market.submitted_demand(TSO_Market.price_intervals + 1, bz_ID) += bid_inflex_industrial;
+		//International_Market.submitted_demand.col(bz_ID).segment(1, International_Market.price_intervals) += Eigen::VectorXd::Constant(International_Market.price_intervals, (double) bid_flex_industrial / International_Market.price_intervals);
 	}
 //	std::cout << TSO_Market.submitted_demand.sum() << "\t";
 //	std::cout << TSO_Market.submitted_supply.sum() << "\n\n";
@@ -320,11 +320,9 @@ void power_market::Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlp
 	Y_n.setFromTriplets(Y_n_trip.begin(), Y_n_trip.end());
 
 	// Generate sparse matrix for general (equality) constraints of voltage, power flow, and source / sink summation
-	//int constrant_num = 2 * Market.network.num_vertice + Market.network.num_edges + 1;
 	int constrant_num = 2 * Market.network.num_vertice + Market.network.num_edges;
 	int variable_num = Market.network.num_vertice * (Market.price_intervals + 4) + Market.network.num_edges;
 	Eigen::VectorXpd non_zero_num(constrant_num);
-	//non_zero_num << Connection_num + Eigen::VectorXpd::Ones(Market.network.num_vertice), Eigen::VectorXpd::Constant(Market.network.num_edges, 3), Eigen::VectorXpd::Constant(Market.network.num_vertice, Market.price_intervals + 3), 1;
 	non_zero_num << Connection_num + Eigen::VectorXpd::Ones(Market.network.num_vertice), Eigen::VectorXpd::Constant(Market.network.num_edges, 3), Eigen::VectorXpd::Constant(Market.network.num_vertice, Market.price_intervals + 3);
 	alglib::integer_1d_array row_sizes_general;
 	row_sizes_general.setcontent(non_zero_num.size(), non_zero_num.data());
