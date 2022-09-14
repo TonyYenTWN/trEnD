@@ -177,7 +177,6 @@ namespace power_market{
 
 namespace power_market{
 	void Market_Initialization(market_inform&);
-	void Market_clearing_nodal(int, market_inform&, Eigen::VectorXi&, Eigen::MatrixXd&, Eigen::MatrixXd&);
 	void Submitted_bid_calculation(int, agent::end_user::profiles&, markets_inform&, market_inform&, market_inform&, power_network::network_inform&, bool);
 	void TSO_boundary_update(int, market_inform&, market_inform&, power_network::network_inform&);
 	void Flow_Based_Market_LP_Set(market_inform&, alglib::minlpstate&);
@@ -206,7 +205,7 @@ namespace power_market{
 	};
 
 	void International_Market_Set(market_inform&, alglib::minlpstate&, power_network::network_inform&, int, fin_market);
-	void International_Market_Optimization(int, market_inform&, alglib::minlpstate&, bool print_result = 1);
+	void International_Market_Optimization(int, market_inform&, alglib::minlpstate&);
 	void International_Market_Output(market_inform&);
 	void International_Market_Price_Estimation(int, market_inform&, alglib::minlpstate&, power_network::network_inform&);
 	std::vector <agent::sorted_vector> International_Market_Price_Sorted(int,  market_inform&);

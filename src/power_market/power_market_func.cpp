@@ -11,59 +11,6 @@ void power_market::Market_Initialization(market_inform &Market){
 	Market.submitted_demand = Eigen::MatrixXd::Zero(Market.price_intervals + 2, Market.num_zone);
 }
 
-void power_market::Market_clearing_nodal(int tick, market_inform &Market, Eigen::VectorXi &default_price_ID, Eigen::MatrixXd &bidded_supply, Eigen::MatrixXd &bidded_demand){
-	Eigen::VectorXi price_demand_ID = (Market.price_intervals + 1) * Eigen::VectorXi::Ones(Market.num_zone);
-	Eigen::VectorXi price_supply_ID = Eigen::VectorXi::Zero(Market.num_zone);
-
-	//#pragma omp parallel for
-	for(int zone_ID = 0; zone_ID < Market.num_zone; ++ zone_ID){
-		while(price_demand_ID(zone_ID) > price_supply_ID(zone_ID)){
-			// Check if there are demand bids at current price interval
-			while(bidded_demand(price_demand_ID(zone_ID), zone_ID) == 0.){
-				if(price_demand_ID(zone_ID) > 0){
-					price_demand_ID(zone_ID) -= 1;
-				}
-				else{
-					// No available buyer left to buy electricity
-					default_price_ID(zone_ID) = price_supply_ID(zone_ID);
-					break;
-				}
-			}
-
-			// Check if there are supply bids at current price interval
-			while(bidded_supply(price_supply_ID(zone_ID), zone_ID) == 0.){
-				if(price_supply_ID(zone_ID) < Market.bidded_price.size() - 1){
-					price_supply_ID(zone_ID) += 1;
-				}
-				else{
-					// No available seller left to sell electricity
-					default_price_ID(zone_ID) = price_demand_ID(zone_ID);
-					break;
-				}
-			}
-
-			if(price_demand_ID(zone_ID) > price_supply_ID(zone_ID)){
-				double trade_quantity = std::min(bidded_supply(price_supply_ID(zone_ID), zone_ID), bidded_demand(price_demand_ID(zone_ID), zone_ID));
-				Market.confirmed_supply(tick, zone_ID) += trade_quantity;
-				Market.confirmed_demand(tick, zone_ID) += trade_quantity;
-				bidded_supply(price_supply_ID(zone_ID), zone_ID) -= trade_quantity;
-				bidded_demand(price_demand_ID(zone_ID), zone_ID) -= trade_quantity;
-			}
-			else{
-				if(bidded_supply(price_supply_ID(zone_ID), zone_ID) > 0){
-					default_price_ID(zone_ID) = price_supply_ID(zone_ID);
-				}
-				else{
-					default_price_ID(zone_ID) = price_demand_ID(zone_ID);
-				}
-			}
-		}
-
-		// Record default market clearing prices
-		Market.confirmed_price(tick, zone_ID) = Market.bidded_price(default_price_ID(zone_ID));
-	}
-}
-
 // ------------------------------------------------------------------------------------------------
 // Functions involving multiple markets
 // ------------------------------------------------------------------------------------------------
@@ -155,8 +102,8 @@ void power_market::Submitted_bid_calculation(int tick, agent::end_user::profiles
 		bid_flex_industrial *= agent::industrial::flexible_ratio();
 		TSO_Market.submitted_demand(TSO_Market.price_intervals + 1, node_ID) += bid_inflex_industrial;
 		TSO_Market.submitted_demand.col(node_ID).segment(1, TSO_Market.price_intervals) += Eigen::VectorXd::Constant(TSO_Market.price_intervals, (double) bid_flex_industrial / TSO_Market.price_intervals);
-		//International_Market.submitted_demand(TSO_Market.price_intervals + 1, bz_ID) += bid_inflex_industrial;
-		//International_Market.submitted_demand.col(bz_ID).segment(1, International_Market.price_intervals) += Eigen::VectorXd::Constant(International_Market.price_intervals, (double) bid_flex_industrial / International_Market.price_intervals);
+		International_Market.submitted_demand(TSO_Market.price_intervals + 1, bz_ID) += bid_inflex_industrial;
+		International_Market.submitted_demand.col(bz_ID).segment(1, International_Market.price_intervals) += Eigen::VectorXd::Constant(International_Market.price_intervals, (double) bid_flex_industrial / International_Market.price_intervals);
 	}
 //	std::cout << TSO_Market.submitted_demand.sum() << "\t";
 //	std::cout << TSO_Market.submitted_supply.sum() << "\n\n";
