@@ -77,7 +77,16 @@ You will be asked to type in the values for some boolean variables at the beginn
 
 # Workflow of the Model
 ![Workflow of the model](https://raw.githubusercontent.com/TonyYenTWN/trEnD/main/pic/Model_Workflow%20-%201.jpg)
+## Data Processing Stage
 
+## Simulation Stage
+### Bid Submission
+
+### Market Clearing
+
+### Redispatch
+
+### Control Reserve Activation
 
 # Documentation of Source Codes
 Below is a summary of what the source codes do, categorized by the subfolders in [src](https://github.com/TonyYenTWN/trEnD/tree/main/src) folder. The full documentation can be found at [the github-pages of this repository](https://tonyyentwn.github.io/trEnD).
