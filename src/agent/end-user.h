@@ -16,8 +16,8 @@ namespace agent{
 		}
 
 		static inline double residential_ratio(){
-			//double value = 1.;
-			double value = .4;
+			double value = 1.;
+			//double value = .4;
 			return value;
 		}
 	}

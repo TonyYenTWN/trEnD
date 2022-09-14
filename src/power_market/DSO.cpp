@@ -359,7 +359,6 @@ void power_market::DSO_Market_Results_Get(int tick, market_inform &Market, algli
 		for(int point_iter = 0; point_iter < DSO_cluster.points_ID.size(); ++ point_iter){
 			int row_start = 2 * Market.network.num_vertice + point_iter * (Market.price_intervals + 2);
 			Market.filtered_demand.col(point_iter) = -(sol_vec.segment(row_start, Market.price_intervals + 2).array().min(0));
-			Market.filtered_demand.col(point_iter) = sol_vec.segment(row_start, Market.price_intervals + 2).array().max(0);
 			Market.filtered_price_demand(tick, point_iter) = Market.bidded_price(0) + rep.lagbc[row_start];
 			Market.filtered_price_demand(tick, point_iter) = std::min(Market.filtered_price_demand(tick, point_iter), Market.price_range_inflex(1));
 			Market.filtered_price_demand(tick, point_iter) = std::max(Market.filtered_price_demand(tick, point_iter), Market.price_range_inflex(0));

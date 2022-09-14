@@ -24,9 +24,6 @@ void power_market::Submitted_bid_calculation(int tick, agent::end_user::profiles
 		DSO_Markets[DSO_iter].filtered_demand = DSO_Markets[DSO_iter].submitted_demand;
 	}
 
-	std::cout << TSO_Market.submitted_demand.sum() << "\t";
-	std::cout << TSO_Market.submitted_supply.sum() << "\n\n";
-
 	// Demand at each point (residential) / node (industrial)
 	// Trivial case: residential demand at each point is 100% inflexible; 5% of industrial demand is flexible
 	int sample_num = end_user_profiles[0].size();
@@ -36,7 +33,7 @@ void power_market::Submitted_bid_calculation(int tick, agent::end_user::profiles
 		int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
 		//std::cout << bz_ID << "\t" << node_ID << "\t" << Power_network_inform.nodes.bidding_zone(node_ID) << "\n";
 
-		// Residential demand
+		// Residential demand; connect to distribution power network
 		for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
 			double bid_inflex_quan = end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile(0);
 			bid_inflex_quan *= end_user_profiles[point_iter][sample_iter].operation.weight;
@@ -50,7 +47,7 @@ void power_market::Submitted_bid_calculation(int tick, agent::end_user::profiles
 			int price_inflex_ID;
 			if(bid_inflex_quan >= 0.){
 				price_inflex_ID = end_user_profiles[point_iter][sample_iter].operation.demand_inflex_price_ID;
-				DSO_Markets[DSO_ID].submitted_demand(price_inflex_ID, Power_network_inform.points.in_cluster_ID(point_iter)) = bid_inflex_quan;
+				DSO_Markets[DSO_ID].submitted_demand(price_inflex_ID, Power_network_inform.points.in_cluster_ID(point_iter)) += bid_inflex_quan;
 				International_Market.submitted_demand(price_inflex_ID, bz_ID) += bid_inflex_quan;
 
 				// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
@@ -60,7 +57,7 @@ void power_market::Submitted_bid_calculation(int tick, agent::end_user::profiles
 			}
 			else{
 				price_inflex_ID = end_user_profiles[point_iter][sample_iter].operation.supply_inflex_price_ID;
-				DSO_Markets[DSO_ID].submitted_supply(price_inflex_ID, Power_network_inform.points.in_cluster_ID(point_iter)) = -bid_inflex_quan;
+				DSO_Markets[DSO_ID].submitted_supply(price_inflex_ID, Power_network_inform.points.in_cluster_ID(point_iter)) -= bid_inflex_quan;
 				International_Market.submitted_supply(price_inflex_ID, bz_ID) -= bid_inflex_quan;
 
 				// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
@@ -73,7 +70,7 @@ void power_market::Submitted_bid_calculation(int tick, agent::end_user::profiles
 			int price_flex_ID;
 			if(bid_flex_quan >= 0.){
 				price_flex_ID = end_user_profiles[point_iter][sample_iter].operation.demand_flex_price_ID;
-				DSO_Markets[DSO_ID].submitted_demand(price_flex_ID, Power_network_inform.points.in_cluster_ID(point_iter)) = bid_flex_quan;
+				DSO_Markets[DSO_ID].submitted_demand(price_flex_ID, Power_network_inform.points.in_cluster_ID(point_iter)) += bid_flex_quan;
 				International_Market.submitted_demand(price_flex_ID, bz_ID) += bid_flex_quan;
 
 				// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
@@ -83,7 +80,7 @@ void power_market::Submitted_bid_calculation(int tick, agent::end_user::profiles
 			}
 			else{
 				price_flex_ID = end_user_profiles[point_iter][sample_iter].operation.supply_flex_price_ID;
-				DSO_Markets[DSO_ID].submitted_supply(price_flex_ID, Power_network_inform.points.in_cluster_ID(point_iter)) = -bid_flex_quan;
+				DSO_Markets[DSO_ID].submitted_supply(price_flex_ID, Power_network_inform.points.in_cluster_ID(point_iter)) -= bid_flex_quan;
 				International_Market.submitted_supply(price_flex_ID, bz_ID) -= bid_flex_quan;
 
 				// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
@@ -93,7 +90,7 @@ void power_market::Submitted_bid_calculation(int tick, agent::end_user::profiles
 			}
 		}
 
-		// Industrial demand
+		// Industrial demand; connect to transmission power network
 		double bid_inflex_industrial = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick);
 		bid_inflex_industrial *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
 		bid_inflex_industrial *= 1. - agent::parameters::residential_ratio();
@@ -105,18 +102,6 @@ void power_market::Submitted_bid_calculation(int tick, agent::end_user::profiles
 		International_Market.submitted_demand(TSO_Market.price_intervals + 1, bz_ID) += bid_inflex_industrial;
 		International_Market.submitted_demand.col(bz_ID).segment(1, International_Market.price_intervals) += Eigen::VectorXd::Constant(International_Market.price_intervals, (double) bid_flex_industrial / International_Market.price_intervals);
 	}
-//	std::cout << TSO_Market.submitted_demand.sum() << "\t";
-//	std::cout << TSO_Market.submitted_supply.sum() << "\n\n";
-//	for(int zone_iter = 0; zone_iter < 5; ++ zone_iter){
-//		std::cout << International_Market.submitted_demand.col(zone_iter).sum() << "\t";
-//	}
-//	std::cout << "\n\n";
-//	Eigen::VectorXd demand_sum = Eigen::VectorXd::Zero(5);
-//	for(int node_iter = 0; node_iter < TSO_Market.num_zone; ++ node_iter){
-//		int bz_ID = Power_network_inform.nodes.bidding_zone(node_iter);
-//		demand_sum(bz_ID) += TSO_Market.submitted_demand.col(node_iter).sum();
-//	}
-//	std::cout << demand_sum.transpose() << "\n\n";
 
 	// Supply at each point (LV power plants) / node (HV power plants)
 	for(int hydro_iter = 0; hydro_iter < Power_network_inform.plants.hydro.node.size(); ++ hydro_iter){
@@ -134,7 +119,6 @@ void power_market::Submitted_bid_calculation(int tick, agent::end_user::profiles
 			bid_vec *= Power_network_inform.plants.hydro.cap(hydro_iter);
 			bid_vec /= (International_Market.merit_order_curve.col(Power_network_inform.nodes.bidding_zone(node_ID)).sum());
 
-			DSO_Markets[DSO_ID].submitted_supply.col(Power_network_inform.DSO_cluster[DSO_ID].points_ID.size() + Power_network_inform.nodes.in_cluster_ID(node_ID)) += bid_vec;
 			TSO_Market.submitted_supply.col(node_ID) += bid_vec;
 		}
 		// Low voltage power plants feed into distribution network
@@ -180,7 +164,6 @@ void power_market::Submitted_bid_calculation(int tick, agent::end_user::profiles
 			DSO_ID = Power_network_inform.nodes.cluster(node_ID);
 			bz_ID = Power_network_inform.nodes.bidding_zone(node_ID);
 
-			DSO_Markets[DSO_ID].submitted_supply(0, Power_network_inform.DSO_cluster[DSO_ID].points_ID.size() + Power_network_inform.nodes.in_cluster_ID(node_ID)) += bid_quan;
 			TSO_Market.submitted_supply(0, node_ID) += bid_quan;
 		}
 		// Low voltage power plants feed into distribution network
@@ -199,8 +182,15 @@ void power_market::Submitted_bid_calculation(int tick, agent::end_user::profiles
 		International_Market.submitted_supply(0, bz_ID) += bid_quan;
 	}
 
-	std::cout << TSO_Market.submitted_demand.sum() << "\t";
-	std::cout << TSO_Market.submitted_supply.sum() << "\n\n";
+	if(DSO_filter_flag){
+		double demand_sum = 0;
+		double supply_sum = 0;
+		for(int DSO_iter = 0; DSO_iter < DSO_Markets.size(); ++ DSO_iter){
+			demand_sum += DSO_Markets[DSO_iter].submitted_demand.sum();
+			supply_sum +=  DSO_Markets[DSO_iter].submitted_supply.sum();
+		}
+		std::cout << "Total submitted:\t" << demand_sum << "\t" << supply_sum << "\n\n";
+	}
 }
 
 void power_market::TSO_boundary_update(int tick, market_inform &TSO_Market, market_inform &International_Market, power_network::network_inform &Power_network_inform){
@@ -222,9 +212,6 @@ void power_market::TSO_boundary_update(int tick, market_inform &TSO_Market, mark
 			TSO_Market.submitted_demand(price_ID, node_ID) += sink / node_num;
 		}
 	}
-
-	std::cout << TSO_Market.submitted_demand.sum() << "\t";
-	std::cout << TSO_Market.submitted_supply.sum() << "\n\n";
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -442,8 +429,16 @@ void power_market::Filtered_bid_calculation(int tick, markets_inform &DSO_Market
 		}
 		//std::cout << "function 1 end\n";
 	}
-	std::cout << TSO_Market.submitted_demand.sum() << "\t";
-	std::cout << TSO_Market.submitted_supply.sum() << "\n\n";
+//	std::cout << TSO_Market.submitted_demand.sum() << "\t";
+//	std::cout << TSO_Market.submitted_supply.sum() << "\n\n";
+
+	double demand_sum = 0;
+	double supply_sum = 0;
+	for(int DSO_iter = 0; DSO_iter < DSO_Markets.size(); ++ DSO_iter){
+		demand_sum += DSO_Markets[DSO_iter].filtered_demand.sum();
+		supply_sum +=  DSO_Markets[DSO_iter].filtered_supply.sum();
+	}
+	std::cout << "Total filtered:\t" << demand_sum << "\t" << supply_sum << "\n\n";
 
 //	# pragma omp parallel
 //	{
