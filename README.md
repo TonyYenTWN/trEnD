@@ -8,12 +8,20 @@ Welcome to trEnD, a c++ based model of the energy transition, focusing on the en
   - [Preparing the Input .csv Files](#preparing-the-input-csv-files)
 
   - [Compiling the Source Codes](#compiling-the-source-codes)
+    - [Prerequisite for Compilation](#prerequisite-for-compilation)
+    - [Compiler Choice and Settings](#compiler-choice-and-settings)
 
   - [Executing the Binary File](#executing-the-binary-file)
 
   - [Output .csv Files](#output-csv-files)
 
 - [Workflow of the Model](#workflow-of-the-model)
+  - [Data Processing Stage](#data-processing-stage)
+  - [Simulation Stage](#simulation-stage)
+    - [Bid Submission](#bid-submission)
+    - [Market Clearing](#market-clearing)
+    - [Redispatch](#redispatch)
+    - [Control Reserve Activation](#control-reserve-activation)
 
 - [Documentation of Source Codes](#documentation-of-source-codes)
 
