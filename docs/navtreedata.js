@@ -37,7 +37,7 @@ var NAVTREE =
       [ "Class List", "annotated.html", "annotated_dup" ],
       [ "Class Index", "classes.html", null ],
       [ "Class Members", "functions.html", [
-        [ "All", "functions.html", null ],
+        [ "All", "functions.html", "functions_dup" ],
         [ "Functions", "functions_func.html", null ],
         [ "Variables", "functions_vars.html", null ]
       ] ]
@@ -57,7 +57,7 @@ var NAVTREEINDEX =
 [
 "annotated.html",
 "d5/d93/structpower__market_1_1network__graph.html#a911b988210fff6ab0ae6ffeb06a7464d",
-"dc/db0/spatial__field_8h.html#a3f2a182a9c38fc8ba7fb5da147a830b6"
+"dc/d2e/structpower__network_1_1plants__per__tech.html#a77b724c35ff8a3fe1dbe1315253742f2"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
