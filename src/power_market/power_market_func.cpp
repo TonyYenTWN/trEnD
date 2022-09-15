@@ -28,6 +28,7 @@ void power_market::Submitted_bid_calculation(int tick, agent::end_user::profiles
 	// Trivial case: residential demand at each point is 100% inflexible; 5% of industrial demand is flexible
 	int sample_num = end_user_profiles[0].size();
 	for(int point_iter = 0; point_iter < Power_network_inform.points.bidding_zone.size(); ++ point_iter){
+		int point_ID = Power_network_inform.points.in_cluster_ID(point_iter);
 		int node_ID = Power_network_inform.points.node(point_iter);
 		int DSO_ID = Power_network_inform.nodes.cluster(node_ID);
 		int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
@@ -47,7 +48,7 @@ void power_market::Submitted_bid_calculation(int tick, agent::end_user::profiles
 			int price_inflex_ID;
 			if(bid_inflex_quan >= 0.){
 				price_inflex_ID = end_user_profiles[point_iter][sample_iter].operation.demand_inflex_price_ID;
-				DSO_Markets[DSO_ID].submitted_demand(price_inflex_ID, Power_network_inform.points.in_cluster_ID(point_iter)) += bid_inflex_quan;
+				DSO_Markets[DSO_ID].submitted_demand(price_inflex_ID, point_ID) += bid_inflex_quan;
 				International_Market.submitted_demand(price_inflex_ID, bz_ID) += bid_inflex_quan;
 
 				// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
@@ -57,7 +58,7 @@ void power_market::Submitted_bid_calculation(int tick, agent::end_user::profiles
 			}
 			else{
 				price_inflex_ID = end_user_profiles[point_iter][sample_iter].operation.supply_inflex_price_ID;
-				DSO_Markets[DSO_ID].submitted_supply(price_inflex_ID, Power_network_inform.points.in_cluster_ID(point_iter)) -= bid_inflex_quan;
+				DSO_Markets[DSO_ID].submitted_supply(price_inflex_ID, point_ID) -= bid_inflex_quan;
 				International_Market.submitted_supply(price_inflex_ID, bz_ID) -= bid_inflex_quan;
 
 				// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
@@ -70,7 +71,7 @@ void power_market::Submitted_bid_calculation(int tick, agent::end_user::profiles
 			int price_flex_ID;
 			if(bid_flex_quan >= 0.){
 				price_flex_ID = end_user_profiles[point_iter][sample_iter].operation.demand_flex_price_ID;
-				DSO_Markets[DSO_ID].submitted_demand(price_flex_ID, Power_network_inform.points.in_cluster_ID(point_iter)) += bid_flex_quan;
+				DSO_Markets[DSO_ID].submitted_demand(price_flex_ID, point_ID) += bid_flex_quan;
 				International_Market.submitted_demand(price_flex_ID, bz_ID) += bid_flex_quan;
 
 				// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
@@ -80,7 +81,7 @@ void power_market::Submitted_bid_calculation(int tick, agent::end_user::profiles
 			}
 			else{
 				price_flex_ID = end_user_profiles[point_iter][sample_iter].operation.supply_flex_price_ID;
-				DSO_Markets[DSO_ID].submitted_supply(price_flex_ID, Power_network_inform.points.in_cluster_ID(point_iter)) -= bid_flex_quan;
+				DSO_Markets[DSO_ID].submitted_supply(price_flex_ID, point_ID) -= bid_flex_quan;
 				International_Market.submitted_supply(price_flex_ID, bz_ID) -= bid_flex_quan;
 
 				// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
