@@ -363,6 +363,20 @@ void power_market::DSO_Market_Results_Get(int tick, market_inform &Market, algli
 			Market.filtered_price_demand(tick, point_iter) = std::min(Market.filtered_price_demand(tick, point_iter), Market.price_range_inflex(1));
 			Market.filtered_price_demand(tick, point_iter) = std::max(Market.filtered_price_demand(tick, point_iter), Market.price_range_inflex(0));
 
+			// Store ratio at nodes
+			for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter){
+				if(Market.bidded_price(price_iter) >= Market.filtered_price_demand(tick, point_iter) || price_iter == Market.price_intervals + 1){
+					Market.filtered_ratio_demand(tick, point_iter) =  sol_vec(row_start + price_iter);
+					if(sol_vec(row_start + price_iter) >= 0.){
+						Market.filtered_ratio_demand(tick, point_iter) = 0.;
+					}
+					else{
+						Market.filtered_ratio_demand(tick, point_iter) /= Market.submitted_demand(price_iter, point_iter);
+					}
+					break;
+				}
+			}
+
 			//std::cout << Market.submitted_demand.col(point_iter).transpose() << "\n\n";
 			//std::cout << Market.filtered_demand.col(point_iter).transpose() << "\n\n";
 			//std::cout << (Market.submitted_demand.col(point_iter) - Market.filtered_demand.col(point_iter)).transpose() << "\n\n";
