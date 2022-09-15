@@ -211,7 +211,7 @@ var NAVTREEINDEX1 =
 "db/d56/power__market_8h.html#a3b707d36ca100993e14b9a70836f53fb":[2,0,0,2,2,14],
 "db/d56/power__market_8h.html#a40a028ec74fd392c003dca1f3ac99d2a":[2,0,0,2,2,12],
 "db/d56/power__market_8h.html#a4652f98220233eff81d750d027b54b2d":[2,0,0,2,2,22],
-"db/d56/power__market_8h.html#a4aa93d7a810b01f7cb18754ab503577d":[2,0,0,2,2,32],
+"db/d56/power__market_8h.html#a4c6c66f09d3fbf7962b2df3224984345":[2,0,0,2,2,32],
 "db/d56/power__market_8h.html#a53e17da0ec3f9445eb26b9e9ae8525ac":[2,0,0,2,2,21],
 "db/d56/power__market_8h.html#a55fda398215601b822a441257b435687":[2,0,0,2,2,17],
 "db/d56/power__market_8h.html#a732445b90146209be6e564bfa0d47123":[2,0,0,2,2,30],

@@ -218,7 +218,7 @@ var NAVTREEINDEX0 =
 "d5/d60/namespacepower__market.html#a3b707d36ca100993e14b9a70836f53fb":[0,0,3,10],
 "d5/d60/namespacepower__market.html#a40a028ec74fd392c003dca1f3ac99d2a":[0,0,3,8],
 "d5/d60/namespacepower__market.html#a4652f98220233eff81d750d027b54b2d":[0,0,3,18],
-"d5/d60/namespacepower__market.html#a4aa93d7a810b01f7cb18754ab503577d":[0,0,3,28],
+"d5/d60/namespacepower__market.html#a4c6c66f09d3fbf7962b2df3224984345":[0,0,3,28],
 "d5/d60/namespacepower__market.html#a53e17da0ec3f9445eb26b9e9ae8525ac":[0,0,3,17],
 "d5/d60/namespacepower__market.html#a55fda398215601b822a441257b435687":[0,0,3,13],
 "d5/d60/namespacepower__market.html#a732445b90146209be6e564bfa0d47123":[0,0,3,26],
