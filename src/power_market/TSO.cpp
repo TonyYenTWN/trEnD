@@ -116,7 +116,7 @@ void power_market::TSO_Market_Results_Get(int tick, market_inform &Market, algli
 	std::cout << sol_vec.tail(Market.network.num_edges).minCoeff() << " " << sol_vec.tail(Market.network.num_edges).maxCoeff() << "\n\n";
 }
 
-void power_market::TSO_Market_control_reserve(int tick, market_inform &Market, power_network::network_inform &Power_network_inform, agent::end_user::profiles &end_user_profiles, alglib::minlpstate &Problem){
+void power_market::TSO_Market_control_reserve(int tick, markets_inform &DSO_Markets, market_inform &Market, power_network::network_inform &Power_network_inform, agent::end_user::profiles &end_user_profiles, alglib::minlpstate &Problem, bool DSO_filter_flag){
 	int bz_num = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
 	int point_num = Power_network_inform.points.bidding_zone.size();
 
@@ -125,54 +125,35 @@ void power_market::TSO_Market_control_reserve(int tick, market_inform &Market, p
 	Market.control_reserve.available_ratio_demand = Eigen::MatrixXd::Ones(Market.price_intervals + 2, Market.num_zone);
 	// Temporary setting!!
 
-	Eigen::VectorXd imbalance_demand_sum = Eigen::VectorXd::Zero(Market.num_zone);
+	Eigen::MatrixXd imbalance_demand = Eigen::MatrixXd::Zero(Market.price_intervals + 2, Market.num_zone);
 	for(int point_iter = 0; point_iter < point_num; ++ point_iter){
+		int point_ID = Power_network_inform.points.in_cluster_ID(point_iter);
 		int node_ID = Power_network_inform.points.node(point_iter);
-		int sample_num = agent::parameters::sample_num();
+		int DSO_ID = Power_network_inform.nodes.cluster(node_ID);
 		double node_price = Market.confirmed_price(tick, node_ID);
 
-		for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
-			double imbalance_demand_temp = 0.;
-			if(node_price < end_user_profiles[point_iter][sample_iter].operation.demand_flex_price){
-				imbalance_demand_temp += end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile(0);
-			}
-			else if(node_price == end_user_profiles[point_iter][sample_iter].operation.demand_flex_price){
-				imbalance_demand_temp += (Market.confirmed_price_ratio(tick, node_ID) <= 0.) * (-Market.confirmed_price_ratio(tick, node_ID)) * end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile(0);
-			}
-
-			if(node_price < end_user_profiles[point_iter][sample_iter].operation.demand_inflex_price){
-				imbalance_demand_temp += end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile(0);
-			}
-			else if(node_price == end_user_profiles[point_iter][sample_iter].operation.demand_inflex_price){
-				imbalance_demand_temp += (Market.confirmed_price_ratio(tick, node_ID) <= 0.) * (-Market.confirmed_price_ratio(tick, node_ID)) * end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile(0);
-			}
-
-			imbalance_demand_temp *= end_user_profiles[point_iter][sample_iter].operation.weight;
-			imbalance_demand_temp *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
-			imbalance_demand_temp *= Power_network_inform.points.imbalance_field(point_iter, tick);
-			imbalance_demand_sum(node_ID) += imbalance_demand_temp;
-		}
-	}
-
-	Eigen::VectorXd imbalance_demand_ratio(Market.num_zone);
-	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
-		imbalance_demand_ratio(node_iter) = imbalance_demand_sum(node_iter) / (Market.confirmed_demand(tick, node_iter) + 1E-16);
-	}
-	std::cout << imbalance_demand_ratio.minCoeff() << "\t" << imbalance_demand_ratio.maxCoeff() << "\n\n";
-
-	Eigen::MatrixXd imbalance_demand = Eigen::MatrixXd::Zero(Market.price_intervals + 2, Market.num_zone);
-	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
+		Eigen::VectorXd imbalance_demand_temp = Eigen::VectorXd::Zero(Market.price_intervals + 2);
 		for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter){
-			if(Market.bidded_price(price_iter) >= Market.confirmed_price(tick, node_iter) || price_iter == Market.price_intervals + 1){
-					if(Market.confirmed_price_ratio(tick, node_iter) < 0.){
-						imbalance_demand(price_iter, node_iter) = -imbalance_demand_ratio(node_iter) * Market.confirmed_price_ratio(tick, node_iter)* Market.submitted_demand(price_iter, node_iter);
-					}
-					break;
+			// Imbalance due to residential demand
+			if(DSO_filter_flag){
+				imbalance_demand_temp(price_iter) += DSO_Markets[DSO_ID].filtered_demand(price_iter, point_ID);
 			}
 			else{
-				imbalance_demand(price_iter, node_iter) = imbalance_demand_ratio(node_iter) * Market.submitted_demand(price_iter, node_iter);
+				imbalance_demand_temp(price_iter) += DSO_Markets[DSO_ID].submitted_demand(price_iter, point_ID);
+			}
+
+			// Imbalance due to industrial demand
+			// Update later
+
+			if(Market.bidded_price(price_iter) >= Market.confirmed_price(tick, node_ID) || price_iter == Market.price_intervals + 1){
+				if(Market.confirmed_price_ratio(tick, node_ID) < 0.){
+					imbalance_demand_temp(price_iter) *= -Market.confirmed_price_ratio(tick, node_ID);
+				}
+				break;
 			}
 		}
+		imbalance_demand_temp *= Power_network_inform.points.imbalance_field(point_iter, tick);
+		imbalance_demand.col(node_ID) += imbalance_demand_temp;
 	}
 
 	// -------------------------------------------------------------------------------
