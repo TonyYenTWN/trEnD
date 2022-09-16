@@ -9,6 +9,7 @@ namespace{
 		bool estimation_flag;
 		bool simulation_flag;
 		bool DSO_filter_flag;
+		bool control_reserve_flag;
 
 		void process_default_get(){
 			std::cout << "Default procedure?        Yes: 1 / No: 0 | ";
@@ -20,6 +21,7 @@ namespace{
 			this->estimation_flag = 0;
 			this->simulation_flag = 1;
 			this->DSO_filter_flag = 0;
+			this->control_reserve_flag = 1;
 		}
 
 		void process_bool_input(){
@@ -34,6 +36,10 @@ namespace{
 			if(this->simulation_flag == 1){
 				std::cout << "DSOs filter bids?         Yes: 1 / No: 0 | ";
 				std::cin >> this->DSO_filter_flag;
+				std::cout << "\n";
+
+				std::cout << "Control reserve?          Yes: 1 / No: 0 | ";
+				std::cin >> this->control_reserve_flag;
 				std::cout << "\n";
 			}
 		}
@@ -68,8 +74,8 @@ int main(){
 
 	// Power market processes
 	if(process_par.simulation_flag){
-		power_market::power_market_process_set(Power_network_inform, Power_market_inform, process_par.DSO_filter_flag);
-		power_market::power_market_process_update(Power_network_inform, Power_market_inform, process_par.DSO_filter_flag);
+		power_market::power_market_process_set(Power_network_inform, Power_market_inform, process_par.DSO_filter_flag, process_par.control_reserve_flag);
+		power_market::power_market_process_update(Power_network_inform, Power_market_inform, process_par.DSO_filter_flag, process_par.control_reserve_flag);
 	}
 }
 //	std::cin.get();
