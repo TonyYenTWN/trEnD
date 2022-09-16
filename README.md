@@ -79,7 +79,8 @@ You will be asked to type in the values for some boolean variables at the beginn
 - "Default procedure?": If you type 1 (yes) for this question, the default settings of the program (no estimation of spatial fields, simulation without DSO filtering bids during redispatch).
 - "Estimate spatial fields?": If you type 1 (yes) for this question, the necessary spatial fields will be estimated first and stored in the [Processed/spatial_field](https://github.com/TonyYenTWN/trEnD/tree/main/csv/processed/spatial_field) folder.
 - "Simulate operation?": If you type 1 (yes) for this question, the program will simulate the operation of the power market.
-- "DSOs filter bids?": This question only appears when you have answered "yes" to the previous question.  If you type 1 (yes) for this question, the DSOs will filter submitted bids in their operation area during redispatch.
+- "DSOs filter bids?": This question only appears when you have answered "yes" to "Simulate operation?". If you type 1 (yes) for this question, the DSOs will filter submitted bids in their operation area during redispatch.
+- "Control reserve?": This question only appears when you have answered "yes" to "Simulate operation?". If you type 1 (yes) for this question, the program will simulate the activatation of tertiary control reserve after redispatch.
 
 ## Output .csv Files
 
