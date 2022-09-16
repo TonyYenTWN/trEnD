@@ -184,8 +184,8 @@ namespace power_market{
 	void Flow_Based_Market_Optimization(market_inform&, alglib::minlpstate&);
 	void Filtered_bid_calculation(int, markets_inform&, market_inform&, power_network::network_inform&, std::vector <alglib::minlpstate>&);
 	void default_demand_set(power_network::network_inform&, market_whole_inform&);
-	void power_market_process_set(power_network::network_inform&, market_whole_inform&, bool);
-	void power_market_process_update(power_network::network_inform&, market_whole_inform&, bool);
+	void power_market_process_set(power_network::network_inform&, market_whole_inform&, bool, bool);
+	void power_market_process_update(power_network::network_inform&, market_whole_inform&, bool, bool);
 }
 
 #endif
