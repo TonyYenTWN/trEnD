@@ -176,13 +176,13 @@ void power_market::TSO_Market_control_reserve(int tick, markets_inform &DSO_Mark
 			double flex_quan;
 			if(Market.bidded_price(price_iter) == Market.confirmed_price(tick, node_iter)){
 				if(Market.confirmed_price_ratio(tick, node_iter) < 0.){
-					origin_point(price_iter) = -Market.confirmed_demand(price_iter, node_iter);
-					flex_quan = Market.control_reserve.available_ratio_demand(price_iter, node_iter) * Market.confirmed_demand(price_iter, node_iter);
+					origin_point(price_iter) = -Market.confirmed_demand(price_iter, node_iter) - imbalance_demand(price_iter, node_iter);
+					flex_quan = Market.control_reserve.available_ratio_demand(price_iter, node_iter) * (Market.confirmed_demand(price_iter, node_iter) + imbalance_demand(price_iter, node_iter));
 					flex_quan += Market.control_reserve.available_ratio_supply(price_iter, node_iter) * Market.submitted_supply(price_iter, node_iter);
 					flex_up(price_iter) = flex_quan;
 
 					flex_quan = Market.control_reserve.available_ratio_demand(price_iter, node_iter);
-					flex_quan *= Market.submitted_demand(price_iter, node_iter) - Market.confirmed_demand(price_iter, node_iter);
+					flex_quan *= Market.submitted_demand(price_iter, node_iter) - Market.confirmed_demand(price_iter, node_iter) - imbalance_demand(price_iter, node_iter);
 					flex_down(price_iter) = flex_quan;
 				}
 				else{
@@ -200,7 +200,7 @@ void power_market::TSO_Market_control_reserve(int tick, markets_inform &DSO_Mark
 				continue;
 			}
 
-			flex_quan = Market.control_reserve.available_ratio_demand(price_iter, node_iter) * Market.submitted_demand(price_iter, node_iter);
+			flex_quan = Market.control_reserve.available_ratio_demand(price_iter, node_iter) * (Market.submitted_demand(price_iter, node_iter) + imbalance_demand(price_iter, node_iter));
 			flex_quan += Market.control_reserve.available_ratio_supply(price_iter, node_iter) * Market.submitted_supply(price_iter, node_iter);
 			if(full_supply){
 				origin_point(price_iter) = Market.submitted_supply(price_iter, node_iter);
@@ -208,12 +208,12 @@ void power_market::TSO_Market_control_reserve(int tick, markets_inform &DSO_Mark
 				flex_down(price_iter) = flex_quan;
 			}
 			else{
-				origin_point(price_iter) = -Market.submitted_demand(price_iter, node_iter);
+				origin_point(price_iter) = -Market.submitted_demand(price_iter, node_iter) - imbalance_demand(price_iter, node_iter);
 				flex_up(price_iter) = flex_quan;
 				flex_down(price_iter) = 0.;
 			}
 		}
-		origin_point = origin_point - imbalance_demand.col(node_iter);
+		//origin_point = origin_point - imbalance_demand.col(node_iter);
 		bound_box.middleRows(row_start, Market.price_intervals + 2).col(0) = origin_point - flex_down;
 		bound_box.middleRows(row_start, Market.price_intervals + 2).col(1) = origin_point + flex_up;
 

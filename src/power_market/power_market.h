@@ -166,6 +166,7 @@ namespace power_market{
 		markets_inform DSO_Markets;
 		Problems DSO_Problems;
 		agent::end_user::profiles end_user_profiles;
+		//Eigen::MatrixXd industrial_submitted_demand;
 	};
 }
 
@@ -177,7 +178,7 @@ namespace power_market{
 
 namespace power_market{
 	void Market_Initialization(market_inform&);
-	void Submitted_bid_calculation(int, agent::end_user::profiles&, markets_inform&, market_inform&, market_inform&, power_network::network_inform&, bool);
+	void Submitted_bid_calculation(int, market_whole_inform&, power_network::network_inform&, bool);
 	void TSO_boundary_update(int, market_inform&, market_inform&, power_network::network_inform&);
 	void Flow_Based_Market_LP_Set(market_inform&, alglib::minlpstate&);
 	void Flow_Based_Market_Optimization(market_inform&, alglib::minlpstate&);
