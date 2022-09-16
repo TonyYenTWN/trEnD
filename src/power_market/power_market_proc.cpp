@@ -17,7 +17,7 @@ void power_market::default_demand_set(power_network::network_inform &Power_netwo
 	International_Market_Set(Power_market_inform.International_Market, Power_market_inform.IMO_Problem, Power_network_inform, Time, fin_market);
 }
 
-void power_market::power_market_process_set(power_network::network_inform &Power_network_inform, market_whole_inform &Power_market_inform, bool DSO_filter_flag){
+void power_market::power_market_process_set(power_network::network_inform &Power_network_inform, market_whole_inform &Power_market_inform, bool DSO_filter_flag, bool control_reserve_flag){
 	int Time = parameters::Time();
 
 	// Initialization of processed spatial fields
@@ -63,10 +63,12 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	// Re-dispatch + tertiary control reserve in TSO
 	Flow_Based_Market_Optimization(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
 	TSO_Market_Results_Get(0, Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
-	TSO_Market_control_reserve(0, Power_market_inform, Power_network_inform, DSO_filter_flag);
+	if(control_reserve_flag){
+		TSO_Market_control_reserve(0, Power_market_inform, Power_network_inform, DSO_filter_flag);
+	}
 }
 
-void power_market::power_market_process_update(power_network::network_inform &Power_network_inform, market_whole_inform &Power_market_inform, bool DSO_filter_flag){
+void power_market::power_market_process_update(power_network::network_inform &Power_network_inform, market_whole_inform &Power_market_inform, bool DSO_filter_flag, bool control_reserve_flag){
 	int Time = parameters::Time();
 
 	int tick = 1;
@@ -82,5 +84,7 @@ void power_market::power_market_process_update(power_network::network_inform &Po
 
 	Flow_Based_Market_Optimization(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
 	TSO_Market_Results_Get(tick, Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
-	TSO_Market_control_reserve(tick, Power_market_inform, Power_network_inform, DSO_filter_flag);
+	if(control_reserve_flag){
+		TSO_Market_control_reserve(tick, Power_market_inform, Power_network_inform, DSO_filter_flag);
+	}
 }
