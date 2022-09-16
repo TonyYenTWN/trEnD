@@ -1,7 +1,6 @@
 // Header file for operation and investment of industrial consumers
-#include "src/alglib/optimization.h"
-#include "src/basic/basic_definitions.h"
-#include "src/basic/eigen_sparse.h"
+#pragma once
+#include "agent.h"
 
 namespace agent{
 	namespace industrial{

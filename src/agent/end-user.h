@@ -1,27 +1,8 @@
 // Header file for operation and investment of end-user
-#include "src/alglib/optimization.h"
-#include "src/basic/basic_definitions.h"
-#include "src/basic/eigen_sparse.h"
+#pragma once
+#include "agent.h"
 
 namespace agent{
-	namespace parameters{
-		static inline int foresight_time(){
-			int value = 24;
-			return value;
-		}
-
-		static inline int sample_num(){
-			int value = 3;
-			return value;
-		}
-
-		static inline double residential_ratio(){
-			double value = 1.;
-			//double value = .4;
-			return value;
-		}
-	}
-
 	namespace end_user{
 		/** @brief Decision variables representing possible investment combinations of an end-user.*/
 		struct decision{
@@ -192,19 +173,11 @@ namespace agent{
 		/** @brief A 2D vector of end-user profiles. The 1st dimension represents the spatial points,
 		* the 2nd represents the samples at the point.*/
 		typedef std::vector <std::vector <profile>> profiles;
-	}
 
-	struct sorted_vector{
-		Eigen::VectorXi id;
-		Eigen::VectorXd value;
-	};
-
-	// Functions
-	namespace end_user{
+		// Functions
 		void smart_appliance_schedule(sorted_vector, Eigen::VectorXd, smart_appliance_inform&);
 		alglib::minlpstate storage_schedule_LP_mold(int);
 		void storage_schedule_LP_optimize(int, sorted_vector, storage_inform&, bool fixed_end = 0);
 		void EV_schedule(int, sorted_vector, EV_inform&);
 	}
-	sorted_vector sort(Eigen::VectorXd);
 }
