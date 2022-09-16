@@ -166,7 +166,7 @@ namespace power_market{
 		markets_inform DSO_Markets;
 		Problems DSO_Problems;
 		agent::end_user::profiles end_user_profiles;
-		//Eigen::MatrixXd industrial_submitted_demand;
+		Eigen::MatrixXd industrial_submitted_demand;
 	};
 }
 
@@ -221,7 +221,7 @@ namespace power_market{
 namespace power_market{
 	void TSO_Market_Set(market_inform&, power_network::network_inform&, int);
 	void TSO_Market_Results_Get(int, market_inform&, alglib::minlpstate&);
-	void TSO_Market_control_reserve(int, markets_inform&, market_inform&, power_network::network_inform&, agent::end_user::profiles&, alglib::minlpstate&, bool);
+	void TSO_Market_control_reserve(int, market_whole_inform&, power_network::network_inform&, bool);
 }
 
 #endif

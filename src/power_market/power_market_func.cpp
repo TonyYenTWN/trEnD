@@ -14,7 +14,10 @@ void power_market::Market_Initialization(market_inform &Market){
 // ------------------------------------------------------------------------------------------------
 // Functions involving multiple markets
 // ------------------------------------------------------------------------------------------------
-void power_market::Submitted_bid_calculation(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, bool DSO_filter_flag){
+void power_market::Submitted_bid_calculation(int tick, market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, bool DSO_filter_flag){
+	int point_num = Power_network_inform.points.bidding_zone.size();
+	int sample_num = Power_market_inform.end_user_profiles[0].size();
+
 	// Initialize submit bids of markets
 	Market_Initialization(Power_market_inform.International_Market);
 	Market_Initialization(Power_market_inform.TSO_Market);
@@ -23,11 +26,11 @@ void power_market::Submitted_bid_calculation(int tick, power_market::market_whol
 		Power_market_inform.DSO_Markets[DSO_iter].filtered_supply = Power_market_inform.DSO_Markets[DSO_iter].submitted_supply;
 		Power_market_inform.DSO_Markets[DSO_iter].filtered_demand = Power_market_inform.DSO_Markets[DSO_iter].submitted_demand;
 	}
+	Power_market_inform.industrial_submitted_demand = Eigen::MatrixXd::Zero(Power_market_inform.TSO_Market.price_intervals + 2, point_num);
 
 	// Demand at each point (residential) / node (industrial)
 	// Trivial case: residential demand at each point is 100% inflexible; 5% of industrial demand is flexible
-	int sample_num = Power_market_inform.end_user_profiles[0].size();
-	for(int point_iter = 0; point_iter < Power_network_inform.points.bidding_zone.size(); ++ point_iter){
+	for(int point_iter = 0; point_iter < point_num; ++ point_iter){
 		int point_ID = Power_network_inform.points.in_cluster_ID(point_iter);
 		int node_ID = Power_network_inform.points.node(point_iter);
 		int DSO_ID = Power_network_inform.nodes.cluster(node_ID);
@@ -98,6 +101,8 @@ void power_market::Submitted_bid_calculation(int tick, power_market::market_whol
 		double bid_flex_industrial = bid_inflex_industrial;
 		bid_inflex_industrial *= 1. - agent::industrial::flexible_ratio();
 		bid_flex_industrial *= agent::industrial::flexible_ratio();
+		Power_market_inform.industrial_submitted_demand(Power_market_inform.TSO_Market.price_intervals + 1, point_iter) += bid_inflex_industrial;
+		Power_market_inform.industrial_submitted_demand.col(point_iter).segment(1, Power_market_inform.TSO_Market.price_intervals) += Eigen::VectorXd::Constant(Power_market_inform.TSO_Market.price_intervals, (double) bid_flex_industrial / Power_market_inform.TSO_Market.price_intervals);
 		Power_market_inform.TSO_Market.submitted_demand(Power_market_inform.TSO_Market.price_intervals + 1, node_ID) += bid_inflex_industrial;
 		Power_market_inform.TSO_Market.submitted_demand.col(node_ID).segment(1, Power_market_inform.TSO_Market.price_intervals) += Eigen::VectorXd::Constant(Power_market_inform.TSO_Market.price_intervals, (double) bid_flex_industrial / Power_market_inform.TSO_Market.price_intervals);
 		Power_market_inform.International_Market.submitted_demand(Power_market_inform.TSO_Market.price_intervals + 1, bz_ID) += bid_inflex_industrial;

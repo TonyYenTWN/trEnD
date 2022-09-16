@@ -63,7 +63,7 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	// Re-dispatch + tertiary control reserve in TSO
 	Flow_Based_Market_Optimization(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
 	TSO_Market_Results_Get(0, Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
-	TSO_Market_control_reserve(0, Power_market_inform.DSO_Markets, Power_market_inform.TSO_Market, Power_network_inform, Power_market_inform.end_user_profiles, Power_market_inform.TSO_Problem, DSO_filter_flag);
+	TSO_Market_control_reserve(0, Power_market_inform, Power_network_inform, DSO_filter_flag);
 }
 
 void power_market::power_market_process_update(power_network::network_inform &Power_network_inform, market_whole_inform &Power_market_inform, bool DSO_filter_flag){
@@ -82,5 +82,5 @@ void power_market::power_market_process_update(power_network::network_inform &Po
 
 	Flow_Based_Market_Optimization(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
 	TSO_Market_Results_Get(tick, Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
-	TSO_Market_control_reserve(tick, Power_market_inform.DSO_Markets, Power_market_inform.TSO_Market, Power_network_inform, Power_market_inform.end_user_profiles, Power_market_inform.TSO_Problem, DSO_filter_flag);
+	TSO_Market_control_reserve(tick, Power_market_inform, Power_network_inform, DSO_filter_flag);
 }

@@ -117,38 +117,39 @@ void power_market::TSO_Market_Results_Get(int tick, market_inform &Market, algli
 	std::cout << sol_vec.tail(Market.network.num_edges).minCoeff() << " " << sol_vec.tail(Market.network.num_edges).maxCoeff() << "\n\n";
 }
 
-void power_market::TSO_Market_control_reserve(int tick, markets_inform &DSO_Markets, market_inform &Market, power_network::network_inform &Power_network_inform, agent::end_user::profiles &end_user_profiles, alglib::minlpstate &Problem, bool DSO_filter_flag){
+//void power_market::TSO_Market_control_reserve(int tick, markets_inform &DSO_Markets, market_inform &Market, power_network::network_inform &Power_network_inform, alglib::minlpstate &Problem, bool DSO_filter_flag){
+void power_market::TSO_Market_control_reserve(int tick, market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, bool DSO_filter_flag){
 	int bz_num = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
 	int point_num = Power_network_inform.points.bidding_zone.size();
 
 	// Temporary setting!!
-	Market.control_reserve.available_ratio_supply = Eigen::MatrixXd::Ones(Market.price_intervals + 2, Market.num_zone);
-	Market.control_reserve.available_ratio_demand = Eigen::MatrixXd::Ones(Market.price_intervals + 2, Market.num_zone);
+	Power_market_inform.TSO_Market.control_reserve.available_ratio_supply = Eigen::MatrixXd::Ones(Power_market_inform.TSO_Market.price_intervals + 2, Power_market_inform.TSO_Market.num_zone);
+	Power_market_inform.TSO_Market.control_reserve.available_ratio_demand = Eigen::MatrixXd::Ones(Power_market_inform.TSO_Market.price_intervals + 2, Power_market_inform.TSO_Market.num_zone);
 	// Temporary setting!!
 
-	Eigen::MatrixXd imbalance_demand = Eigen::MatrixXd::Zero(Market.price_intervals + 2, Market.num_zone);
+	Eigen::MatrixXd imbalance_demand = Eigen::MatrixXd::Zero(Power_market_inform.TSO_Market.price_intervals + 2, Power_market_inform.TSO_Market.num_zone);
 	for(int point_iter = 0; point_iter < point_num; ++ point_iter){
 		int point_ID = Power_network_inform.points.in_cluster_ID(point_iter);
 		int node_ID = Power_network_inform.points.node(point_iter);
 		int DSO_ID = Power_network_inform.nodes.cluster(node_ID);
-		double node_price = Market.confirmed_price(tick, node_ID);
+		double node_price = Power_market_inform.TSO_Market.confirmed_price(tick, node_ID);
 
-		Eigen::VectorXd imbalance_demand_temp = Eigen::VectorXd::Zero(Market.price_intervals + 2);
-		for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter){
+		Eigen::VectorXd imbalance_demand_temp = Eigen::VectorXd::Zero(Power_market_inform.TSO_Market.price_intervals + 2);
+		for(int price_iter = 0; price_iter < Power_market_inform.TSO_Market.price_intervals + 2; ++ price_iter){
 			// Imbalance due to residential demand
 			if(DSO_filter_flag){
-				imbalance_demand_temp(price_iter) += DSO_Markets[DSO_ID].filtered_demand(price_iter, point_ID);
+				imbalance_demand_temp(price_iter) += Power_market_inform.DSO_Markets[DSO_ID].filtered_demand(price_iter, point_ID);
 			}
 			else{
-				imbalance_demand_temp(price_iter) += DSO_Markets[DSO_ID].submitted_demand(price_iter, point_ID);
+				imbalance_demand_temp(price_iter) += Power_market_inform.DSO_Markets[DSO_ID].submitted_demand(price_iter, point_ID);
 			}
 
 			// Imbalance due to industrial demand
 			// Update later
 
-			if(Market.bidded_price(price_iter) >= Market.confirmed_price(tick, node_ID) || price_iter == Market.price_intervals + 1){
-				if(Market.confirmed_price_ratio(tick, node_ID) < 0.){
-					imbalance_demand_temp(price_iter) *= -Market.confirmed_price_ratio(tick, node_ID);
+			if(Power_market_inform.TSO_Market.bidded_price(price_iter) >= Power_market_inform.TSO_Market.confirmed_price(tick, node_ID) || price_iter == Power_market_inform.TSO_Market.price_intervals + 1){
+				if(Power_market_inform.TSO_Market.confirmed_price_ratio(tick, node_ID) < 0.){
+					imbalance_demand_temp(price_iter) *= -Power_market_inform.TSO_Market.confirmed_price_ratio(tick, node_ID);
 				}
 				break;
 			}
@@ -160,39 +161,39 @@ void power_market::TSO_Market_control_reserve(int tick, markets_inform &DSO_Mark
 	// -------------------------------------------------------------------------------
 	// Update bounds for box constraints
 	// -------------------------------------------------------------------------------
-	int variable_num = Market.network.num_vertice * (Market.price_intervals + 4) + Market.network.num_edges;
+	int variable_num = Power_market_inform.TSO_Market.network.num_vertice * (Power_market_inform.TSO_Market.price_intervals + 4) + Power_market_inform.TSO_Market.network.num_edges;
 	Eigen::MatrixXd bound_box(variable_num, 2);
-	bound_box.topRows(Market.network.num_vertice) = Market.network.voltage_constraint;
-	bound_box.middleRows(Market.network.num_vertice, Market.network.num_vertice).col(0) = Eigen::VectorXd::Constant(Market.network.num_vertice, -std::numeric_limits<double>::infinity());
-	bound_box.middleRows(Market.network.num_vertice, Market.network.num_vertice).col(1) = Eigen::VectorXd::Constant(Market.network.num_vertice, std::numeric_limits<double>::infinity());
-	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
-		int row_start = 2 * Market.network.num_vertice + node_iter * (Market.price_intervals + 2);
-		Eigen::VectorXd origin_point(Market.price_intervals + 2);
-		Eigen::VectorXd flex_up(Market.price_intervals + 2);
-		Eigen::VectorXd flex_down(Market.price_intervals + 2);
+	bound_box.topRows(Power_market_inform.TSO_Market.network.num_vertice) = Power_market_inform.TSO_Market.network.voltage_constraint;
+	bound_box.middleRows(Power_market_inform.TSO_Market.network.num_vertice, Power_market_inform.TSO_Market.network.num_vertice).col(0) = Eigen::VectorXd::Constant(Power_market_inform.TSO_Market.network.num_vertice, -std::numeric_limits<double>::infinity());
+	bound_box.middleRows(Power_market_inform.TSO_Market.network.num_vertice, Power_market_inform.TSO_Market.network.num_vertice).col(1) = Eigen::VectorXd::Constant(Power_market_inform.TSO_Market.network.num_vertice, std::numeric_limits<double>::infinity());
+	for(int node_iter = 0; node_iter < Power_market_inform.TSO_Market.network.num_vertice; ++ node_iter){
+		int row_start = 2 * Power_market_inform.TSO_Market.network.num_vertice + node_iter * (Power_market_inform.TSO_Market.price_intervals + 2);
+		Eigen::VectorXd origin_point(Power_market_inform.TSO_Market.price_intervals + 2);
+		Eigen::VectorXd flex_up(Power_market_inform.TSO_Market.price_intervals + 2);
+		Eigen::VectorXd flex_down(Power_market_inform.TSO_Market.price_intervals + 2);
 		bool full_supply = 1;
 
-		for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter){
+		for(int price_iter = 0; price_iter < Power_market_inform.TSO_Market.price_intervals + 2; ++ price_iter){
 			double flex_quan;
-			if(Market.bidded_price(price_iter) == Market.confirmed_price(tick, node_iter)){
-				if(Market.confirmed_price_ratio(tick, node_iter) < 0.){
-					origin_point(price_iter) = -Market.confirmed_demand(price_iter, node_iter) - imbalance_demand(price_iter, node_iter);
-					flex_quan = Market.control_reserve.available_ratio_demand(price_iter, node_iter) * (Market.confirmed_demand(price_iter, node_iter) + imbalance_demand(price_iter, node_iter));
-					flex_quan += Market.control_reserve.available_ratio_supply(price_iter, node_iter) * Market.submitted_supply(price_iter, node_iter);
+			if(Power_market_inform.TSO_Market.bidded_price(price_iter) == Power_market_inform.TSO_Market.confirmed_price(tick, node_iter)){
+				if(Power_market_inform.TSO_Market.confirmed_price_ratio(tick, node_iter) < 0.){
+					origin_point(price_iter) = -Power_market_inform.TSO_Market.confirmed_demand(price_iter, node_iter) - imbalance_demand(price_iter, node_iter);
+					flex_quan = Power_market_inform.TSO_Market.control_reserve.available_ratio_demand(price_iter, node_iter) * (Power_market_inform.TSO_Market.confirmed_demand(price_iter, node_iter) + imbalance_demand(price_iter, node_iter));
+					flex_quan += Power_market_inform.TSO_Market.control_reserve.available_ratio_supply(price_iter, node_iter) * Power_market_inform.TSO_Market.submitted_supply(price_iter, node_iter);
 					flex_up(price_iter) = flex_quan;
 
-					flex_quan = Market.control_reserve.available_ratio_demand(price_iter, node_iter);
-					flex_quan *= Market.submitted_demand(price_iter, node_iter) - Market.confirmed_demand(price_iter, node_iter) - imbalance_demand(price_iter, node_iter);
+					flex_quan = Power_market_inform.TSO_Market.control_reserve.available_ratio_demand(price_iter, node_iter);
+					flex_quan *= Power_market_inform.TSO_Market.submitted_demand(price_iter, node_iter) - Power_market_inform.TSO_Market.confirmed_demand(price_iter, node_iter) - imbalance_demand(price_iter, node_iter);
 					flex_down(price_iter) = flex_quan;
 				}
 				else{
-					origin_point(price_iter) = Market.confirmed_supply(price_iter, node_iter);
-					flex_quan = Market.control_reserve.available_ratio_supply(price_iter, node_iter) * Market.confirmed_supply(price_iter, node_iter);
-					flex_quan += Market.control_reserve.available_ratio_demand(price_iter, node_iter) * Market.submitted_demand(price_iter, node_iter);
+					origin_point(price_iter) = Power_market_inform.TSO_Market.confirmed_supply(price_iter, node_iter);
+					flex_quan = Power_market_inform.TSO_Market.control_reserve.available_ratio_supply(price_iter, node_iter) * Power_market_inform.TSO_Market.confirmed_supply(price_iter, node_iter);
+					flex_quan += Power_market_inform.TSO_Market.control_reserve.available_ratio_demand(price_iter, node_iter) * Power_market_inform.TSO_Market.submitted_demand(price_iter, node_iter);
 					flex_down(price_iter) = flex_quan;
 
-					flex_quan = Market.control_reserve.available_ratio_supply(price_iter, node_iter);
-					flex_quan *= Market.submitted_supply(price_iter, node_iter) - Market.confirmed_supply(price_iter, node_iter);
+					flex_quan = Power_market_inform.TSO_Market.control_reserve.available_ratio_supply(price_iter, node_iter);
+					flex_quan *= Power_market_inform.TSO_Market.submitted_supply(price_iter, node_iter) - Power_market_inform.TSO_Market.confirmed_supply(price_iter, node_iter);
 					flex_up(price_iter) = flex_quan;
 				}
 
@@ -200,75 +201,61 @@ void power_market::TSO_Market_control_reserve(int tick, markets_inform &DSO_Mark
 				continue;
 			}
 
-			flex_quan = Market.control_reserve.available_ratio_demand(price_iter, node_iter) * (Market.submitted_demand(price_iter, node_iter) + imbalance_demand(price_iter, node_iter));
-			flex_quan += Market.control_reserve.available_ratio_supply(price_iter, node_iter) * Market.submitted_supply(price_iter, node_iter);
+			flex_quan = Power_market_inform.TSO_Market.control_reserve.available_ratio_demand(price_iter, node_iter) * (Power_market_inform.TSO_Market.submitted_demand(price_iter, node_iter) + imbalance_demand(price_iter, node_iter));
+			flex_quan += Power_market_inform.TSO_Market.control_reserve.available_ratio_supply(price_iter, node_iter) * Power_market_inform.TSO_Market.submitted_supply(price_iter, node_iter);
 			if(full_supply){
-				origin_point(price_iter) = Market.submitted_supply(price_iter, node_iter);
+				origin_point(price_iter) = Power_market_inform.TSO_Market.submitted_supply(price_iter, node_iter);
 				flex_up(price_iter) = 0.;
 				flex_down(price_iter) = flex_quan;
 			}
 			else{
-				origin_point(price_iter) = -Market.submitted_demand(price_iter, node_iter) - imbalance_demand(price_iter, node_iter);
+				origin_point(price_iter) = -Power_market_inform.TSO_Market.submitted_demand(price_iter, node_iter) - imbalance_demand(price_iter, node_iter);
 				flex_up(price_iter) = flex_quan;
 				flex_down(price_iter) = 0.;
 			}
 		}
-		//origin_point = origin_point - imbalance_demand.col(node_iter);
-		bound_box.middleRows(row_start, Market.price_intervals + 2).col(0) = origin_point - flex_down;
-		bound_box.middleRows(row_start, Market.price_intervals + 2).col(1) = origin_point + flex_up;
-
-//		Eigen::VectorXd flex_up = Market.control_reserve.available_ratio_demand.col(node_iter).array() * Market.confirmed_demand.col(node_iter).array();
-//		flex_up = flex_up.array() + Market.control_reserve.available_ratio_supply.col(node_iter).array() * (Market.submitted_supply.col(node_iter).array() - Market.confirmed_supply.col(node_iter).array());
-//		Eigen::VectorXd flex_down = Market.control_reserve.available_ratio_supply.col(node_iter).array() * Market.confirmed_supply.col(node_iter).array();
-//		flex_down = flex_down.array() + Market.control_reserve.available_ratio_demand.col(node_iter).array() * (Market.submitted_demand.col(node_iter).array() - Market.confirmed_demand.col(node_iter).array());
-//		bound_box.middleRows(row_start, Market.price_intervals + 2).col(0) = origin_point.array() - flex_down.array();
-//		bound_box.middleRows(row_start, Market.price_intervals + 2).col(1) = origin_point.array() + flex_up.array();
-
-//		Eigen::VectorXd origin_point = (1. - Market.control_reserve.available_ratio_supply.col(node_iter).array()) * Market.submitted_supply.col(node_iter).array();
-//		origin_point = origin_point.array() - (1. - Market.control_reserve.available_ratio_demand.col(node_iter).array()) * Market.submitted_demand.col(node_iter).array();
-//		origin_point = origin_point.array() - imbalance_demand.col(node_iter).array();
-//		bound_box.middleRows(row_start, Market.price_intervals + 2).col(0) = origin_point.array() - Market.control_reserve.available_ratio_demand.col(node_iter).array() * Market.submitted_demand.col(node_iter).array();
-//		bound_box.middleRows(row_start, Market.price_intervals + 2).col(1) = origin_point.array() + Market.control_reserve.available_ratio_supply.col(node_iter).array() * Market.submitted_supply.col(node_iter).array();
+		bound_box.middleRows(row_start, Power_market_inform.TSO_Market.price_intervals + 2).col(0) = origin_point - flex_down;
+		bound_box.middleRows(row_start, Power_market_inform.TSO_Market.price_intervals + 2).col(1) = origin_point + flex_up;
 	}
-	bound_box.bottomRows(Market.network.num_edges) = Market.network.power_constraint;
+	bound_box.bottomRows(Power_market_inform.TSO_Market.network.num_edges) = Power_market_inform.TSO_Market.network.power_constraint;
 
 	// Bounds of box constraints
 	alglib::real_1d_array lb_box;
 	alglib::real_1d_array ub_box;
 	lb_box.setcontent(bound_box.rows(), bound_box.col(0).data());
 	ub_box.setcontent(bound_box.rows(), bound_box.col(1).data());
-	alglib::minlpsetbc(Problem, lb_box, ub_box);
+	alglib::minlpsetbc(Power_market_inform.TSO_Problem, lb_box, ub_box);
 
 	// -------------------------------------------------------------------------------
 	// Solve the problem
 	// -------------------------------------------------------------------------------
-	alglib::minlpoptimize(Problem);
+	alglib::minlpoptimize(Power_market_inform.TSO_Problem);
 
 	alglib::real_1d_array sol;
 	alglib::minlpreport rep;
-	alglib::minlpresults(Problem, sol, rep);
+	alglib::minlpresults(Power_market_inform.TSO_Problem, sol, rep);
 	Eigen::VectorXd sol_vec = Eigen::Map <Eigen::VectorXd> (sol.getcontent(), sol.length());
 
-	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
+	for(int node_iter = 0; node_iter < Power_market_inform.TSO_Market.network.num_vertice; ++ node_iter){
 		// Store power source / sink
-		int row_start = 2 * Market.network.num_vertice + node_iter * (Market.price_intervals + 2);
-		Market.actual_supply(tick, node_iter) = (sol_vec.segment(row_start, Market.price_intervals + 2).array().max(0)).sum();
-		Market.actual_demand(tick, node_iter) = -(sol_vec.segment(row_start, Market.price_intervals + 2).array().min(0)).sum();
+		int row_start = 2 * Power_market_inform.TSO_Market.network.num_vertice + node_iter * (Power_market_inform.TSO_Market.price_intervals + 2);
+		Power_market_inform.TSO_Market.actual_supply(tick, node_iter) = (sol_vec.segment(row_start, Power_market_inform.TSO_Market.price_intervals + 2).array().max(0)).sum();
+		Power_market_inform.TSO_Market.actual_demand(tick, node_iter) = -(sol_vec.segment(row_start, Power_market_inform.TSO_Market.price_intervals + 2).array().min(0)).sum();
 
 		// Store nodal prices
-		Market.actual_price(tick, node_iter) = Market.bidded_price(0) + rep.lagbc[row_start];
-		Market.actual_price(tick, node_iter) = std::min(Market.actual_price(tick, node_iter), Market.price_range_inflex(1));
-		Market.actual_price(tick, node_iter) = std::max(Market.actual_price(tick, node_iter), Market.price_range_inflex(0));
+		Power_market_inform.TSO_Market.actual_price(tick, node_iter) = Power_market_inform.TSO_Market.bidded_price(0) + rep.lagbc[row_start];
+		Power_market_inform.TSO_Market.actual_price(tick, node_iter) = std::min(Power_market_inform.TSO_Market.actual_price(tick, node_iter), Power_market_inform.TSO_Market.price_range_inflex(1));
+		Power_market_inform.TSO_Market.actual_price(tick, node_iter) = std::max(Power_market_inform.TSO_Market.actual_price(tick, node_iter), Power_market_inform.TSO_Market.price_range_inflex(0));
 
 		// Store ratio at nodes
-		for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter){
-			if(Market.bidded_price(price_iter) >= Market.actual_price(tick, node_iter) || price_iter == Market.price_intervals + 1){
-				Market.actual_price_ratio(tick, node_iter) =  sol[row_start + price_iter];
+		for(int price_iter = 0; price_iter < Power_market_inform.TSO_Market.price_intervals + 2; ++ price_iter){
+			if(Power_market_inform.TSO_Market.bidded_price(price_iter) >= Power_market_inform.TSO_Market.actual_price(tick, node_iter) || price_iter == Power_market_inform.TSO_Market.price_intervals + 1){
+				Power_market_inform.TSO_Market.actual_price_ratio(tick, node_iter) =  sol[row_start + price_iter];
 				if(sol[row_start + price_iter] >= 0.){
-					Market.actual_price_ratio(tick, node_iter) /= Market.submitted_supply(price_iter, node_iter);
+					Power_market_inform.TSO_Market.actual_price_ratio(tick, node_iter) /= Power_market_inform.TSO_Market.submitted_supply(price_iter, node_iter);
 				}
 				else{
-					Market.actual_price_ratio(tick, node_iter) /= Market.submitted_demand(price_iter, node_iter) - imbalance_demand(price_iter, node_iter);
+					Power_market_inform.TSO_Market.actual_price_ratio(tick, node_iter) /= Power_market_inform.TSO_Market.submitted_demand(price_iter, node_iter) - imbalance_demand(price_iter, node_iter);
 				}
 				break;
 			}
@@ -276,11 +263,11 @@ void power_market::TSO_Market_control_reserve(int tick, markets_inform &DSO_Mark
 	}
 
 	// Store voltage and power flow
-	Market.network.confirmed_voltage.row(tick) = sol_vec.head(Market.network.num_vertice);
-	Market.network.confirmed_power.row(tick) = sol_vec.tail(Market.network.num_edges);
+	Power_market_inform.TSO_Market.network.confirmed_voltage.row(tick) = sol_vec.head(Power_market_inform.TSO_Market.network.num_vertice);
+	Power_market_inform.TSO_Market.network.confirmed_power.row(tick) = sol_vec.tail(Power_market_inform.TSO_Market.network.num_edges);
 
-	std::cout << Market.actual_supply.row(tick).sum() << "\t" << Market.actual_demand.row(tick).sum() << "\n";
-	std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).array().abs().sum() << "\n";
-	std::cout << sol_vec.head(Market.network.num_vertice).minCoeff() << " " << sol_vec.head(Market.network.num_vertice).maxCoeff()  << "\n";
-	std::cout << sol_vec.tail(Market.network.num_edges).minCoeff() << " " << sol_vec.tail(Market.network.num_edges).maxCoeff() << "\n\n";
+	std::cout << Power_market_inform.TSO_Market.actual_supply.row(tick).sum() << "\t" << Power_market_inform.TSO_Market.actual_demand.row(tick).sum() << "\n";
+	std::cout << sol_vec.segment(Power_market_inform.TSO_Market.network.num_vertice, Power_market_inform.TSO_Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Power_market_inform.TSO_Market.network.num_vertice, Power_market_inform.TSO_Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Power_market_inform.TSO_Market.network.num_vertice, Power_market_inform.TSO_Market.network.num_vertice).array().abs().sum() << "\n";
+	std::cout << sol_vec.head(Power_market_inform.TSO_Market.network.num_vertice).minCoeff() << " " << sol_vec.head(Power_market_inform.TSO_Market.network.num_vertice).maxCoeff()  << "\n";
+	std::cout << sol_vec.tail(Power_market_inform.TSO_Market.network.num_edges).minCoeff() << " " << sol_vec.tail(Power_market_inform.TSO_Market.network.num_edges).maxCoeff() << "\n\n";
 }
