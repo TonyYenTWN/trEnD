@@ -124,7 +124,7 @@ agent::end_user::profiles power_market::DSO_agents_set(market_inform &Internatio
 	int foresight_time = agent::parameters::foresight_time();
 	double residential_ratio = agent::parameters::residential_ratio();
 
-	agent::end_user::profiles end_user_profiles(Power_network_inform.points.bidding_zone.rows());
+	agent::end_user::profiles end_user_profiles(Power_network_inform.points.bidding_zone.size());
 	int sample_num = agent::parameters::sample_num();
 	for(int point_iter = 0; point_iter < end_user_profiles.size(); ++ point_iter){
 		end_user_profiles[point_iter] = std::vector <agent::end_user::profile> (sample_num);
