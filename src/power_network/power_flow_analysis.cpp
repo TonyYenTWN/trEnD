@@ -4,7 +4,10 @@
 
 // HELM method
 // P-Q Bus
-// Set {V}(s) = \sum {a}_n * s^n,
-// {\hat V}(s) = \sum {b}_n * s^n,
-// {1 / V}(s) = \sum {c}_n * s^n,
-// {1 / \hat V}(s) = \sum {d}_n * s^n,
+// Set {V}(s) = \sum {a}_n * s^n
+// {\hat V}(s) = \sum {b}_n * s^n
+// {1 / V}(s) = \sum {c}_n * s^n
+// {1 / \hat V}(s) = \sum {d}_n * s^n
+// Equations:
+// [Y] {V}(s) = s * {S*} . {1 / \hat V}(s)
+
