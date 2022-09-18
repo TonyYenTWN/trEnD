@@ -117,7 +117,6 @@ void power_market::TSO_Market_Results_Get(int tick, market_inform &Market, algli
 	std::cout << sol_vec.tail(Market.network.num_edges).minCoeff() << " " << sol_vec.tail(Market.network.num_edges).maxCoeff() << "\n\n";
 }
 
-//void power_market::TSO_Market_control_reserve(int tick, markets_inform &DSO_Markets, market_inform &Market, power_network::network_inform &Power_network_inform, alglib::minlpstate &Problem, bool DSO_filter_flag){
 void power_market::TSO_Market_control_reserve(int tick, market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, bool DSO_filter_flag){
 	int bz_num = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
 	int point_num = Power_network_inform.points.bidding_zone.size();
