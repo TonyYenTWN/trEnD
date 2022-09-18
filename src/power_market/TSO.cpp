@@ -160,6 +160,12 @@ void power_market::TSO_Market_control_reserve(int tick, market_whole_inform &Pow
 		imbalance_demand.col(node_ID) += imbalance_demand_temp;
 	}
 
+	// Exit the function if imbalance is too small
+	if(imbalance_demand.array().abs().sum() < 1.){
+		std::cout << "No imbalance in the time slice.\n\n";
+		exit(0);
+	}
+
 	// -------------------------------------------------------------------------------
 	// Update bounds for box constraints
 	// -------------------------------------------------------------------------------
