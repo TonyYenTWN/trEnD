@@ -23,6 +23,38 @@ namespace agent{
 		}
 	}
 
+	struct bids{
+		// Submitted bids into the IMO
+		Eigen::VectorXd submitted_supply_inflex;
+		Eigen::VectorXd submitted_demand_inflex;
+		Eigen::VectorXd submitted_supply_flex;
+		Eigen::VectorXd submitted_demand_flex;
+
+		// Equivalent bidding price when considering redispatch
+		Eigen::VectorXd redispatch_supply_inflex;
+		Eigen::VectorXd redispatch_demand_inflex;
+		Eigen::VectorXd redispatch_supply_flex;
+		Eigen::VectorXd redispatch_demand_flex;
+
+		// Filtered bids into redisatch of TSO
+		Eigen::VectorXd filtered_supply_inflex;
+		Eigen::VectorXd filtered_demand_inflex;
+		Eigen::VectorXd filtered_supply_flex;
+		Eigen::VectorXd filtered_demand_flex;
+
+		// Confirmed bids after TSO redispatch
+		Eigen::VectorXd confirmed_supply_inflex;
+		Eigen::VectorXd confirmed_demand_inflex;
+		Eigen::VectorXd confirmed_supply_flex;
+		Eigen::VectorXd confirmed_demand_flex;
+
+		// Equivalent bidding price when control reserve is activated
+		Eigen::VectorXd actual_supply_inflex;
+		Eigen::VectorXd actual_demand_inflex;
+		Eigen::VectorXd actual_supply_flex;
+		Eigen::VectorXd actual_demand_flex;
+	};
+
 	struct sorted_vector{
 		Eigen::VectorXi id;
 		Eigen::VectorXd value;

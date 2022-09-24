@@ -39,59 +39,59 @@ void power_market::Submitted_bid_calculation(int tick, market_whole_inform &Powe
 
 		// Residential demand; connect to distribution power network
 		for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
-			double bid_inflex_quan = Power_market_inform.end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile(0);
-			bid_inflex_quan *= Power_market_inform.end_user_profiles[point_iter][sample_iter].operation.weight;
-			bid_inflex_quan *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
-
-			double bid_flex_quan = Power_market_inform.end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile(0);
-			bid_flex_quan *= Power_market_inform.end_user_profiles[point_iter][sample_iter].operation.weight;
-			bid_flex_quan *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
-
-			// Updating inflexible bids; if quantity is positive (negative -> update supply bids)
-			int price_inflex_ID;
-			if(bid_inflex_quan >= 0.){
-				price_inflex_ID = Power_market_inform.end_user_profiles[point_iter][sample_iter].operation.demand_inflex_price_ID;
-				Power_market_inform.DSO_Markets[DSO_ID].submitted_demand(price_inflex_ID, point_ID) += bid_inflex_quan;
-				Power_market_inform.International_Market.submitted_demand(price_inflex_ID, bz_ID) += bid_inflex_quan;
-
-				// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
-				if(!DSO_filter_flag){
-					Power_market_inform.TSO_Market.submitted_demand(price_inflex_ID, node_ID) += bid_inflex_quan;
-				}
-			}
-			else{
-				price_inflex_ID = Power_market_inform.end_user_profiles[point_iter][sample_iter].operation.supply_inflex_price_ID;
-				Power_market_inform.DSO_Markets[DSO_ID].submitted_supply(price_inflex_ID, point_ID) -= bid_inflex_quan;
-				Power_market_inform.International_Market.submitted_supply(price_inflex_ID, bz_ID) -= bid_inflex_quan;
-
-				// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
-				if(!DSO_filter_flag){
-					Power_market_inform.TSO_Market.submitted_supply(price_inflex_ID, node_ID) -= bid_inflex_quan;
-				}
-			}
-
-			// Updating flexible bids; if quantity is positive (negative -> update supply bids)
-			int price_flex_ID;
-			if(bid_flex_quan >= 0.){
-				price_flex_ID = Power_market_inform.end_user_profiles[point_iter][sample_iter].operation.demand_flex_price_ID;
-				Power_market_inform.DSO_Markets[DSO_ID].submitted_demand(price_flex_ID, point_ID) += bid_flex_quan;
-				Power_market_inform.International_Market.submitted_demand(price_flex_ID, bz_ID) += bid_flex_quan;
-
-				// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
-				if(!DSO_filter_flag){
-					Power_market_inform.TSO_Market.submitted_demand(price_flex_ID, node_ID) += bid_flex_quan;
-				}
-			}
-			else{
-				price_flex_ID = Power_market_inform.end_user_profiles[point_iter][sample_iter].operation.supply_flex_price_ID;
-				Power_market_inform.DSO_Markets[DSO_ID].submitted_supply(price_flex_ID, point_ID) -= bid_flex_quan;
-				Power_market_inform.International_Market.submitted_supply(price_flex_ID, bz_ID) -= bid_flex_quan;
-
-				// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
-				if(!DSO_filter_flag){
-					Power_market_inform.TSO_Market.submitted_supply(price_flex_ID, node_ID) -= bid_flex_quan;
-				}
-			}
+//			double bid_inflex_quan = Power_market_inform.end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_inflex_profile(0);
+//			bid_inflex_quan *= Power_market_inform.end_user_profiles[point_iter][sample_iter].operation.weight;
+//			bid_inflex_quan *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
+//
+//			double bid_flex_quan = Power_market_inform.end_user_profiles[point_iter][sample_iter].operation.normalized_scheduled_residual_demand_flex_profile(0);
+//			bid_flex_quan *= Power_market_inform.end_user_profiles[point_iter][sample_iter].operation.weight;
+//			bid_flex_quan *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
+//
+//			// Updating inflexible bids; if quantity is positive (negative -> update supply bids)
+//			int price_inflex_ID;
+//			if(bid_inflex_quan >= 0.){
+//				price_inflex_ID = Power_market_inform.end_user_profiles[point_iter][sample_iter].operation.demand_inflex_price_ID;
+//				Power_market_inform.DSO_Markets[DSO_ID].submitted_demand(price_inflex_ID, point_ID) += bid_inflex_quan;
+//				Power_market_inform.International_Market.submitted_demand(price_inflex_ID, bz_ID) += bid_inflex_quan;
+//
+//				// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
+//				if(!DSO_filter_flag){
+//					Power_market_inform.TSO_Market.submitted_demand(price_inflex_ID, node_ID) += bid_inflex_quan;
+//				}
+//			}
+//			else{
+//				price_inflex_ID = Power_market_inform.end_user_profiles[point_iter][sample_iter].operation.supply_inflex_price_ID;
+//				Power_market_inform.DSO_Markets[DSO_ID].submitted_supply(price_inflex_ID, point_ID) -= bid_inflex_quan;
+//				Power_market_inform.International_Market.submitted_supply(price_inflex_ID, bz_ID) -= bid_inflex_quan;
+//
+//				// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
+//				if(!DSO_filter_flag){
+//					Power_market_inform.TSO_Market.submitted_supply(price_inflex_ID, node_ID) -= bid_inflex_quan;
+//				}
+//			}
+//
+//			// Updating flexible bids; if quantity is positive (negative -> update supply bids)
+//			int price_flex_ID;
+//			if(bid_flex_quan >= 0.){
+//				price_flex_ID = Power_market_inform.end_user_profiles[point_iter][sample_iter].operation.demand_flex_price_ID;
+//				Power_market_inform.DSO_Markets[DSO_ID].submitted_demand(price_flex_ID, point_ID) += bid_flex_quan;
+//				Power_market_inform.International_Market.submitted_demand(price_flex_ID, bz_ID) += bid_flex_quan;
+//
+//				// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
+//				if(!DSO_filter_flag){
+//					Power_market_inform.TSO_Market.submitted_demand(price_flex_ID, node_ID) += bid_flex_quan;
+//				}
+//			}
+//			else{
+//				price_flex_ID = Power_market_inform.end_user_profiles[point_iter][sample_iter].operation.supply_flex_price_ID;
+//				Power_market_inform.DSO_Markets[DSO_ID].submitted_supply(price_flex_ID, point_ID) -= bid_flex_quan;
+//				Power_market_inform.International_Market.submitted_supply(price_flex_ID, bz_ID) -= bid_flex_quan;
+//
+//				// If DSOs do not filter local bids, the demand is added directly on the nodes of the TSO
+//				if(!DSO_filter_flag){
+//					Power_market_inform.TSO_Market.submitted_supply(price_flex_ID, node_ID) -= bid_flex_quan;
+//				}
+//			}
 		}
 
 		// Industrial demand; connect to transmission power network

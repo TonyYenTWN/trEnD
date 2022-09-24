@@ -26,27 +26,34 @@ namespace agent{
 			* assuming the default is constant profile before shifting.
 			*/
 			double scale;
-			/**  Indicates how flexible the smart appliances are;
-			* e.g. 1 / 2 = can concentrate the demand within half of the time interval.
+			/**  Maximum load shifting time length of a flexible demand;
+			* indicates how flexible the smart appliances are.
 			*/
-			double flexibility_factor;
+			int shift_time;
+//			/**  Indicates how flexible the smart appliances are;
+//			* e.g. 1 / 2 = can concentrate the demand within half of the time interval.
+//			*/
+//			double flexibility_factor;
 			/*@{*/
+
 
 			/**
 			* @name process variables
 			*/
 			/*@{*/
-			/** Previous demand not yet fulfilled (kWh per hour per person).*/
-			double unfulfilled_demand;
+			/** Flexible demand not yet fulfilled in the load shifting timeframe (kWh per hour per person).*/
+			Eigen::VectorXd unfulfilled_demand;
+			/** Scheduled flexible demand at current time step (kWh per hour per person).*/
+			double scheduled_demand;
 			/*@{*/
 
-			/**
-			* @name output variables
-			*/
-			/*@{*/
-			/** Normalized schedule profile for smart appliance (kWh per hour per person).*/
-			Eigen::VectorXd normalized_scheduled_profile;
-			/*@{*/
+//			/**
+//			* @name output variables
+//			*/
+//			/*@{*/
+//			/** Normalized schedule profile for smart appliance (kWh per hour per person).*/
+//			Eigen::VectorXd normalized_scheduled_profile;
+//			/*@{*/
 		};
 
 		/** @brief Information of battery storage system of an end-user.*/
@@ -61,28 +68,32 @@ namespace agent{
 			double capacity_scale = .001;
 			/** Conversion efficiency of charge / discharge.*/
 			double efficiency = .95;
-			/** Initial state of charge level.*/
-			double soc_ini;
-			/** Final state of charge level.*/
-			double soc_final;
+//			/** Initial state of charge level.*/
+//			double soc_ini;
+//			/** Final state of charge level.*/
+//			double soc_final;
 			/*@{*/
 
 			/**
 			* @name process parameters
 			*/
 			/*@{*/
-			alglib::minlpstate Problem;
+			/** State of charge level.*/
+			double soc;
+			/** Scheduled charge / discharge output at current time step (kWh per hour per person).*/
+			double scheduled_capacity;
+//			alglib::minlpstate Problem;
 			/*@{*/
 
-			/**
-			* @name output variables
-			*/
-			/*@{*/
-			/** Normalized schedule profile for battery storage capacity (kWh per hour per person).*/
-			Eigen::VectorXd normalized_scheduled_capacity_profile;
-			/** Normalized schedule profile for battery storage state of charge level (kWh).*/
-			Eigen::VectorXd normalized_scheduled_soc_profile;
-			/*@{*/
+//			/**
+//			* @name output variables
+//			*/
+//			/*@{*/
+//			/** Normalized schedule profile for battery storage capacity (kWh per hour per person).*/
+//			Eigen::VectorXd normalized_scheduled_capacity_profile;
+//			/** Normalized schedule profile for battery storage state of charge level (kWh).*/
+//			Eigen::VectorXd normalized_scheduled_soc_profile;
+//			/*@{*/
 		};
 
 		/** @brief Information of electric vehicle of an end-user.*/
@@ -97,6 +108,18 @@ namespace agent{
 			Eigen::VectorXi usage_default_period;
 			/** The time intervals when EV is parked in the house.*/
 			Eigen::VectorXi house_default_period;
+			/** The time series of the default charging demand of the EV (kWh per person).*/
+			Eigen::VectorXd default_demand_profile;
+			/*@{*/
+
+			/**
+			* @name process parameters
+			*/
+			/*@{*/
+			/** State of charge level.*/
+			double soc;
+			/** Scheduled charge / discharge output at current time step (kWh per hour per person).*/
+			double scheduled_capacity;
 			/*@{*/
 
 			/**
@@ -124,34 +147,20 @@ namespace agent{
 			/** Weight of the sample representing the population distribution.
 			* Summation at a sample point equals to 1.*/
 			double weight;
-			/** Scale of the PV system = capacity / normalized default base value of demand*/
+			/** Scale of the PV system (kW / person)*/
 			double PV_scale;
 			/** Default demand profile; normalized to nominal value (kWh per hour per person)*/
-			Eigen::VectorXd normalized_default_demand_profile;
-			/** Default PV profile; normalized with the same base as demand.*/
-			Eigen::VectorXd normalized_default_PV_profile;
+			Eigen::VectorXd default_demand_profile;
+			/** Default PV profile; normalized to nominal value (kWh per hour per person).*/
+			Eigen::VectorXd default_PV_profile;
 			/*@{*/
 
 			/**
-			* @name output variables
+			* @name process variables
 			*/
 			/*@{*/
-			int supply_inflex_price_ID;
-			int supply_flex_price_ID;
-			int demand_inflex_price_ID;
-			int demand_flex_price_ID;
-			double supply_inflex_price;
-			double supply_flex_price;
-			double demand_inflex_price;
-			double demand_flex_price;
-			Eigen::VectorXd normalized_scheduled_residual_demand_inflex_profile;
-			Eigen::VectorXd normalized_confirmed_residual_demand_inflex_profile;
-			Eigen::VectorXd normalized_actual_residual_demand_inflex_profile;
-			Eigen::VectorXd normalized_scheduled_residual_demand_flex_profile;
-			Eigen::VectorXd normalized_confirmed_residual_demand_flex_profile;
-			Eigen::VectorXd normalized_actual_residual_demand_flex_profile;
-			//Eigen::VectorXd normalized_scheduled_pos_cr_profile;
-			//Eigen::VectorXd normalized_scheduled_neg_cr_profile;
+			alglib::minlpstate Problem;
+			bids bids;
 			/*@{*/
 
 			/**
@@ -175,6 +184,7 @@ namespace agent{
 		typedef std::vector <std::vector <profile>> profiles;
 
 		// Functions
+		void end_user_LP_set();
 		void smart_appliance_schedule(sorted_vector, Eigen::VectorXd, smart_appliance_inform&);
 		alglib::minlpstate storage_schedule_LP_mold(int);
 		void storage_schedule_LP_optimize(int, sorted_vector, storage_inform&, bool fixed_end = 0);
