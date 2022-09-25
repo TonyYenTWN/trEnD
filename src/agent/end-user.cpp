@@ -50,6 +50,7 @@ void agent::end_user::end_user_LP_set(profile &profile){
 			non_zero_num(row_ID) = tock_end - tock_start + 1;
 		}
 	}
+	non_zero_num.segment(5 * foresight_time, foresight_time) += Eigen::VectorXpd::Ones(foresight_time);
 	alglib::integer_1d_array row_sizes_general;
 	row_sizes_general.setcontent(non_zero_num.size(), non_zero_num.data());
 	alglib::sparsematrix constraint_general;
@@ -144,18 +145,22 @@ void agent::end_user::end_user_LP_set(profile &profile){
 		alglib::sparseset(constraint_general, row_ID, s_ev_now_ID, 1.);
 	}
 
-	// \sum_{tau} d^sa(tau, t) = d^sa(t)
+	// U^sa(t) - \sum_{tau} d^sa(tau, t) = 0
 	for(int row_iter = 0; row_iter < foresight_time; ++ row_iter){
 		int row_ID = 5 * foresight_time + row_iter;
+		int U_sa_ID = row_iter * variable_per_time + 4;
+		alglib::sparseset(constraint_general, row_ID, U_sa_ID, 1.);
 
 		for(int tick = 0; tick < 2 * load_shift_time + 1; ++ tick){
 			int tick_ID = row_iter - load_shift_time + tick;
 			if(tick_ID >= -load_shift_time && tick_ID < foresight_time){
 				int d_sa_ID = row_iter * variable_per_time + 10 + tick_ID + load_shift_time;
-				alglib::sparseset(constraint_general, row_ID, d_sa_ID, 1.);
+				alglib::sparseset(constraint_general, row_ID, d_sa_ID, -1.);
 			}
 		}
 	}
+
+	// \sum_{tau} d^sa(t, tau) = d^sa(t)
 }
 
 agent::sorted_vector agent::sort(Eigen::VectorXd original){
