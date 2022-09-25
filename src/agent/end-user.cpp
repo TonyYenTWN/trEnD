@@ -21,7 +21,7 @@ void agent::end_user::end_user_LP_set(profile &profile){
 	// ch^ev(t): electricity charge from EV
 	// dc^ev(t): electricity discharge from EV
 	// soc^ev(t): state of charge of EV
-	// d^sa(\tau, t): scheduled smart appliance load at time t
+	// d^sa(..., t): scheduled smart appliance load at time t
 	// -------------------------------------------------------------------------------
 	int foresight_time = profile.operation.foresight_time;
 	int load_shift_time = profile.operation.smart_appliance.shift_time;
@@ -142,6 +142,19 @@ void agent::end_user::end_user_LP_set(profile &profile){
 		alglib::sparseset(constraint_general, row_ID, ch_ev_ID, -1);
 		alglib::sparseset(constraint_general, row_ID, dc_ev_ID, 1.);
 		alglib::sparseset(constraint_general, row_ID, s_ev_now_ID, 1.);
+	}
+
+	// \sum_{tau} d^sa(tau, t) = d^sa(t)
+	for(int row_iter = 0; row_iter < foresight_time; ++ row_iter){
+		int row_ID = 5 * foresight_time + row_iter;
+
+		for(int tick = 0; tick < 2 * load_shift_time + 1; ++ tick){
+			int tick_ID = row_iter - load_shift_time + tick;
+			if(tick_ID >= -load_shift_time && tick_ID < foresight_time){
+				int d_sa_ID = row_iter * variable_per_time + 10 + tick_ID + load_shift_time;
+				alglib::sparseset(constraint_general, row_ID, d_sa_ID, 1.);
+			}
+		}
 	}
 }
 
