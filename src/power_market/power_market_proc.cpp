@@ -35,17 +35,17 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 
 	// Initialization of the DSO
 	DSO_Markets_Set(Power_market_inform.DSO_Markets, Power_network_inform, Time);
-//	Power_market_inform.DSO_Problems = Problems (Power_market_inform.DSO_Markets.size());
-//	for(int DSO_iter = 0; DSO_iter < Power_market_inform.DSO_Markets.size(); ++ DSO_iter){
-//		Flow_Based_Market_LP_Set(Power_market_inform.DSO_Markets[DSO_iter], Power_market_inform.DSO_Problems[DSO_iter]);
-//	}
-//
-//	// Initial estimation of market clearing price in the IMO
-//	International_Market_Price_Estimation(0, Power_market_inform.International_Market, Power_market_inform.IMO_Problem, Power_network_inform);
-//
-//	// Bidding strategies of end-users
-//	Power_market_inform.end_user_profiles = DSO_agents_set(Power_market_inform.International_Market, Power_network_inform);
-//
+	Power_market_inform.DSO_Problems = Problems (Power_market_inform.DSO_Markets.size());
+	for(int DSO_iter = 0; DSO_iter < Power_market_inform.DSO_Markets.size(); ++ DSO_iter){
+		Flow_Based_Market_LP_Set(Power_market_inform.DSO_Markets[DSO_iter], Power_market_inform.DSO_Problems[DSO_iter]);
+	}
+
+	// Initial estimation of market clearing price in the IMO
+	International_Market_Price_Estimation(0, Power_market_inform.International_Market, Power_market_inform.IMO_Problem, Power_network_inform);
+
+	// Bidding strategies of end-users
+	Power_market_inform.end_user_profiles = DSO_agents_set(Power_market_inform.International_Market, Power_network_inform);
+
 //	// Initialization of submitted bids in DSOs, TSOs, and IMO
 //	Submitted_bid_calculation(0, Power_market_inform, Power_network_inform, DSO_filter_flag);
 //

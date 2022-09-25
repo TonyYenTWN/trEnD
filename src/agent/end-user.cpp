@@ -6,8 +6,143 @@
 //#include "../basic/LP_gpa_fast.cpp"
 #include "end-user.h"
 
-void agent::end_user::end_user_LP_set(){
+void agent::end_user::end_user_LP_set(profile &profile){
+	// -------------------------------------------------------------------------------
+	// LP Solver initialization for operation strategy of end-users
+	// Warm-up once and reuse for the rest of time slices
+	// Variables are sorted as the following order (repeat for every t)
+	// U^s(t), U^d(t): aggregated scheduled supply and demand
+	// U^b(t): electricity demand from BESS
+	// U^ev(t): electricity demand from EV
+	// U^sa(t): electricity demand from smart appliance
+	// ch^b(t): electricity charge from BESS
+	// dc^b(t): electricity discharge from BESS
+	// soc^b(t): state of charge of BESS
+	// ch^ev(t): electricity charge from EV
+	// dc^ev(t): electricity discharge from EV
+	// soc^ev(t): state of charge of EV
+	// d^sa(\tau, t): scheduled smart appliance load at time t
+	// -------------------------------------------------------------------------------
+	int foresight_time = profile.operation.foresight_time;
+	int load_shift_time = profile.operation.smart_appliance.shift_time;
+	load_shift_time = std::min(load_shift_time, foresight_time / 2);
 
+	// -------------------------------------------------------------------------------
+	// Set matrix for general constraints
+	// -------------------------------------------------------------------------------
+	// Generate sparse matrix for general equality constraints of dynamic equation
+	int constrant_num = 7 * foresight_time + load_shift_time;
+	int variable_per_time = 11 + foresight_time + load_shift_time;
+	int variable_num = variable_per_time * foresight_time;
+	Eigen::VectorXpd non_zero_num(constrant_num);
+	non_zero_num.head(5 * foresight_time) << Eigen::VectorXpd::Constant(foresight_time, 5), Eigen::VectorXpd::Constant(foresight_time + 1, 3), Eigen::VectorXpd::Constant(foresight_time - 1, 4), Eigen::VectorXpd::Constant(foresight_time + 1, 3), Eigen::VectorXpd::Constant(foresight_time - 1, 4);
+	non_zero_num.segment(5 * foresight_time, foresight_time - load_shift_time) =  Eigen::VectorXpd::Constant(foresight_time - load_shift_time, 2 * load_shift_time + 1);
+	if(load_shift_time > 0){
+		for(int tick = 0; tick < load_shift_time; ++ tick){
+			int row_ID = 6 * foresight_time - load_shift_time + tick;
+			non_zero_num(row_ID) = 2 * load_shift_time + 1 - tick;
+		}
+
+		for(int tick = 0; tick < foresight_time + load_shift_time; ++ tick){
+			int row_ID = 6 * foresight_time + tick;
+			int tock_start = std::max(tick - 2 * load_shift_time, 0);
+			int tock_end = std::min(tick, foresight_time - 1);
+			non_zero_num(row_ID) = tock_end - tock_start + 1;
+		}
+	}
+	alglib::integer_1d_array row_sizes_general;
+	row_sizes_general.setcontent(non_zero_num.size(), non_zero_num.data());
+	alglib::sparsematrix constraint_general;
+	alglib::sparsecreatecrs(constrant_num, variable_num, row_sizes_general, constraint_general);
+
+	// Fill in the coefficients for the sparse matrix
+	// U^d(t) - U^s(t) - U^b(t) - U^ev(t) - U^sa(t) = D_0(t) - U^pv(t)
+	for(int row_iter = 0; row_iter < foresight_time; ++ row_iter){
+		int U_d_ID = row_iter * variable_per_time;
+		int U_s_ID = row_iter * variable_per_time + 1;
+		int U_b_ID = row_iter * variable_per_time + 2;
+		int U_ev_ID = row_iter * variable_per_time + 3;
+		int U_sa_ID = row_iter * variable_per_time + 4;
+
+		alglib::sparseset(constraint_general, row_iter, U_d_ID, 1.);
+		alglib::sparseset(constraint_general, row_iter, U_s_ID, -1.);
+		alglib::sparseset(constraint_general, row_iter, U_b_ID, -1.);
+		alglib::sparseset(constraint_general, row_iter, U_ev_ID, -1.);
+		alglib::sparseset(constraint_general, row_iter, U_sa_ID, -1.);
+	}
+
+	// U^b(t) - 1 / eta * ch^b(t) + eta * dc^b(t) = 0
+	for(int row_iter = 0; row_iter < foresight_time; ++ row_iter){
+		int row_ID = foresight_time + row_iter;
+		int U_b_ID = row_iter * variable_per_time + 2;
+		int ch_b_ID = row_iter * variable_per_time + 5;
+		int dc_b_ID = row_iter * variable_per_time + 6;
+
+		alglib::sparseset(constraint_general, row_ID, U_b_ID, 1.);
+		alglib::sparseset(constraint_general, row_ID, ch_b_ID, -1. / profile.operation.BESS.efficiency);
+		alglib::sparseset(constraint_general, row_ID, dc_b_ID, profile.operation.BESS.efficiency);
+	}
+
+	// soc^b(t) - soc^b(t - 1) - ch^b(t) + dc^b(t) = 0
+	{
+		int row_iter = 0;
+		int row_ID = 2 * foresight_time + row_iter;
+		int ch_b_ID = row_iter * variable_per_time + 5;
+		int dc_b_ID = row_iter * variable_per_time + 6;
+		int s_b_now_ID = row_iter * variable_per_time + 7;
+		alglib::sparseset(constraint_general, row_ID, ch_b_ID, -1);
+		alglib::sparseset(constraint_general, row_ID, dc_b_ID, 1.);
+		alglib::sparseset(constraint_general, row_ID, s_b_now_ID, 1.);
+	}
+	for(int row_iter = 1; row_iter < foresight_time; ++ row_iter){
+		int row_ID = 2 * foresight_time + row_iter;
+		int s_b_prev_ID = (row_iter - 1) * variable_per_time + 7;
+		int ch_b_ID = row_iter * variable_per_time + 5;
+		int dc_b_ID = row_iter * variable_per_time + 6;
+		int s_b_now_ID = row_iter * variable_per_time + 7;
+
+		alglib::sparseset(constraint_general, row_ID, s_b_prev_ID, -1.);
+		alglib::sparseset(constraint_general, row_ID, ch_b_ID, -1);
+		alglib::sparseset(constraint_general, row_ID, dc_b_ID, 1.);
+		alglib::sparseset(constraint_general, row_ID, s_b_now_ID, 1.);
+	}
+
+	// U^ev(t) - 1 / eta * ch^ev(t) + eta * dc^ev(t) = 0
+	for(int row_iter = 0; row_iter < foresight_time; ++ row_iter){
+		int row_ID = 3 * foresight_time + row_iter;
+		int U_ev_ID = row_iter * variable_per_time + 3;
+		int ch_ev_ID = row_iter * variable_per_time + 8;
+		int dc_ev_ID = row_iter * variable_per_time + 9;
+
+		alglib::sparseset(constraint_general, row_ID, U_ev_ID, 1.);
+		alglib::sparseset(constraint_general, row_ID, ch_ev_ID, -1. / profile.operation.EV.BESS.efficiency);
+		alglib::sparseset(constraint_general, row_ID, dc_ev_ID, profile.operation.EV.BESS.efficiency);
+	}
+
+	// soc^ev(t) - soc^ev(t - 1) - ch^ev(t) + dc^ev(t) = -d^ev(t)
+	{
+		int row_iter = 0;
+		int row_ID = 4 * foresight_time + row_iter;
+		int ch_ev_ID = row_iter * variable_per_time + 8;
+		int dc_ev_ID = row_iter * variable_per_time + 9;
+		int s_ev_now_ID = row_iter * variable_per_time + 10;
+
+		alglib::sparseset(constraint_general, row_ID, ch_ev_ID, -1);
+		alglib::sparseset(constraint_general, row_ID, dc_ev_ID, 1.);
+		alglib::sparseset(constraint_general, row_ID, s_ev_now_ID, 1.);
+	}
+	for(int row_iter = 1; row_iter < foresight_time; ++ row_iter){
+		int row_ID = 4 * foresight_time + row_iter;
+		int s_ev_prev_ID = (row_iter - 1) * variable_per_time + 10;
+		int ch_ev_ID = row_iter * variable_per_time + 8;
+		int dc_ev_ID = row_iter * variable_per_time + 9;
+		int s_ev_now_ID = row_iter * variable_per_time + 10;
+
+		alglib::sparseset(constraint_general, row_ID, s_ev_prev_ID, -1.);
+		alglib::sparseset(constraint_general, row_ID, ch_ev_ID, -1);
+		alglib::sparseset(constraint_general, row_ID, dc_ev_ID, 1.);
+		alglib::sparseset(constraint_general, row_ID, s_ev_now_ID, 1.);
+	}
 }
 
 agent::sorted_vector agent::sort(Eigen::VectorXd original){

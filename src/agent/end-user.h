@@ -144,6 +144,8 @@ namespace agent{
 			* @name input parameters
 			*/
 			/*@{*/
+			/** Foresight time length for the end-user when schedule its demand*/
+			int foresight_time;
 			/** Weight of the sample representing the population distribution.
 			* Summation at a sample point equals to 1.*/
 			double weight;
@@ -184,7 +186,8 @@ namespace agent{
 		typedef std::vector <std::vector <profile>> profiles;
 
 		// Functions
-		void end_user_LP_set();
+		void end_user_LP_set(profile&);
+
 		void smart_appliance_schedule(sorted_vector, Eigen::VectorXd, smart_appliance_inform&);
 		alglib::minlpstate storage_schedule_LP_mold(int);
 		void storage_schedule_LP_optimize(int, sorted_vector, storage_inform&, bool fixed_end = 0);

@@ -121,22 +121,28 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 }
 
 agent::end_user::profiles power_market::DSO_agents_set(market_inform &International_Market, power_network::network_inform &Power_network_inform){
-//	int foresight_time = agent::parameters::foresight_time();
-//	double residential_ratio = agent::parameters::residential_ratio();
-//
-//	agent::end_user::profiles end_user_profiles(Power_network_inform.points.bidding_zone.size());
-//	int sample_num = agent::parameters::sample_num();
-//	for(int point_iter = 0; point_iter < end_user_profiles.size(); ++ point_iter){
-//		end_user_profiles[point_iter] = std::vector <agent::end_user::profile> (sample_num);
-//	}
-//
-//	// Initialization of forecast price profile
-//	auto expected_price_sorted = power_market::International_Market_Price_Sorted(0, International_Market);
-//
-//	// Initialization of forecast demand profile and operation strategies
-//	Eigen::VectorXd weight(sample_num);
-//	weight = Eigen::VectorXd::Constant(sample_num, 1. / sample_num);
-//	auto Problem = agent::end_user::storage_schedule_LP_mold(foresight_time);
+	int foresight_time = agent::parameters::foresight_time();
+	double residential_ratio = agent::parameters::residential_ratio();
+
+	agent::end_user::profiles end_user_profiles(Power_network_inform.points.bidding_zone.size());
+	int sample_num = agent::parameters::sample_num();
+	for(int point_iter = 0; point_iter < end_user_profiles.size(); ++ point_iter){
+		end_user_profiles[point_iter] = std::vector <agent::end_user::profile> (sample_num);
+	}
+
+	// Initialization of forecast demand profile and operation strategies
+	Eigen::VectorXd weight(sample_num);
+	weight = Eigen::VectorXd::Constant(sample_num, 1. / sample_num);
+	for(int point_iter = 0; point_iter < end_user_profiles.size(); ++ point_iter){
+		int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
+
+		for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
+			end_user_profiles[point_iter][sample_iter].operation.foresight_time = foresight_time;
+			end_user_profiles[point_iter][sample_iter].operation.smart_appliance.shift_time = 1;
+			agent::end_user::end_user_LP_set(end_user_profiles[point_iter][sample_iter]);
+		}
+	}
+
 //	for(int point_iter = 0; point_iter < end_user_profiles.size(); ++ point_iter){
 //		int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
 //
@@ -190,7 +196,7 @@ agent::end_user::profiles power_market::DSO_agents_set(market_inform &Internatio
 //		}
 //	}
 //
-//	return end_user_profiles;
+	return end_user_profiles;
 }
 
 void power_market::DSO_agents_update(int tick, agent::end_user::profiles &end_user_profiles, market_inform &TSO_Market, market_inform &International_Market, power_network::network_inform &Power_network_inform){
