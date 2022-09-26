@@ -221,6 +221,9 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 	Eigen::MatrixXd bound_box(variable_num, 2);
 	for(int tock = 0; tock < foresight_time; ++ tock){
 		int row_start = tock * variable_per_time;
+		int ch_b_ID = tock * variable_per_time + 6;
+		int dc_b_ID = tock * variable_per_time + 7;
+
 		bound_box.col(0).segment(row_start, 6) = Eigen::VectorXd::Constant(6, -std::numeric_limits<double>::infinity());
 		bound_box.col(1).segment(row_start, 6) = Eigen::VectorXd::Constant(6, std::numeric_limits<double>::infinity());
 	}
