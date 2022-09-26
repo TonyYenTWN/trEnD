@@ -44,7 +44,7 @@ void agent::end_user::end_user_LP_set(profile &profile){
 	if(load_shift_time > 0){
 		for(int tick = 0; tick < load_shift_time; ++ tick){
 			int row_ID = 6 * foresight_time - load_shift_time + tick;
-			non_zero_num(row_ID) = 2 * load_shift_time + 1 - tick;
+			non_zero_num(row_ID) = 2 * load_shift_time - tick;
 		}
 
 		for(int tick = 0; tick < foresight_time + load_shift_time; ++ tick){
@@ -176,28 +176,25 @@ void agent::end_user::end_user_LP_set(profile &profile){
 			}
 		}
 	}
+	//std::cout << row_sizes_general[143] << "\n";
+//	alglib::sparseset(constraint_general, 144, 14, -1.);
+//	alglib::sparseset(constraint_general, 144, 936, 1.);
 
 	// d^sa(t) - \sum_{tau} d^sa(t, tau) = 0
 	for(int row_iter = 0; row_iter < foresight_time + load_shift_time; ++ row_iter){
 		int row_ID = 6 * foresight_time + row_iter;
 
-		std::cout << row_iter - load_shift_time << "(" << row_ID << ", " << non_zero_num(row_ID) << "):\t";
 		for(int tick = 0; tick < 2 * load_shift_time + 1; ++ tick){
 			int tick_ID = row_iter - 2 * load_shift_time + tick;
 			if(tick_ID >= 0 && tick_ID < foresight_time){
 				int d_sa_ID = tick_ID * variable_per_time + 14 + row_iter;
-				//std::cout << tick_ID << "\t";
-				std::cout << tick_ID << "(" << d_sa_ID << ")\t";
-				//alglib::sparseset(constraint_general, row_ID, d_sa_ID, -1.);
+				alglib::sparseset(constraint_general, row_ID, d_sa_ID, -1.);
 			}
 		}
 
 		int d_sa_total_ID = variable_per_time * foresight_time + row_iter;
 		alglib::sparseset(constraint_general, row_ID, d_sa_total_ID, 1.);
-		std::cout << d_sa_total_ID;
-		std::cout << "\n";
 	}
-	std::cout << "\n";
 }
 
 agent::sorted_vector agent::sort(Eigen::VectorXd original){
