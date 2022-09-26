@@ -219,8 +219,11 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 	// Set bounds for box constraints
 	// -------------------------------------------------------------------------------
 	Eigen::MatrixXd bound_box(variable_num, 2);
-	bound_box.col(0).head(6 * foresight_time) = Eigen::VectorXd::Constant(6 * foresight_time, -std::numeric_limits<double>::infinity());
-	bound_box.col(1).head(6 * foresight_time) = Eigen::VectorXd::Constant(6 * foresight_time, std::numeric_limits<double>::infinity());
+	for(int tock = 0; tock < foresight_time; ++ tock){
+		int row_start = tock * variable_per_time;
+		bound_box.col(0).segment(row_start, 6) = Eigen::VectorXd::Constant(6, -std::numeric_limits<double>::infinity());
+		bound_box.col(1).segment(row_start, 6) = Eigen::VectorXd::Constant(6, std::numeric_limits<double>::infinity());
+	}
 }
 
 agent::sorted_vector agent::sort(Eigen::VectorXd original){
