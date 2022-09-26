@@ -122,6 +122,7 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 
 agent::end_user::profiles power_market::DSO_agents_set(market_inform &International_Market, power_network::network_inform &Power_network_inform){
 	int foresight_time = agent::parameters::foresight_time();
+	int load_shift_time = agent::parameters::load_shift_time();
 	double residential_ratio = agent::parameters::residential_ratio();
 
 	agent::end_user::profiles end_user_profiles(Power_network_inform.points.bidding_zone.size());
@@ -137,9 +138,41 @@ agent::end_user::profiles power_market::DSO_agents_set(market_inform &Internatio
 		int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
 
 		for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
+			// Initialization of investment parameters
+			end_user_profiles[point_iter][sample_iter].investment.decision.dynamic_tariff = 1;
+			end_user_profiles[point_iter][sample_iter].investment.decision.smart_appliance = 1;
+			end_user_profiles[point_iter][sample_iter].investment.decision.PV = 1;
+			end_user_profiles[point_iter][sample_iter].investment.decision.BESS = 1;
+			end_user_profiles[point_iter][sample_iter].investment.decision.EV_self_charging = 1;
+			end_user_profiles[point_iter][sample_iter].investment.decision.reverse_flow = 1;
+
+			// Initialization of operational parameters
 			end_user_profiles[point_iter][sample_iter].operation.foresight_time = foresight_time;
-			end_user_profiles[point_iter][sample_iter].operation.smart_appliance.shift_time = 1;
+			int load_shift_time_temp = std::min(load_shift_time, foresight_time / 2);
+			end_user_profiles[point_iter][sample_iter].operation.smart_appliance.shift_time = load_shift_time_temp;
+			end_user_profiles[point_iter][sample_iter].operation.BESS.soc = end_user_profiles[point_iter][sample_iter].operation.BESS.energy_scale / 2;
+			end_user_profiles[point_iter][sample_iter].operation.BESS.soc *= end_user_profiles[point_iter][sample_iter].investment.decision.BESS;
+			end_user_profiles[point_iter][sample_iter].operation.EV.BESS.soc = end_user_profiles[point_iter][sample_iter].operation.EV.BESS.energy_scale / 2;
+			end_user_profiles[point_iter][sample_iter].operation.EV.BESS.soc *= end_user_profiles[point_iter][sample_iter].investment.decision.EV_self_charging;
+
+			// Initialization of input profiles
+			end_user_profiles[point_iter][sample_iter].operation.EV.house_default_period = Eigen::VectorXi::Ones(foresight_time);
+			end_user_profiles[point_iter][sample_iter].operation.EV.default_demand_profile = Eigen::VectorXd::Zero(foresight_time);
+			end_user_profiles[point_iter][sample_iter].operation.EV.default_demand_profile *= end_user_profiles[point_iter][sample_iter].investment.decision.EV_self_charging;
+			end_user_profiles[point_iter][sample_iter].operation.default_demand_profile = Power_network_inform.points.nominal_mean_demand_field.row(point_iter).head(foresight_time);
+			//end_user_profiles[point_iter][sample_iter].operation.default_demand_profile -= end_user_profiles[point_iter][sample_iter].operation.EV.default_demand_profile;
+			end_user_profiles[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand = Eigen::VectorXd::Zero(2 * load_shift_time_temp + 1);
+			for(int tick = load_shift_time_temp; tick < 2 * load_shift_time_temp + 1; ++ tick){
+				end_user_profiles[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(tick) = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick - load_shift_time_temp);
+				end_user_profiles[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(tick) *= end_user_profiles[point_iter][sample_iter].investment.decision.smart_appliance * end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale;
+			}
+			end_user_profiles[point_iter][sample_iter].operation.default_demand_profile *= 1. - end_user_profiles[point_iter][sample_iter].investment.decision.smart_appliance * end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale;
+
+			// Set the LP problem
 			agent::end_user::end_user_LP_set(end_user_profiles[point_iter][sample_iter]);
+
+			// Optimization and update process variables
+			agent::end_user::end_user_LP_optimize(0, end_user_profiles[point_iter][sample_iter]);
 		}
 	}
 

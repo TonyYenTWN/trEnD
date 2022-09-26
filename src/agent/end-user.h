@@ -8,7 +8,8 @@ namespace agent{
 		struct decision{
 			bool dynamic_tariff;
 			bool smart_appliance;
-			bool PV_BESS;
+			bool PV;
+			bool BESS;
 			bool EV_self_charging;
 			/** Whether the end-user can inject power flow back to grid; false when active_flex is false*/
 			bool reverse_flow;
@@ -30,10 +31,6 @@ namespace agent{
 			* indicates how flexible the smart appliances are.
 			*/
 			int shift_time;
-//			/**  Indicates how flexible the smart appliances are;
-//			* e.g. 1 / 2 = can concentrate the demand within half of the time interval.
-//			*/
-//			double flexibility_factor;
 			/*@{*/
 
 
@@ -46,14 +43,6 @@ namespace agent{
 			/** Scheduled flexible demand at current time step (kWh per hour per person).*/
 			double scheduled_demand;
 			/*@{*/
-
-//			/**
-//			* @name output variables
-//			*/
-//			/*@{*/
-//			/** Normalized schedule profile for smart appliance (kWh per hour per person).*/
-//			Eigen::VectorXd normalized_scheduled_profile;
-//			/*@{*/
 		};
 
 		/** @brief Information of battery storage system of an end-user.*/
@@ -68,10 +57,6 @@ namespace agent{
 			double capacity_scale = .001;
 			/** Conversion efficiency of charge / discharge.*/
 			double efficiency = .95;
-//			/** Initial state of charge level.*/
-//			double soc_ini;
-//			/** Final state of charge level.*/
-//			double soc_final;
 			/*@{*/
 
 			/**
@@ -82,18 +67,7 @@ namespace agent{
 			double soc;
 			/** Scheduled charge / discharge output at current time step (kWh per hour per person).*/
 			double scheduled_capacity;
-//			alglib::minlpstate Problem;
 			/*@{*/
-
-//			/**
-//			* @name output variables
-//			*/
-//			/*@{*/
-//			/** Normalized schedule profile for battery storage capacity (kWh per hour per person).*/
-//			Eigen::VectorXd normalized_scheduled_capacity_profile;
-//			/** Normalized schedule profile for battery storage state of charge level (kWh).*/
-//			Eigen::VectorXd normalized_scheduled_soc_profile;
-//			/*@{*/
 		};
 
 		/** @brief Information of electric vehicle of an end-user.*/
@@ -187,6 +161,7 @@ namespace agent{
 
 		// Functions
 		void end_user_LP_set(profile&);
+		void end_user_LP_optimize(int tick, profile &profile);
 
 		void smart_appliance_schedule(sorted_vector, Eigen::VectorXd, smart_appliance_inform&);
 		alglib::minlpstate storage_schedule_LP_mold(int);

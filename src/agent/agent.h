@@ -11,6 +11,11 @@ namespace agent{
 			return value;
 		}
 
+		static inline int load_shift_time(){
+			int value = 1;
+			return value;
+		}
+
 		static inline int sample_num(){
 			int value = 3;
 			return value;

@@ -29,7 +29,7 @@ void agent::end_user::end_user_LP_set(profile &profile){
 	// -------------------------------------------------------------------------------
 	int foresight_time = profile.operation.foresight_time;
 	int load_shift_time = profile.operation.smart_appliance.shift_time;
-	load_shift_time = std::min(load_shift_time, foresight_time / 2);
+//	load_shift_time = std::min(load_shift_time, foresight_time / 2);
 
 	// -------------------------------------------------------------------------------
 	// Set matrix for general constraints
@@ -176,9 +176,6 @@ void agent::end_user::end_user_LP_set(profile &profile){
 			}
 		}
 	}
-	//std::cout << row_sizes_general[143] << "\n";
-//	alglib::sparseset(constraint_general, 144, 14, -1.);
-//	alglib::sparseset(constraint_general, 144, 936, 1.);
 
 	// d^sa(t) - \sum_{tau} d^sa(t, tau) = 0
 	for(int row_iter = 0; row_iter < foresight_time + load_shift_time; ++ row_iter){
@@ -195,6 +192,26 @@ void agent::end_user::end_user_LP_set(profile &profile){
 		int d_sa_total_ID = variable_per_time * foresight_time + row_iter;
 		alglib::sparseset(constraint_general, row_ID, d_sa_total_ID, 1.);
 	}
+
+	// -------------------------------------------------------------------------------
+	// Set bounds for general constraints
+	// -------------------------------------------------------------------------------
+	Eigen::MatrixXd bound_general = Eigen::MatrixXd::Zero(constrant_num, 2);
+	alglib::real_1d_array lb_general;
+	alglib::real_1d_array ub_general;
+	lb_general.setcontent(bound_general.rows(), bound_general.col(0).data());
+	ub_general.setcontent(bound_general.rows(), bound_general.col(1).data());
+
+	// -------------------------------------------------------------------------------
+	// Set the LP problem object
+	// -------------------------------------------------------------------------------
+	alglib::minlpcreate(variable_num, profile.operation.Problem);
+	alglib::minlpsetlc2(profile.operation.Problem, constraint_general, lb_general, ub_general, constrant_num);
+	alglib::minlpsetalgodss(profile.operation.Problem, 0.);
+}
+
+void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
+
 }
 
 agent::sorted_vector agent::sort(Eigen::VectorXd original){
