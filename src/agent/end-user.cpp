@@ -25,6 +25,7 @@ void agent::end_user::end_user_LP_set(profile &profile){
 	// d^ev(t): electricity demand from EV
 	// soc^ev(t): state of charge of EV
 	// d^sa(..., t): scheduled smart appliance load at time t
+	// d^sa(t): default smart appliance load at time t
 	// -------------------------------------------------------------------------------
 	int foresight_time = profile.operation.foresight_time;
 	int load_shift_time = profile.operation.smart_appliance.shift_time;
@@ -36,7 +37,7 @@ void agent::end_user::end_user_LP_set(profile &profile){
 	// Generate sparse matrix for general equality constraints of dynamic equation
 	int constrant_num = 7 * foresight_time + load_shift_time;
 	int variable_per_time = 14 + foresight_time + load_shift_time;
-	int variable_num = variable_per_time * foresight_time;
+	int variable_num = variable_per_time * foresight_time + foresight_time + load_shift_time;
 	Eigen::VectorXpd non_zero_num(constrant_num);
 	non_zero_num.head(5 * foresight_time) << Eigen::VectorXpd::Constant(foresight_time, 6), Eigen::VectorXpd::Constant(foresight_time, 3), 4, Eigen::VectorXpd::Constant(foresight_time - 1, 5), Eigen::VectorXpd::Constant(foresight_time, 3), 4, Eigen::VectorXpd::Constant(foresight_time - 1, 5);
 	non_zero_num.segment(5 * foresight_time, foresight_time - load_shift_time) =  Eigen::VectorXpd::Constant(foresight_time - load_shift_time, 2 * load_shift_time + 1);
@@ -54,6 +55,7 @@ void agent::end_user::end_user_LP_set(profile &profile){
 		}
 	}
 	non_zero_num.segment(5 * foresight_time, foresight_time) += Eigen::VectorXpd::Ones(foresight_time);
+	non_zero_num.tail(foresight_time + load_shift_time) += Eigen::VectorXpd::Ones(foresight_time + load_shift_time);
 	alglib::integer_1d_array row_sizes_general;
 	row_sizes_general.setcontent(non_zero_num.size(), non_zero_num.data());
 	alglib::sparsematrix constraint_general;
@@ -90,6 +92,7 @@ void agent::end_user::end_user_LP_set(profile &profile){
 	}
 
 	// soc^b(t) - soc^b(t - 1) - ch^b(t) + dc^b(t) + d^b(t) = 0
+	// when t = 0, soc(0) also stored in d^b(t)
 	{
 		int row_iter = 0;
 		int row_ID = 2 * foresight_time + row_iter;
@@ -168,28 +171,33 @@ void agent::end_user::end_user_LP_set(profile &profile){
 		for(int tick = 0; tick < 2 * load_shift_time + 1; ++ tick){
 			int tick_ID = row_iter - load_shift_time + tick;
 			if(tick_ID >= -load_shift_time && tick_ID < foresight_time){
-				int d_sa_ID = row_iter * variable_per_time + 13 + tick_ID + load_shift_time;
+				int d_sa_ID = row_iter * variable_per_time + 14 + tick_ID + load_shift_time;
 				alglib::sparseset(constraint_general, row_ID, d_sa_ID, -1.);
 			}
 		}
 	}
 
-//	// \sum_{tau} d^sa(t, tau) = d^sa(t)
-//	for(int row_iter = 0; row_iter < foresight_time + load_shift_time; ++ row_iter){
-//		int row_ID = 6 * foresight_time + row_iter;
-//
-//		std::cout << row_iter - load_shift_time << "(" << non_zero_num(row_ID) << "):\t";
-//		for(int tick = 0; tick < 2 * load_shift_time + 1; ++ tick){
-//			int tick_ID = row_iter - 2 * load_shift_time + tick;
-//			if(tick_ID >= 0 && tick_ID < foresight_time){
-//				int d_sa_ID = tick_ID * variable_per_time + 13 + row_iter;
-//				std::cout << tick_ID << "\t";
-//				//alglib::sparseset(constraint_general, row_ID, d_sa_ID, 1.);
-//			}
-//		}
-//		std::cout << "\n";
-//	}
-//	std::cout << "\n";
+	// d^sa(t) - \sum_{tau} d^sa(t, tau) = 0
+	for(int row_iter = 0; row_iter < foresight_time + load_shift_time; ++ row_iter){
+		int row_ID = 6 * foresight_time + row_iter;
+
+		std::cout << row_iter - load_shift_time << "(" << row_ID << ", " << non_zero_num(row_ID) << "):\t";
+		for(int tick = 0; tick < 2 * load_shift_time + 1; ++ tick){
+			int tick_ID = row_iter - 2 * load_shift_time + tick;
+			if(tick_ID >= 0 && tick_ID < foresight_time){
+				int d_sa_ID = tick_ID * variable_per_time + 14 + row_iter;
+				//std::cout << tick_ID << "\t";
+				std::cout << tick_ID << "(" << d_sa_ID << ")\t";
+				//alglib::sparseset(constraint_general, row_ID, d_sa_ID, -1.);
+			}
+		}
+
+		int d_sa_total_ID = variable_per_time * foresight_time + row_iter;
+		alglib::sparseset(constraint_general, row_ID, d_sa_total_ID, 1.);
+		std::cout << d_sa_total_ID;
+		std::cout << "\n";
+	}
+	std::cout << "\n";
 }
 
 agent::sorted_vector agent::sort(Eigen::VectorXd original){
