@@ -29,7 +29,6 @@ void agent::end_user::end_user_LP_set(profile &profile){
 	// -------------------------------------------------------------------------------
 	int foresight_time = profile.operation.foresight_time;
 	int load_shift_time = profile.operation.smart_appliance.shift_time;
-//	load_shift_time = std::min(load_shift_time, foresight_time / 2);
 
 	// -------------------------------------------------------------------------------
 	// Set matrix for general constraints
@@ -211,7 +210,17 @@ void agent::end_user::end_user_LP_set(profile &profile){
 }
 
 void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
+	int foresight_time = profile.operation.foresight_time;
+	int load_shift_time = profile.operation.smart_appliance.shift_time;
+	int variable_per_time = 14 + foresight_time + load_shift_time;
+	int variable_num = variable_per_time * foresight_time + foresight_time + load_shift_time;
 
+	// -------------------------------------------------------------------------------
+	// Set bounds for box constraints
+	// -------------------------------------------------------------------------------
+	Eigen::MatrixXd bound_box(variable_num, 2);
+	bound_box.col(0).head(6 * foresight_time) = Eigen::VectorXd::Constant(6 * foresight_time, -std::numeric_limits<double>::infinity());
+	bound_box.col(1).head(6 * foresight_time) = Eigen::VectorXd::Constant(6 * foresight_time, std::numeric_limits<double>::infinity());
 }
 
 agent::sorted_vector agent::sort(Eigen::VectorXd original){
