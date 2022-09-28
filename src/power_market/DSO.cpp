@@ -121,12 +121,12 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 }
 
 agent::end_user::profiles power_market::DSO_agents_set(market_inform &International_Market, power_network::network_inform &Power_network_inform){
-	int foresight_time = agent::parameters::foresight_time();
-	int load_shift_time = agent::parameters::load_shift_time();
+	int foresight_time = agent::end_user::parameters::foresight_time();
+	int load_shift_time = agent::end_user::parameters::load_shift_time();
 	double residential_ratio = agent::parameters::residential_ratio();
 
 	agent::end_user::profiles end_user_profiles(Power_network_inform.points.bidding_zone.size());
-	int sample_num = agent::parameters::sample_num();
+	int sample_num = agent::end_user::parameters::sample_num();
 	for(int point_iter = 0; point_iter < end_user_profiles.size(); ++ point_iter){
 		end_user_profiles[point_iter] = std::vector <agent::end_user::profile> (sample_num);
 	}
@@ -168,6 +168,8 @@ agent::end_user::profiles power_market::DSO_agents_set(market_inform &Internatio
 			}
 			end_user_profiles[point_iter][sample_iter].operation.default_demand_profile *= 1. - end_user_profiles[point_iter][sample_iter].investment.decision.smart_appliance * end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale;
 			end_user_profiles[point_iter][sample_iter].operation.default_PV_profile = Eigen::VectorXd::Zero(foresight_time);
+			end_user_profiles[point_iter][sample_iter].operation.price_demand_profile = International_Market.confirmed_price.col(bz_ID).head(foresight_time);
+			end_user_profiles[point_iter][sample_iter].operation.price_supply_profile = International_Market.confirmed_price.col(bz_ID).head(foresight_time);
 
 			// Set the LP problem
 			agent::end_user::end_user_LP_set(end_user_profiles[point_iter][sample_iter]);

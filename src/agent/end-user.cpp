@@ -221,20 +221,20 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 	Eigen::MatrixXd bound_box = Eigen::MatrixXd::Zero(variable_num, 2);
 	for(int tock = 0; tock < foresight_time; ++ tock){
 		int row_start = tock * variable_per_time;
-		int U_d_ID = tock * variable_per_time;
-		int U_s_ID = tock * variable_per_time + 1;
-		int U_b_ID = tock * variable_per_time + 2;
-		int U_ev_ID = tock * variable_per_time + 3;
-		int U_sa_ID = tock * variable_per_time + 4;
-		int RL_ID = tock * variable_per_time + 5;
-		int ch_b_ID = tock * variable_per_time + 6;
-		int dc_b_ID = tock * variable_per_time + 7;
-		int d_b_ID = tock * variable_per_time + 8;
-		int s_b_ID = tock * variable_per_time + 9;
-		int ch_ev_ID = tock * variable_per_time + 10;
-		int dc_ev_ID = tock * variable_per_time + 11;
-		int d_ev_ID = tock * variable_per_time + 12;
-		int s_ev_ID = tock * variable_per_time + 13;
+		int U_d_ID = row_start;
+		int U_s_ID = row_start + 1;
+		int U_b_ID = row_start + 2;
+		int U_ev_ID = row_start + 3;
+		int U_sa_ID = row_start + 4;
+		int RL_ID = row_start + 5;
+		int ch_b_ID = row_start + 6;
+		int dc_b_ID = row_start + 7;
+		int d_b_ID = row_start + 8;
+		int s_b_ID = row_start + 9;
+		int ch_ev_ID = row_start + 10;
+		int dc_ev_ID = row_start + 11;
+		int d_ev_ID = row_start + 12;
+		int s_ev_ID = row_start + 13;
 
 		bound_box.row(U_d_ID) << -std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity();
 		bound_box.row(U_s_ID) << -std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity();
@@ -270,6 +270,27 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 	lb_box.setcontent(bound_box.rows(), bound_box.col(0).data());
 	ub_box.setcontent(bound_box.rows(), bound_box.col(1).data());
 	alglib::minlpsetbc(profile.operation.Problem, lb_box, ub_box);
+
+	// -------------------------------------------------------------------------------
+	// Set objective coefficients of variables
+	// -------------------------------------------------------------------------------
+	Eigen::VectorXd obj_vec = Eigen::VectorXd::Zero(variable_num);
+	for(int tock = 0; tock < foresight_time; ++ tock){
+		int row_start = tock * variable_per_time;
+		int U_d_ID = row_start;
+		int U_s_ID = row_start + 1;
+
+		obj_vec(U_d_ID) = profile.operation.price_demand_profile(tock);
+		obj_vec(U_s_ID) = -profile.operation.price_supply_profile(tock);
+	}
+	alglib::real_1d_array obj_coeff;
+	obj_coeff.setcontent(obj_vec.size(), obj_vec.data());
+	alglib::minlpsetcost(profile.operation.Problem, obj_coeff);
+
+	// -------------------------------------------------------------------------------
+	// Solve the problem and store the results
+	// -------------------------------------------------------------------------------
+	alglib::minlpoptimize(profile.operation.Problem);
 }
 
 agent::sorted_vector agent::sort(Eigen::VectorXd original){

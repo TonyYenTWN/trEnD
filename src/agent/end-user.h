@@ -4,6 +4,23 @@
 
 namespace agent{
 	namespace end_user{
+		namespace parameters{
+			static inline int foresight_time(){
+				int value = 24;
+				return value;
+			}
+
+			static inline int load_shift_time(){
+				int value = 1;
+				return value;
+			}
+
+			static inline int sample_num(){
+				int value = 3;
+				return value;
+			}
+		}
+
 		/** @brief Decision variables representing possible investment combinations of an end-user.*/
 		struct decision{
 			bool dynamic_tariff;
@@ -131,6 +148,10 @@ namespace agent{
 			Eigen::VectorXd default_demand_profile;
 			/** Default PV profile; normalized to nominal value (kWh per hour per person).*/
 			Eigen::VectorXd default_PV_profile;
+			/** Tariff for consumption.*/
+			Eigen::VectorXd price_demand_profile;
+			/** Tariff for feed-in supply.*/
+			Eigen::VectorXd price_supply_profile;
 			/*@{*/
 
 			/**
