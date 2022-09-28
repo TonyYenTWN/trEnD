@@ -260,8 +260,10 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 			if(tuck_ID >= -load_shift_time && tuck_ID < foresight_time){
 				int d_sa_ID = tock * variable_per_time + 14 + tuck_ID + load_shift_time;
 				bound_box.row(d_sa_ID) << 0., profile.operation.smart_appliance.unfulfilled_demand(tuck_ID + load_shift_time);
+				//std::cout << bound_box.row(d_sa_ID) << "\n";
 			}
 		}
+		//std::cout << "\n";
 	}
 
 	// Bounds of box constraints
@@ -291,6 +293,15 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 	// Solve the problem and store the results
 	// -------------------------------------------------------------------------------
 	alglib::minlpoptimize(profile.operation.Problem);
+	alglib::real_1d_array sol;
+	alglib::minlpreport rep;
+	alglib::minlpresults(profile.operation.Problem, sol, rep);
+	profile.operation.BESS.scheduled_capacity = sol[2];
+	profile.operation.EV.BESS.scheduled_capacity = sol[3];
+	profile.operation.smart_appliance.scheduled_demand = sol[4];
+	//std::cout << profile.operation.BESS.scheduled_capacity << "\t" << profile.operation.smart_appliance.scheduled_demand << "\n\n";
+	std::cout << sol[2] << "\t" << sol[41] << "\t" << sol[80] <<  "\t" << sol[119] << "\t" << sol[158] << "\n";
+	std::cout << sol[4] << "\t" << sol[43] << "\t" << sol[82] <<  "\t" << sol[121] << "\t" << sol[160] << "\n\n";
 }
 
 agent::sorted_vector agent::sort(Eigen::VectorXd original){
