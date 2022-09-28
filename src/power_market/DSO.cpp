@@ -123,6 +123,7 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 agent::end_user::profiles power_market::DSO_agents_set(market_inform &International_Market, power_network::network_inform &Power_network_inform){
 	int foresight_time = agent::end_user::parameters::foresight_time();
 	int load_shift_time = agent::end_user::parameters::load_shift_time();
+	int price_interval = power_market::parameters::price_interval();
 	double residential_ratio = agent::parameters::residential_ratio();
 
 	agent::end_user::profiles end_user_profiles(Power_network_inform.points.bidding_zone.size());
@@ -173,6 +174,12 @@ agent::end_user::profiles power_market::DSO_agents_set(market_inform &Internatio
 
 			// Set the LP problem
 			agent::end_user::end_user_LP_set(end_user_profiles[point_iter][sample_iter]);
+
+			// Set bids information
+			end_user_profiles[point_iter][sample_iter].operation.bids.submitted_supply_inflex = Eigen::VectorXd::Zero(price_interval + 2);
+			end_user_profiles[point_iter][sample_iter].operation.bids.submitted_demand_inflex = Eigen::VectorXd::Zero(price_interval + 2);
+			end_user_profiles[point_iter][sample_iter].operation.bids.submitted_supply_flex = Eigen::VectorXd::Zero(price_interval + 2);
+			end_user_profiles[point_iter][sample_iter].operation.bids.submitted_demand_flex = Eigen::VectorXd::Zero(price_interval + 2);
 
 			// Optimization and update process variables
 			agent::end_user::end_user_LP_optimize(0, end_user_profiles[point_iter][sample_iter]);

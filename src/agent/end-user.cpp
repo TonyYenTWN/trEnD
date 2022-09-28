@@ -305,8 +305,11 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 	profile.operation.BESS.scheduled_capacity = sol[2];
 	profile.operation.EV.BESS.scheduled_capacity = sol[3];
 	profile.operation.smart_appliance.scheduled_demand = sol[4];
-	std::cout << profile.operation.BESS.scheduled_capacity << "\t" << profile.operation.smart_appliance.scheduled_demand << "\n\n";
-	//std::cout << sol[2] << "\t" << sol[41] << "\t" << sol[80] <<  "\t" << sol[119] << "\t" << sol[158] << "\n";
+	//std::cout << profile.operation.BESS.scheduled_capacity << "\t" << profile.operation.smart_appliance.scheduled_demand << "\n";
+	//std::cout << rep.lagbc[2] << "\t" << rep.lagbc[4] << "\n\n";
+//	if(abs(sol[2]) > 1E-12){
+//		std::cout << sol[2] << "\t" << sol[41] << "\t" << sol[80] <<  "\t" << sol[119] << "\t" << sol[158] << "\t" << sol[197] << "\n";
+//	}
 	//std::cout << sol[4] << "\t" << sol[43] << "\t" << sol[82] <<  "\t" << sol[121] << "\t" << sol[160] << "\n\n";
 }
 

@@ -17,6 +17,11 @@ namespace power_market{
 			int value = 8760;
 			return value;
 		}
+
+		static inline int price_interval(){
+			int value = 600;
+			return value;
+		}
 	}
 
 	// Power market objects
@@ -82,7 +87,7 @@ namespace power_market{
 		/**Total time intervals of the model.*/
 		int time_intervals;
 		/**Total price intervals for flexible supply and demand in the model.*/
-		int price_intervals = 600;
+		int price_intervals = parameters::price_interval();
 		/**Name of bidding zones (for the IMO market only).*/
 		std::vector<std::string> zone_names;
 		/**Range of lowest and highest possible bidding prices.*/
