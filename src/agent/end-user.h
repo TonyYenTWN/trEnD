@@ -57,6 +57,8 @@ namespace agent{
 			double capacity_scale = .001;
 			/** Conversion efficiency of charge / discharge.*/
 			double efficiency = .95;
+			/** Self-consumption (kWh per hour per person) of the BESS.*/
+			double self_consumption = 0.;
 			/*@{*/
 
 			/**

@@ -218,7 +218,7 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 	// -------------------------------------------------------------------------------
 	// Set bounds for box constraints
 	// -------------------------------------------------------------------------------
-	Eigen::MatrixXd bound_box(variable_num, 2);
+	Eigen::MatrixXd bound_box = Eigen::MatrixXd::Zero(variable_num, 2);
 	for(int tock = 0; tock < foresight_time; ++ tock){
 		int row_start = tock * variable_per_time;
 		int U_d_ID = tock * variable_per_time;
@@ -245,18 +245,26 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 		bound_box.row(ch_b_ID) << 0., profile.operation.BESS.capacity_scale;
 		bound_box.row(dc_b_ID) << 0., profile.operation.BESS.capacity_scale;
 		bound_box.row(s_b_ID) << 0., profile.operation.BESS.energy_scale;
+		bound_box.row(d_b_ID) << Eigen::RowVector2d::Constant(profile.operation.BESS.self_consumption);
 		bound_box.row(ch_ev_ID) << 0., profile.operation.EV.BESS.capacity_scale;
 		bound_box.row(dc_ev_ID) << 0., profile.operation.EV.BESS.capacity_scale;
 		bound_box.row(s_ev_ID) << 0., profile.operation.EV.BESS.energy_scale;
+		bound_box.row(d_ev_ID) << Eigen::RowVector2d::Constant(profile.operation.EV.default_demand_profile(tock));
 		if(tock == 0){
-			//bound_box.row(d_b_ID) << profile.operation.BESS.soc, profile.operation.BESS.soc;
+			bound_box.row(d_b_ID) -= Eigen::RowVector2d::Constant(profile.operation.BESS.soc);
+			bound_box.row(d_ev_ID) -= Eigen::RowVector2d::Constant(profile.operation.EV.BESS.soc);
 		}
-		else{
-			bound_box.row(d_b_ID) << 0., 0.;
-			bound_box.row(d_ev_ID) << profile.operation.EV.default_demand_profile(tock), profile.operation.EV.default_demand_profile(tock);
+//		else{
+//			bound_box.row(d_b_ID) << 0., 0.;
+//		}
+
+		for(int tuck = 0; tuck < 2 * load_shift_time + 1; ++ tuck){
+			int tuck_ID = tock - load_shift_time + tuck;
+			if(tuck_ID >= -load_shift_time && tuck_ID < foresight_time){
+				int d_sa_ID = tock * variable_per_time + 14 + tuck_ID + load_shift_time;
+				bound_box.row(d_sa_ID) << 0., profile.operation.smart_appliance.unfulfilled_demand(tuck_ID + load_shift_time);
+			}
 		}
-
-
 	}
 }
 
