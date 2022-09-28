@@ -302,7 +302,7 @@ void power_market::International_Market_Output(market_inform &International_Mark
 }
 
 void power_market::International_Market_Price_Estimation(int tick, market_inform &International_Market, alglib::minlpstate &IMO_Problem, power_network::network_inform &Power_network_inform){
-	int foresight_time = agent::parameters::foresight_time();
+	int foresight_time = agent::aggregator::parameters::foresight_time();
 
 	// Initialization of forecast market clearing price
 	if(tick == 0){
@@ -320,7 +320,7 @@ void power_market::International_Market_Price_Estimation(int tick, market_inform
 
 std::vector <agent::sorted_vector> power_market::International_Market_Price_Sorted(int tick,  market_inform &International_Market){
 	std::vector <agent::sorted_vector> expected_price_sorted(International_Market.cross_border_zone_start);
-	int foresight_time = agent::parameters::foresight_time();
+	int foresight_time = agent::aggregator::parameters::foresight_time();
 
 	for(int zone_iter = 0; zone_iter < expected_price_sorted.size(); ++ zone_iter){
 		Eigen::VectorXd expected_price = (International_Market.confirmed_price.col(zone_iter)).segment(tick, foresight_time);

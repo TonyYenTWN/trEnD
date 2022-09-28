@@ -5,22 +5,16 @@
 #include "src/basic/eigen_sparse.h"
 
 namespace agent{
+	namespace aggregator{
+		namespace parameters{
+			static inline int foresight_time(){
+				int value = 24;
+				return value;
+			}
+		}
+	}
+
 	namespace parameters{
-		static inline int foresight_time(){
-			int value = 24;
-			return value;
-		}
-
-		static inline int load_shift_time(){
-			int value = 1;
-			return value;
-		}
-
-		static inline int sample_num(){
-			int value = 3;
-			return value;
-		}
-
 		static inline double residential_ratio(){
 			//double value = 1.;
 			double value = .4;
