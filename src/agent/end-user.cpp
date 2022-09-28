@@ -221,11 +221,42 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 	Eigen::MatrixXd bound_box(variable_num, 2);
 	for(int tock = 0; tock < foresight_time; ++ tock){
 		int row_start = tock * variable_per_time;
+		int U_d_ID = tock * variable_per_time;
+		int U_s_ID = tock * variable_per_time + 1;
+		int U_b_ID = tock * variable_per_time + 2;
+		int U_ev_ID = tock * variable_per_time + 3;
+		int U_sa_ID = tock * variable_per_time + 4;
+		int RL_ID = tock * variable_per_time + 5;
 		int ch_b_ID = tock * variable_per_time + 6;
 		int dc_b_ID = tock * variable_per_time + 7;
+		int d_b_ID = tock * variable_per_time + 8;
+		int s_b_ID = tock * variable_per_time + 9;
+		int ch_ev_ID = tock * variable_per_time + 10;
+		int dc_ev_ID = tock * variable_per_time + 11;
+		int d_ev_ID = tock * variable_per_time + 12;
+		int s_ev_ID = tock * variable_per_time + 13;
 
-		bound_box.col(0).segment(row_start, 6) = Eigen::VectorXd::Constant(6, -std::numeric_limits<double>::infinity());
-		bound_box.col(1).segment(row_start, 6) = Eigen::VectorXd::Constant(6, std::numeric_limits<double>::infinity());
+		bound_box.row(U_d_ID) << -std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity();
+		bound_box.row(U_s_ID) << -std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity();
+		bound_box.row(U_b_ID) << -std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity();
+		bound_box.row(U_ev_ID) << -std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity();
+		bound_box.row(U_sa_ID) << -std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity();
+		bound_box.row(RL_ID) << Eigen::RowVector2d::Constant(profile.operation.default_demand_profile(tock) - profile.operation.default_PV_profile(tock));
+		bound_box.row(ch_b_ID) << 0., profile.operation.BESS.capacity_scale;
+		bound_box.row(dc_b_ID) << 0., profile.operation.BESS.capacity_scale;
+		bound_box.row(s_b_ID) << 0., profile.operation.BESS.energy_scale;
+		bound_box.row(ch_ev_ID) << 0., profile.operation.EV.BESS.capacity_scale;
+		bound_box.row(dc_ev_ID) << 0., profile.operation.EV.BESS.capacity_scale;
+		bound_box.row(s_ev_ID) << 0., profile.operation.EV.BESS.energy_scale;
+		if(tock == 0){
+			//bound_box.row(d_b_ID) << profile.operation.BESS.soc, profile.operation.BESS.soc;
+		}
+		else{
+			bound_box.row(d_b_ID) << 0., 0.;
+			bound_box.row(d_ev_ID) << profile.operation.EV.default_demand_profile(tock), profile.operation.EV.default_demand_profile(tock);
+		}
+
+
 	}
 }
 

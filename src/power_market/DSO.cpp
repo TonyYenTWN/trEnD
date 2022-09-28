@@ -167,6 +167,7 @@ agent::end_user::profiles power_market::DSO_agents_set(market_inform &Internatio
 				end_user_profiles[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(tick) *= end_user_profiles[point_iter][sample_iter].investment.decision.smart_appliance * end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale;
 			}
 			end_user_profiles[point_iter][sample_iter].operation.default_demand_profile *= 1. - end_user_profiles[point_iter][sample_iter].investment.decision.smart_appliance * end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale;
+			end_user_profiles[point_iter][sample_iter].operation.default_PV_profile = Eigen::VectorXd::Zero(foresight_time);
 
 			// Set the LP problem
 			agent::end_user::end_user_LP_set(end_user_profiles[point_iter][sample_iter]);
