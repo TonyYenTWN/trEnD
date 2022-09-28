@@ -254,9 +254,6 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 			bound_box.row(d_b_ID) -= Eigen::RowVector2d::Constant(profile.operation.BESS.soc);
 			bound_box.row(d_ev_ID) -= Eigen::RowVector2d::Constant(profile.operation.EV.BESS.soc);
 		}
-//		else{
-//			bound_box.row(d_b_ID) << 0., 0.;
-//		}
 
 		for(int tuck = 0; tuck < 2 * load_shift_time + 1; ++ tuck){
 			int tuck_ID = tock - load_shift_time + tuck;
@@ -266,6 +263,13 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 			}
 		}
 	}
+
+	// Bounds of box constraints
+	alglib::real_1d_array lb_box;
+	alglib::real_1d_array ub_box;
+	lb_box.setcontent(bound_box.rows(), bound_box.col(0).data());
+	ub_box.setcontent(bound_box.rows(), bound_box.col(1).data());
+	alglib::minlpsetbc(profile.operation.Problem, lb_box, ub_box);
 }
 
 agent::sorted_vector agent::sort(Eigen::VectorXd original){
