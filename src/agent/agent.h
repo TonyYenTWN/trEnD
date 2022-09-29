@@ -23,6 +23,9 @@ namespace agent{
 	}
 
 	struct bids{
+		// Inflex: bids with dispatch priority
+		// Flex: bids that can be redispatched or provide control reserve
+
 		// Submitted bids into the IMO
 		Eigen::VectorXd submitted_supply_inflex;
 		Eigen::VectorXd submitted_demand_inflex;
