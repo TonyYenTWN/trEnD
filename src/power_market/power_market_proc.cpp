@@ -1,4 +1,5 @@
 // Source file for the main procedure of the power market clearing
+#include "src/agent/agent_func.h"
 #include "src/power_market/power_market.h"
 #include "src/spatial_field/spatial_field.h"
 
@@ -44,7 +45,8 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	International_Market_Price_Estimation(0, Power_market_inform.International_Market, Power_market_inform.IMO_Problem, Power_network_inform);
 
 	// Bidding strategies of end-users
-	DSO_agents_set(Power_market_inform, Power_network_inform);
+	//DSO_agents_set(Power_market_inform, Power_network_inform);
+	agent::agents_set(Power_market_inform, Power_network_inform);
 
 	// Initialization of submitted bids in DSOs, TSOs, and IMO
 //	Submitted_bid_calculation(0, Power_market_inform, Power_network_inform, DSO_filter_flag);

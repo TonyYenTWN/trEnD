@@ -167,6 +167,7 @@ namespace power_market{
 	struct agent_profiles{
 		agent::aggregator::profiles aggregators;
 		agent::end_user::profiles end_users;
+		agent::industrial::profiles industrial;
 	};
 
 	/**Information of the entire power market landscape.*/
@@ -244,7 +245,8 @@ namespace power_market{
 
 namespace power_market{
 	void DSO_Markets_Set(markets_inform&, power_network::network_inform&, int);
-	void DSO_agents_set(market_whole_inform&, power_network::network_inform&);
+//	void agents_set(power_market::market_whole_inform&, power_network::network_inform&);
+//	void DSO_agents_set(market_whole_inform&, power_network::network_inform&);
 	void DSO_agents_update(int, agent::end_user::profiles&, market_inform&, market_inform&, power_network::network_inform&);
 	void Source_Node_Set(market_inform&, power_network::DSO_cluster&);
 	void Sink_Node_Set(market_inform&, power_network::DSO_cluster&);
