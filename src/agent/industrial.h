@@ -11,7 +11,6 @@ namespace agent{
 
 		struct profile{
 			int point_ID;
-			int node_ID;
 			bids bids;
 		};
 
