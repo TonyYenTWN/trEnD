@@ -34,7 +34,9 @@
 		<Linker>
 			<Add option="-static-libgcc -fopenmp -s" />
 		</Linker>
-		<Unit filename="src/agent/agent.h" />
+		<Unit filename="src/agent/agent_basic.h" />
+		<Unit filename="src/agent/agent_func.cpp" />
+		<Unit filename="src/agent/agent_func.h" />
 		<Unit filename="src/agent/aggregator.h" />
 		<Unit filename="src/agent/end-user.cpp" />
 		<Unit filename="src/agent/end-user.h" />
