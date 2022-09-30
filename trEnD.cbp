@@ -41,6 +41,7 @@
 		<Unit filename="src/agent/end-user.cpp" />
 		<Unit filename="src/agent/end-user.h" />
 		<Unit filename="src/agent/industrial.h" />
+		<Unit filename="src/agent/power_supplier.h" />
 		<Unit filename="src/alglib/alglibinternal.cpp" />
 		<Unit filename="src/alglib/alglibinternal.h" />
 		<Unit filename="src/alglib/alglibmisc.cpp" />
