@@ -16,7 +16,7 @@ void power_market::Market_Initialization(market_inform &Market){
 // ------------------------------------------------------------------------------------------------
 void power_market::Submitted_bid_calculation(int tick, market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, bool DSO_filter_flag){
 	int point_num = Power_network_inform.points.bidding_zone.size();
-	int sample_num = Power_market_inform.end_user_profiles[0].size();
+	int sample_num = Power_market_inform.agent_profiles.end_users[0].size();
 
 	// Initialize submit bids of markets
 	Market_Initialization(Power_market_inform.International_Market);

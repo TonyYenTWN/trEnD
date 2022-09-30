@@ -28,10 +28,12 @@ namespace agent{
 			bool PV;
 			bool BESS;
 			bool EV_self_charging;
-			/** Whether the end-user can inject power flow back to grid; false when active_flex is false*/
+			/** Whether the end-user can inject power flow back to grid*/
 			bool reverse_flow;
-			/** Whether the end-user can provide flexibility to the aggregator; false when dynamic_tariff is false, or when end-user does not have PV + BESS, EV, or smart appliance*/
-			bool active_flex;
+			/** Whether the end-user can provide flexibility for redispatch; false when dynamic_tariff is false, or when end-user does not have PV + BESS, EV, or smart appliance*/
+			bool redispatch;
+			/** Whether the end-user can provide flexibility for control reserve; false when dynamic_tariff is false, or when end-user does not have PV + BESS, EV, or smart appliance*/
+			bool control_reserve;
 		};
 
 		/** @brief Information of smart appliance of an end-user.*/
@@ -185,10 +187,5 @@ namespace agent{
 		// Functions
 		void end_user_LP_set(profile&);
 		void end_user_LP_optimize(int tick, profile &profile);
-
-		void smart_appliance_schedule(sorted_vector, Eigen::VectorXd, smart_appliance_inform&);
-		alglib::minlpstate storage_schedule_LP_mold(int);
-		void storage_schedule_LP_optimize(int, sorted_vector, storage_inform&, bool fixed_end = 0);
-		void EV_schedule(int, sorted_vector, EV_inform&);
 	}
 }

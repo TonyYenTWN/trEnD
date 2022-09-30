@@ -5,15 +5,6 @@
 #include "src/basic/eigen_sparse.h"
 
 namespace agent{
-	namespace aggregator{
-		namespace parameters{
-			static inline int foresight_time(){
-				int value = 24;
-				return value;
-			}
-		}
-	}
-
 	namespace parameters{
 		static inline double residential_ratio(){
 			//double value = 1.;
@@ -33,28 +24,20 @@ namespace agent{
 		Eigen::VectorXd submitted_demand_flex;
 
 		// Equivalent bidding price when considering redispatch
-		Eigen::VectorXd redispatch_supply_inflex;
-		Eigen::VectorXd redispatch_demand_inflex;
-		Eigen::VectorXd redispatch_supply_flex;
-		Eigen::VectorXd redispatch_demand_flex;
+		Eigen::VectorXd redispatch_supply;
+		Eigen::VectorXd redispatch_demand;
 
-		// Filtered bids into redisatch of TSO
-		Eigen::VectorXd filtered_supply_inflex;
-		Eigen::VectorXd filtered_demand_inflex;
-		Eigen::VectorXd filtered_supply_flex;
-		Eigen::VectorXd filtered_demand_flex;
+		// Filtered bids into redisatch of TSO (for distributed resources)
+		Eigen::VectorXd filtered_supply;
+		Eigen::VectorXd filtered_demand;
 
 		// Confirmed bids after TSO redispatch
-		Eigen::VectorXd confirmed_supply_inflex;
-		Eigen::VectorXd confirmed_demand_inflex;
-		Eigen::VectorXd confirmed_supply_flex;
-		Eigen::VectorXd confirmed_demand_flex;
+		Eigen::VectorXd confirmed_supply;
+		Eigen::VectorXd confirmed_demand;
 
 		// Equivalent bidding price when control reserve is activated
-		Eigen::VectorXd actual_supply_inflex;
-		Eigen::VectorXd actual_demand_inflex;
-		Eigen::VectorXd actual_supply_flex;
-		Eigen::VectorXd actual_demand_flex;
+		Eigen::VectorXd actual_supply;
+		Eigen::VectorXd actual_demand;
 	};
 
 	struct sorted_vector{

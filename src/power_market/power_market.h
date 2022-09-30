@@ -4,6 +4,7 @@
 #ifndef MARKET_OBJECT
 #define MARKET_OBJECT
 
+#include "src/agent/aggregator.h"
 #include "src/agent/end-user.h"
 #include "src/agent/industrial.h"
 #include "src/alglib/optimization.h"
@@ -162,6 +163,12 @@ namespace power_market{
 	/**A vector of LP problems of power markets. This type is used in setting the LP for DSO markets.*/
 	typedef std::vector <alglib::minlpstate> Problems;
 
+	/**Information of agents*/
+	struct agent_profiles{
+		agent::aggregator::profiles aggregators;
+		agent::end_user::profiles end_users;
+	};
+
 	/**Information of the entire power market landscape.*/
 	struct market_whole_inform{
 		market_inform International_Market;
@@ -170,7 +177,7 @@ namespace power_market{
 		alglib::minlpstate TSO_Problem;
 		markets_inform DSO_Markets;
 		Problems DSO_Problems;
-		agent::end_user::profiles end_user_profiles;
+		agent_profiles agent_profiles;
 		Eigen::MatrixXd industrial_submitted_demand;
 	};
 }
@@ -237,7 +244,7 @@ namespace power_market{
 
 namespace power_market{
 	void DSO_Markets_Set(markets_inform&, power_network::network_inform&, int);
-	agent::end_user::profiles DSO_agents_set(market_inform&, power_network::network_inform&);
+	void DSO_agents_set(market_whole_inform&, power_network::network_inform&);
 	void DSO_agents_update(int, agent::end_user::profiles&, market_inform&, market_inform&, power_network::network_inform&);
 	void Source_Node_Set(market_inform&, power_network::DSO_cluster&);
 	void Sink_Node_Set(market_inform&, power_network::DSO_cluster&);
