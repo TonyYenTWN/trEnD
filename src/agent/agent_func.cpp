@@ -11,6 +11,12 @@ namespace{
 		bids.submitted_demand_flex = Eigen::VectorXd::Zero(price_interval + 2);
 		bids.redispatch_supply = Eigen::VectorXd::Zero(price_interval + 2);
 		bids.redispatch_demand = Eigen::VectorXd::Zero(price_interval + 2);
+		bids.filtered_supply = Eigen::VectorXd::Zero(price_interval + 2);
+		bids.filtered_demand = Eigen::VectorXd::Zero(price_interval + 2);
+		bids.accepted_supply = Eigen::VectorXd::Zero(price_interval + 2);
+		bids.accepted_demand = Eigen::VectorXd::Zero(price_interval + 2);
+		bids.balancing_supply = Eigen::VectorXd::Zero(price_interval + 2);
+		bids.balancing_demand = Eigen::VectorXd::Zero(price_interval + 2);
 	}
 
 	agent::aggregator::profiles aggregator_set(power_market::market_inform &International_Market, power_network::network_inform &Power_network_inform){
@@ -235,7 +241,7 @@ namespace{
 
 void agent::agents_set(power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
 	Power_market_inform.agent_profiles.aggregators = aggregator_set(Power_market_inform.International_Market, Power_network_inform);
-	//Power_market_inform.agent_profiles.end_users = end_user_set(Power_market_inform, Power_network_inform);
+	Power_market_inform.agent_profiles.end_users = end_user_set(Power_market_inform, Power_network_inform);
 	Power_market_inform.agent_profiles.industrial = industrial_set(Power_network_inform);
 	power_supplier_set(Power_market_inform, Power_network_inform);
 }

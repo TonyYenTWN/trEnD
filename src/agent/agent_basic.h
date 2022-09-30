@@ -32,10 +32,20 @@ namespace agent{
 		Eigen::VectorXd filtered_demand;
 
 		// Confirmed bids after TSO redispatch
+		Eigen::VectorXd accepted_supply;
+		Eigen::VectorXd accepted_demand;
+
+		// Equivalent bidding price when control reserve is activated
+		Eigen::VectorXd balancing_supply;
+		Eigen::VectorXd balancing_demand;
+	};
+
+	struct results{
+		// Confirmed schedule after TSO redispatch
 		Eigen::VectorXd confirmed_supply;
 		Eigen::VectorXd confirmed_demand;
 
-		// Equivalent bidding price when control reserve is activated
+		// Actual supply / demand profile after control reserve is activated
 		Eigen::VectorXd actual_supply;
 		Eigen::VectorXd actual_demand;
 	};
