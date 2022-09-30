@@ -1,6 +1,6 @@
 // Header file for operation and investment of end-user
 #pragma once
-#include "agent.h"
+#include "agent_basic.h"
 
 namespace agent{
 	namespace end_user{

@@ -1,6 +1,6 @@
 // Header file for operation and investment of industrial consumers
 #pragma once
-#include "agent.h"
+#include "agent_basic.h"
 
 namespace agent{
 	namespace industrial{
@@ -12,7 +12,7 @@ namespace agent{
 		struct profile{
 			int point_ID;
 			int node_ID;
-			Eigen::VectorXd submitted_demand;
+			bids bids;
 		};
 
 		struct profiles{

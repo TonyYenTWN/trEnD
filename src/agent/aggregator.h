@@ -1,6 +1,6 @@
 // Header file for aggregators
 #pragma once
-#include "agent.h"
+#include "agent_basic.h"
 
 namespace agent{
 	namespace aggregator{
