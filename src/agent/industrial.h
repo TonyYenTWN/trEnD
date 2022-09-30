@@ -8,5 +8,16 @@ namespace agent{
 			double value = .05;
 			return value;
 		}
+
+		struct profile{
+			int point_ID;
+			int node_ID;
+			Eigen::VectorXd submitted_demand;
+		};
+
+		struct profiles{
+			std::vector <profile> HV;
+			std::vector <profile> LV;
+		};
 	}
 }
