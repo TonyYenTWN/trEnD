@@ -137,6 +137,7 @@ void power_market::International_Market_Set(market_inform &International_Market,
 	International_Market.confirmed_supply = Eigen::MatrixXd::Zero(Time, International_Market.num_zone);
 	International_Market.confirmed_demand = Eigen::MatrixXd::Zero(Time, International_Market.num_zone);
 	International_Market.confirmed_price = Eigen::MatrixXd(Time, International_Market.num_zone);
+	International_Market.confirmed_price_ratio = Eigen::MatrixXd(Time, International_Market.num_zone);
 	International_Market.network.confirmed_power = Eigen::MatrixXd(Time, International_Market.network.num_edges);
 
 	// Update alglib object for optimization
@@ -233,32 +234,32 @@ void power_market::International_Market_Set(market_inform &International_Market,
 	alglib::minlpsetalgodss(IMO_Problem, 0.);
 }
 
-void power_market::International_Market_Optimization(int tick, market_inform &International_Market, alglib::minlpstate &IMO_Problem){
+void power_market::International_Market_Optimization(int tick, market_inform &Market, alglib::minlpstate &IMO_Problem){
 	// Update of submitted supply and demand bids at other nations
 	// Bidding zones of other nations: assume inflexible supply or demand
-	International_Market.submitted_supply.rightCols(International_Market.num_zone - International_Market.cross_border_zone_start) = International_Market.merit_order_curve.rightCols(International_Market.num_zone - International_Market.cross_border_zone_start);
-	for(int zone_ID = International_Market.cross_border_zone_start; zone_ID < International_Market.num_zone; ++ zone_ID){
-		if(International_Market.demand_default(tick, zone_ID) >= 0){
-			International_Market.submitted_demand(International_Market.price_intervals, zone_ID) += International_Market.demand_default(tick, zone_ID);
+	Market.submitted_supply.rightCols(Market.num_zone - Market.cross_border_zone_start) = Market.merit_order_curve.rightCols(Market.num_zone - Market.cross_border_zone_start);
+	for(int zone_ID = Market.cross_border_zone_start; zone_ID < Market.num_zone; ++ zone_ID){
+		if(Market.demand_default(tick, zone_ID) >= 0){
+			Market.submitted_demand(Market.price_intervals, zone_ID) += Market.demand_default(tick, zone_ID);
 		}
 		else{
-			International_Market.submitted_supply(0, zone_ID) += -International_Market.demand_default(tick, zone_ID);
+			Market.submitted_supply(0, zone_ID) += -Market.demand_default(tick, zone_ID);
 		}
 	}
 
 	// -------------------------------------------------------------------------------
 	// Update bounds for box constraints
 	// -------------------------------------------------------------------------------
-	int variable_num =  International_Market.network.num_edges + International_Market.network.num_vertice * (International_Market.price_intervals + 3);
+	int variable_num =  Market.network.num_edges + Market.network.num_vertice * (Market.price_intervals + 3);
 	Eigen::MatrixXd bound_box = Eigen::MatrixXd::Zero(variable_num, 2);
-	bound_box.col(0).head(International_Market.network.num_edges) = -International_Market.network.power_constraint.col(1);
-	bound_box.col(1).head(International_Market.network.num_edges) = International_Market.network.power_constraint.col(0);
-	bound_box.col(0).segment(International_Market.network.num_edges, International_Market.network.num_vertice) = Eigen::VectorXd::Constant(International_Market.network.num_vertice, -std::numeric_limits<double>::infinity());
-	bound_box.col(1).segment(International_Market.network.num_edges, International_Market.network.num_vertice) = Eigen::VectorXd::Constant(International_Market.network.num_vertice, std::numeric_limits<double>::infinity());
-	for(int node_iter = 0; node_iter < International_Market.network.num_vertice; ++ node_iter){
-		int row_start = International_Market.network.num_edges + International_Market.network.num_vertice + node_iter * (International_Market.price_intervals + 2);
-		bound_box.middleRows(row_start, International_Market.price_intervals + 2).col(0) = -International_Market.submitted_demand.col(node_iter);
-		bound_box.middleRows(row_start, International_Market.price_intervals + 2).col(1) = International_Market.submitted_supply.col(node_iter);
+	bound_box.col(0).head(Market.network.num_edges) = -Market.network.power_constraint.col(1);
+	bound_box.col(1).head(Market.network.num_edges) = Market.network.power_constraint.col(0);
+	bound_box.col(0).segment(Market.network.num_edges, Market.network.num_vertice) = Eigen::VectorXd::Constant(Market.network.num_vertice, -std::numeric_limits<double>::infinity());
+	bound_box.col(1).segment(Market.network.num_edges, Market.network.num_vertice) = Eigen::VectorXd::Constant(Market.network.num_vertice, std::numeric_limits<double>::infinity());
+	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
+		int row_start = Market.network.num_edges + Market.network.num_vertice + node_iter * (Market.price_intervals + 2);
+		bound_box.middleRows(row_start, Market.price_intervals + 2).col(0) = -Market.submitted_demand.col(node_iter);
+		bound_box.middleRows(row_start, Market.price_intervals + 2).col(1) = Market.submitted_supply.col(node_iter);
 	}
 
 	// Bounds of box constraints
@@ -276,24 +277,38 @@ void power_market::International_Market_Optimization(int tick, market_inform &In
 	alglib::minlpreport rep;
 	alglib::minlpresults(IMO_Problem, sol, rep);
 	Eigen::VectorXd sol_vec = Eigen::Map <Eigen::VectorXd> (sol.getcontent(), sol.length());
-//	std::cout << sol_vec.segment(International_Market.network.num_edges, International_Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(International_Market.network.num_edges, International_Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(International_Market.network.num_edges, International_Market.network.num_vertice).array().abs().sum() << "\n";
-//	std::cout << sol_vec.head(International_Market.network.num_edges).minCoeff() << " " << sol_vec.head(International_Market.network.num_edges).maxCoeff() << "\n\n";
+//	std::cout << sol_vec.segment(Market.network.num_edges, Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Market.network.num_edges, Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_edges, Market.network.num_vertice).array().abs().sum() << "\n";
+//	std::cout << sol_vec.head(Market.network.num_edges).minCoeff() << " " << sol_vec.head(Market.network.num_edges).maxCoeff() << "\n\n";
 
-	for(int node_iter = 0; node_iter < International_Market.network.num_vertice; ++ node_iter){
+	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
 		// Store power source / sink
-		int row_start = International_Market.network.num_edges + International_Market.network.num_vertice + node_iter * (International_Market.price_intervals + 2);
-		International_Market.confirmed_supply(tick, node_iter) = (sol_vec.segment(row_start, International_Market.price_intervals + 2).array().max(0)).sum();
-		International_Market.confirmed_demand(tick, node_iter) = -(sol_vec.segment(row_start, International_Market.price_intervals + 2).array().min(0)).sum();
+		int row_start = Market.network.num_edges + Market.network.num_vertice + node_iter * (Market.price_intervals + 2);
+		Market.confirmed_supply(tick, node_iter) = (sol_vec.segment(row_start, Market.price_intervals + 2).array().max(0)).sum();
+		Market.confirmed_demand(tick, node_iter) = -(sol_vec.segment(row_start, Market.price_intervals + 2).array().min(0)).sum();
 
 		// Store nodal prices
-		International_Market.confirmed_price(tick, node_iter) = International_Market.bidded_price(0) + rep.lagbc[row_start];
-		International_Market.confirmed_price(tick, node_iter) = std::min(International_Market.confirmed_price(tick, node_iter), International_Market.price_range_inflex(1));
-		International_Market.confirmed_price(tick, node_iter) = std::max(International_Market.confirmed_price(tick, node_iter), International_Market.price_range_inflex(0));
+		Market.confirmed_price(tick, node_iter) = Market.bidded_price(0) + rep.lagbc[row_start];
+		Market.confirmed_price(tick, node_iter) = std::min(Market.confirmed_price(tick, node_iter), Market.price_range_inflex(1));
+		Market.confirmed_price(tick, node_iter) = std::max(Market.confirmed_price(tick, node_iter), Market.price_range_inflex(0));
+
+		// Store ratio at nodes
+		for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter){
+			if(Market.bidded_price(price_iter) >= Market.confirmed_price(tick, node_iter) || price_iter == Market.price_intervals + 1){
+				Market.confirmed_price_ratio(tick, node_iter) = sol[row_start + price_iter];
+				if(sol[row_start + price_iter] >= 0.){
+					Market.confirmed_price_ratio(tick, node_iter) /= Market.submitted_supply(price_iter, node_iter);
+				}
+				else{
+					Market.confirmed_price_ratio(tick, node_iter) /= Market.submitted_demand(price_iter, node_iter);
+				}
+				break;
+			}
+		}
 	}
 
 	// Store cross-border transmission flow
-	International_Market.network.confirmed_power.row(tick) = sol_vec.head(International_Market.network.num_edges);
-//	std::cout << International_Market.network.confirmed_power.row(tick) << "\n\n";
+	Market.network.confirmed_power.row(tick) = sol_vec.head(Market.network.num_edges);
+//	std::cout << Market.network.confirmed_power.row(tick) << "\n\n";
 }
 
 void power_market::International_Market_Output(market_inform &International_Market){
