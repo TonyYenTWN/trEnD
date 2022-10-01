@@ -277,3 +277,7 @@ void agent::agents_set(power_market::market_whole_inform &Power_market_inform, p
 	Power_market_inform.agent_profiles.industrial = industrial_set(Power_network_inform);
 	Power_market_inform.agent_profiles.power_supplier = power_supplier_set(Power_market_inform, Power_network_inform);
 }
+
+void agent::agents_redispatch_update(power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
+	end_user_redispatch_update(Power_market_inform, Power_network_inform);
+}
