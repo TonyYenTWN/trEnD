@@ -19,6 +19,13 @@ namespace{
 		bids.balancing_demand = Eigen::VectorXd::Zero(price_interval + 2);
 	}
 
+	void agent_submitted_bids_scale(double scale, agent::bids &bids){
+		bids.submitted_supply_inflex *= scale;
+		bids.submitted_demand_inflex *= scale;
+		bids.submitted_supply_flex *= scale;
+		bids.submitted_demand_flex *= scale;
+	}
+
 	agent::aggregator::profiles aggregator_set(power_market::market_inform &International_Market, power_network::network_inform &Power_network_inform){
 		int foresight_time = agent::aggregator::parameters::foresight_time();
 		int point_num = Power_network_inform.points.bidding_zone.size();
@@ -68,6 +75,7 @@ namespace{
 
 				// Initialization of operational parameters
 				end_user_profiles[point_iter][sample_iter].operation.foresight_time = foresight_time;
+				end_user_profiles[point_iter][sample_iter].operation.weight = weight(sample_iter);
 				int load_shift_time_temp = std::min(load_shift_time, foresight_time / 2);
 				end_user_profiles[point_iter][sample_iter].operation.smart_appliance.shift_time = load_shift_time_temp;
 				end_user_profiles[point_iter][sample_iter].operation.BESS.soc = end_user_profiles[point_iter][sample_iter].operation.BESS.energy_scale / 2;
@@ -99,6 +107,12 @@ namespace{
 
 				// Optimization and update process variables
 				agent::end_user::end_user_LP_optimize(0, end_user_profiles[point_iter][sample_iter]);
+
+				// Scale the bids correctly
+				double scale = end_user_profiles[point_iter][sample_iter].operation.weight;
+				scale *= agent::parameters::residential_ratio();
+				scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
+				agent_submitted_bids_scale(scale, end_user_profiles[point_iter][sample_iter].operation.bids);
 			}
 		}
 
