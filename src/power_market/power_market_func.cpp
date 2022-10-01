@@ -82,7 +82,6 @@ void power_market::Submitted_bid_calculation(int tick, market_whole_inform &Powe
 		int bz_ID = Power_network_inform.points.bidding_zone(point_ID);
 		Power_market_inform.International_Market.submitted_supply.col(bz_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.submitted_supply_flex;
 	}
-	std::cout << Power_market_inform.International_Market.submitted_demand.leftCols(5).sum() << "\t" << Power_market_inform.International_Market.submitted_supply.leftCols(5).sum();
 
 //	// Demand at each point (residential) / node (industrial)
 //	// Trivial case: residential demand at each point is 100% inflexible; 5% of industrial demand is flexible

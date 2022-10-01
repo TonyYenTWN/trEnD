@@ -53,7 +53,7 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 
 	// Ideal market clearing in IMO
 	International_Market_Optimization(0, Power_market_inform.International_Market, Power_market_inform.IMO_Problem);
-//
+
 //	// Set cross-border transmission as boundary conditions of TSO
 //	TSO_boundary_update(0, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform);
 //
