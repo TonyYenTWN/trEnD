@@ -147,9 +147,9 @@ namespace{
 		power_supplier_profiles.hydro.HV_plant.reserve(hydro_num);
 		power_supplier_profiles.hydro.LV_hybrid.reserve(hydro_num);
 		power_supplier_profiles.hydro.LV_plant.reserve(hydro_num);
-		for(int hydro_iter = 0; hydro_iter < hydro_num; ++ hydro_iter){
-			int x_ID = int((Power_network_inform.plants.hydro.x(hydro_iter) - Power_network_inform.points.x.minCoeff()) / Power_network_inform.points.grid_length + .5);
-			int y_ID = int((Power_network_inform.plants.hydro.y(hydro_iter) - Power_network_inform.points.y.minCoeff()) / Power_network_inform.points.grid_length + .5);
+		for(int agent_iter = 0; agent_iter < hydro_num; ++ agent_iter){
+			int x_ID = int((Power_network_inform.plants.hydro.x(agent_iter) - Power_network_inform.points.x.minCoeff()) / Power_network_inform.points.grid_length + .5);
+			int y_ID = int((Power_network_inform.plants.hydro.y(agent_iter) - Power_network_inform.points.y.minCoeff()) / Power_network_inform.points.grid_length + .5);
 			int point_ID = Power_network_inform.points.coordinate_grid(x_ID, y_ID);
 			if(point_ID == -1){
 				continue;
@@ -157,45 +157,45 @@ namespace{
 			int node_ID = Power_network_inform.points.node(point_ID);
 			int bz_ID = Power_network_inform.nodes.bidding_zone(node_ID);
 			Eigen::VectorXd bid_vec = Power_market_inform.International_Market.merit_order_curve.col(bz_ID);
-			bid_vec *= Power_network_inform.plants.hydro.cap(hydro_iter);
+			bid_vec *= Power_network_inform.plants.hydro.cap(agent_iter);
 			bid_vec /= (Power_market_inform.International_Market.merit_order_curve.col(bz_ID).sum());
 
-			if(Power_network_inform.plants.hydro.type(hydro_iter) < 4){
-				agent::power_supplier::plant_profile plant_temp;
-				plant_temp.point_ID = point_ID;
-				plant_temp.cap = Power_network_inform.plants.hydro.cap(hydro_iter);
+			if(Power_network_inform.plants.hydro.type(agent_iter) < 4){
+				agent::power_supplier::plant_profile profile_temp;
+				profile_temp.point_ID = point_ID;
+				profile_temp.cap = Power_network_inform.plants.hydro.cap(agent_iter);
 
 				// Set bids information
-				agent_bids_initialization(plant_temp.bids);
-				plant_temp.bids.submitted_supply_flex = bid_vec;
-				plant_temp.bids.redispatch_supply = bid_vec;
+				agent_bids_initialization(profile_temp.bids);
+				profile_temp.bids.submitted_supply_flex = bid_vec;
+				profile_temp.bids.redispatch_supply = bid_vec;
 
 				// High voltage power plants connect directly to transmission network
-				if(plant_temp.cap >= cutoff_power){
-					power_supplier_profiles.hydro.HV_plant.push_back(plant_temp);
+				if(profile_temp.cap >= cutoff_power){
+					power_supplier_profiles.hydro.HV_plant.push_back(profile_temp);
 				}
 				// Low voltage power plants feed into distribution network
 				else{
-					power_supplier_profiles.hydro.LV_plant.push_back(plant_temp);
+					power_supplier_profiles.hydro.LV_plant.push_back(profile_temp);
 				}
 			}
-			else if(Power_network_inform.plants.hydro.type(hydro_iter) == 5){
-				agent::power_supplier::storage_profile storage_temp;
-				storage_temp.point_ID = point_ID;
-				storage_temp.cap = Power_network_inform.plants.hydro.cap(hydro_iter);
+			else if(Power_network_inform.plants.hydro.type(agent_iter) == 5){
+				agent::power_supplier::storage_profile profile_temp;
+				profile_temp.point_ID = point_ID;
+				profile_temp.cap = Power_network_inform.plants.hydro.cap(agent_iter);
 
 				// Set bids information
-				agent_bids_initialization(storage_temp.bids);
-				storage_temp.bids.submitted_supply_flex = bid_vec;
-				storage_temp.bids.redispatch_supply = bid_vec;
+				agent_bids_initialization(profile_temp.bids);
+				profile_temp.bids.submitted_supply_flex = bid_vec;
+				profile_temp.bids.redispatch_supply = bid_vec;
 
 				// High voltage power plants connect directly to transmission network
-				if(storage_temp.cap >= cutoff_power){
-					power_supplier_profiles.pump_storage.HV.push_back(storage_temp);
+				if(profile_temp.cap >= cutoff_power){
+					power_supplier_profiles.pump_storage.HV.push_back(profile_temp);
 				}
 				// Low voltage power plants feed into distribution network
 				else{
-					power_supplier_profiles.pump_storage.LV.push_back(storage_temp);
+					power_supplier_profiles.pump_storage.LV.push_back(profile_temp);
 				}
 			}
 		}
@@ -204,9 +204,9 @@ namespace{
 		power_supplier_profiles.wind.HV_plant.reserve(wind_num);
 		power_supplier_profiles.wind.LV_hybrid.reserve(wind_num);
 		power_supplier_profiles.wind.LV_plant.reserve(wind_num);
-		for(int wind_iter = 0; wind_iter < wind_num; ++ wind_iter){
-			int x_ID = int((Power_network_inform.plants.wind.x(wind_iter) - Power_network_inform.points.x.minCoeff()) / Power_network_inform.points.grid_length + .5);
-			int y_ID = int((Power_network_inform.plants.wind.y(wind_iter) - Power_network_inform.points.y.minCoeff()) / Power_network_inform.points.grid_length + .5);
+		for(int agent_iter = 0; agent_iter < wind_num; ++ agent_iter){
+			int x_ID = int((Power_network_inform.plants.wind.x(agent_iter) - Power_network_inform.points.x.minCoeff()) / Power_network_inform.points.grid_length + .5);
+			int y_ID = int((Power_network_inform.plants.wind.y(agent_iter) - Power_network_inform.points.y.minCoeff()) / Power_network_inform.points.grid_length + .5);
 			int point_ID = Power_network_inform.points.coordinate_grid(x_ID, y_ID);
 			if(point_ID == -1){
 				continue;
@@ -214,24 +214,24 @@ namespace{
 			int node_ID = Power_network_inform.points.node(point_ID);
 			int bz_ID = Power_network_inform.nodes.bidding_zone(node_ID);
 			int price_supply_flex_ID = 0;
-			double bid_quan = Power_network_inform.points.wind_on_cf(point_ID, 0) * Power_network_inform.plants.wind.cap(wind_iter);
+			double bid_quan = Power_network_inform.points.wind_on_cf(point_ID, 0) * Power_network_inform.plants.wind.cap(agent_iter);
 
-			agent::power_supplier::plant_profile plant_temp;
-			plant_temp.point_ID = point_ID;
-			plant_temp.cap = Power_network_inform.plants.wind.cap(wind_iter);
+			agent::power_supplier::plant_profile profile_temp;
+			profile_temp.point_ID = point_ID;
+			profile_temp.cap = Power_network_inform.plants.wind.cap(agent_iter);
 
 			// Set bids information
-			agent_bids_initialization(plant_temp.bids);
-			plant_temp.bids.submitted_supply_flex(price_supply_flex_ID) = bid_quan;
-			plant_temp.bids.redispatch_supply = plant_temp.bids.submitted_supply_flex;
+			agent_bids_initialization(profile_temp.bids);
+			profile_temp.bids.submitted_supply_flex(price_supply_flex_ID) = bid_quan;
+			profile_temp.bids.redispatch_supply = profile_temp.bids.submitted_supply_flex;
 
 			// High voltage power plants connect directly to transmission network
-			if(plant_temp.cap >= cutoff_power){
-				power_supplier_profiles.hydro.HV_plant.push_back(plant_temp);
+			if(profile_temp.cap >= cutoff_power){
+				power_supplier_profiles.hydro.HV_plant.push_back(profile_temp);
 			}
 			// Low voltage power plants feed into distribution network
 			else{
-				power_supplier_profiles.hydro.LV_plant.push_back(plant_temp);
+				power_supplier_profiles.hydro.LV_plant.push_back(profile_temp);
 			}
 		}
 
@@ -243,5 +243,5 @@ void agent::agents_set(power_market::market_whole_inform &Power_market_inform, p
 	Power_market_inform.agent_profiles.aggregators = aggregator_set(Power_market_inform.International_Market, Power_network_inform);
 	Power_market_inform.agent_profiles.end_users = end_user_set(Power_market_inform, Power_network_inform);
 	Power_market_inform.agent_profiles.industrial = industrial_set(Power_network_inform);
-	power_supplier_set(Power_market_inform, Power_network_inform);
+	Power_market_inform.agent_profiles.power_supplier = power_supplier_set(Power_market_inform, Power_network_inform);
 }
