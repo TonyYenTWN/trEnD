@@ -60,8 +60,6 @@ namespace{
 		Eigen::VectorXd weight(sample_num);
 		weight = Eigen::VectorXd::Constant(sample_num, 1. / sample_num);
 		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
-			int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
-
 			for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
 				// Initialization of investment parameters
 				end_user_profiles[point_iter][sample_iter].investment.decision.dynamic_tariff = 1;
@@ -250,6 +248,26 @@ namespace{
 		}
 
 		return power_supplier_profiles;
+	}
+
+	void end_user_redispatch_update(power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
+		int point_num = Power_network_inform.points.bidding_zone.size();
+		int sample_num = agent::end_user::parameters::sample_num();
+		int price_interval = power_market::parameters::price_interval();
+
+		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
+			for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
+				if(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.redispatch == 1){
+					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex;
+					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_flex;
+					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_inflex;
+					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_flex;
+				}
+				else{
+
+				}
+			}
+		}
 	}
 }
 
