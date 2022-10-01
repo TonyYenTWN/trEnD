@@ -186,6 +186,6 @@ namespace agent{
 
 		// Functions
 		void end_user_LP_set(profile&);
-		void end_user_LP_optimize(int tick, profile &profile);
+		void end_user_LP_optimize(int tick, profile&);
 	}
 }
