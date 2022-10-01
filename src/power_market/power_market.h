@@ -181,7 +181,7 @@ namespace power_market{
 		markets_inform DSO_Markets;
 		Problems DSO_Problems;
 		agent_profiles agent_profiles;
-		Eigen::MatrixXd industrial_submitted_demand;
+		//Eigen::MatrixXd industrial_submitted_demand;
 	};
 }
 
