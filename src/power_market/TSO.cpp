@@ -144,7 +144,7 @@ void power_market::TSO_Market_control_reserve(int tick, market_whole_inform &Pow
 			}
 
 			// Imbalance due to industrial demand
-			imbalance_demand_temp(price_iter) += Power_market_inform.industrial_submitted_demand(price_iter, point_iter);
+			//imbalance_demand_temp(price_iter) += Power_market_inform.industrial_submitted_demand(price_iter, point_iter);
 
 			if(Power_market_inform.TSO_Market.bidded_price(price_iter) >= Power_market_inform.TSO_Market.confirmed_price(tick, node_ID) || price_iter == Power_market_inform.TSO_Market.price_intervals + 1){
 				if(Power_market_inform.TSO_Market.confirmed_price_ratio(tick, node_ID) < 0.){
