@@ -240,11 +240,15 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 		bound_box.row(U_sa_ID) << -std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity();
 		bound_box.row(RL_ID) << Eigen::RowVector2d::Constant(profile.operation.default_demand_profile(tock) - profile.operation.default_PV_profile(tock));
 		bound_box.row(ch_b_ID) << 0., profile.operation.BESS.capacity_scale;
+		bound_box.row(ch_b_ID) *= profile.investment.decision.BESS;
 		bound_box.row(dc_b_ID) << 0., profile.operation.BESS.capacity_scale;
+		bound_box.row(dc_b_ID) *= profile.investment.decision.BESS;
 		bound_box.row(s_b_ID) << 0., profile.operation.BESS.energy_scale;
 		bound_box.row(d_b_ID) << Eigen::RowVector2d::Constant(profile.operation.BESS.self_consumption);
 		bound_box.row(ch_ev_ID) << 0., profile.operation.EV.BESS.capacity_scale;
+		bound_box.row(ch_ev_ID) *= profile.investment.decision.EV_self_charging;
 		bound_box.row(dc_ev_ID) << 0., profile.operation.EV.BESS.capacity_scale;
+		bound_box.row(dc_ev_ID) *= profile.investment.decision.EV_self_charging;
 		bound_box.row(s_ev_ID) << 0., profile.operation.EV.BESS.energy_scale;
 		bound_box.row(d_ev_ID) << Eigen::RowVector2d::Constant(profile.operation.EV.default_demand_profile(tock));
 		if(tock == 0){
