@@ -250,21 +250,46 @@ namespace{
 		return power_supplier_profiles;
 	}
 
-	void end_user_redispatch_update(power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
+	void end_user_redispatch_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
 		int point_num = Power_network_inform.points.bidding_zone.size();
 		int sample_num = agent::end_user::parameters::sample_num();
 		int price_interval = power_market::parameters::price_interval();
+		auto price_map = power_market::parameters::price_ID_bimap();
 
 		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
+			int bz_ID = Power_network_inform.nodes.bidding_zone(point_iter);
 			for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
+				int marginal_price_ID = price_map.price_ID[Power_market_inform.International_Market.confirmed_price(tick, bz_ID)];
+				if(marginal_price_ID > 0){
+					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand(0) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex.head(marginal_price_ID).sum();
+					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply(0) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_inflex.head(marginal_price_ID).sum();
+				}
+				if(marginal_price_ID < price_interval + 1){
+					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand(price_interval + 1) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex.tail(price_interval + 1 - marginal_price_ID).sum();
+					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply(price_interval + 1) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_inflex.tail(price_interval + 1 - marginal_price_ID).sum();
+				}
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand(0) += (1. - Power_market_inform.International_Market.confirmed_ratio_demand(bz_ID)) * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex(marginal_price_ID);
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply(0) += Power_market_inform.International_Market.confirmed_ratio_supply(bz_ID) * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_inflex(marginal_price_ID);
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply(price_interval + 1) += Power_market_inform.International_Market.confirmed_ratio_demand(bz_ID) * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex(marginal_price_ID);
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply(price_interval + 1) += (1. - Power_market_inform.International_Market.confirmed_ratio_supply(bz_ID)) * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_inflex(marginal_price_ID);
+
 				if(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.redispatch == 1){
-					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex;
 					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_flex;
-					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_inflex;
 					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_flex;
 				}
 				else{
-
+					if(marginal_price_ID > 0){
+						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand(0) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_flex.head(marginal_price_ID).sum();
+						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply(0) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_flex.head(marginal_price_ID).sum();
+					}
+					if(marginal_price_ID < price_interval + 1){
+						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand(price_interval + 1) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_flex.tail(price_interval + 1 - marginal_price_ID).sum();
+						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply(price_interval + 1) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_flex.tail(price_interval + 1 - marginal_price_ID).sum();
+					}
+					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand(0) += (1. - Power_market_inform.International_Market.confirmed_ratio_demand(bz_ID)) * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_flex(marginal_price_ID);
+					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply(0) += Power_market_inform.International_Market.confirmed_ratio_supply(bz_ID) * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_flex(marginal_price_ID);
+					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply(price_interval + 1) += Power_market_inform.International_Market.confirmed_ratio_demand(bz_ID) * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_flex(marginal_price_ID);
+					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply(price_interval + 1) += (1. - Power_market_inform.International_Market.confirmed_ratio_supply(bz_ID)) * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_flex(marginal_price_ID);
 				}
 			}
 		}
@@ -278,6 +303,6 @@ void agent::agents_set(power_market::market_whole_inform &Power_market_inform, p
 	Power_market_inform.agent_profiles.power_supplier = power_supplier_set(Power_market_inform, Power_network_inform);
 }
 
-void agent::agents_redispatch_update(power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
-	end_user_redispatch_update(Power_market_inform, Power_network_inform);
+void agent::agents_redispatch_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
+	end_user_redispatch_update(tick, Power_market_inform, Power_network_inform);
 }
