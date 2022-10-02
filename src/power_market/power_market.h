@@ -15,6 +15,11 @@
 
 namespace power_market{
 	namespace parameters{
+		struct price_ID_bimap{
+			Eigen::VectorXd bidded_price;
+			std::map <double, int> price_ID;
+		};
+
 		static inline int Time(){
 			int value = 8760;
 			return value;
@@ -23,6 +28,30 @@ namespace power_market{
 		static inline int price_interval(){
 			int value = 600;
 			return value;
+		}
+
+		static inline price_ID_bimap bidded_price(){
+			int price_intervals = parameters::price_interval();
+			// Range of lowest and highest possible bidding prices.
+			Eigen::Vector2d price_range_inflex = Eigen::Vector2d(-500., 3000.);
+			// Range of bidding prices for flexible supply and demand in the model.
+			Eigen::Vector2d price_range_flex = Eigen::Vector2d(-100., 500.);
+
+			Eigen::VectorXd bidded_price = Eigen::VectorXd(price_intervals + 2);
+			bidded_price(0) = price_range_inflex(0);
+			bidded_price.array().tail(1) = price_range_inflex(1);
+			bidded_price.segment(1, price_intervals) = Eigen::VectorXd::LinSpaced(price_intervals, price_range_flex(0) + .5 * (price_range_flex(1) - price_range_flex(0)) / price_intervals, price_range_flex(1) - .5 * (price_range_flex(1) - price_range_flex(0)) / price_intervals);
+
+			std::map <double, int> price_ID;
+			for(int price_iter = 0; price_iter < bidded_price.size(); ++ price_iter){
+				price_ID.insert(std::pair <double, int> (bidded_price(price_iter), price_iter));
+			}
+
+			price_ID_bimap obj;
+			obj.bidded_price = bidded_price;
+			obj.price_ID = price_ID;
+
+			return obj;
 		}
 	}
 
@@ -132,6 +161,10 @@ namespace power_market{
 		* -1: 100% demand; 1: 100% supply.
 		*/
 		Eigen::MatrixXd confirmed_price_ratio;
+		/**Ratio of supply confirmed at marginal price.*/
+		Eigen::VectorXd confirmed_ratio_supply;
+		/**Ratio of demand confirmed at marginal price.*/
+		Eigen::VectorXd confirmed_ratio_demand;
 		/**Actual supply quantity (after real time control reserve activation) of the market.*/
 		Eigen::MatrixXd actual_supply;
 		/**Actual demand quantity (after real time control reserve activation) of the market.*/
