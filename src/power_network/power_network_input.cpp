@@ -179,9 +179,6 @@ namespace {
 		Power_network_inform.plants.wind.y = wind_inform.col(wind_inform.cols() - 3);
 		Power_network_inform.plants.wind.lon = wind_inform.col(wind_inform.cols() - 2);
 		Power_network_inform.plants.wind.lat = wind_inform.col(wind_inform.cols() - 1);
-
-		//std::cout << Power_network_inform.plants.wind.node.tail(10).transpose() << "\n";
-		//std::cout << Power_network_inform.plants.wind.lat.tail(10).transpose() << "\n";
 	}
 }
 
