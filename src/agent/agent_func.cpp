@@ -2,6 +2,15 @@
 #include "agent_func.h"
 
 namespace{
+	void agent_results_set(agent::results &results){
+		int Time = power_market::parameters::Time();
+
+		results.confirmed_supply = Eigen::VectorXd(Time);
+		results.confirmed_demand = Eigen::VectorXd(Time);
+		results.actual_supply = Eigen::VectorXd(Time);
+		results.actual_demand = Eigen::VectorXd(Time);
+	}
+
 	void agent_bids_initialization(agent::bids &bids){
 		int price_interval = power_market::parameters::price_interval();
 
@@ -100,8 +109,9 @@ namespace{
 				// Set the LP problem
 				agent::end_user::end_user_LP_set(end_user_profiles[point_iter][sample_iter]);
 
-				// Set bids information
+				// Set bids and results information
 				agent_bids_initialization(end_user_profiles[point_iter][sample_iter].operation.bids);
+				//agent_results_set(end_user_profiles[point_iter][sample_iter].operation.results);
 
 				// Optimization and update process variables
 				agent::end_user::end_user_LP_optimize(0, end_user_profiles[point_iter][sample_iter]);
@@ -138,6 +148,7 @@ namespace{
 
 			// Set bids information
 			agent_bids_initialization(profile_temp.bids);
+			//agent_results_set(profile_temp.results);
 			profile_temp.bids.submitted_demand_flex(price_interval + 1) = bid_inflex_industrial;
 			profile_temp.bids.submitted_demand_flex.segment(1, price_interval) = Eigen::VectorXd::Constant(price_interval, bid_flex_industrial);
 			profile_temp.bids.redispatch_demand = profile_temp.bids.submitted_demand_flex;
@@ -181,6 +192,7 @@ namespace{
 
 				// Set bids information
 				agent_bids_initialization(profile_temp.bids);
+				//agent_results_set(profile_temp.results);
 				profile_temp.bids.submitted_supply_flex = bid_vec;
 				profile_temp.bids.redispatch_supply = bid_vec;
 
@@ -200,6 +212,7 @@ namespace{
 
 				// Set bids information
 				agent_bids_initialization(profile_temp.bids);
+				//agent_results_set(profile_temp.results);
 				profile_temp.bids.submitted_supply_flex = bid_vec;
 				profile_temp.bids.redispatch_supply = bid_vec;
 
@@ -236,6 +249,7 @@ namespace{
 
 			// Set bids information
 			agent_bids_initialization(profile_temp.bids);
+			//agent_results_set(profile_temp.results);
 			profile_temp.bids.submitted_supply_flex(price_supply_flex_ID) = bid_quan;
 			profile_temp.bids.redispatch_supply = profile_temp.bids.submitted_supply_flex;
 
