@@ -4,6 +4,27 @@
 // ------------------------------------------------------------------------------------------------
 // Generic functions for all market types
 // ------------------------------------------------------------------------------------------------
+void power_market::parameters::bidded_price(price_ID_bimap &obj){
+	int price_intervals = price_interval();
+	// Range of lowest and highest possible bidding prices.
+	Eigen::Vector2d price_range_inflex = Eigen::Vector2d(-500., 3000.);
+	// Range of bidding prices for flexible supply and demand in the model.
+	Eigen::Vector2d price_range_flex = Eigen::Vector2d(-100., 500.);
+
+	Eigen::VectorXd bidded_price = Eigen::VectorXd(price_intervals + 2);
+	bidded_price(0) = price_range_inflex(0);
+	bidded_price.array().tail(1) = price_range_inflex(1);
+	bidded_price.segment(1, price_intervals) = Eigen::VectorXd::LinSpaced(price_intervals, price_range_flex(0) + .5 * (price_range_flex(1) - price_range_flex(0)) / price_intervals, price_range_flex(1) - .5 * (price_range_flex(1) - price_range_flex(0)) / price_intervals);
+
+	std::map <double, int> price_ID;
+	for(int price_iter = 0; price_iter < bidded_price.size(); ++ price_iter){
+		price_ID.insert(std::pair <double, int> (bidded_price(price_iter), price_iter));
+	}
+
+	obj.bidded_price = bidded_price;
+	obj.price_ID = price_ID;
+}
+
 void power_market::Market_Initialization(market_inform &Market){
 	// Initialization of process variables
 	// Should re-initialize for every time slice
@@ -14,7 +35,7 @@ void power_market::Market_Initialization(market_inform &Market){
 // ------------------------------------------------------------------------------------------------
 // Functions involving multiple markets
 // ------------------------------------------------------------------------------------------------
-void power_market::Submitted_bid_calculation(int tick, market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, bool DSO_filter_flag){
+void power_market::Submitted_bid_calculation(market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
 	int price_interval = power_market::parameters::price_interval();
 
 	// Initialize submit bids of markets
@@ -25,7 +46,6 @@ void power_market::Submitted_bid_calculation(int tick, market_whole_inform &Powe
 //		Power_market_inform.DSO_Markets[DSO_iter].filtered_supply = Power_market_inform.DSO_Markets[DSO_iter].submitted_supply;
 //		Power_market_inform.DSO_Markets[DSO_iter].filtered_demand = Power_market_inform.DSO_Markets[DSO_iter].submitted_demand;
 //	}
-//	Power_market_inform.industrial_submitted_demand = Eigen::MatrixXd::Zero(price_interval+ 2, point_num);
 
 	// Demand at each point (residential) / node (industrial)
 	int point_num = Power_network_inform.points.bidding_zone.size();
@@ -75,12 +95,14 @@ void power_market::Submitted_bid_calculation(int tick, market_whole_inform &Powe
 		int point_ID = Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].point_ID;
 		int bz_ID = Power_network_inform.points.bidding_zone(point_ID);
 		Power_market_inform.International_Market.submitted_supply.col(bz_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].bids.submitted_supply_flex;
+		Power_market_inform.International_Market.submitted_demand.col(bz_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].bids.submitted_demand_flex;
 	}
 	int pump_LV_num = Power_market_inform.agent_profiles.power_supplier.pump_storage.LV.size();
 	for(int agent_iter = 0; agent_iter < pump_LV_num; ++ agent_iter){
 		int point_ID = Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].point_ID;
 		int bz_ID = Power_network_inform.points.bidding_zone(point_ID);
 		Power_market_inform.International_Market.submitted_supply.col(bz_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.submitted_supply_flex;
+		Power_market_inform.International_Market.submitted_demand.col(bz_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.submitted_demand_flex;
 	}
 
 //	// Demand at each point (residential) / node (industrial)
@@ -389,12 +411,6 @@ void power_market::Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlp
 	lb_general.setcontent(bound_general.rows(), bound_general.col(0).data());
 	ub_general.setcontent(bound_general.rows(), bound_general.col(1).data());
 
-	// Bounds of box constraints
-//	alglib::real_1d_array lb_box;
-//	alglib::real_1d_array ub_box;
-//	lb_box.setcontent(bound_box.rows(), bound_box.col(0).data());
-//	ub_box.setcontent(bound_box.rows(), bound_box.col(1).data());
-
 	// -------------------------------------------------------------------------------
 	// Set scale of variables
 	// -------------------------------------------------------------------------------
@@ -420,10 +436,8 @@ void power_market::Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlp
 	// -------------------------------------------------------------------------------
 	alglib::minlpcreate(variable_num, Problem);
 	alglib::minlpsetcost(Problem, obj_coeff);
-//	alglib::minlpsetbc(Problem, lb_box, ub_box);
 	alglib::minlpsetlc2(Problem, constraint_general, lb_general, ub_general, constrant_num);
 	alglib::minlpsetscale(Problem, scale);
-	//alglib::minlpsetalgoipm(Problem);
 	alglib::minlpsetalgodss(Problem, 0.);
 }
 
