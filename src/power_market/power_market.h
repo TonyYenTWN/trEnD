@@ -30,29 +30,7 @@ namespace power_market{
 			return value;
 		}
 
-		static inline price_ID_bimap bidded_price(){
-			int price_intervals = parameters::price_interval();
-			// Range of lowest and highest possible bidding prices.
-			Eigen::Vector2d price_range_inflex = Eigen::Vector2d(-500., 3000.);
-			// Range of bidding prices for flexible supply and demand in the model.
-			Eigen::Vector2d price_range_flex = Eigen::Vector2d(-100., 500.);
-
-			Eigen::VectorXd bidded_price = Eigen::VectorXd(price_intervals + 2);
-			bidded_price(0) = price_range_inflex(0);
-			bidded_price.array().tail(1) = price_range_inflex(1);
-			bidded_price.segment(1, price_intervals) = Eigen::VectorXd::LinSpaced(price_intervals, price_range_flex(0) + .5 * (price_range_flex(1) - price_range_flex(0)) / price_intervals, price_range_flex(1) - .5 * (price_range_flex(1) - price_range_flex(0)) / price_intervals);
-
-			std::map <double, int> price_ID;
-			for(int price_iter = 0; price_iter < bidded_price.size(); ++ price_iter){
-				price_ID.insert(std::pair <double, int> (bidded_price(price_iter), price_iter));
-			}
-
-			price_ID_bimap obj;
-			obj.bidded_price = bidded_price;
-			obj.price_ID = price_ID;
-
-			return obj;
-		}
+		void bidded_price(price_ID_bimap&);
 	}
 
 	// Power market objects
@@ -226,7 +204,7 @@ namespace power_market{
 
 namespace power_market{
 	void Market_Initialization(market_inform&);
-	void Submitted_bid_calculation(int, market_whole_inform&, power_network::network_inform&, bool);
+	void Submitted_bid_calculation(market_whole_inform&, power_network::network_inform&);
 	void TSO_boundary_update(int, market_inform&, market_inform&, power_network::network_inform&);
 	void Flow_Based_Market_LP_Set(market_inform&, alglib::minlpstate&);
 	void Flow_Based_Market_Optimization(market_inform&, alglib::minlpstate&);
@@ -268,6 +246,7 @@ namespace power_market{
 
 namespace power_market{
 	void TSO_Market_Set(market_inform&, power_network::network_inform&, int);
+	void Confirmed_bid_calculation(int, market_whole_inform&, power_network::network_inform&, bool);
 	void TSO_Market_Results_Get(int, market_inform&, alglib::minlpstate&);
 	void TSO_Market_control_reserve(int, market_whole_inform&, power_network::network_inform&, bool);
 }
