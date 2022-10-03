@@ -15,6 +15,7 @@ namespace agent{
 			int point_ID;
 			double cap;
 			bids bids;
+			results results;
 		};
 
 		struct storage_profile{
@@ -23,6 +24,7 @@ namespace agent{
 			double cap;
 			double soc;
 			bids bids;
+			results results;
 		};
 
 		struct hybrid_profile{
