@@ -71,8 +71,110 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 	TSO_Market.control_reserve.activated_negative = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.network.confirmed_voltage = Eigen::MatrixXd(Time, TSO_Market.network.num_vertice);
 	TSO_Market.network.confirmed_power = Eigen::MatrixXd(Time, TSO_Market.network.num_edges);
-//	TSO_Market.control_reserve.confirmed_positive = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
-//	TSO_Market.control_reserve.confirmed_negative = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+}
+
+void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, bool DSO_filter_flag){
+	int price_interval = power_market::parameters::price_interval();
+
+	// Initialize submit bids of the TSO market
+	Market_Initialization(Power_market_inform.TSO_Market);
+
+	// Initialize boundary conditions with other bidding zones
+	TSO_boundary_update(tick, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform);
+
+	// Residential demand
+	int point_num = Power_network_inform.points.bidding_zone.size();
+	int sample_num = Power_market_inform.agent_profiles.end_users[0].size();
+	for(int point_iter = 0; point_iter < point_num; ++ point_iter){
+		int node_ID = Power_network_inform.points.node(point_iter);
+
+		for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
+			if(DSO_filter_flag){
+
+			}
+			else{
+				Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand;
+				Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply;
+			}
+		}
+	}
+
+	// Industrial demand
+	int industrial_HV_num = Power_market_inform.agent_profiles.industrial.HV.size();
+	for(int agent_iter = 0; agent_iter < industrial_HV_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.industrial.HV[agent_iter].point_ID;
+		int node_ID = Power_network_inform.points.node(point_ID);
+
+		Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids.redispatch_demand;
+	}
+
+	// Hydroelectric power plants
+	int hydro_HV_plant_num = Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant.size();
+	for(int agent_iter = 0; agent_iter < hydro_HV_plant_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].point_ID;
+		int node_ID = Power_network_inform.points.node(point_ID);
+
+		Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].bids.redispatch_supply;
+		Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].bids.redispatch_demand;
+	}
+	int hydro_LV_plant_num = Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant.size();
+	for(int agent_iter = 0; agent_iter < hydro_LV_plant_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].point_ID;
+		int node_ID = Power_network_inform.points.node(point_ID);
+
+		if(DSO_filter_flag){
+
+		}
+		else{
+			Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids.redispatch_supply;
+			Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids.redispatch_demand;
+		}
+	}
+
+	// Wind power plants
+	int wind_HV_plant_num = Power_market_inform.agent_profiles.power_supplier.wind.HV_plant.size();
+	for(int agent_iter = 0; agent_iter < wind_HV_plant_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].point_ID;
+		int node_ID = Power_network_inform.points.node(point_ID);
+
+		Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].bids.redispatch_supply;
+		Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].bids.redispatch_demand;
+	}
+	int wind_LV_plant_num = Power_market_inform.agent_profiles.power_supplier.wind.LV_plant.size();
+	for(int agent_iter = 0; agent_iter < wind_LV_plant_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].point_ID;
+		int node_ID = Power_network_inform.points.node(point_ID);
+
+		if(DSO_filter_flag){
+
+		}
+		else{
+			Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].bids.redispatch_supply;
+			Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].bids.redispatch_demand;
+		}
+	}
+
+	// Pump storage
+	int pump_HV_num = Power_market_inform.agent_profiles.power_supplier.pump_storage.HV.size();
+	for(int agent_iter = 0; agent_iter < pump_HV_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].point_ID;
+		int node_ID = Power_network_inform.points.node(point_ID);
+		Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].bids.redispatch_supply;
+		Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].bids.redispatch_demand;
+	}
+	int pump_LV_num = Power_market_inform.agent_profiles.power_supplier.pump_storage.LV.size();
+	for(int agent_iter = 0; agent_iter < pump_LV_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].point_ID;
+		int node_ID = Power_network_inform.points.node(point_ID);
+
+		if(DSO_filter_flag){
+
+		}
+		else{
+			Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.redispatch_supply;
+			Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.redispatch_demand;
+		}
+	}
 }
 
 void power_market::TSO_Market_Results_Get(int tick, market_inform &Market, alglib::minlpstate &Problem){
