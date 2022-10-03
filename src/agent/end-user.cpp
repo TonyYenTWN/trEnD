@@ -311,14 +311,24 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 	int price_demand_flex_ID = price_interval + 1;
 	int price_supply_inflex_ID = 0;
 	int price_supply_flex_ID = 0;
-	profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) = std::max(sol[5], 0.);
-	profile.operation.bids.submitted_supply_inflex(0) = -std::min(sol[5], 0.);
+	profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::max(sol[5], 0.);
+	profile.operation.bids.submitted_supply_inflex(0) += -std::min(sol[5], 0.);
 	profile.operation.bids.submitted_demand_inflex(price_supply_inflex_ID) += sol[14];
-	profile.operation.bids.submitted_demand_flex(price_demand_flex_ID) = sol[4] - sol[14];
-	profile.operation.bids.submitted_demand_flex(price_demand_flex_ID) += std::max(sol[2], 0.);
-	profile.operation.bids.submitted_supply_flex(price_supply_flex_ID) += -std::min(sol[2], 0.);
-	profile.operation.bids.submitted_demand_flex(price_demand_flex_ID) += std::max(sol[3], 0.);
-	profile.operation.bids.submitted_supply_flex(price_supply_flex_ID) += -std::min(sol[3], 0.);
+	if(profile.investment.decision.redispatch == 1){
+		profile.operation.bids.submitted_demand_flex(price_demand_flex_ID) += sol[4] - sol[14];
+		profile.operation.bids.submitted_demand_flex(price_demand_flex_ID) += std::max(sol[2], 0.);
+		profile.operation.bids.submitted_supply_flex(price_supply_flex_ID) += -std::min(sol[2], 0.);
+		profile.operation.bids.submitted_demand_flex(price_demand_flex_ID) += std::max(sol[3], 0.);
+		profile.operation.bids.submitted_supply_flex(price_supply_flex_ID) += -std::min(sol[3], 0.);
+	}
+	else{
+		profile.operation.bids.submitted_demand_inflex(price_demand_flex_ID) += sol[4] - sol[14];
+		profile.operation.bids.submitted_demand_inflex(price_demand_flex_ID) += std::max(sol[2], 0.);
+		profile.operation.bids.submitted_supply_inflex(price_supply_flex_ID) += -std::min(sol[2], 0.);
+		profile.operation.bids.submitted_demand_inflex(price_demand_flex_ID) += std::max(sol[3], 0.);
+		profile.operation.bids.submitted_supply_inflex(price_supply_flex_ID) += -std::min(sol[3], 0.);
+	}
+
 //	std::cout << profile.operation.BESS.scheduled_capacity << "\t" << profile.operation.smart_appliance.scheduled_demand << "\n";
 //	std::cout << rep.lagbc[7] << "\t" << rep.lagbc[14] << "\n\n";
 //	if(abs(sol[2]) > 1E-12){
