@@ -44,15 +44,18 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	// Initial estimation of market clearing price in the IMO
 	International_Market_Price_Estimation(0, Power_market_inform.International_Market, Power_market_inform.IMO_Problem, Power_network_inform);
 
-	// Bidding strategies of end-users
-	//DSO_agents_set(Power_market_inform, Power_network_inform);
+	// Bidding strategies of agents
 	agent::agents_set(Power_market_inform, Power_network_inform);
 
-	// Initialization of submitted bids in DSOs, TSOs, and IMO
-	Submitted_bid_calculation(0, Power_market_inform, Power_network_inform, DSO_filter_flag);
-
 	// Ideal market clearing in IMO
+	Submitted_bid_calculation(Power_market_inform, Power_network_inform);
 	International_Market_Optimization(0, Power_market_inform.International_Market, Power_market_inform.IMO_Problem);
+
+	// Equivalent redispatch bids of agents
+	agent::agents_redispatch_update(0, Power_market_inform, Power_network_inform);
+
+	// Redispatch in TSO
+	Confirmed_bid_calculation(0, Power_market_inform, Power_network_inform, DSO_filter_flag);
 
 //	// Set cross-border transmission as boundary conditions of TSO
 //	TSO_boundary_update(0, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform);
@@ -62,9 +65,9 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 //		Filtered_bid_calculation(0, Power_market_inform.DSO_Markets, Power_market_inform.TSO_Market, Power_network_inform, Power_market_inform.DSO_Problems);
 //	}
 //
-//	// Re-dispatch + tertiary control reserve in TSO
-//	Flow_Based_Market_Optimization(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
-//	TSO_Market_Results_Get(0, Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
+	// Re-dispatch + tertiary control reserve in TSO
+	Flow_Based_Market_Optimization(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
+	TSO_Market_Results_Get(0, Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
 //	if(control_reserve_flag){
 //		TSO_Market_control_reserve(0, Power_market_inform, Power_network_inform, DSO_filter_flag);
 //	}
