@@ -165,6 +165,13 @@ namespace agent{
 			/*@{*/
 
 			/**
+			* @name output results
+			*/
+			/*@{*/
+			results results;
+			/*@{*/
+
+			/**
 			* @name mixed substructure
 			*/
 			/*@{*/
