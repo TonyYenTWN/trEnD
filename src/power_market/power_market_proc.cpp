@@ -54,20 +54,21 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	// Equivalent redispatch bids of agents
 	agent::agents_redispatch_update(0, Power_market_inform, Power_network_inform);
 
-	// Redispatch in TSO
-	Confirmed_bid_calculation(0, Power_market_inform, Power_network_inform, DSO_filter_flag);
-
-//	// Set cross-border transmission as boundary conditions of TSO
-//	TSO_boundary_update(0, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform);
-//
 //	// Bid-filtering in DSOs
 //	if(DSO_filter_flag){
 //		Filtered_bid_calculation(0, Power_market_inform.DSO_Markets, Power_market_inform.TSO_Market, Power_network_inform, Power_market_inform.DSO_Problems);
 //	}
 //
-	// Re-dispatch + tertiary control reserve in TSO
+
+	// Redispatch in TSO
+	Confirmed_bid_calculation(0, Power_market_inform, Power_network_inform, DSO_filter_flag);
 	Flow_Based_Market_Optimization(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
 	TSO_Market_Results_Get(0, Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
+
+	// Equivalent balancing bids of agents
+	agent::agents_balancing_update(0, Power_market_inform, Power_network_inform, DSO_filter_flag);
+
+	// Tertiary control reserve in TSO
 //	if(control_reserve_flag){
 //		TSO_Market_control_reserve(0, Power_market_inform, Power_network_inform, DSO_filter_flag);
 //	}
