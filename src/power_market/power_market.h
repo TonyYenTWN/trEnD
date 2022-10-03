@@ -185,6 +185,7 @@ namespace power_market{
 
 	/**Information of the entire power market landscape.*/
 	struct market_whole_inform{
+		parameters::price_ID_bimap price_map;
 		market_inform International_Market;
 		alglib::minlpstate IMO_Problem;
 		market_inform TSO_Market;
@@ -192,7 +193,6 @@ namespace power_market{
 		markets_inform DSO_Markets;
 		Problems DSO_Problems;
 		agent_profiles agent_profiles;
-		//Eigen::MatrixXd industrial_submitted_demand;
 	};
 }
 
