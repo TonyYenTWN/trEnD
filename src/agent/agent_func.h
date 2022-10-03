@@ -9,4 +9,5 @@
 namespace agent{
 	void agents_set(power_market::market_whole_inform&, power_network::network_inform&);
 	void agents_redispatch_update(int, power_market::market_whole_inform&, power_network::network_inform&);
+	void agents_balancing_update(int, power_market::market_whole_inform&, power_network::network_inform&, bool);
 }
