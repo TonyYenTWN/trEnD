@@ -153,6 +153,10 @@ namespace power_market{
 		* -1: 100% demand; 1: 100% supply.
 		*/
 		Eigen::MatrixXd actual_price_ratio;
+		/**Ratio of actual supply at marginal price.*/
+		Eigen::VectorXd actual_ratio_supply;
+		/**Ratio of actual demand at marginal price.*/
+		Eigen::VectorXd actual_ratio_demand;
 
 		// Mixed Substructure
 		/**Information of the corresponding power network of the market.*/
