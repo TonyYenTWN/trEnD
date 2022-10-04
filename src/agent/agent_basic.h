@@ -42,12 +42,12 @@ namespace agent{
 
 	struct results{
 		// Confirmed schedule after TSO redispatch
-		Eigen::VectorXd confirmed_supply;
-		Eigen::VectorXd confirmed_demand;
+		double confirmed_supply;
+		double confirmed_demand;
 
 		// Actual supply / demand profile after control reserve is activated
-		Eigen::VectorXd actual_supply;
-		Eigen::VectorXd actual_demand;
+		double actual_supply;
+		double actual_demand;
 	};
 
 	struct sorted_vector{
