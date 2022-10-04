@@ -36,16 +36,8 @@ void power_market::Market_Initialization(market_inform &Market){
 // Functions involving multiple markets
 // ------------------------------------------------------------------------------------------------
 void power_market::Submitted_bid_calculation(market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
-	int price_interval = power_market::parameters::price_interval();
-
 	// Initialize submit bids of markets
 	Market_Initialization(Power_market_inform.International_Market);
-//	Market_Initialization(Power_market_inform.TSO_Market);
-//	for(int DSO_iter = 0; DSO_iter < Power_market_inform.DSO_Markets.size(); ++ DSO_iter){
-//		Market_Initialization(Power_market_inform.DSO_Markets[DSO_iter]);
-//		Power_market_inform.DSO_Markets[DSO_iter].filtered_supply = Power_market_inform.DSO_Markets[DSO_iter].submitted_supply;
-//		Power_market_inform.DSO_Markets[DSO_iter].filtered_demand = Power_market_inform.DSO_Markets[DSO_iter].submitted_demand;
-//	}
 
 	// Demand at each point (residential) / node (industrial)
 	int point_num = Power_network_inform.points.bidding_zone.size();
