@@ -355,7 +355,29 @@ namespace{
 	}
 
 	void industrial_balancing_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
+		int price_interval = power_market::parameters::price_interval();
 
+		int industrial_HV_num = Power_market_inform.agent_profiles.industrial.HV.size();
+		for(int agent_iter = 0; agent_iter < industrial_HV_num; ++ agent_iter){
+			int point_ID = Power_market_inform.agent_profiles.industrial.HV[agent_iter].point_ID;
+			int node_ID = Power_network_inform.points.node(point_ID);
+			double marginal_price = Power_market_inform.TSO_Market.confirmed_price(tick, node_ID);
+			int marginal_price_ID = Power_market_inform.price_map.price_ID[marginal_price];
+
+			if(marginal_price_ID > 0){
+				Power_market_inform.agent_profiles.industrial.HV[agent_iter].results.actual_supply += Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids.redispatch_supply.head(marginal_price_ID).sum();
+			}
+			if(marginal_price_ID < price_interval + 1){
+				Power_market_inform.agent_profiles.industrial.HV[agent_iter].results.actual_demand += Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids.redispatch_demand.tail(price_interval + 1 - marginal_price_ID).sum();
+			}
+			Power_market_inform.agent_profiles.industrial.HV[agent_iter].results.actual_supply += Power_market_inform.TSO_Market.confirmed_ratio_supply(node_ID) * Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids.redispatch_supply(marginal_price_ID);
+			Power_market_inform.agent_profiles.industrial.HV[agent_iter].results.actual_demand += Power_market_inform.TSO_Market.confirmed_ratio_demand(node_ID) * Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids.redispatch_demand(marginal_price_ID);
+
+			double imbalance = Power_market_inform.agent_profiles.industrial.HV[agent_iter].results.actual_demand;
+			imbalance *= Power_network_inform.points.imbalance_field(point_ID, tick);
+			Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids.balancing_demand(price_interval + 1) += (imbalance >= 0.) * imbalance;
+			Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids.balancing_supply(0) -= (imbalance < 0.) * imbalance;
+		}
 	}
 }
 
