@@ -76,8 +76,6 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 }
 
 void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, bool DSO_filter_flag){
-	int price_interval = power_market::parameters::price_interval();
-
 	// Initialize submit bids of the TSO market
 	Market_Initialization(Power_market_inform.TSO_Market);
 
@@ -228,8 +226,6 @@ void power_market::TSO_Market_Scheduled_Results_Get(int tick, market_inform &Mar
 }
 
 void power_market::Balancing_bid_calculation(int tick, market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
-	int price_interval = power_market::parameters::price_interval();
-
 	// Initialize submit bids of the TSO market
 	Market_Initialization(Power_market_inform.TSO_Market);
 
