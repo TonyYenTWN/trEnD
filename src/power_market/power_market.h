@@ -247,7 +247,9 @@ namespace power_market{
 namespace power_market{
 	void TSO_Market_Set(market_inform&, power_network::network_inform&, int);
 	void Confirmed_bid_calculation(int, market_whole_inform&, power_network::network_inform&, bool);
-	void TSO_Market_Results_Get(int, market_inform&, alglib::minlpstate&);
+	void TSO_Market_Scheduled_Results_Get(int, market_inform&, alglib::minlpstate&);
+	void Balancing_bid_calculation(int, market_whole_inform&, power_network::network_inform&);
+	void TSO_Market_Actual_Results_Get(int, market_inform&, alglib::minlpstate&);
 	void TSO_Market_control_reserve(int, market_whole_inform&, power_network::network_inform&, bool);
 }
 
