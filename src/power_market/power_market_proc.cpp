@@ -54,6 +54,8 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	// Equivalent redispatch bids of agents
 	agent::agents_redispatch_update(0, Power_market_inform, Power_network_inform);
 
+	// Redispatch in DSO
+
 //	// Bid-filtering in DSOs
 //	if(DSO_filter_flag){
 //		Filtered_bid_calculation(0, Power_market_inform.DSO_Markets, Power_market_inform.TSO_Market, Power_network_inform, Power_market_inform.DSO_Problems);
@@ -65,19 +67,15 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	Flow_Based_Market_Optimization(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
 	TSO_Market_Scheduled_Results_Get(0, Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
 
-	// Control reserve
-	if(control_reserve_flag){
-		// Equivalent balancing bids of agents
-		agent::agents_balancing_update(0, Power_market_inform, Power_network_inform, DSO_filter_flag);
+	// Equivalent balancing bids of agents
+	agent::agents_balancing_update(0, Power_market_inform, Power_network_inform, DSO_filter_flag);
 
-		// Control reserve activation in TSO
+	// Control reserve activation in TSO
+	if(control_reserve_flag){
 		Balancing_bid_calculation(0, Power_market_inform, Power_network_inform);
 		Flow_Based_Market_Optimization(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
 		TSO_Market_Actual_Results_Get(0, Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
 	}
-//	if(control_reserve_flag){
-//		TSO_Market_control_reserve(0, Power_market_inform, Power_network_inform, DSO_filter_flag);
-//	}
 }
 
 void power_market::power_market_process_update(power_network::network_inform &Power_network_inform, market_whole_inform &Power_market_inform, bool DSO_filter_flag, bool control_reserve_flag){
