@@ -253,6 +253,32 @@ void power_market::Sink_Node_Set(market_inform &DSO_Market, power_network::DSO_c
 	}
 }
 
+void power_market::Filtered_bid_demand_calculation(market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
+	for(int DSO_iter = 0; DSO_iter < Power_market_inform.DSO_Markets.size(); ++ DSO_iter){
+		// Initialize submit bids of DSO markets
+		Market_Initialization(Power_market_inform.DSO_Markets[DSO_iter]);
+
+		// Create source nodes
+		Source_Node_Set(Power_market_inform.DSO_Markets[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter]);
+	}
+
+	// Residential demand at each point
+	int point_num = Power_network_inform.points.bidding_zone.size();
+	int sample_num = Power_market_inform.agent_profiles.end_users[0].size();
+	for(int point_iter = 0; point_iter < point_num; ++ point_iter){
+		int point_ID = Power_network_inform.points.in_cluster_ID(point_iter);
+		int node_ID = Power_network_inform.points.node(point_iter);
+		int DSO_ID = Power_network_inform.nodes.cluster(node_ID);
+
+		for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
+			Power_market_inform.DSO_Markets[DSO_ID].submitted_demand.col(point_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand;
+			Power_market_inform.DSO_Markets[DSO_ID].submitted_supply.col(point_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply;
+		}
+	}
+
+	// LV Power suppliers
+}
+
 void power_market::DSO_Market_Results_Get(int tick, market_inform &Market, alglib::minlpstate &Problem, power_network::DSO_cluster &DSO_cluster, bool supply){
 	alglib::real_1d_array sol;
 	alglib::minlpreport rep;
