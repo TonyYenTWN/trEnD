@@ -332,7 +332,7 @@ namespace{
 						}
 					}
 					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_supply += Power_market_inform.TSO_Market.confirmed_ratio_supply(node_ID) * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply(marginal_price_ID);
-					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_demand += Power_market_inform.TSO_Market.confirmed_ratio_supply(node_ID) * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand(marginal_price_ID);
+					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_demand += Power_market_inform.TSO_Market.confirmed_ratio_demand(node_ID) * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand(marginal_price_ID);
 					if(!Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.control_reserve){
 						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.balancing_demand(0) += (1. - Power_market_inform.TSO_Market.confirmed_ratio_demand(node_ID)) * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand(marginal_price_ID);
 						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.balancing_supply(0) += Power_market_inform.TSO_Market.confirmed_ratio_supply(node_ID) * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply(marginal_price_ID);
@@ -353,6 +353,10 @@ namespace{
 			}
 		}
 	}
+
+	void industrial_balancing_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
+
+	}
 }
 
 void agent::agents_set(power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
@@ -368,4 +372,5 @@ void agent::agents_redispatch_update(int tick, power_market::market_whole_inform
 
 void agent::agents_balancing_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, bool DSO_filter_flag){
 	end_user_balancing_update(tick, Power_market_inform, Power_network_inform, DSO_filter_flag);
+	industrial_balancing_update(tick, Power_market_inform, Power_network_inform);
 }
