@@ -301,16 +301,16 @@ void power_market::International_Market_Optimization(int tick, market_inform &Ma
 		for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter){
 			if(Market.bidded_price(price_iter) >= Market.confirmed_price(tick, node_iter) || price_iter == Market.price_intervals + 1){
 				if(sol[row_start + price_iter] >= 0.){
-					Market.confirmed_ratio_demand(node_iter) = std::min(Market.submitted_demand(price_iter, node_iter), Market.submitted_demand(price_iter, node_iter) - sol[row_start + price_iter]);
+					Market.confirmed_ratio_demand(node_iter) = std::min(Market.submitted_demand(price_iter, node_iter), Market.submitted_supply(price_iter, node_iter) - sol[row_start + price_iter]);
 					Market.confirmed_ratio_supply(node_iter) = Market.confirmed_ratio_demand(node_iter) + sol[row_start + price_iter];
-					Market.confirmed_ratio_demand(node_iter) /= Market.submitted_demand(price_iter, node_iter);
-					Market.confirmed_ratio_supply(node_iter) /= Market.submitted_supply(price_iter, node_iter);
+					Market.confirmed_ratio_demand(node_iter) /= Market.submitted_demand(price_iter, node_iter) + 1E-12;
+					Market.confirmed_ratio_supply(node_iter) /= Market.submitted_supply(price_iter, node_iter) + 1E-12;
 				}
 				else{
-					Market.confirmed_ratio_demand(node_iter) = std::min(Market.submitted_demand(price_iter, node_iter), Market.submitted_demand(price_iter, node_iter) - sol[row_start + price_iter]);
-					Market.confirmed_ratio_supply(node_iter) = Market.confirmed_ratio_demand(node_iter) + sol[row_start + price_iter];
-					Market.confirmed_ratio_demand(node_iter) /= Market.submitted_demand(price_iter, node_iter);
-					Market.confirmed_ratio_supply(node_iter) /= Market.submitted_supply(price_iter, node_iter);
+					Market.confirmed_ratio_supply(node_iter) = std::min(Market.submitted_supply(price_iter, node_iter), Market.submitted_demand(price_iter, node_iter) - sol[row_start + price_iter]);
+					Market.confirmed_ratio_demand(node_iter) = Market.confirmed_ratio_supply(node_iter) + sol[row_start + price_iter];
+					Market.confirmed_ratio_demand(node_iter) /= Market.submitted_demand(price_iter, node_iter) + 1E-12;
+					Market.confirmed_ratio_supply(node_iter) /= Market.submitted_supply(price_iter, node_iter) + 1E-12;
 				}
 				break;
 			}
