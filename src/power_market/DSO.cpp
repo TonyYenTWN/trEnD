@@ -108,10 +108,11 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 		power_market::Market_Initialization(DSO_Markets[DSO_iter]);
 
 		// Initialization of output variables
-		DSO_Markets[DSO_iter].filtered_price_supply = Eigen::MatrixXd::Zero(Time, DSO_Markets[DSO_iter].num_zone);
-		DSO_Markets[DSO_iter].filtered_price_demand = Eigen::MatrixXd::Zero(Time, DSO_Markets[DSO_iter].num_zone);
-		DSO_Markets[DSO_iter].filtered_ratio_supply = Eigen::MatrixXd::Zero(Time, DSO_Markets[DSO_iter].num_zone);
-		DSO_Markets[DSO_iter].filtered_ratio_demand = Eigen::MatrixXd::Zero(Time, DSO_Markets[DSO_iter].num_zone);
+		DSO_Markets[DSO_iter].confirmed_supply = Eigen::MatrixXd::Zero(Time, DSO_Markets[DSO_iter].num_zone);
+		DSO_Markets[DSO_iter].confirmed_demand = Eigen::MatrixXd::Zero(Time, DSO_Markets[DSO_iter].num_zone);
+		DSO_Markets[DSO_iter].confirmed_price = Eigen::MatrixXd::Zero(Time, DSO_Markets[DSO_iter].num_zone);
+		DSO_Markets[DSO_iter].confirmed_ratio_supply = Eigen::MatrixXd::Zero(Time, DSO_Markets[DSO_iter].num_zone);
+		DSO_Markets[DSO_iter].confirmed_ratio_demand = Eigen::MatrixXd::Zero(Time, DSO_Markets[DSO_iter].num_zone);
 	}
 }
 
@@ -253,7 +254,7 @@ void power_market::Sink_Node_Set(market_inform &DSO_Market, power_network::DSO_c
 	}
 }
 
-void power_market::Filtered_bid_demand_calculation(market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
+void power_market::Filtered_bid_demand_calculation(int tick, market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
 	for(int DSO_iter = 0; DSO_iter < Power_market_inform.DSO_Markets.size(); ++ DSO_iter){
 		// Initialize submit bids of DSO markets
 		Market_Initialization(Power_market_inform.DSO_Markets[DSO_iter]);
@@ -272,11 +273,83 @@ void power_market::Filtered_bid_demand_calculation(market_whole_inform &Power_ma
 
 		for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
 			Power_market_inform.DSO_Markets[DSO_ID].submitted_demand.col(point_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand;
+		}
+	}
+
+	// LV Power suppliers
+	int pump_LV_num = Power_market_inform.agent_profiles.power_supplier.pump_storage.LV.size();
+	for(int agent_iter = 0; agent_iter < pump_LV_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].point_ID;
+		int node_ID = Power_network_inform.points.node(point_ID);
+		int DSO_ID = Power_network_inform.nodes.cluster(node_ID);
+		point_ID = Power_network_inform.points.in_cluster_ID(point_ID);
+
+		Power_market_inform.DSO_Markets[DSO_ID].submitted_demand.col(point_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.redispatch_demand;
+	}
+
+	for(int DSO_iter = 0; DSO_iter < Power_market_inform.DSO_Markets.size(); ++ DSO_iter){
+		Flow_Based_Market_Optimization(Power_market_inform.DSO_Markets[DSO_iter], Power_market_inform.DSO_Problems[DSO_iter]);
+		DSO_Market_Results_Get(tick, Power_market_inform.DSO_Markets[DSO_iter], Power_market_inform.DSO_Problems[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter], 0);
+	}
+}
+
+void power_market::Filtered_bid_supply_calculation(int tick, market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
+	for(int DSO_iter = 0; DSO_iter < Power_market_inform.DSO_Markets.size(); ++ DSO_iter){
+		// Initialize submit bids of DSO markets
+		Market_Initialization(Power_market_inform.DSO_Markets[DSO_iter]);
+
+		// Create source nodes
+		Sink_Node_Set(Power_market_inform.DSO_Markets[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter]);
+	}
+
+	// Residential demand at each point
+	int point_num = Power_network_inform.points.bidding_zone.size();
+	int sample_num = Power_market_inform.agent_profiles.end_users[0].size();
+	for(int point_iter = 0; point_iter < point_num; ++ point_iter){
+		int point_ID = Power_network_inform.points.in_cluster_ID(point_iter);
+		int node_ID = Power_network_inform.points.node(point_iter);
+		int DSO_ID = Power_network_inform.nodes.cluster(node_ID);
+
+		for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
 			Power_market_inform.DSO_Markets[DSO_ID].submitted_supply.col(point_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply;
 		}
 	}
 
 	// LV Power suppliers
+	int hydro_LV_plant_num = Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant.size();
+	for(int agent_iter = 0; agent_iter < hydro_LV_plant_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].point_ID;
+		int node_ID = Power_network_inform.points.node(point_ID);
+		int DSO_ID = Power_network_inform.nodes.cluster(node_ID);
+		point_ID = Power_network_inform.points.in_cluster_ID(point_ID);
+
+		Power_market_inform.DSO_Markets[DSO_ID].submitted_supply.col(point_ID) += Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids.redispatch_supply;
+	}
+
+	int wind_LV_plant_num = Power_market_inform.agent_profiles.power_supplier.wind.LV_plant.size();
+	for(int agent_iter = 0; agent_iter < wind_LV_plant_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].point_ID;
+		int node_ID = Power_network_inform.points.node(point_ID);
+		int DSO_ID = Power_network_inform.nodes.cluster(node_ID);
+		point_ID = Power_network_inform.points.in_cluster_ID(point_ID);
+
+		Power_market_inform.DSO_Markets[DSO_ID].submitted_supply.col(point_ID) += Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].bids.redispatch_supply;
+	}
+
+	int pump_LV_num = Power_market_inform.agent_profiles.power_supplier.pump_storage.LV.size();
+	for(int agent_iter = 0; agent_iter < pump_LV_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].point_ID;
+		int node_ID = Power_network_inform.points.node(point_ID);
+		int DSO_ID = Power_network_inform.nodes.cluster(node_ID);
+		point_ID = Power_network_inform.points.in_cluster_ID(point_ID);
+
+		Power_market_inform.DSO_Markets[DSO_ID].submitted_supply.col(point_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.redispatch_supply;
+	}
+
+	for(int DSO_iter = 0; DSO_iter < Power_market_inform.DSO_Markets.size(); ++ DSO_iter){
+		Flow_Based_Market_Optimization(Power_market_inform.DSO_Markets[DSO_iter], Power_market_inform.DSO_Problems[DSO_iter]);
+		DSO_Market_Results_Get(tick, Power_market_inform.DSO_Markets[DSO_iter], Power_market_inform.DSO_Problems[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter], 1);
+	}
 }
 
 void power_market::DSO_Market_Results_Get(int tick, market_inform &Market, alglib::minlpstate &Problem, power_network::DSO_cluster &DSO_cluster, bool supply){
@@ -288,46 +361,69 @@ void power_market::DSO_Market_Results_Get(int tick, market_inform &Market, algli
 	if(supply){
 		// Store filtered supply bids at spatial points
 		for(int point_iter = 0; point_iter < DSO_cluster.points_ID.size(); ++ point_iter){
+			// Store power sink
 			int row_start = 2 * Market.network.num_vertice + point_iter * (Market.price_intervals + 2);
-			Market.filtered_supply.col(point_iter) = sol_vec.segment(row_start, Market.price_intervals + 2).array().max(0);
-			Market.filtered_price_supply(tick, point_iter) = Market.bidded_price(0) + rep.lagbc[row_start];
-			Market.filtered_price_supply(tick, point_iter) = std::min(Market.filtered_price_supply(tick, point_iter), Market.price_range_inflex(1));
-			Market.filtered_price_supply(tick, point_iter) = std::max(Market.filtered_price_supply(tick, point_iter), Market.price_range_inflex(0));
+			Market.confirmed_supply(tick, point_iter) = (sol_vec.segment(row_start, Market.price_intervals + 2).array().max(0)).sum();
 
-//			for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter ){
-//				std::cout << rep.lagbc[row_start + price_iter] << "\t";
-//			}
-//			std::cout << "\n\n";
-			//std::cout << Market.filtered_supply.col(point_iter).transpose() << "\n\n";
-			//std::cout << (Market.submitted_supply.col(point_iter) - Market.filtered_supply.col(point_iter)).transpose() << "\n\n";
+			// Store nodal prices
+			Market.confirmed_price(tick, point_iter) = Market.bidded_price(1) + rep.lagbc[row_start + 1];
+			Market.confirmed_price(tick, point_iter) = int(Market.confirmed_price(tick, point_iter)) + .5;
+			if(Market.confirmed_price(tick, point_iter) < Market.bidded_price(1)){
+				Market.confirmed_price(tick, point_iter) = Market.bidded_price(0);
+			}
+			else if(Market.confirmed_price(tick, point_iter) > Market.bidded_price(Market.price_intervals)){
+				Market.confirmed_price(tick, point_iter) = Market.bidded_price(Market.price_intervals + 1);
+			}
+
+			// Store ratio at nodes
+			for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter){
+				if(Market.bidded_price(price_iter) >= Market.confirmed_price(tick, point_iter) || price_iter == Market.price_intervals + 1){
+					if(sol[row_start + price_iter] >= 0.){
+						Market.confirmed_ratio_demand(point_iter) = std::min(Market.submitted_demand(price_iter, point_iter), Market.submitted_supply(price_iter, point_iter) - sol[row_start + price_iter]);
+						Market.confirmed_ratio_supply(point_iter) = Market.confirmed_ratio_demand(point_iter) + sol[row_start + price_iter];
+						Market.confirmed_ratio_demand(point_iter) /= Market.submitted_demand(price_iter, point_iter) + 1E-12;
+					}
+					else{
+						Market.confirmed_ratio_supply(point_iter) = std::min(Market.submitted_supply(price_iter, point_iter), Market.submitted_demand(price_iter, point_iter) + sol[row_start + price_iter]);
+						Market.confirmed_ratio_supply(point_iter) /= Market.submitted_supply(price_iter, point_iter) + 1E-12;
+					}
+					break;
+				}
+			}
 		}
 	}
 	else{
 		// Store filtered demand bids at spatial points
 		for(int point_iter = 0; point_iter < DSO_cluster.points_ID.size(); ++ point_iter){
+			// Store power sink
 			int row_start = 2 * Market.network.num_vertice + point_iter * (Market.price_intervals + 2);
-			Market.filtered_demand.col(point_iter) = -(sol_vec.segment(row_start, Market.price_intervals + 2).array().min(0));
-			Market.filtered_price_demand(tick, point_iter) = Market.bidded_price(0) + rep.lagbc[row_start];
-			Market.filtered_price_demand(tick, point_iter) = std::min(Market.filtered_price_demand(tick, point_iter), Market.price_range_inflex(1));
-			Market.filtered_price_demand(tick, point_iter) = std::max(Market.filtered_price_demand(tick, point_iter), Market.price_range_inflex(0));
+			Market.confirmed_demand(tick, point_iter) = -(sol_vec.segment(row_start, Market.price_intervals + 2).array().min(0)).sum();
+
+			// Store nodal prices
+			Market.confirmed_price(tick, point_iter) = Market.bidded_price(1) + rep.lagbc[row_start + 1];
+			Market.confirmed_price(tick, point_iter) = int(Market.confirmed_price(tick, point_iter)) + .5;
+			if(Market.confirmed_price(tick, point_iter) < Market.bidded_price(1)){
+				Market.confirmed_price(tick, point_iter) = Market.bidded_price(0);
+			}
+			else if(Market.confirmed_price(tick, point_iter) > Market.bidded_price(Market.price_intervals)){
+				Market.confirmed_price(tick, point_iter) = Market.bidded_price(Market.price_intervals + 1);
+			}
 
 			// Store ratio at nodes
 			for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter){
-				if(Market.bidded_price(price_iter) >= Market.filtered_price_demand(tick, point_iter) || price_iter == Market.price_intervals + 1){
-					Market.filtered_ratio_demand(tick, point_iter) =  sol_vec(row_start + price_iter);
-					if(sol_vec(row_start + price_iter) >= 0.){
-						Market.filtered_ratio_demand(tick, point_iter) = 0.;
+				if(Market.bidded_price(price_iter) >= Market.confirmed_price(tick, point_iter) || price_iter == Market.price_intervals + 1){
+					if(sol[row_start + price_iter] >= 0.){
+						Market.confirmed_ratio_demand(point_iter) = std::min(Market.submitted_demand(price_iter, point_iter), Market.submitted_supply(price_iter, point_iter) - sol[row_start + price_iter]);
+						Market.confirmed_ratio_demand(point_iter) /= Market.submitted_demand(price_iter, point_iter) + 1E-12;
 					}
 					else{
-						Market.filtered_ratio_demand(tick, point_iter) /= Market.submitted_demand(price_iter, point_iter);
+						Market.confirmed_ratio_supply(point_iter) = std::min(Market.submitted_supply(price_iter, point_iter), Market.submitted_demand(price_iter, point_iter) + sol[row_start + price_iter]);
+						Market.confirmed_ratio_demand(point_iter) = Market.confirmed_ratio_supply(point_iter) - sol[row_start + price_iter];
+						Market.confirmed_ratio_demand(point_iter) /= Market.submitted_demand(price_iter, point_iter) + 1E-12;
 					}
 					break;
 				}
 			}
-
-			//std::cout << Market.submitted_demand.col(point_iter).transpose() << "\n\n";
-			//std::cout << Market.filtered_demand.col(point_iter).transpose() << "\n\n";
-			//std::cout << (Market.submitted_demand.col(point_iter) - Market.filtered_demand.col(point_iter)).transpose() << "\n\n";
 		}
 	}
 

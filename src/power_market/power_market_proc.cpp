@@ -55,7 +55,12 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	agent::agents_redispatch_update(0, Power_market_inform, Power_network_inform);
 
 	// Redispatch in DSO
-
+	if(DSO_filter_flag){
+		power_market::Filtered_bid_demand_calculation(0, Power_market_inform, Power_network_inform);
+		agent::agents_filter_demand_update(0, Power_market_inform, Power_network_inform);
+		power_market::Filtered_bid_supply_calculation(0, Power_market_inform, Power_network_inform);
+		agent::agents_filter_supply_update(0, Power_market_inform, Power_network_inform);
+	}
 //	// Bid-filtering in DSOs
 //	if(DSO_filter_flag){
 //		Filtered_bid_calculation(0, Power_market_inform.DSO_Markets, Power_market_inform.TSO_Market, Power_network_inform, Power_market_inform.DSO_Problems);

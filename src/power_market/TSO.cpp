@@ -90,7 +90,8 @@ void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Powe
 
 		for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
 			if(DSO_filter_flag){
-
+				Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.filtered_demand;
+				Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.filtered_supply;
 			}
 			else{
 				Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand;
@@ -123,7 +124,8 @@ void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Powe
 		int node_ID = Power_network_inform.points.node(point_ID);
 
 		if(DSO_filter_flag){
-
+			Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids.filtered_supply;
+			Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids.filtered_demand;
 		}
 		else{
 			Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids.redispatch_supply;
@@ -146,7 +148,8 @@ void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Powe
 		int node_ID = Power_network_inform.points.node(point_ID);
 
 		if(DSO_filter_flag){
-
+			Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].bids.filtered_supply;
+			Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].bids.filtered_demand;
 		}
 		else{
 			Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].bids.redispatch_supply;
@@ -168,7 +171,8 @@ void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Powe
 		int node_ID = Power_network_inform.points.node(point_ID);
 
 		if(DSO_filter_flag){
-
+			Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.filtered_supply;
+			Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.filtered_demand;
 		}
 		else{
 			Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.redispatch_supply;
@@ -209,8 +213,8 @@ void power_market::TSO_Market_Scheduled_Results_Get(int tick, market_inform &Mar
 					Market.confirmed_ratio_supply(node_iter) /= Market.submitted_supply(price_iter, node_iter) + 1E-12;
 				}
 				else{
-					Market.confirmed_ratio_supply(node_iter) = std::min(Market.submitted_supply(price_iter, node_iter), Market.submitted_demand(price_iter, node_iter) - sol[row_start + price_iter]);
-					Market.confirmed_ratio_demand(node_iter) = Market.confirmed_ratio_supply(node_iter) + sol[row_start + price_iter];
+					Market.confirmed_ratio_supply(node_iter) = std::min(Market.submitted_supply(price_iter, node_iter), Market.submitted_demand(price_iter, node_iter) + sol[row_start + price_iter]);
+					Market.confirmed_ratio_demand(node_iter) = Market.confirmed_ratio_supply(node_iter) - sol[row_start + price_iter];
 					Market.confirmed_ratio_demand(node_iter) /= Market.submitted_demand(price_iter, node_iter) + 1E-12;
 					Market.confirmed_ratio_supply(node_iter) /= Market.submitted_supply(price_iter, node_iter) + 1E-12;
 				}
@@ -339,8 +343,8 @@ void power_market::TSO_Market_Actual_Results_Get(int tick, market_inform &Market
 					Market.actual_ratio_supply(node_iter) /= Market.submitted_supply(price_iter, node_iter) + 1E-12;
 				}
 				else{
-					Market.actual_ratio_supply(node_iter) = std::min(Market.submitted_supply(price_iter, node_iter), Market.submitted_demand(price_iter, node_iter) - sol[row_start + price_iter]);
-					Market.actual_ratio_demand(node_iter) = Market.actual_ratio_supply(node_iter) + sol[row_start + price_iter];
+					Market.actual_ratio_supply(node_iter) = std::min(Market.submitted_supply(price_iter, node_iter), Market.submitted_demand(price_iter, node_iter) + sol[row_start + price_iter]);
+					Market.actual_ratio_demand(node_iter) = Market.actual_ratio_supply(node_iter) + sol[row_start - price_iter];
 					Market.actual_ratio_demand(node_iter) /= Market.submitted_demand(price_iter, node_iter) + 1E-12;
 					Market.actual_ratio_supply(node_iter) /= Market.submitted_supply(price_iter, node_iter) + 1E-12;
 				}

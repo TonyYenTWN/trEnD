@@ -268,7 +268,8 @@ namespace power_market{
 	void DSO_agents_update(int, agent::end_user::profiles&, market_inform&, market_inform&, power_network::network_inform&);
 	void Source_Node_Set(market_inform&, power_network::DSO_cluster&);
 	void Sink_Node_Set(market_inform&, power_network::DSO_cluster&);
-	void Filtered_bid_demand_calculation(market_whole_inform&, power_network::network_inform&);
+	void Filtered_bid_demand_calculation(int, market_whole_inform&, power_network::network_inform&);
+	void Filtered_bid_supply_calculation(int, market_whole_inform&, power_network::network_inform&);
 	void DSO_Market_Results_Get(int, market_inform&, alglib::minlpstate&, power_network::DSO_cluster&, bool supply = 1);
 }
 
