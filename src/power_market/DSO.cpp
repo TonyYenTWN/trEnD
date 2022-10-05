@@ -14,7 +14,8 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 		// Input parameters of DSO market
 		DSO_Markets[DSO_iter].num_zone = Power_network_inform.DSO_cluster[DSO_iter].points_ID.size() + Power_network_inform.DSO_cluster[DSO_iter].nodes_ID.size();
 		DSO_Markets[DSO_iter].time_intervals = Time;
-		DSO_Markets[DSO_iter].set_bidded_price();
+		//DSO_Markets[DSO_iter].set_bidded_price();
+		parameters::bidded_price(DSO_Markets[DSO_iter].bidded_price_map);
 
 		// Set node admittance matrix
 		// Use fractional Laplacian here :
@@ -240,17 +241,19 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 ////	}
 //}
 
-void power_market::Source_Node_Set(market_inform &DSO_Market, power_network::DSO_cluster &DSO_cluster){
-	for(int node_iter = 0; node_iter < DSO_cluster.nodes_ID.size(); ++ node_iter){
-		DSO_Market.submitted_demand.col(DSO_cluster.points_ID.size() + node_iter)	= Eigen::VectorXd::Zero(DSO_Market.price_intervals + 2);
-		DSO_Market.submitted_supply(0, DSO_cluster.points_ID.size() + node_iter) =  std::numeric_limits<double>::infinity();
+namespace{
+	void Source_Node_Set(power_market::market_inform &DSO_Market, power_network::DSO_cluster &DSO_cluster){
+		for(int node_iter = 0; node_iter < DSO_cluster.nodes_ID.size(); ++ node_iter){
+			DSO_Market.submitted_demand.col(DSO_cluster.points_ID.size() + node_iter)	= Eigen::VectorXd::Zero(DSO_Market.price_intervals + 2);
+			DSO_Market.submitted_supply(0, DSO_cluster.points_ID.size() + node_iter) =  std::numeric_limits<double>::infinity();
+		}
 	}
-}
 
-void power_market::Sink_Node_Set(market_inform &DSO_Market, power_network::DSO_cluster &DSO_cluster){
-	for(int node_iter = 0; node_iter < DSO_cluster.nodes_ID.size(); ++ node_iter){
-		DSO_Market.submitted_supply.col(DSO_cluster.points_ID.size() + node_iter) = Eigen::VectorXd::Zero(DSO_Market.price_intervals + 2);
-		DSO_Market.submitted_demand(DSO_Market.price_intervals + 1, DSO_cluster.points_ID.size() + node_iter) =  std::numeric_limits<double>::infinity();
+	void Sink_Node_Set(power_market::market_inform &DSO_Market, power_network::DSO_cluster &DSO_cluster){
+		for(int node_iter = 0; node_iter < DSO_cluster.nodes_ID.size(); ++ node_iter){
+			DSO_Market.submitted_supply.col(DSO_cluster.points_ID.size() + node_iter) = Eigen::VectorXd::Zero(DSO_Market.price_intervals + 2);
+			DSO_Market.submitted_demand(DSO_Market.price_intervals + 1, DSO_cluster.points_ID.size() + node_iter) =  std::numeric_limits<double>::infinity();
+		}
 	}
 }
 
@@ -366,18 +369,18 @@ void power_market::DSO_Market_Results_Get(int tick, market_inform &Market, algli
 			Market.confirmed_supply(tick, point_iter) = (sol_vec.segment(row_start, Market.price_intervals + 2).array().max(0)).sum();
 
 			// Store nodal prices
-			Market.confirmed_price(tick, point_iter) = Market.bidded_price(1) + rep.lagbc[row_start + 1];
+			Market.confirmed_price(tick, point_iter) = Market.bidded_price_map.bidded_price(1) + rep.lagbc[row_start + 1];
 			Market.confirmed_price(tick, point_iter) = int(Market.confirmed_price(tick, point_iter)) + .5;
-			if(Market.confirmed_price(tick, point_iter) < Market.bidded_price(1)){
-				Market.confirmed_price(tick, point_iter) = Market.bidded_price(0);
+			if(Market.confirmed_price(tick, point_iter) < Market.bidded_price_map.bidded_price(1)){
+				Market.confirmed_price(tick, point_iter) = Market.bidded_price_map.bidded_price(0);
 			}
-			else if(Market.confirmed_price(tick, point_iter) > Market.bidded_price(Market.price_intervals)){
-				Market.confirmed_price(tick, point_iter) = Market.bidded_price(Market.price_intervals + 1);
+			else if(Market.confirmed_price(tick, point_iter) > Market.bidded_price_map.bidded_price(Market.price_intervals)){
+				Market.confirmed_price(tick, point_iter) = Market.bidded_price_map.bidded_price(Market.price_intervals + 1);
 			}
 
 			// Store ratio at nodes
 			for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter){
-				if(Market.bidded_price(price_iter) >= Market.confirmed_price(tick, point_iter) || price_iter == Market.price_intervals + 1){
+				if(Market.bidded_price_map.bidded_price(price_iter) >= Market.confirmed_price(tick, point_iter) || price_iter == Market.price_intervals + 1){
 					if(sol[row_start + price_iter] >= 0.){
 						Market.confirmed_ratio_demand(point_iter) = std::min(Market.submitted_demand(price_iter, point_iter), Market.submitted_supply(price_iter, point_iter) - sol[row_start + price_iter]);
 						Market.confirmed_ratio_supply(point_iter) = Market.confirmed_ratio_demand(point_iter) + sol[row_start + price_iter];
@@ -400,18 +403,18 @@ void power_market::DSO_Market_Results_Get(int tick, market_inform &Market, algli
 			Market.confirmed_demand(tick, point_iter) = -(sol_vec.segment(row_start, Market.price_intervals + 2).array().min(0)).sum();
 
 			// Store nodal prices
-			Market.confirmed_price(tick, point_iter) = Market.bidded_price(1) + rep.lagbc[row_start + 1];
+			Market.confirmed_price(tick, point_iter) = Market.bidded_price_map.bidded_price(1) + rep.lagbc[row_start + 1];
 			Market.confirmed_price(tick, point_iter) = int(Market.confirmed_price(tick, point_iter)) + .5;
-			if(Market.confirmed_price(tick, point_iter) < Market.bidded_price(1)){
-				Market.confirmed_price(tick, point_iter) = Market.bidded_price(0);
+			if(Market.confirmed_price(tick, point_iter) < Market.bidded_price_map.bidded_price(1)){
+				Market.confirmed_price(tick, point_iter) = Market.bidded_price_map.bidded_price(0);
 			}
-			else if(Market.confirmed_price(tick, point_iter) > Market.bidded_price(Market.price_intervals)){
-				Market.confirmed_price(tick, point_iter) = Market.bidded_price(Market.price_intervals + 1);
+			else if(Market.confirmed_price(tick, point_iter) > Market.bidded_price_map.bidded_price(Market.price_intervals)){
+				Market.confirmed_price(tick, point_iter) = Market.bidded_price_map.bidded_price(Market.price_intervals + 1);
 			}
 
 			// Store ratio at nodes
 			for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter){
-				if(Market.bidded_price(price_iter) >= Market.confirmed_price(tick, point_iter) || price_iter == Market.price_intervals + 1){
+				if(Market.bidded_price_map.bidded_price(price_iter) >= Market.confirmed_price(tick, point_iter) || price_iter == Market.price_intervals + 1){
 					if(sol[row_start + price_iter] >= 0.){
 						Market.confirmed_ratio_demand(point_iter) = std::min(Market.submitted_demand(price_iter, point_iter), Market.submitted_supply(price_iter, point_iter) - sol[row_start + price_iter]);
 						Market.confirmed_ratio_demand(point_iter) /= Market.submitted_demand(price_iter, point_iter) + 1E-12;

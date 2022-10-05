@@ -68,22 +68,7 @@ namespace power_market{
 		/*@{*/
 		/**Power flow across each edge; a positive value indicates flowing from start to end.*/
 		Eigen::MatrixXd confirmed_power;
-		/**Voltage at each vertex.*/
-		Eigen::MatrixXd confirmed_voltage;
 		/*@{*/
-	};
-
-	/**Information of the control reserve market*/
-	struct control_reserve_inform{
-		Eigen::MatrixXd activated_positive;
-		Eigen::MatrixXd activated_negative;
-
-		Eigen::MatrixXd available_ratio_supply;
-		Eigen::MatrixXd available_ratio_demand;
-		Eigen::MatrixXd submitted_positive_supply;
-		Eigen::MatrixXd submitted_positive_demand;
-		Eigen::MatrixXd submitted_negative_supply;
-		Eigen::MatrixXd submitted_negative_demand;
 	};
 
 	/**Information of a power market.*/
@@ -99,12 +84,8 @@ namespace power_market{
 		int price_intervals = parameters::price_interval();
 		/**Name of bidding zones (for the IMO market only).*/
 		std::vector<std::string> zone_names;
-		/**Range of lowest and highest possible bidding prices.*/
-		Eigen::Vector2d price_range_inflex = Eigen::Vector2d(-500., 3000.);
-		/**Range of bidding prices for flexible supply and demand in the model.*/
-		Eigen::Vector2d price_range_flex = Eigen::Vector2d(-100., 500.);
 		/**Bidding prices in the model.*/
-		Eigen::VectorXd bidded_price;
+		parameters::price_ID_bimap bidded_price_map;
 		/**Merit order curve of the supply bids (for the IMO market only).*/
 		Eigen::MatrixXd merit_order_curve;
 		/**Default demand of biddings zones without cross-border flows (for the IMO market only).*/
@@ -115,30 +96,14 @@ namespace power_market{
 		Eigen::MatrixXd submitted_supply;
 		/**Demand bid submitted in the bidding zones.*/
 		Eigen::MatrixXd submitted_demand;
-		/**Filtered supply bids from DSOs forwarding to TSO before redispatch.*/
-		Eigen::MatrixXd filtered_supply;
-		/**Filtered demand bids from DSOs forwarding to TSO before redispatch.*/
-		Eigen::MatrixXd filtered_demand;
 
 		// Output Variables
-		/**Highest price of filtered supply in the DSOs.*/
-		Eigen::MatrixXd filtered_price_supply;
-		/**Lowest price of filtered demand in the DSOs.*/
-		Eigen::MatrixXd filtered_price_demand;
-		/**Ratio of filtered supply to submitted supply at the highest price in the DSOs.*/
-		Eigen::MatrixXd filtered_ratio_supply;
-		/**Ratio of filtered demand to submitted demand at the lowest price in the DSOs.*/
-		Eigen::MatrixXd filtered_ratio_demand;
 		/**Confirmed supply quantity of the market.*/
 		Eigen::MatrixXd confirmed_supply;
 		/**Confirmed demand quantity of the market.*/
 		Eigen::MatrixXd confirmed_demand;
 		/**Confirmed market clearing price of the market.*/
 		Eigen::MatrixXd confirmed_price;
-		/**Ratio of supply or demand confirmed at marginal price:
-		* -1: 100% demand; 1: 100% supply.
-		*/
-		Eigen::MatrixXd confirmed_price_ratio;
 		/**Ratio of supply confirmed at marginal price.*/
 		Eigen::VectorXd confirmed_ratio_supply;
 		/**Ratio of demand confirmed at marginal price.*/
@@ -149,10 +114,6 @@ namespace power_market{
 		Eigen::MatrixXd actual_demand;
 		/** Market clearing price after control reserve activation of the market.*/
 		Eigen::MatrixXd actual_price;
-		/**Ratio of supply or demand confirmed at marginal price:
-		* -1: 100% demand; 1: 100% supply.
-		*/
-		Eigen::MatrixXd actual_price_ratio;
 		/**Ratio of actual supply at marginal price.*/
 		Eigen::VectorXd actual_ratio_supply;
 		/**Ratio of actual demand at marginal price.*/
@@ -161,16 +122,6 @@ namespace power_market{
 		// Mixed Substructure
 		/**Information of the corresponding power network of the market.*/
 		network_graph network;
-		control_reserve_inform control_reserve;
-
-		// Functions
-		/**Set the bidding prices of the power market.*/
-		void set_bidded_price(){
-			this->bidded_price = Eigen::VectorXd(this->price_intervals + 2);
-			this->bidded_price(0) = this->price_range_inflex(0);
-			this->bidded_price.array().tail(1) = this->price_range_inflex(1);
-			this->bidded_price.segment(1, this->price_intervals) = Eigen::VectorXd::LinSpaced(this->price_intervals, this->price_range_flex(0) + .5 * (this->price_range_flex(1) - this->price_range_flex(0)) / this->price_intervals, this->price_range_flex(1) - .5 * (this->price_range_flex(1) - this->price_range_flex(0)) / this->price_intervals);
-		}
 	};
 
 	/**A vector of power markets. This type is used in setting the DSO markets.*/
@@ -208,11 +159,9 @@ namespace power_market{
 
 namespace power_market{
 	void Market_Initialization(market_inform&);
-	void Submitted_bid_calculation(market_whole_inform&, power_network::network_inform&);
 	void TSO_boundary_update(int, market_inform&, market_inform&, power_network::network_inform&);
 	void Flow_Based_Market_LP_Set(market_inform&, alglib::minlpstate&);
 	void Flow_Based_Market_Optimization(market_inform&, alglib::minlpstate&);
-	void Filtered_bid_calculation(int, markets_inform&, market_inform&, power_network::network_inform&, std::vector <alglib::minlpstate>&);
 	void default_demand_set(power_network::network_inform&, market_whole_inform&);
 	void power_market_process_set(power_network::network_inform&, market_whole_inform&, bool, bool);
 	void power_market_process_update(power_network::network_inform&, market_whole_inform&, bool, bool);
@@ -236,10 +185,10 @@ namespace power_market{
 	};
 
 	void International_Market_Set(market_inform&, alglib::minlpstate&, power_network::network_inform&, int, fin_market);
+	void Submitted_bid_calculation(market_whole_inform&, power_network::network_inform&);
 	void International_Market_Optimization(int, market_inform&, alglib::minlpstate&);
 	void International_Market_Output(market_inform&);
 	void International_Market_Price_Estimation(int, market_inform&, alglib::minlpstate&, power_network::network_inform&);
-	std::vector <agent::sorted_vector> International_Market_Price_Sorted(int,  market_inform&);
 }
 
 #endif
@@ -254,7 +203,6 @@ namespace power_market{
 	void TSO_Market_Scheduled_Results_Get(int, market_inform&, alglib::minlpstate&);
 	void Balancing_bid_calculation(int, market_whole_inform&, power_network::network_inform&);
 	void TSO_Market_Actual_Results_Get(int, market_inform&, alglib::minlpstate&);
-	void TSO_Market_control_reserve(int, market_whole_inform&, power_network::network_inform&, bool);
 }
 
 #endif
@@ -265,9 +213,7 @@ namespace power_market{
 
 namespace power_market{
 	void DSO_Markets_Set(markets_inform&, power_network::network_inform&, int);
-	void DSO_agents_update(int, agent::end_user::profiles&, market_inform&, market_inform&, power_network::network_inform&);
-	void Source_Node_Set(market_inform&, power_network::DSO_cluster&);
-	void Sink_Node_Set(market_inform&, power_network::DSO_cluster&);
+	//void DSO_agents_update(int, agent::end_user::profiles&, market_inform&, market_inform&, power_network::network_inform&);
 	void Filtered_bid_demand_calculation(int, market_whole_inform&, power_network::network_inform&);
 	void Filtered_bid_supply_calculation(int, market_whole_inform&, power_network::network_inform&);
 	void DSO_Market_Results_Get(int, market_inform&, alglib::minlpstate&, power_network::DSO_cluster&, bool supply = 1);

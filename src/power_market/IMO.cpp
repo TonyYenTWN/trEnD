@@ -22,6 +22,7 @@ namespace{
 		}
 
 		// Supply at each point (LV power plants) / node (HV power plants)
+		double cutoff_power = agent::power_supplier::parameters::cutoff_power();
 		for(int hydro_iter = 0; hydro_iter < Power_network_inform.plants.hydro.node.size(); ++ hydro_iter){
 			int bz_ID;
 			int DSO_ID;
@@ -29,7 +30,7 @@ namespace{
 			Eigen::VectorXd bid_vec;
 
 			// High voltage power plants connect directly to transmission network
-			if(Power_network_inform.plants.hydro.cap(hydro_iter) >= 20.){
+			if(Power_network_inform.plants.hydro.cap(hydro_iter) >= cutoff_power){
 				node_ID = Power_network_inform.plants.hydro.node(hydro_iter);
 				DSO_ID = Power_network_inform.nodes.cluster(node_ID);
 				bz_ID = Power_network_inform.nodes.bidding_zone(node_ID);
@@ -63,7 +64,8 @@ void power_market::International_Market_Set(market_inform &International_Market,
 	International_Market.cross_border_zone_start = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
 	International_Market.time_intervals = Time;
 	International_Market.zone_names = Power_network_inform.cbt.bz_names;
-	International_Market.set_bidded_price();
+	//International_Market.set_bidded_price();
+	parameters::bidded_price(International_Market.bidded_price_map);
 	International_Market.network.num_vertice = International_Market.num_zone;
 	International_Market.network.line_capacity_matrix = Power_network_inform.cbt.flow_constraint;
 
@@ -220,7 +222,7 @@ void power_market::International_Market_Set(market_inform &International_Market,
 	Eigen::VectorXd obj_vec = Eigen::VectorXd::Zero(variable_num);
 	for(int node_iter = 0; node_iter < International_Market.network.num_vertice; ++ node_iter){
 		int row_start = International_Market.network.num_edges + International_Market.network.num_vertice + node_iter * (International_Market.price_intervals + 2);
-		obj_vec.segment(row_start, International_Market.price_intervals + 2) = International_Market.bidded_price;
+		obj_vec.segment(row_start, International_Market.price_intervals + 2) = International_Market.bidded_price_map.bidded_price;
 	}
 	alglib::real_1d_array obj_coeff;
 	obj_coeff.setcontent(obj_vec.size(), obj_vec.data());
@@ -233,6 +235,69 @@ void power_market::International_Market_Set(market_inform &International_Market,
 	alglib::minlpsetlc2(IMO_Problem, constraint_general, lb_general, ub_general, constrant_num);
 	alglib::minlpsetscale(IMO_Problem, scale);
 	alglib::minlpsetalgodss(IMO_Problem, 0.);
+}
+
+void power_market::Submitted_bid_calculation(market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
+	// Initialize submit bids of markets
+	Market_Initialization(Power_market_inform.International_Market);
+
+	// Demand at each point (residential) / node (industrial)
+	int point_num = Power_network_inform.points.bidding_zone.size();
+	int sample_num = Power_market_inform.agent_profiles.end_users[0].size();
+	for(int point_iter = 0; point_iter < point_num; ++ point_iter){
+		int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
+
+		// Residential demand; connect to distribution power network
+		for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
+			Power_market_inform.International_Market.submitted_supply.col(bz_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_inflex;
+			Power_market_inform.International_Market.submitted_supply.col(bz_ID)  += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_flex;
+			Power_market_inform.International_Market.submitted_demand.col(bz_ID)  += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex;
+			Power_market_inform.International_Market.submitted_demand.col(bz_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_flex;
+		}
+
+		// Industrial demand; connect to transmission power network
+		Power_market_inform.International_Market.submitted_demand.col(bz_ID) += Power_market_inform.agent_profiles.industrial.HV[point_iter].bids.submitted_demand_flex;
+	}
+
+	// Supply at each point (LV power plants) / node (HV power plants)
+	int hydro_HV_plant_num = Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant.size();
+	for(int agent_iter = 0; agent_iter < hydro_HV_plant_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].point_ID;
+		int bz_ID = Power_network_inform.points.bidding_zone(point_ID);
+		Power_market_inform.International_Market.submitted_supply.col(bz_ID) += Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].bids.submitted_supply_flex;
+	}
+	int hydro_LV_plant_num = Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant.size();
+	for(int agent_iter = 0; agent_iter < hydro_LV_plant_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].point_ID;
+		int bz_ID = Power_network_inform.points.bidding_zone(point_ID);
+		Power_market_inform.International_Market.submitted_supply.col(bz_ID) += Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids.submitted_supply_flex;
+	}
+	int wind_HV_plant_num = Power_market_inform.agent_profiles.power_supplier.wind.HV_plant.size();
+	for(int agent_iter = 0; agent_iter < wind_HV_plant_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].point_ID;
+		int bz_ID = Power_network_inform.points.bidding_zone(point_ID);
+		Power_market_inform.International_Market.submitted_supply.col(bz_ID) += Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].bids.submitted_supply_flex;
+	}
+	int wind_LV_plant_num = Power_market_inform.agent_profiles.power_supplier.wind.LV_plant.size();
+	for(int agent_iter = 0; agent_iter < wind_LV_plant_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].point_ID;
+		int bz_ID = Power_network_inform.points.bidding_zone(point_ID);
+		Power_market_inform.International_Market.submitted_supply.col(bz_ID) += Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].bids.submitted_supply_flex;
+	}
+	int pump_HV_num = Power_market_inform.agent_profiles.power_supplier.pump_storage.HV.size();
+	for(int agent_iter = 0; agent_iter < pump_HV_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].point_ID;
+		int bz_ID = Power_network_inform.points.bidding_zone(point_ID);
+		Power_market_inform.International_Market.submitted_supply.col(bz_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].bids.submitted_supply_flex;
+		Power_market_inform.International_Market.submitted_demand.col(bz_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].bids.submitted_demand_flex;
+	}
+	int pump_LV_num = Power_market_inform.agent_profiles.power_supplier.pump_storage.LV.size();
+	for(int agent_iter = 0; agent_iter < pump_LV_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].point_ID;
+		int bz_ID = Power_network_inform.points.bidding_zone(point_ID);
+		Power_market_inform.International_Market.submitted_supply.col(bz_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.submitted_supply_flex;
+		Power_market_inform.International_Market.submitted_demand.col(bz_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.submitted_demand_flex;
+	}
 }
 
 void power_market::International_Market_Optimization(int tick, market_inform &Market, alglib::minlpstate &IMO_Problem){
@@ -278,8 +343,6 @@ void power_market::International_Market_Optimization(int tick, market_inform &Ma
 	alglib::minlpreport rep;
 	alglib::minlpresults(IMO_Problem, sol, rep);
 	Eigen::VectorXd sol_vec = Eigen::Map <Eigen::VectorXd> (sol.getcontent(), sol.length());
-//	std::cout << sol_vec.segment(Market.network.num_edges, Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Market.network.num_edges, Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_edges, Market.network.num_vertice).array().abs().sum() << "\n";
-//	std::cout << sol_vec.head(Market.network.num_edges).minCoeff() << " " << sol_vec.head(Market.network.num_edges).maxCoeff() << "\n\n";
 
 	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
 		// Store power source / sink
@@ -288,18 +351,18 @@ void power_market::International_Market_Optimization(int tick, market_inform &Ma
 		Market.confirmed_demand(tick, node_iter) = -(sol_vec.segment(row_start, Market.price_intervals + 2).array().min(0)).sum();
 
 		// Store nodal prices
-		Market.confirmed_price(tick, node_iter) = Market.bidded_price(0) + rep.lagbc[row_start];
+		Market.confirmed_price(tick, node_iter) = Market.bidded_price_map.bidded_price(0) + rep.lagbc[row_start];
 		Market.confirmed_price(tick, node_iter) = int(Market.confirmed_price(tick, node_iter)) + .5;
-		if(Market.confirmed_price(tick, node_iter) < Market.bidded_price(1)){
-			Market.confirmed_price(tick, node_iter) = Market.bidded_price(0);
+		if(Market.confirmed_price(tick, node_iter) < Market.bidded_price_map.bidded_price(1)){
+			Market.confirmed_price(tick, node_iter) = Market.bidded_price_map.bidded_price(0);
 		}
-		else if(Market.confirmed_price(tick, node_iter) > Market.bidded_price(Market.price_intervals)){
-			Market.confirmed_price(tick, node_iter) = Market.bidded_price(Market.price_intervals + 1);
+		else if(Market.confirmed_price(tick, node_iter) > Market.bidded_price_map.bidded_price(Market.price_intervals)){
+			Market.confirmed_price(tick, node_iter) = Market.bidded_price_map.bidded_price(Market.price_intervals + 1);
 		}
 
 		// Store ratio at nodes
 		for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter){
-			if(Market.bidded_price(price_iter) >= Market.confirmed_price(tick, node_iter) || price_iter == Market.price_intervals + 1){
+			if(Market.bidded_price_map.bidded_price(price_iter) >= Market.confirmed_price(tick, node_iter) || price_iter == Market.price_intervals + 1){
 				if(sol[row_start + price_iter] >= 0.){
 					Market.confirmed_ratio_demand(node_iter) = std::min(Market.submitted_demand(price_iter, node_iter), Market.submitted_supply(price_iter, node_iter) - sol[row_start + price_iter]);
 					Market.confirmed_ratio_supply(node_iter) = Market.confirmed_ratio_demand(node_iter) + sol[row_start + price_iter];
@@ -319,7 +382,6 @@ void power_market::International_Market_Optimization(int tick, market_inform &Ma
 
 	// Store cross-border transmission flow
 	Market.network.confirmed_power.row(tick) = sol_vec.head(Market.network.num_edges);
-//	std::cout << Market.network.confirmed_power.row(tick) << "\n\n";
 }
 
 void power_market::International_Market_Output(market_inform &International_Market){
@@ -342,18 +404,6 @@ void power_market::International_Market_Price_Estimation(int tick, market_inform
 		International_Market_Submitted_bid_calculation(tick + foresight_time - 1, International_Market, Power_network_inform);
 		International_Market_Optimization(tick + foresight_time - 1, International_Market, IMO_Problem);
 	}
-}
-
-std::vector <agent::sorted_vector> power_market::International_Market_Price_Sorted(int tick,  market_inform &International_Market){
-//	std::vector <agent::sorted_vector> expected_price_sorted(International_Market.cross_border_zone_start);
-//	int foresight_time = agent::aggregator::parameters::foresight_time();
-//
-//	for(int zone_iter = 0; zone_iter < expected_price_sorted.size(); ++ zone_iter){
-//		Eigen::VectorXd expected_price = (International_Market.confirmed_price.col(zone_iter)).segment(tick, foresight_time);
-//		expected_price_sorted[zone_iter] = agent::sort(expected_price);
-//	}
-//
-//	return expected_price_sorted;
 }
 
 //int main(){

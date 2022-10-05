@@ -61,11 +61,6 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 		power_market::Filtered_bid_supply_calculation(0, Power_market_inform, Power_network_inform);
 		agent::agents_filter_supply_update(0, Power_market_inform, Power_network_inform);
 	}
-//	// Bid-filtering in DSOs
-//	if(DSO_filter_flag){
-//		Filtered_bid_calculation(0, Power_market_inform.DSO_Markets, Power_market_inform.TSO_Market, Power_network_inform, Power_market_inform.DSO_Problems);
-//	}
-//
 
 	// Redispatch in TSO
 	Confirmed_bid_calculation(0, Power_market_inform, Power_network_inform, DSO_filter_flag);
@@ -84,9 +79,11 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 }
 
 void power_market::power_market_process_update(power_network::network_inform &Power_network_inform, market_whole_inform &Power_market_inform, bool DSO_filter_flag, bool control_reserve_flag){
-//	int Time = parameters::Time();
-//
-//	int tick = 1;
+	int Time = parameters::Time();
+	int tick = 1;
+
+	International_Market_Price_Estimation(tick, Power_market_inform.International_Market, Power_market_inform.IMO_Problem, Power_network_inform);
+
 //	International_Market_Price_Estimation(tick, Power_market_inform.International_Market, Power_market_inform.IMO_Problem, Power_network_inform);
 //	DSO_agents_update(tick, Power_market_inform.end_user_profiles, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform);
 //	Submitted_bid_calculation(tick, Power_market_inform, Power_network_inform, DSO_filter_flag);
