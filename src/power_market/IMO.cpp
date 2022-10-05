@@ -307,8 +307,8 @@ void power_market::International_Market_Optimization(int tick, market_inform &Ma
 					Market.confirmed_ratio_supply(node_iter) /= Market.submitted_supply(price_iter, node_iter) + 1E-12;
 				}
 				else{
-					Market.confirmed_ratio_supply(node_iter) = std::min(Market.submitted_supply(price_iter, node_iter), Market.submitted_demand(price_iter, node_iter) - sol[row_start + price_iter]);
-					Market.confirmed_ratio_demand(node_iter) = Market.confirmed_ratio_supply(node_iter) + sol[row_start + price_iter];
+					Market.confirmed_ratio_supply(node_iter) = std::min(Market.submitted_supply(price_iter, node_iter), Market.submitted_demand(price_iter, node_iter) + sol[row_start + price_iter]);
+					Market.confirmed_ratio_demand(node_iter) = Market.confirmed_ratio_supply(node_iter) - sol[row_start + price_iter];
 					Market.confirmed_ratio_demand(node_iter) /= Market.submitted_demand(price_iter, node_iter) + 1E-12;
 					Market.confirmed_ratio_supply(node_iter) /= Market.submitted_supply(price_iter, node_iter) + 1E-12;
 				}
