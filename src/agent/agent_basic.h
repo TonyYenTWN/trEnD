@@ -31,16 +31,16 @@ namespace agent{
 		Eigen::VectorXd filtered_supply;
 		Eigen::VectorXd filtered_demand;
 
-		// Confirmed bids after TSO redispatch
-//		Eigen::VectorXd accepted_supply;
-//		Eigen::VectorXd accepted_demand;
-
 		// Equivalent bidding price when control reserve is activated
 		Eigen::VectorXd balancing_supply;
 		Eigen::VectorXd balancing_demand;
 	};
 
 	struct results{
+		// Clearing results in the IMO
+		double cleared_supply;
+		double cleared_demand;
+
 		// Confirmed schedule after TSO redispatch
 		double confirmed_supply;
 		double confirmed_demand;
