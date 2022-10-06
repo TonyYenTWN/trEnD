@@ -123,20 +123,4 @@ void power_market::power_market_process_update(power_network::network_inform &Po
 
 	// Update state variables of agents
 	agent::agents_status_update(tick, Power_market_inform, Power_network_inform, control_reserve_flag);
-
-//	International_Market_Price_Estimation(tick, Power_market_inform.International_Market, Power_market_inform.IMO_Problem, Power_network_inform);
-//	DSO_agents_update(tick, Power_market_inform.end_user_profiles, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform);
-//	Submitted_bid_calculation(tick, Power_market_inform, Power_network_inform, DSO_filter_flag);
-//	International_Market_Optimization(tick, Power_market_inform.International_Market, Power_market_inform.IMO_Problem);
-//	TSO_boundary_update(tick, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform);
-//
-//	if(DSO_filter_flag){
-//		Filtered_bid_calculation(tick, Power_market_inform.DSO_Markets, Power_market_inform.TSO_Market, Power_network_inform, Power_market_inform.DSO_Problems);
-//	}
-//
-//	Flow_Based_Market_Optimization(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
-//	TSO_Market_Results_Get(tick, Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
-//	if(control_reserve_flag){
-//		TSO_Market_control_reserve(tick, Power_market_inform, Power_network_inform, DSO_filter_flag);
-//	}
 }
