@@ -22,8 +22,6 @@ namespace{
 		bids.redispatch_demand = Eigen::VectorXd::Zero(price_interval + 2);
 		bids.filtered_supply = Eigen::VectorXd::Zero(price_interval + 2);
 		bids.filtered_demand = Eigen::VectorXd::Zero(price_interval + 2);
-//		bids.accepted_supply = Eigen::VectorXd::Zero(price_interval + 2);
-//		bids.accepted_demand = Eigen::VectorXd::Zero(price_interval + 2);
 		bids.balancing_supply = Eigen::VectorXd::Zero(price_interval + 2);
 		bids.balancing_demand = Eigen::VectorXd::Zero(price_interval + 2);
 	}
@@ -682,6 +680,186 @@ namespace{
 			}
 		}
 	}
+
+	void aggregator_price_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
+		int foresight_time = agent::aggregator::parameters::foresight_time();
+		int aggregator_num = Power_market_inform.agent_profiles.aggregators.size();
+
+		for(int agent_iter = 0; agent_iter < aggregator_num; ++ agent_iter){
+			int point_ID = Power_market_inform.agent_profiles.aggregators[agent_iter].point_ID;
+			int bz_ID = Power_network_inform.points.bidding_zone(point_ID);
+			Eigen::VectorXd bid_vec = Power_market_inform.International_Market.merit_order_curve.col(bz_ID);
+			bid_vec *= Power_network_inform.plants.hydro.cap(agent_iter);
+			bid_vec /= (Power_market_inform.International_Market.merit_order_curve.col(bz_ID).sum());
+
+			Power_market_inform.agent_profiles.aggregators[agent_iter].price_expected_profile = Power_market_inform.International_Market.confirmed_price.col(bz_ID).segment(tick, foresight_time);
+			Power_market_inform.agent_profiles.aggregators[agent_iter].price_demand_profile = Power_market_inform.International_Market.confirmed_price.col(bz_ID).segment(tick, foresight_time);
+			Power_market_inform.agent_profiles.aggregators[agent_iter].price_supply_profile = Power_market_inform.International_Market.confirmed_price.col(bz_ID).segment(tick, foresight_time);
+		}
+	}
+
+	void end_user_submit_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
+		int foresight_time = agent::end_user::parameters::foresight_time();
+		int point_num = Power_network_inform.points.bidding_zone.size();
+		int sample_num = agent::end_user::parameters::sample_num();
+		int price_interval = power_market::parameters::price_interval();
+		double residential_ratio = agent::parameters::residential_ratio();
+
+		// Update of forecast demand profile and operation strategies
+		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
+			for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
+				int load_shift_time = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.shift_time;
+
+				// Update of input profiles
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.house_default_period = Eigen::VectorXi::Ones(foresight_time);
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.default_demand_profile = Eigen::VectorXd::Zero(foresight_time);
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.default_demand_profile *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.EV_self_charging;
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile = Power_network_inform.points.nominal_mean_demand_field.row(point_iter).segment(tick, foresight_time);
+				//Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.default_demand_profile;
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand.head(foresight_time + load_shift_time - 1) = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand.tail(foresight_time + load_shift_time - 1);
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(foresight_time + load_shift_time - 1) = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick + foresight_time - 1);
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(foresight_time + load_shift_time - 1) *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.smart_appliance * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scale;
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile *= 1. - Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.smart_appliance * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scale;
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_PV_profile = Eigen::VectorXd::Zero(foresight_time);
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.price_demand_profile = Power_market_inform.agent_profiles.aggregators[point_iter].price_demand_profile;
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.price_supply_profile = Power_market_inform.agent_profiles.aggregators[point_iter].price_supply_profile;
+
+				// Set bids and results information
+				agent_bids_initialization(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids);
+				agent_results_set(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results);
+
+				// Optimization and update process variables
+				agent::end_user::end_user_LP_optimize(tick, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter]);
+
+				// Scale the bids correctly
+				double scale = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.weight;
+				scale *= agent::parameters::residential_ratio();
+				scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
+				agent_submitted_bids_scale(scale, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids);
+			}
+		}
+	}
+
+	void industrial_submit_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
+		int industrial_HV_num = Power_market_inform.agent_profiles.industrial.HV.size();
+		int price_interval = power_market::parameters::price_interval();
+
+		for(int agent_iter = 0; agent_iter < industrial_HV_num; ++ agent_iter){
+			int point_ID = Power_market_inform.agent_profiles.industrial.HV[agent_iter].point_ID;
+
+			double bid_inflex_industrial = Power_network_inform.points.nominal_mean_demand_field(point_ID, tick);
+			bid_inflex_industrial *= Power_network_inform.points.population_density(point_ID) * Power_network_inform.points.point_area / 1000.;
+			bid_inflex_industrial *= 1. - agent::parameters::residential_ratio();
+			double bid_flex_industrial = bid_inflex_industrial;
+			bid_inflex_industrial *= 1. - agent::industrial::flexible_ratio();
+			bid_flex_industrial *= agent::industrial::flexible_ratio();
+			bid_flex_industrial /= price_interval;
+
+			// Set bids information
+			agent_bids_initialization(Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids);
+			agent_results_set(Power_market_inform.agent_profiles.industrial.HV[agent_iter].results);
+			Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids.submitted_demand_flex(price_interval + 1) = bid_inflex_industrial;
+			Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids.submitted_demand_flex.segment(1, price_interval) = Eigen::VectorXd::Constant(price_interval, bid_flex_industrial);
+			Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids.redispatch_demand = Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids.submitted_demand_flex;
+			Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids.balancing_demand = Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids.submitted_demand_flex;
+		}
+	}
+
+	void power_supplier_submit_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
+		int price_interval = power_market::parameters::price_interval();
+
+		int hydro_HV_plant_num = Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant.size();
+		for(int agent_iter = 0; agent_iter < hydro_HV_plant_num; ++ agent_iter){
+			int point_ID = Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].point_ID;
+			int bz_ID = Power_network_inform.points.bidding_zone(point_ID);
+			Eigen::VectorXd bid_vec = Power_market_inform.International_Market.merit_order_curve.col(bz_ID);
+			bid_vec *= Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].cap;
+			bid_vec /= (Power_market_inform.International_Market.merit_order_curve.col(bz_ID).sum());
+
+			// Set bids information
+			agent_bids_initialization(Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].bids);
+			agent_results_set(Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].results);
+			Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].bids.submitted_supply_flex = bid_vec;
+			Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].bids.redispatch_supply = bid_vec;
+			Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].bids.balancing_supply = bid_vec;
+		}
+
+		int hydro_LV_plant_num = Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant.size();
+		for(int agent_iter = 0; agent_iter < hydro_LV_plant_num; ++ agent_iter){
+			int point_ID = Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].point_ID;
+			int bz_ID = Power_network_inform.points.bidding_zone(point_ID);
+			Eigen::VectorXd bid_vec = Power_market_inform.International_Market.merit_order_curve.col(bz_ID);
+			bid_vec *= Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].cap;
+			bid_vec /= (Power_market_inform.International_Market.merit_order_curve.col(bz_ID).sum());
+
+			// Set bids information
+			agent_bids_initialization(Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids);
+			agent_results_set(Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].results);
+			Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids.submitted_supply_flex = bid_vec;
+			Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids.redispatch_supply = bid_vec;
+			Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids.balancing_supply = bid_vec;
+		}
+
+		int wind_HV_plant_num = Power_market_inform.agent_profiles.power_supplier.wind.HV_plant.size();
+		for(int agent_iter = 0; agent_iter < wind_HV_plant_num; ++ agent_iter){
+			int point_ID = Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].point_ID;
+			int price_supply_flex_ID = 0;
+			double bid_quan = Power_network_inform.points.wind_on_cf(point_ID, 0) * Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].cap;
+
+			// Set bids information
+			agent_bids_initialization(Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].bids);
+			agent_results_set(Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].results);
+			Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].bids.submitted_supply_flex(price_supply_flex_ID) = bid_quan;
+			Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].bids.redispatch_supply(price_supply_flex_ID) = bid_quan;
+			Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].bids.balancing_supply(price_supply_flex_ID) = bid_quan;
+		}
+
+		int wind_LV_plant_num = Power_market_inform.agent_profiles.power_supplier.wind.LV_plant.size();
+		for(int agent_iter = 0; agent_iter < wind_LV_plant_num; ++ agent_iter){
+			int point_ID = Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].point_ID;
+			int price_supply_flex_ID = 0;
+			double bid_quan = Power_network_inform.points.wind_on_cf(point_ID, 0) * Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].cap;
+
+			// Set bids information
+			agent_bids_initialization(Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].bids);
+			agent_results_set(Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].results);
+			Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].bids.submitted_supply_flex(price_supply_flex_ID) = bid_quan;
+			Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].bids.redispatch_supply(price_supply_flex_ID) = bid_quan;
+			Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].bids.balancing_supply(price_supply_flex_ID) = bid_quan;
+		}
+
+		int pump_HV_num = Power_market_inform.agent_profiles.power_supplier.pump_storage.HV.size();
+		for(int agent_iter = 0; agent_iter < pump_HV_num; ++ agent_iter){
+			int point_ID = Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].point_ID;
+			int bz_ID = Power_network_inform.points.bidding_zone(point_ID);
+			Eigen::VectorXd bid_vec = Power_market_inform.International_Market.merit_order_curve.col(bz_ID);
+			bid_vec *= Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].cap;
+			bid_vec /= (Power_market_inform.International_Market.merit_order_curve.col(bz_ID).sum());
+
+			// Set bids information
+			agent_bids_initialization(Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].bids);
+			agent_results_set(Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].results);
+			Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].bids.submitted_supply_flex = bid_vec;
+			Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].bids.redispatch_supply = bid_vec;
+			Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].bids.balancing_supply = bid_vec;
+		}
+
+		int pump_LV_num = Power_market_inform.agent_profiles.power_supplier.pump_storage.LV.size();
+		for(int agent_iter = 0; agent_iter < pump_LV_num; ++ agent_iter){
+			int point_ID = Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].point_ID;
+			int bz_ID = Power_network_inform.points.bidding_zone(point_ID);
+			Eigen::VectorXd bid_vec = Power_market_inform.International_Market.merit_order_curve.col(bz_ID);
+			bid_vec *= Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].cap;
+			bid_vec /= (Power_market_inform.International_Market.merit_order_curve.col(bz_ID).sum());
+
+			// Set bids information
+			agent_bids_initialization(Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids);
+			agent_results_set(Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].results);
+			Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.submitted_supply_flex = bid_vec;
+			Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.redispatch_supply = bid_vec;
+			Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.balancing_supply = bid_vec;
+		}
+	}
 }
 
 void agent::agents_set(power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
@@ -716,5 +894,8 @@ void agent::agents_status_update(int tick, power_market::market_whole_inform &Po
 }
 
 void agent::agents_submit_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
-
+	aggregator_price_update(tick, Power_market_inform, Power_network_inform);
+	end_user_submit_update(tick, Power_market_inform, Power_network_inform);
+	industrial_submit_update(tick, Power_market_inform, Power_network_inform);
+	power_supplier_submit_update(tick, Power_market_inform, Power_network_inform);
 }

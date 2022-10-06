@@ -85,7 +85,11 @@ void power_market::power_market_process_update(power_network::network_inform &Po
 	int Time = parameters::Time();
 	int tick = 1;
 
+	// Initial estimation of market clearing price in the IMO
 	International_Market_Price_Estimation(tick, Power_market_inform.International_Market, Power_market_inform.IMO_Problem, Power_network_inform);
+
+	// Bidding strategies of agents
+	agent::agents_submit_update(tick, Power_market_inform, Power_network_inform);
 
 //	International_Market_Price_Estimation(tick, Power_market_inform.International_Market, Power_market_inform.IMO_Problem, Power_network_inform);
 //	DSO_agents_update(tick, Power_market_inform.end_user_profiles, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform);
