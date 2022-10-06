@@ -32,8 +32,8 @@ namespace agent{
 		Eigen::VectorXd filtered_demand;
 
 		// Confirmed bids after TSO redispatch
-		Eigen::VectorXd accepted_supply;
-		Eigen::VectorXd accepted_demand;
+//		Eigen::VectorXd accepted_supply;
+//		Eigen::VectorXd accepted_demand;
 
 		// Equivalent bidding price when control reserve is activated
 		Eigen::VectorXd balancing_supply;

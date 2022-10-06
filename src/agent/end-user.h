@@ -60,7 +60,7 @@ namespace agent{
 			/** Flexible demand not yet fulfilled in the load shifting timeframe (kWh per hour per person).*/
 			Eigen::VectorXd unfulfilled_demand;
 			/** Scheduled flexible demand at current time step (kWh per hour per person).*/
-			double scheduled_demand;
+			Eigen::VectorXd scheduled_demand;
 			/*@{*/
 		};
 

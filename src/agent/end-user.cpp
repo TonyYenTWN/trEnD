@@ -250,7 +250,7 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 		bound_box.row(dc_ev_ID) << 0., profile.operation.EV.BESS.capacity_scale;
 		bound_box.row(dc_ev_ID) *= profile.investment.decision.EV_self_charging;
 		bound_box.row(s_ev_ID) << 0., profile.operation.EV.BESS.energy_scale;
-		bound_box.row(d_ev_ID) << Eigen::RowVector2d::Constant(profile.operation.EV.default_demand_profile(tock));
+		bound_box.row(d_ev_ID) << Eigen::RowVector2d::Constant(profile.operation.EV.default_demand_profile(tock) + profile.operation.EV.BESS.self_consumption);
 		if(tock == 0){
 			bound_box.row(d_b_ID) -= Eigen::RowVector2d::Constant(profile.operation.BESS.soc);
 			bound_box.row(d_ev_ID) -= Eigen::RowVector2d::Constant(profile.operation.EV.BESS.soc);
@@ -305,7 +305,10 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 	alglib::minlpresults(profile.operation.Problem, sol, rep);
 	profile.operation.BESS.scheduled_capacity = sol[2];
 	profile.operation.EV.BESS.scheduled_capacity = sol[3];
-	profile.operation.smart_appliance.scheduled_demand = sol[4];
+	profile.operation.smart_appliance.scheduled_demand = Eigen::VectorXd::Zero(2 * load_shift_time + 1);
+	for(int tock = 0; tock < 2 * load_shift_time + 1; ++ tock){
+		profile.operation.smart_appliance.scheduled_demand(tock) = sol[14 + tock];
+	}
 
 	int price_demand_inflex_ID = price_interval + 1;
 	int price_demand_flex_ID = price_interval + 1;
