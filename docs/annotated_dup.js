@@ -1,6 +1,9 @@
 var annotated_dup =
 [
     [ "agent", "d2/d00/namespaceagent.html", [
+      [ "aggregator", "de/dad/namespaceagent_1_1aggregator.html", [
+        [ "profile", "de/d26/structagent_1_1aggregator_1_1profile.html", "de/d26/structagent_1_1aggregator_1_1profile" ]
+      ] ],
       [ "end_user", "d8/d3f/namespaceagent_1_1end__user.html", [
         [ "decision", "d1/de8/structagent_1_1end__user_1_1decision.html", "d1/de8/structagent_1_1end__user_1_1decision" ],
         [ "EV_inform", "da/d92/structagent_1_1end__user_1_1EV__inform.html", "da/d92/structagent_1_1end__user_1_1EV__inform" ],
@@ -10,10 +13,27 @@ var annotated_dup =
         [ "smart_appliance_inform", "d3/dd0/structagent_1_1end__user_1_1smart__appliance__inform.html", "d3/dd0/structagent_1_1end__user_1_1smart__appliance__inform" ],
         [ "storage_inform", "d3/dfa/structagent_1_1end__user_1_1storage__inform.html", "d3/dfa/structagent_1_1end__user_1_1storage__inform" ]
       ] ],
+      [ "industrial", "db/d80/namespaceagent_1_1industrial.html", [
+        [ "profile", "db/ded/structagent_1_1industrial_1_1profile.html", "db/ded/structagent_1_1industrial_1_1profile" ],
+        [ "profiles", "db/dbf/structagent_1_1industrial_1_1profiles.html", "db/dbf/structagent_1_1industrial_1_1profiles" ]
+      ] ],
+      [ "power_supplier", "da/d54/namespaceagent_1_1power__supplier.html", [
+        [ "hybrid_profile", "da/d0e/structagent_1_1power__supplier_1_1hybrid__profile.html", "da/d0e/structagent_1_1power__supplier_1_1hybrid__profile" ],
+        [ "plant_profile", "d5/d5c/structagent_1_1power__supplier_1_1plant__profile.html", "d5/d5c/structagent_1_1power__supplier_1_1plant__profile" ],
+        [ "plants", "dc/dbd/structagent_1_1power__supplier_1_1plants.html", "dc/dbd/structagent_1_1power__supplier_1_1plants" ],
+        [ "profiles", "d8/d53/structagent_1_1power__supplier_1_1profiles.html", "d8/d53/structagent_1_1power__supplier_1_1profiles" ],
+        [ "storage", "d3/d72/structagent_1_1power__supplier_1_1storage.html", "d3/d72/structagent_1_1power__supplier_1_1storage" ],
+        [ "storage_profile", "d5/dcf/structagent_1_1power__supplier_1_1storage__profile.html", "d5/dcf/structagent_1_1power__supplier_1_1storage__profile" ]
+      ] ],
+      [ "bids", "d6/d69/structagent_1_1bids.html", "d6/d69/structagent_1_1bids" ],
+      [ "results", "d8/d28/structagent_1_1results.html", "d8/d28/structagent_1_1results" ],
       [ "sorted_vector", "de/dbe/structagent_1_1sorted__vector.html", "de/dbe/structagent_1_1sorted__vector" ]
     ] ],
     [ "power_market", "d5/d60/namespacepower__market.html", [
-      [ "control_reserve_inform", "d1/df3/structpower__market_1_1control__reserve__inform.html", "d1/df3/structpower__market_1_1control__reserve__inform" ],
+      [ "parameters", "d5/d27/namespacepower__market_1_1parameters.html", [
+        [ "price_ID_bimap", "dc/d53/structpower__market_1_1parameters_1_1price__ID__bimap.html", "dc/d53/structpower__market_1_1parameters_1_1price__ID__bimap" ]
+      ] ],
+      [ "agent_profiles", "da/d3a/structpower__market_1_1agent__profiles.html", "da/d3a/structpower__market_1_1agent__profiles" ],
       [ "fin_market", "d9/d9c/structpower__market_1_1fin__market.html", "d9/d9c/structpower__market_1_1fin__market" ],
       [ "market_inform", "d8/d2d/structpower__market_1_1market__inform.html", "d8/d2d/structpower__market_1_1market__inform" ],
       [ "market_whole_inform", "da/d16/structpower__market_1_1market__whole__inform.html", "da/d16/structpower__market_1_1market__whole__inform" ],

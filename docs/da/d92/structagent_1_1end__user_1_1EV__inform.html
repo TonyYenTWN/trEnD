@@ -120,6 +120,13 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a304efde733a06c524755ef67d5cd9bbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab17389a88f626fddea739fcca1cde005"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXi&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d92/structagent_1_1end__user_1_1EV__inform.html#ab17389a88f626fddea739fcca1cde005">house_default_period</a></td></tr>
 <tr class="separator:ab17389a88f626fddea739fcca1cde005"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1a501c0976af1cb7c5460f1d7e0c223"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d92/structagent_1_1end__user_1_1EV__inform.html#ab1a501c0976af1cb7c5460f1d7e0c223">default_demand_profile</a></td></tr>
+<tr class="separator:ab1a501c0976af1cb7c5460f1d7e0c223"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr><td colspan="2"><div class="groupHeader">process parameters</div></td></tr>
+<tr class="memitem:a97f5f7905d61e174dd39989c51f25f43"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d92/structagent_1_1end__user_1_1EV__inform.html#a97f5f7905d61e174dd39989c51f25f43">soc</a></td></tr>
+<tr class="separator:a97f5f7905d61e174dd39989c51f25f43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a242adb85e80fc88ae7a6cab914420d79"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d92/structagent_1_1end__user_1_1EV__inform.html#a242adb85e80fc88ae7a6cab914420d79">scheduled_capacity</a></td></tr>
+<tr class="separator:a242adb85e80fc88ae7a6cab914420d79"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">mixed substructure</div></td></tr>
 <tr class="memitem:acb90d5492f84189de62bb31de2806cd0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d3/dfa/structagent_1_1end__user_1_1storage__inform.html">storage_inform</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d92/structagent_1_1end__user_1_1EV__inform.html#acb90d5492f84189de62bb31de2806cd0">BESS</a></td></tr>
 <tr class="separator:acb90d5492f84189de62bb31de2806cd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -127,7 +134,7 @@ Public Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Information of electric vehicle of an end-user. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00108">108</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00095">95</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
 <a id="acb90d5492f84189de62bb31de2806cd0" name="acb90d5492f84189de62bb31de2806cd0"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#acb90d5492f84189de62bb31de2806cd0">&#9670;&nbsp;</a></span>BESS</h2>
@@ -141,7 +148,24 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00125">125</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00124">124</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
+
+</div>
+</div>
+<a id="ab1a501c0976af1cb7c5460f1d7e0c223" name="ab1a501c0976af1cb7c5460f1d7e0c223"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1a501c0976af1cb7c5460f1d7e0c223">&#9670;&nbsp;</a></span>default_demand_profile</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd agent::end_user::EV_inform::default_demand_profile</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >The time series of the default charging demand of the EV (kWh per person). </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00107">107</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
 
 </div>
 </div>
@@ -158,7 +182,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >kWh per person per hour of usage. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00114">114</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00101">101</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
 
 </div>
 </div>
@@ -175,7 +199,41 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >The time intervals when EV is parked in the house. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00118">118</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00105">105</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
+
+</div>
+</div>
+<a id="a242adb85e80fc88ae7a6cab914420d79" name="a242adb85e80fc88ae7a6cab914420d79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a242adb85e80fc88ae7a6cab914420d79">&#9670;&nbsp;</a></span>scheduled_capacity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double agent::end_user::EV_inform::scheduled_capacity</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Scheduled charge / discharge output at current time step (kWh per hour per person). </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00117">117</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
+
+</div>
+</div>
+<a id="a97f5f7905d61e174dd39989c51f25f43" name="a97f5f7905d61e174dd39989c51f25f43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a97f5f7905d61e174dd39989c51f25f43">&#9670;&nbsp;</a></span>soc</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double agent::end_user::EV_inform::soc</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >State of charge level. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00115">115</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
 
 </div>
 </div>
@@ -192,7 +250,7 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >The time intervals when EV is actually used. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00116">116</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00103">103</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
 
 </div>
 </div>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['technical_5fparameters_0',['technical_parameters',['../dc/dd8/structpower__network_1_1technical__parameters.html',1,'power_network']]]
+  ['operation_0',['operation',['../df/d54/structagent_1_1end__user_1_1operation.html',1,'agent::end_user']]]
 ];

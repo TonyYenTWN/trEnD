@@ -1,9 +1,10 @@
 var searchData=
 [
-  ['default_5fdemand_5fset_0',['default_demand_set',['../d5/d60/namespacepower__market.html#a40a028ec74fd392c003dca1f3ac99d2a',1,'power_market']]],
-  ['demand_5fimbalance_5festimation_1',['demand_imbalance_estimation',['../d9/d64/namespacespatial__field.html#ab6d335db1d6e0494e778cd48a635bcc8',1,'spatial_field']]],
-  ['dso_5fagents_5fset_2',['DSO_agents_set',['../d5/d60/namespacepower__market.html#a8c0cec002a223b9316c4d9136982db42',1,'power_market']]],
-  ['dso_5fagents_5fupdate_3',['DSO_agents_update',['../d5/d60/namespacepower__market.html#a3b707d36ca100993e14b9a70836f53fb',1,'power_market']]],
-  ['dso_5fmarket_5fresults_5fget_4',['DSO_Market_Results_Get',['../d5/d60/namespacepower__market.html#aae63972c2a760e0f75cc9a339b8c9875',1,'power_market']]],
-  ['dso_5fmarkets_5fset_5',['DSO_Markets_Set',['../d5/d60/namespacepower__market.html#a33e114e901ed9959e3bf88c5fd7c2547',1,'power_market']]]
+  ['agents_5fbalancing_5fupdate_0',['agents_balancing_update',['../d2/d00/namespaceagent.html#a5525260e01219f0de32e2f289bbc19d6',1,'agent']]],
+  ['agents_5ffilter_5fdemand_5fupdate_1',['agents_filter_demand_update',['../d2/d00/namespaceagent.html#a34dbe35f42ba4470aeaaa1c3eeae261f',1,'agent']]],
+  ['agents_5ffilter_5fsupply_5fupdate_2',['agents_filter_supply_update',['../d2/d00/namespaceagent.html#a902fd9e4ace8c1f43491a98dac21a45a',1,'agent']]],
+  ['agents_5fredispatch_5fupdate_3',['agents_redispatch_update',['../d2/d00/namespaceagent.html#aa42b56091d930f40ace421bc2c3bf415',1,'agent']]],
+  ['agents_5fset_4',['agents_set',['../d2/d00/namespaceagent.html#acd836abfb42e828989b3007d8aec32a3',1,'agent']]],
+  ['agents_5fstatus_5fupdate_5',['agents_status_update',['../d2/d00/namespaceagent.html#a9b5fdc420011351277dfe82ef99c1db0',1,'agent']]],
+  ['agents_5fsubmit_5fupdate_6',['agents_submit_update',['../d2/d00/namespaceagent.html#ae2c34b9201e0ba49c6eefcbb5532cf28',1,'agent']]]
 ];

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['operation_0',['operation',['../df/d54/structagent_1_1end__user_1_1operation.html',1,'agent::end_user']]]
+  ['investment_0',['investment',['../da/db1/structagent_1_1end__user_1_1investment.html',1,'agent::end_user']]]
 ];

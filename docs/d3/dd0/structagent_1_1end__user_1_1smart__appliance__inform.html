@@ -114,60 +114,21 @@ $(document).ready(function(){initNavTree('d3/dd0/structagent_1_1end__user_1_1sma
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr><td colspan="2"><div class="groupHeader">input parameters</div></td></tr>
-<tr class="memitem:a0492dbf3388ed3af417aca1d897d3615"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dd0/structagent_1_1end__user_1_1smart__appliance__inform.html#a0492dbf3388ed3af417aca1d897d3615">scale</a></td></tr>
+<tr class="memitem:a0492dbf3388ed3af417aca1d897d3615"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dd0/structagent_1_1end__user_1_1smart__appliance__inform.html#a0492dbf3388ed3af417aca1d897d3615">scale</a> = .1</td></tr>
 <tr class="separator:a0492dbf3388ed3af417aca1d897d3615"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5d391bae93e7973f70204c2fed6515f5"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dd0/structagent_1_1end__user_1_1smart__appliance__inform.html#a5d391bae93e7973f70204c2fed6515f5">flexibility_factor</a></td></tr>
-<tr class="separator:a5d391bae93e7973f70204c2fed6515f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a984b5c0d9091a876808a039fa2a35bf2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dd0/structagent_1_1end__user_1_1smart__appliance__inform.html#a984b5c0d9091a876808a039fa2a35bf2">shift_time</a></td></tr>
+<tr class="separator:a984b5c0d9091a876808a039fa2a35bf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">process variables</div></td></tr>
-<tr class="memitem:aec913bff88549ea43f9ede76b8c97368"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dd0/structagent_1_1end__user_1_1smart__appliance__inform.html#aec913bff88549ea43f9ede76b8c97368">unfulfilled_demand</a></td></tr>
-<tr class="separator:aec913bff88549ea43f9ede76b8c97368"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr><td colspan="2"><div class="groupHeader">output variables</div></td></tr>
-<tr class="memitem:af21bdbab51cca1eba35143024bc81add"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dd0/structagent_1_1end__user_1_1smart__appliance__inform.html#af21bdbab51cca1eba35143024bc81add">normalized_scheduled_profile</a></td></tr>
-<tr class="separator:af21bdbab51cca1eba35143024bc81add"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae251dcd0fff1691eb8c04b3a532276ed"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dd0/structagent_1_1end__user_1_1smart__appliance__inform.html#ae251dcd0fff1691eb8c04b3a532276ed">unfulfilled_demand</a></td></tr>
+<tr class="separator:ae251dcd0fff1691eb8c04b3a532276ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0bd63d9f3523bd8173576333bee6db01"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dd0/structagent_1_1end__user_1_1smart__appliance__inform.html#a0bd63d9f3523bd8173576333bee6db01">scheduled_demand</a></td></tr>
+<tr class="separator:a0bd63d9f3523bd8173576333bee6db01"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Information of smart appliance of an end-user. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00039">39</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00040">40</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
 </div><h2 class="groupheader">Member Data Documentation</h2>
-<a id="a5d391bae93e7973f70204c2fed6515f5" name="a5d391bae93e7973f70204c2fed6515f5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5d391bae93e7973f70204c2fed6515f5">&#9670;&nbsp;</a></span>flexibility_factor</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">double agent::end_user::smart_appliance_inform::flexibility_factor</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p >Indicates how flexible the smart appliances are; e.g. 1 / 2 = can concentrate the demand within half of the time interval. </p>
-
-<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00051">51</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../dc/dc3/end-user_8cpp_source.html#l00027">agent::end_user::smart_appliance_schedule()</a>.</p>
-
-</div>
-</div>
-<a id="af21bdbab51cca1eba35143024bc81add" name="af21bdbab51cca1eba35143024bc81add"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af21bdbab51cca1eba35143024bc81add">&#9670;&nbsp;</a></span>normalized_scheduled_profile</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">Eigen::VectorXd agent::end_user::smart_appliance_inform::normalized_scheduled_profile</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p >Normalized schedule profile for smart appliance (kWh per hour per person). </p>
-
-<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00067">67</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../dc/dc3/end-user_8cpp_source.html#l00027">agent::end_user::smart_appliance_schedule()</a>.</p>
-
-</div>
-</div>
 <a id="a0492dbf3388ed3af417aca1d897d3615" name="a0492dbf3388ed3af417aca1d897d3615"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0492dbf3388ed3af417aca1d897d3615">&#9670;&nbsp;</a></span>scale</h2>
 
@@ -175,34 +136,64 @@ Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double agent::end_user::smart_appliance_inform::scale</td>
+          <td class="memname">double agent::end_user::smart_appliance_inform::scale = .1</td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p >Indicates how much ratio of the total demand in the time interval can be shifted around flexibly; assuming the default is constant profile before shifting. </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00047">47</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="../../dc/dc3/end-user_8cpp_source.html#l00027">agent::end_user::smart_appliance_schedule()</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00048">48</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
 
 </div>
 </div>
-<a id="aec913bff88549ea43f9ede76b8c97368" name="aec913bff88549ea43f9ede76b8c97368"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aec913bff88549ea43f9ede76b8c97368">&#9670;&nbsp;</a></span>unfulfilled_demand</h2>
+<a id="a0bd63d9f3523bd8173576333bee6db01" name="a0bd63d9f3523bd8173576333bee6db01"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bd63d9f3523bd8173576333bee6db01">&#9670;&nbsp;</a></span>scheduled_demand</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">double agent::end_user::smart_appliance_inform::unfulfilled_demand</td>
+          <td class="memname">Eigen::VectorXd agent::end_user::smart_appliance_inform::scheduled_demand</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Previous demand not yet fulfilled (kWh per hour per person). </p>
+<p >Scheduled flexible demand at current time step (kWh per hour per person). </p>
 
-<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00059">59</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00063">63</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="../../dc/dc3/end-user_8cpp_source.html#l00027">agent::end_user::smart_appliance_schedule()</a>.</p>
+</div>
+</div>
+<a id="a984b5c0d9091a876808a039fa2a35bf2" name="a984b5c0d9091a876808a039fa2a35bf2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a984b5c0d9091a876808a039fa2a35bf2">&#9670;&nbsp;</a></span>shift_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int agent::end_user::smart_appliance_inform::shift_time</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Maximum load shifting time length of a flexible demand; indicates how flexible the smart appliances are. </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00052">52</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
+
+</div>
+</div>
+<a id="ae251dcd0fff1691eb8c04b3a532276ed" name="ae251dcd0fff1691eb8c04b3a532276ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae251dcd0fff1691eb8c04b3a532276ed">&#9670;&nbsp;</a></span>unfulfilled_demand</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd agent::end_user::smart_appliance_inform::unfulfilled_demand</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Flexible demand not yet fulfilled in the load shifting timeframe (kWh per hour per person). </p>
+
+<p class="definition">Definition at line <a class="el" href="../../d2/d8b/end-user_8h_source.html#l00061">61</a> of file <a class="el" href="../../d2/d8b/end-user_8h_source.html">end-user.h</a>.</p>
 
 </div>
 </div>

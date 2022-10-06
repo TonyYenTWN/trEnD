@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['market_5finform_0',['market_inform',['../d8/d2d/structpower__market_1_1market__inform.html',1,'power_market']]],
-  ['market_5fwhole_5finform_1',['market_whole_inform',['../da/d16/structpower__market_1_1market__whole__inform.html',1,'power_market']]]
+  ['fin_5ffield_0',['fin_field',['../d2/d48/structspatial__field_1_1fin__field.html',1,'spatial_field']]],
+  ['fin_5fmarket_1',['fin_market',['../d9/d9c/structpower__market_1_1fin__market.html',1,'power_market']]]
 ];

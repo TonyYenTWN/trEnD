@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['tso_5fboundary_5fupdate_0',['TSO_boundary_update',['../d5/d60/namespacepower__market.html#af5b224f3d0c0c210ed0c66cc8140c5b1',1,'power_market']]],
-  ['tso_5fmarket_5fcontrol_5freserve_1',['TSO_Market_control_reserve',['../d5/d60/namespacepower__market.html#a4c6c66f09d3fbf7962b2df3224984345',1,'power_market']]],
-  ['tso_5fmarket_5fresults_5fget_2',['TSO_Market_Results_Get',['../d5/d60/namespacepower__market.html#ac071507e193ed4c20579a682961bcd14',1,'power_market']]],
-  ['tso_5fmarket_5fset_3',['TSO_Market_Set',['../d5/d60/namespacepower__market.html#adff40f938d2d4deba55dfc4779c01300',1,'power_market']]]
+  ['point_5fdistance_5fcov_0',['point_distance_cov',['../d8/dcc/namespacepower__network.html#a4b6a21877e715342c8c684b927f2672e',1,'power_network']]],
+  ['power_5fmarket_5fprocess_5fset_1',['power_market_process_set',['../d5/d60/namespacepower__market.html#a8ec72024455ee21d39d482af08231158',1,'power_market']]],
+  ['power_5fmarket_5fprocess_5fupdate_2',['power_market_process_update',['../d5/d60/namespacepower__market.html#a52afeedd219eaa47c1583e845a6868eb',1,'power_market']]],
+  ['power_5fnetwork_5finput_5fprocess_3',['power_network_input_process',['../d8/dcc/namespacepower__network.html#a7b618914786ca0d322b51b456244c0d4',1,'power_network']]]
 ];

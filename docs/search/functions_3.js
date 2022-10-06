@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['geodist_0',['geodist',['../d9/d64/namespacespatial__field.html#a6ed9b59869392f44a0ca31520223e79f',1,'spatial_field']]],
-  ['get_5fcol_5fname_1',['get_col_name',['../de/dbb/namespacebasic.html#a11ea1d6640d0bbd0d337cbfb5204b8a7',1,'basic']]],
-  ['get_5ffile_5fdim_2',['get_file_dim',['../de/dbb/namespacebasic.html#a27f0ca57a03561dbb4cdad6525cc6bbb',1,'basic']]],
-  ['get_5frow_5fname_3',['get_row_name',['../de/dbb/namespacebasic.html#a1d4fdfaa57e41d6f1d34d2bf0a092b10',1,'basic']]]
+  ['default_5fdemand_5fset_0',['default_demand_set',['../d5/d60/namespacepower__market.html#a40a028ec74fd392c003dca1f3ac99d2a',1,'power_market']]],
+  ['demand_5fimbalance_5festimation_1',['demand_imbalance_estimation',['../d9/d64/namespacespatial__field.html#ab6d335db1d6e0494e778cd48a635bcc8',1,'spatial_field']]],
+  ['dso_5fmarket_5fresults_5fget_2',['DSO_Market_Results_Get',['../d5/d60/namespacepower__market.html#aae63972c2a760e0f75cc9a339b8c9875',1,'power_market']]],
+  ['dso_5fmarkets_5fset_3',['DSO_Markets_Set',['../d5/d60/namespacepower__market.html#a33e114e901ed9959e3bf88c5fd7c2547',1,'power_market']]]
 ];
