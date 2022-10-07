@@ -169,6 +169,7 @@ namespace agent{
 			*/
 			/*@{*/
 			results results;
+			settlement settlement;
 			/*@{*/
 
 			/**

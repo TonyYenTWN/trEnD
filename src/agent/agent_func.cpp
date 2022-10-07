@@ -2,9 +2,21 @@
 #include "agent_func.h"
 
 namespace{
-	void agent_results_set(agent::results &results){
-		int Time = power_market::parameters::Time();
+	void agent_settlement_set(agent::settlement &settlement){
+		settlement.cost.balancing = 0.;
+		settlement.cost.EOM = 0.;
+		settlement.cost.redispatch = 0.;
+		settlement.price.balancing = 0.;
+		settlement.price.EOM = 0.;
+		settlement.price.redispatch = 0.;
+		settlement.utility.balancing = 0.;
+		settlement.utility.EOM = 0.;
+		settlement.utility.redispatch = 0.;
+		settlement.forced_curtailment_supply = 0.;
+		settlement.forced_shed_demand = 0.;
+	}
 
+	void agent_results_set(agent::results &results){
 		results.cleared_supply = 0.;
 		results.cleared_demand = 0.;
 		results.confirmed_supply = 0.;
@@ -112,6 +124,7 @@ namespace{
 				// Set bids and results information
 				agent_bids_initialization(end_user_profiles[point_iter][sample_iter].operation.bids);
 				agent_results_set(end_user_profiles[point_iter][sample_iter].operation.results);
+				agent_settlement_set(end_user_profiles[point_iter][sample_iter].operation.settlement);
 
 				// Optimization and update process variables
 				agent::end_user::end_user_LP_optimize(0, end_user_profiles[point_iter][sample_iter]);
@@ -149,6 +162,7 @@ namespace{
 			// Set bids information
 			agent_bids_initialization(profile_temp.bids);
 			agent_results_set(profile_temp.results);
+			agent_settlement_set(profile_temp.settlement);
 			profile_temp.bids.submitted_demand_flex(price_interval + 1) = bid_inflex_industrial;
 			profile_temp.bids.submitted_demand_flex.segment(1, price_interval) = Eigen::VectorXd::Constant(price_interval, bid_flex_industrial);
 			profile_temp.bids.redispatch_demand = profile_temp.bids.submitted_demand_flex;
@@ -194,6 +208,7 @@ namespace{
 				// Set bids information
 				agent_bids_initialization(profile_temp.bids);
 				agent_results_set(profile_temp.results);
+				agent_settlement_set(profile_temp.settlement);
 				profile_temp.bids.submitted_supply_flex = bid_vec;
 				profile_temp.bids.redispatch_supply = bid_vec;
 				profile_temp.bids.balancing_supply = bid_vec;
@@ -215,6 +230,7 @@ namespace{
 				// Set bids information
 				agent_bids_initialization(profile_temp.bids);
 				agent_results_set(profile_temp.results);
+				agent_settlement_set(profile_temp.settlement);
 				profile_temp.bids.submitted_supply_flex = bid_vec;
 				profile_temp.bids.redispatch_supply = bid_vec;
 				profile_temp.bids.balancing_supply = bid_vec;
@@ -253,6 +269,7 @@ namespace{
 			// Set bids information
 			agent_bids_initialization(profile_temp.bids);
 			agent_results_set(profile_temp.results);
+			agent_settlement_set(profile_temp.settlement);
 			profile_temp.bids.submitted_supply_flex(price_supply_flex_ID) = bid_quan;
 			profile_temp.bids.redispatch_supply = profile_temp.bids.submitted_supply_flex;
 			profile_temp.bids.balancing_supply = profile_temp.bids.submitted_supply_flex;

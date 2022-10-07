@@ -13,6 +13,7 @@ namespace agent{
 			int point_ID;
 			bids bids;
 			results results;
+			settlement settlement;
 		};
 
 		struct profiles{

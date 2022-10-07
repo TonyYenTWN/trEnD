@@ -16,6 +16,7 @@ namespace agent{
 			double cap;
 			bids bids;
 			results results;
+			settlement settlement;
 		};
 
 		struct storage_profile{
@@ -25,6 +26,7 @@ namespace agent{
 			double soc;
 			bids bids;
 			results results;
+			settlement settlement;
 		};
 
 		struct hybrid_profile{

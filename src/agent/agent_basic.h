@@ -50,6 +50,23 @@ namespace agent{
 		double actual_demand;
 	};
 
+	struct settlement_process{
+		double EOM;
+		double redispatch;
+		double balancing;
+	};
+
+	struct settlement{
+		double forced_curtailment_supply;
+		double forced_shed_demand;
+		// Cost of supplying service
+		settlement_process cost;
+		// Price of using service
+		settlement_process price;
+		// Utility of using service
+		settlement_process utility;
+	};
+
 	struct sorted_vector{
 		Eigen::VectorXi id;
 		Eigen::VectorXd value;
