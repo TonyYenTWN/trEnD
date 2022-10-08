@@ -108,6 +108,12 @@ namespace power_market{
 		Eigen::VectorXd confirmed_ratio_supply;
 		/**Ratio of demand confirmed at marginal price.*/
 		Eigen::VectorXd confirmed_ratio_demand;
+		/**Redispatched supply quantity of the market.*/
+		Eigen::MatrixXd redispatched_supply;
+		/**Redispatched demand quantity of the market.*/
+		Eigen::MatrixXd redispatched_demand;
+		/**Redispatch cost of the market.*/
+		Eigen::MatrixXd redispatched_cost;
 		/**Actual supply quantity (after real time control reserve activation) of the market.*/
 		Eigen::MatrixXd actual_supply;
 		/**Actual demand quantity (after real time control reserve activation) of the market.*/
