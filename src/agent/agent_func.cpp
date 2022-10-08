@@ -12,8 +12,12 @@ namespace{
 		settlement.utility.balancing = 0.;
 		settlement.utility.EOM = 0.;
 		settlement.utility.redispatch = 0.;
-		settlement.forced_curtailment_supply = 0.;
-		settlement.forced_shed_demand = 0.;
+		settlement.volume_demand.balancing = 0.;
+		settlement.volume_demand.EOM = 0.;
+		settlement.volume_demand.redispatch;
+		settlement.volume_supply.balancing = 0.;
+		settlement.volume_supply.EOM = 0.;
+		settlement.volume_supply.redispatch = 0.;
 	}
 
 	void agent_results_set(agent::results &results){
@@ -517,10 +521,17 @@ namespace{
 					}
 				}
 
+				// Imbalance accounting
 				double imbalance = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.confirmed_demand;
 				imbalance *= Power_network_inform.points.imbalance_field(point_iter, tick);
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.balancing_demand(price_interval + 1) += (imbalance >= 0.) * imbalance;
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.balancing_supply(0) -= (imbalance < 0.) * imbalance;
+
+				// Settlement in EOM
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_supply.EOM += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.confirmed_supply;
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_demand.EOM += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.confirmed_demand;
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.price.EOM += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.confirmed_demand * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.price_demand_profile(0);
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.utility.EOM += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.confirmed_supply * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.price_supply_profile(0);
 			}
 		}
 	}
@@ -704,6 +715,8 @@ namespace{
 				for(int tock = 0; tock < 2 * load_shift_time + 1; ++ tock){
 					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(tock) -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scheduled_demand(tock);
 				}
+
+
 			}
 		}
 	}

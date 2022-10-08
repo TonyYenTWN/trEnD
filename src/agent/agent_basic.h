@@ -57,8 +57,8 @@ namespace agent{
 	};
 
 	struct settlement{
-		double forced_curtailment_supply;
-		double forced_shed_demand;
+		settlement_process volume_supply;
+		settlement_process volume_demand;
 		// Cost of supplying service
 		settlement_process cost;
 		// Price of using service
@@ -66,12 +66,4 @@ namespace agent{
 		// Utility of using service
 		settlement_process utility;
 	};
-
-	struct sorted_vector{
-		Eigen::VectorXi id;
-		Eigen::VectorXd value;
-	};
-
-	// Functions
-	sorted_vector sort(Eigen::VectorXd);
 }
