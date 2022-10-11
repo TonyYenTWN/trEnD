@@ -544,44 +544,86 @@ namespace{
 				double confirmed_supply_gap = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.confirmed_supply;
 				double min_supply_gap = std::min(cleared_supply_gap, confirmed_supply_gap);
 				double max_supply_gap = std::max(cleared_supply_gap, confirmed_supply_gap);
-				bool reduced_flag = (confirmed_supply_gap == min_supply_gap);
-				double margin_quan;
-				int margin_ID;
+				bool reduced_flag_supply = (confirmed_supply_gap == min_supply_gap);
+				double margin_quan_supply;
+				int margin_ID_supply;
 				for(int price_iter = 0; price_iter < price_interval; ++ price_iter){
-					margin_quan = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply(price_iter);
+					margin_quan_supply = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply(price_iter);
 
-					if(min_supply_gap > margin_quan){
-						min_supply_gap -= margin_quan;
-						max_supply_gap -= margin_quan;
+					if(min_supply_gap > margin_quan_supply){
+						min_supply_gap -= margin_quan_supply;
+						max_supply_gap -= margin_quan_supply;
 					}
 					else{
 						max_supply_gap -= min_supply_gap;
-						margin_quan -= min_supply_gap;
-						margin_ID = price_iter ;
+						margin_quan_supply -= min_supply_gap;
+						margin_ID_supply = price_iter ;
 						break;
 					}
 				}
-				for(int price_iter = margin_ID; price_iter < price_interval; ++ price_iter){
-					if(price_iter > margin_ID){
-						margin_quan = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply(price_iter);
+				for(int price_iter = margin_ID_supply; price_iter < price_interval; ++ price_iter){
+					if(price_iter > margin_ID_supply){
+						margin_quan_supply = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply(price_iter);
 					}
 
-					if(max_supply_gap > margin_quan){
-						max_supply_gap -= margin_quan;
-						Power_market_inform.TSO_Market.redispatched_supply(tick, node_ID) += (1 - 2 * reduced_flag) * margin_quan;
-						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_supply.redispatch +=  (1 - 2 * reduced_flag) * margin_quan;
-						Power_market_inform.TSO_Market.redispatched_cost(tick, node_ID) += abs(original_price - Power_market_inform.price_map.bidded_price(price_iter)) * margin_quan;
-						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.utility.redispatch += abs(original_price - Power_market_inform.price_map.bidded_price(price_iter)) * margin_quan;
+					if(max_supply_gap > margin_quan_supply){
+						max_supply_gap -= margin_quan_supply;
+						Power_market_inform.TSO_Market.redispatched_supply(tick, node_ID) += (1 - 2 * reduced_flag_supply) * margin_quan_supply;
+						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_supply.redispatch +=  (1 - 2 * reduced_flag_supply) * margin_quan_supply;
+						Power_market_inform.TSO_Market.redispatched_cost(tick, node_ID) += abs(original_price - Power_market_inform.price_map.bidded_price(price_iter)) * margin_quan_supply;
+						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.utility.redispatch += abs(original_price - Power_market_inform.price_map.bidded_price(price_iter)) * margin_quan_supply;
 					}
 					else{
-						Power_market_inform.TSO_Market.redispatched_supply(tick, node_ID) += (1 - 2 * reduced_flag) * max_supply_gap;
-						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_supply.redispatch +=  (1 - 2 * reduced_flag) * max_supply_gap;
+						Power_market_inform.TSO_Market.redispatched_supply(tick, node_ID) += (1 - 2 * reduced_flag_supply) * max_supply_gap;
+						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_supply.redispatch +=  (1 - 2 * reduced_flag_supply) * max_supply_gap;
 						Power_market_inform.TSO_Market.redispatched_cost(tick, node_ID) += abs(original_price - Power_market_inform.price_map.bidded_price(price_iter)) * max_supply_gap;
 						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.utility.redispatch += abs(original_price - Power_market_inform.price_map.bidded_price(price_iter)) * max_supply_gap;
 						break;
 					}
 				}
 
+				// Demand side
+				double cleared_demand_gap = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.cleared_demand;
+				double confirmed_demand_gap = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.confirmed_demand;
+				double min_demand_gap = std::min(cleared_demand_gap, confirmed_demand_gap);
+				double max_demand_gap = std::max(cleared_demand_gap, confirmed_demand_gap);
+				bool reduced_flag_demand = (confirmed_demand_gap == min_demand_gap);
+				double margin_quan_demand;
+				int margin_ID_demand;
+				for(int price_iter = price_interval + 1; price_iter >= 0; -- price_iter){
+					margin_quan_demand = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand(price_iter);
+
+					if(min_demand_gap > margin_quan_demand){
+						min_demand_gap -= margin_quan_demand;
+						max_demand_gap -= margin_quan_demand;
+					}
+					else{
+						max_demand_gap -= min_demand_gap;
+						margin_quan_demand -= min_demand_gap;
+						margin_ID_demand = price_iter ;
+						break;
+					}
+				}
+				for(int price_iter = margin_ID_demand; price_iter >= 0; -- price_iter){
+					if(price_iter > margin_ID_demand){
+						margin_quan_demand = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand(price_iter);
+					}
+
+					if(max_demand_gap > margin_quan_demand){
+						max_demand_gap -= margin_quan_demand;
+						Power_market_inform.TSO_Market.redispatched_demand(tick, node_ID) += (1 - 2 * reduced_flag_demand) * margin_quan_demand;
+						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_demand.redispatch +=  (1 - 2 * reduced_flag_demand) * margin_quan_demand;
+						Power_market_inform.TSO_Market.redispatched_cost(tick, node_ID) += abs(original_price - Power_market_inform.price_map.bidded_price(price_iter)) * margin_quan_demand;
+						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.utility.redispatch += abs(original_price - Power_market_inform.price_map.bidded_price(price_iter)) * margin_quan_demand;
+					}
+					else{
+						Power_market_inform.TSO_Market.redispatched_demand(tick, node_ID) += (1 - 2 * reduced_flag_demand) * max_demand_gap;
+						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_demand.redispatch +=  (1 - 2 * reduced_flag_demand) * max_demand_gap;
+						Power_market_inform.TSO_Market.redispatched_cost(tick, node_ID) += abs(original_price - Power_market_inform.price_map.bidded_price(price_iter)) * max_demand_gap;
+						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.utility.redispatch += abs(original_price - Power_market_inform.price_map.bidded_price(price_iter)) * max_demand_gap;
+						break;
+					}
+				}
 			}
 		}
 	}
