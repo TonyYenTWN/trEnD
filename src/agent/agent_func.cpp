@@ -667,8 +667,8 @@ namespace{
 			// Settlement in EOM
 			Power_market_inform.agent_profiles.industrial.HV[agent_iter].settlement.volume_supply.EOM += Power_market_inform.agent_profiles.industrial.HV[agent_iter].results.confirmed_supply;
 			Power_market_inform.agent_profiles.industrial.HV[agent_iter].settlement.volume_demand.EOM += Power_market_inform.agent_profiles.industrial.HV[agent_iter].results.confirmed_demand;
-			Power_market_inform.agent_profiles.industrial.HV[agent_iter].settlement.price.EOM += Power_market_inform.agent_profiles.industrial.HV[agent_iter].results.confirmed_demand * marginal_price;
-			Power_market_inform.agent_profiles.industrial.HV[agent_iter].settlement.utility.EOM += Power_market_inform.agent_profiles.industrial.HV[agent_iter].results.confirmed_supply * marginal_price;
+			Power_market_inform.agent_profiles.industrial.HV[agent_iter].settlement.price.EOM += Power_market_inform.agent_profiles.industrial.HV[agent_iter].results.confirmed_demand * original_price;
+			Power_market_inform.agent_profiles.industrial.HV[agent_iter].settlement.utility.EOM += Power_market_inform.agent_profiles.industrial.HV[agent_iter].results.confirmed_supply * original_price;
 			Power_market_inform.agent_profiles.industrial.HV[agent_iter].settlement.utility.EOM += Power_market_inform.agent_profiles.industrial.HV[agent_iter].results.confirmed_demand * Power_market_inform.price_map.bidded_price(price_interval + 1);
 
 			// Settlement of redispatch
@@ -747,6 +747,13 @@ namespace{
 			}
 			Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].results.cleared_supply += Power_market_inform.TSO_Market.confirmed_ratio_supply(node_ID) * Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].bids.redispatch_supply(original_price_ID);
 			Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].results.cleared_demand += Power_market_inform.TSO_Market.confirmed_ratio_demand(node_ID) * Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].bids.redispatch_demand(original_price_ID);
+
+			// Settlement in EOM
+			Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].settlement.volume_supply.EOM += Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].results.confirmed_supply;
+			Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].settlement.volume_demand.EOM += Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].results.confirmed_demand;
+			Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].settlement.price.EOM += Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].results.confirmed_demand * original_price;
+			Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].settlement.utility.EOM += Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].results.confirmed_supply * original_price;
+			Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].settlement.utility.EOM += Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].results.confirmed_demand * Power_market_inform.price_map.bidded_price(price_interval + 1);
 
 		}
 	}
