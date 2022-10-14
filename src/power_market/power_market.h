@@ -30,6 +30,11 @@ namespace power_market{
 			return value;
 		}
 
+		static inline double redispatch_price_max(){
+			double value = 100.;
+			return value;
+		}
+
 		void bidded_price(price_ID_bimap&);
 	}
 

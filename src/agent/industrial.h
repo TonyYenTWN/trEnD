@@ -5,7 +5,7 @@
 namespace agent{
 	namespace industrial{
 		static inline double flexible_ratio(){
-			double value = .05;
+			double value = .1;
 			return value;
 		}
 
