@@ -57,15 +57,15 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	// Equivalent redispatch bids of agents
 	agent::agents_redispatch_update(0, Power_market_inform, Power_network_inform);
 
-//	// Redispatch in DSO
-//	if(DSO_filter_flag){
-//		power_market::Filtered_bid_demand_calculation(0, Power_market_inform, Power_network_inform);
-//		agent::agents_filter_demand_update(0, Power_market_inform, Power_network_inform);
-//		power_market::Filtered_bid_supply_calculation(0, Power_market_inform, Power_network_inform);
-//		agent::agents_filter_supply_update(0, Power_market_inform, Power_network_inform);
-//	}
-//
-//	// Redispatch in TSO
+	// Redispatch in DSO
+	if(DSO_filter_flag){
+		power_market::Filtered_bid_demand_calculation(0, Power_market_inform, Power_network_inform);
+		agent::agents_filter_demand_update(0, Power_market_inform, Power_network_inform);
+		power_market::Filtered_bid_supply_calculation(0, Power_market_inform, Power_network_inform);
+		agent::agents_filter_supply_update(0, Power_market_inform, Power_network_inform);
+	}
+
+	// Redispatch in TSO
 //	Confirmed_bid_calculation(0, Power_market_inform, Power_network_inform, DSO_filter_flag);
 //	Flow_Based_Market_Optimization(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
 //	TSO_Market_Scheduled_Results_Get(0, Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
