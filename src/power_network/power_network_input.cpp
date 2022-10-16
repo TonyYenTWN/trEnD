@@ -60,7 +60,7 @@ namespace {
 		for(int node_iter = 0; node_iter < fin_node_dim[0]; ++ node_iter){
 			Power_network_inform.nodes.bidding_zone(node_iter) = bz_inform(int(node_inform(node_iter, 0)) - 1, 1) - 1;
 			Power_network_inform.nodes.cluster(node_iter) = int(node_inform(node_iter, 1)) - 1;
-			Power_network_inform.nodes.voltage_base(node_iter) = int(node_inform(node_iter, 2));
+			//Power_network_inform.nodes.voltage_base(node_iter) = int(node_inform(node_iter, 2));
 			Power_network_inform.DSO_cluster[Power_network_inform.nodes.cluster(node_iter)].nodes_ID.push_back(node_iter);
 			Power_network_inform.nodes.in_cluster_ID(node_iter) = Power_network_inform.DSO_cluster[Power_network_inform.nodes.cluster(node_iter)].nodes_ID.size() - 1;
 		}
@@ -160,7 +160,7 @@ namespace {
 		Power_network_inform.plants.hydro.node = Eigen::VectorXi(fin_hydro_dim[0]);
 		Power_network_inform.plants.hydro.type = Eigen::VectorXi(fin_hydro_dim[0]);
 		for(int hydro_iter = 0; hydro_iter < fin_hydro_dim[0]; ++ hydro_iter){
-			Power_network_inform.plants.hydro.node(hydro_iter) = int(hydro_inform(hydro_iter, 0)) - 1;
+			//Power_network_inform.plants.hydro.node(hydro_iter) = int(hydro_inform(hydro_iter, 0)) - 1;
 			Power_network_inform.plants.hydro.type(hydro_iter) = int(hydro_inform(hydro_iter, 1)) - 1;
 		}
 		Power_network_inform.plants.hydro.cap = hydro_inform.col(3).array().abs();
@@ -172,7 +172,7 @@ namespace {
 		// Organize wind power plant data
 		Power_network_inform.plants.wind.node = Eigen::VectorXi(fin_wind_dim[0]);
 		for(int wind_iter = 0; wind_iter < fin_wind_dim[0]; ++ wind_iter){
-			Power_network_inform.plants.wind.node(wind_iter) = int(wind_inform(wind_iter, 0)) - 1;
+			//Power_network_inform.plants.wind.node(wind_iter) = int(wind_inform(wind_iter, 0)) - 1;
 		}
 		Power_network_inform.plants.wind.cap = wind_inform.col(1);
 		Power_network_inform.plants.wind.x = wind_inform.col(wind_inform.cols() - 4);
