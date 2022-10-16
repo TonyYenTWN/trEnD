@@ -47,16 +47,16 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	// Initial estimation of market clearing price in the IMO
 	International_Market_Price_Estimation(0, Power_market_inform.International_Market, Power_market_inform.IMO_Problem, Power_network_inform);
 
-//	// Bidding strategies of agents
-//	agent::agents_set(Power_market_inform, Power_network_inform);
-//
-//	// Ideal market clearing in IMO
-//	Submitted_bid_calculation(Power_market_inform, Power_network_inform);
-//	International_Market_Optimization(0, Power_market_inform.International_Market, Power_market_inform.IMO_Problem);
-//
-//	// Equivalent redispatch bids of agents
-//	agent::agents_redispatch_update(0, Power_market_inform, Power_network_inform);
-//
+	// Bidding strategies of agents
+	agent::agents_set(Power_market_inform, Power_network_inform);
+
+	// Ideal market clearing in IMO
+	Submitted_bid_calculation(Power_market_inform, Power_network_inform);
+	International_Market_Optimization(0, Power_market_inform.International_Market, Power_market_inform.IMO_Problem);
+
+	// Equivalent redispatch bids of agents
+	agent::agents_redispatch_update(0, Power_market_inform, Power_network_inform);
+
 //	// Redispatch in DSO
 //	if(DSO_filter_flag){
 //		power_market::Filtered_bid_demand_calculation(0, Power_market_inform, Power_network_inform);
