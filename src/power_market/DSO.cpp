@@ -112,8 +112,8 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 		DSO_Markets[DSO_iter].confirmed_supply = Eigen::MatrixXd::Zero(Time, DSO_Markets[DSO_iter].num_zone);
 		DSO_Markets[DSO_iter].confirmed_demand = Eigen::MatrixXd::Zero(Time, DSO_Markets[DSO_iter].num_zone);
 		DSO_Markets[DSO_iter].confirmed_price = Eigen::MatrixXd::Zero(Time, DSO_Markets[DSO_iter].num_zone);
-		DSO_Markets[DSO_iter].confirmed_ratio_supply = Eigen::MatrixXd::Zero(Time, DSO_Markets[DSO_iter].num_zone);
-		DSO_Markets[DSO_iter].confirmed_ratio_demand = Eigen::MatrixXd::Zero(Time, DSO_Markets[DSO_iter].num_zone);
+		DSO_Markets[DSO_iter].confirmed_ratio_supply = Eigen::VectorXd::Zero(DSO_Markets[DSO_iter].num_zone);
+		DSO_Markets[DSO_iter].confirmed_ratio_demand = Eigen::VectorXd::Zero(DSO_Markets[DSO_iter].num_zone);
 	}
 }
 
