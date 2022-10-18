@@ -21,39 +21,37 @@ namespace{
 			International_Market.submitted_demand(International_Market.price_intervals + 1, bz_ID) += bid_quan;
 		}
 
-		// Supply at each point (LV power plants) / node (HV power plants)
+		// Supply at each power plant
 		double cutoff_power = agent::power_supplier::parameters::cutoff_power();
 		for(int hydro_iter = 0; hydro_iter < Power_network_inform.plants.hydro.node.size(); ++ hydro_iter){
-			int bz_ID;
-			int DSO_ID;
-			int node_ID;
-			Eigen::VectorXd bid_vec;
-
-			// High voltage power plants connect directly to transmission network
-			if(Power_network_inform.plants.hydro.cap(hydro_iter) >= cutoff_power){
-				node_ID = Power_network_inform.plants.hydro.node(hydro_iter);
-				DSO_ID = Power_network_inform.nodes.cluster(node_ID);
-				bz_ID = Power_network_inform.nodes.bidding_zone(node_ID);
-				bid_vec = International_Market.merit_order_curve.col(Power_network_inform.nodes.bidding_zone(node_ID));
-				bid_vec *= Power_network_inform.plants.hydro.cap(hydro_iter);
-				bid_vec /= (International_Market.merit_order_curve.col(Power_network_inform.nodes.bidding_zone(node_ID)).sum());
+			int x_ID = int((Power_network_inform.plants.hydro.x(hydro_iter) - Power_network_inform.points.x.minCoeff()) / Power_network_inform.points.grid_length + .5);
+			int y_ID = int((Power_network_inform.plants.hydro.y(hydro_iter) - Power_network_inform.points.y.minCoeff()) / Power_network_inform.points.grid_length + .5);
+			int point_ID = Power_network_inform.points.coordinate_grid(x_ID, y_ID);
+			if(point_ID == -1){
+				continue;
 			}
-			// Low voltage power plants feed into distribution network
-			else{
-				int x_ID = int((Power_network_inform.plants.hydro.x(hydro_iter) - Power_network_inform.points.x.minCoeff()) / Power_network_inform.points.grid_length + .5);
-				int y_ID = int((Power_network_inform.plants.hydro.y(hydro_iter) - Power_network_inform.points.y.minCoeff()) / Power_network_inform.points.grid_length + .5);
-				int point_ID = Power_network_inform.points.coordinate_grid(x_ID, y_ID);
-				if(point_ID == -1){
-					continue;
-				}
-				node_ID = Power_network_inform.points.node(point_ID);
-				DSO_ID = Power_network_inform.nodes.cluster(node_ID);
-				bz_ID = Power_network_inform.nodes.bidding_zone(node_ID);
-				bid_vec = International_Market.merit_order_curve.col(Power_network_inform.points.bidding_zone(point_ID));
-				bid_vec	*= Power_network_inform.plants.hydro.cap(hydro_iter);
-				bid_vec	/= (International_Market.merit_order_curve.col(Power_network_inform.points.bidding_zone(point_ID)).sum());
-			}
+			int node_ID = Power_network_inform.points.node(point_ID);
+			int DSO_ID = Power_network_inform.nodes.cluster(node_ID);
+			int bz_ID = Power_network_inform.nodes.bidding_zone(node_ID);
+			Eigen::VectorXd bid_vec = International_Market.merit_order_curve.col(bz_ID);
+			bid_vec /= bid_vec.sum();
+			bid_vec *= Power_network_inform.plants.hydro.cap(hydro_iter);
 			International_Market.submitted_supply.col(bz_ID) += bid_vec;
+		}
+
+		for(int wind_iter = 0; wind_iter < Power_network_inform.plants.wind.node.size(); ++ wind_iter){
+			int x_ID = int((Power_network_inform.plants.wind.x(wind_iter) - Power_network_inform.points.x.minCoeff()) / Power_network_inform.points.grid_length + .5);
+			int y_ID = int((Power_network_inform.plants.wind.y(wind_iter) - Power_network_inform.points.y.minCoeff()) / Power_network_inform.points.grid_length + .5);
+			int point_ID = Power_network_inform.points.coordinate_grid(x_ID, y_ID);
+			if(point_ID == -1){
+				continue;
+			}
+			int node_ID = Power_network_inform.points.node(point_ID);
+			int DSO_ID = Power_network_inform.nodes.cluster(node_ID);
+			int bz_ID = Power_network_inform.nodes.bidding_zone(node_ID);
+			double bid_quan = Power_network_inform.points.wind_on_cf(point_ID, tick) * Power_network_inform.plants.wind.cap(wind_iter);
+
+			International_Market.submitted_supply(0, bz_ID) += bid_quan;
 		}
 	}
 }
