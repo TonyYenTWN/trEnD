@@ -76,9 +76,9 @@ namespace {
 		for(int edge_iter = 0; edge_iter < fin_edge_dim[0]; ++ edge_iter){
 			Power_network_inform.edges.from(edge_iter) = int(edge_inform(edge_iter, 0)) - 1;
 			Power_network_inform.edges.to(edge_iter) = int(edge_inform(edge_iter, 1)) - 1;
-			Power_network_inform.edges.voltage_base(edge_iter) = int(edge_inform(edge_iter, 4));
+			Power_network_inform.edges.voltage_base(edge_iter) = int(edge_inform(edge_iter, edge_inform.cols() - 2));
 		}
-		Power_network_inform.edges.distance = edge_inform.col(5);
+		Power_network_inform.edges.distance = edge_inform.col(edge_inform.cols() - 1);
 	}
 
 	void points_data_input(power_network::network_inform &Power_network_inform, Eigen::MatrixXd bz_inform, std::string fin_point, std::string fin_point_matrix){
@@ -231,7 +231,7 @@ void power_network::power_network_input_process(network_inform &Power_network_in
 	Power_network_inform.set_line_density();
 
 	// Construct base voltage and base impedance level maps
-	Power_network_inform.tech_parameters.set_level_maps(Power_network_inform.nodes);
+	Power_network_inform.tech_parameters.set_level_maps(Power_network_inform.edges);
 }
 
 //int main(){

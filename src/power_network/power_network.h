@@ -7,6 +7,7 @@
 #include "src/basic/basic_definitions.h"
 #include "src/basic/eigen_sparse.h"
 #include "src/basic/rw_csv.h"
+#include <iostream>
 
 namespace power_network{
     /** @brief Information of spatial points in the model.*/
@@ -277,32 +278,27 @@ namespace power_network{
 		/*@{*/
 
 		// Set the maps for levels of voltage and impedance base
-		void set_level_maps(nodes &nodes){
-			int voltage_min = nodes.voltage_base.minCoeff();
+		void set_level_maps(edges &edges){
+			int voltage_min = edges.voltage_base.minCoeff();
 			int voltage_max = voltage_min;
 			int level_count = 0;
 			this->voltage_base_levels.insert(std::make_pair(voltage_max, level_count));
 			this->impedenace_base_levels.insert(std::make_pair(voltage_max, (double) voltage_max * voltage_max / this->s_base / 3.));
 			this->power_limit.insert(std::make_pair(voltage_max, (double) voltage_max));
+			//std::cout << voltage_base_levels[voltage_max] << "\t" <<  voltage_max << "\t" << impedenace_base_levels[voltage_max] << "\n";
 
-			std::vector <int> voltage_base_sorted(nodes.voltage_base.data(), nodes.voltage_base.data() + nodes.voltage_base.size());
+			std::vector <int> voltage_base_sorted(edges.voltage_base.data(), edges.voltage_base.data() + edges.voltage_base.size());
 			std::sort(voltage_base_sorted.begin(), voltage_base_sorted.end());
-			for(int node_iter = 0; node_iter < nodes.voltage_base.size(); ++ node_iter){
-				if(voltage_base_sorted[node_iter] > voltage_max){
-					voltage_max = voltage_base_sorted[node_iter];
+			for(int edge_iter = 0; edge_iter < edges.voltage_base.size(); ++ edge_iter){
+				if(voltage_base_sorted[edge_iter] > voltage_max){
+					voltage_max = voltage_base_sorted[edge_iter];
 					level_count += 1;
 					this->voltage_base_levels.insert(std::make_pair(voltage_max, level_count));
 					this->impedenace_base_levels.insert(std::make_pair(voltage_max, (double) voltage_max * voltage_max / this->s_base / 3.));
 					this->power_limit.insert(std::make_pair(voltage_max, (double) voltage_max));
-					//std::cout << voltage_base_levels[voltage_max] << "\t" <<  voltage_max << "\t" << impedenace_base_levels[level_count] << "\n";
+					//std::cout << voltage_base_levels[voltage_max] << "\t" <<  voltage_max << "\t" << impedenace_base_levels[voltage_max] << "\n";
 				}
 			}
-
-//			// Set power flow limits for different base voltage levels
-//			this->power_limit = Eigen::VectorXd(voltage_base_levels.size());
-//			for(auto level_iter = ; level_iter < voltage_base_levels.size(); ++ level_iter){
-//				this->power_limit(level_iter) = voltage_base_levels[level_iter];
-//			}
 		}
     };
 
