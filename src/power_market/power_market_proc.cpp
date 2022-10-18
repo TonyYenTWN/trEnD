@@ -37,11 +37,8 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	// Initialization of the DSO
 	DSO_Markets_Set(Power_market_inform.DSO_Markets, Power_network_inform, Time);
 	Power_market_inform.DSO_Problems = Problems (Power_market_inform.DSO_Markets.size());
-	int err_count = 0;
 	for(int DSO_iter = 0; DSO_iter < Power_market_inform.DSO_Markets.size(); ++ DSO_iter){
-		if(Power_market_inform.DSO_Markets[DSO_iter].num_zone > 0){
-			Flow_Based_Market_LP_Set(Power_market_inform.DSO_Markets[DSO_iter], Power_market_inform.DSO_Problems[DSO_iter]);
-		}
+		Flow_Based_Market_LP_Set(Power_market_inform.DSO_Markets[DSO_iter], Power_market_inform.DSO_Problems[DSO_iter]);
 	}
 
 	// Initial estimation of market clearing price in the IMO
@@ -51,25 +48,25 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	agent::agents_set(Power_market_inform, Power_network_inform);
 
 	// Ideal market clearing in IMO
-	Submitted_bid_calculation(Power_market_inform, Power_network_inform);
-	International_Market_Optimization(0, Power_market_inform.International_Market, Power_market_inform.IMO_Problem);
+//	Submitted_bid_calculation(Power_market_inform, Power_network_inform);
+//	International_Market_Optimization(0, Power_market_inform.International_Market, Power_market_inform.IMO_Problem);
 
-	// Equivalent redispatch bids of agents
-	agent::agents_redispatch_update(0, Power_market_inform, Power_network_inform);
-
-	// Redispatch in DSO
-	if(DSO_filter_flag){
-		power_market::Filtered_bid_demand_calculation(0, Power_market_inform, Power_network_inform);
-		agent::agents_filter_demand_update(0, Power_market_inform, Power_network_inform);
-		power_market::Filtered_bid_supply_calculation(0, Power_market_inform, Power_network_inform);
-		agent::agents_filter_supply_update(0, Power_market_inform, Power_network_inform);
-	}
+//	// Equivalent redispatch bids of agents
+//	agent::agents_redispatch_update(0, Power_market_inform, Power_network_inform);
+//
+//	// Redispatch in DSO
+//	if(DSO_filter_flag){
+//		power_market::Filtered_bid_demand_calculation(0, Power_market_inform, Power_network_inform);
+//		agent::agents_filter_demand_update(0, Power_market_inform, Power_network_inform);
+//		power_market::Filtered_bid_supply_calculation(0, Power_market_inform, Power_network_inform);
+//		agent::agents_filter_supply_update(0, Power_market_inform, Power_network_inform);
+//	}
 
 	// Redispatch in TSO
 //	Confirmed_bid_calculation(0, Power_market_inform, Power_network_inform, DSO_filter_flag);
 //	Flow_Based_Market_Optimization(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
 //	TSO_Market_Scheduled_Results_Get(0, Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
-//
+
 //	// Equivalent balancing bids of agents
 //	agent::agents_balancing_update(0, Power_market_inform, Power_network_inform, DSO_filter_flag);
 //
