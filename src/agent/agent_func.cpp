@@ -640,7 +640,7 @@ namespace{
 			}
 		}
 
-		std::cout << demand_total << "\n";
+		//std::cout << demand_total << "\n";
 	}
 
 	void industrial_balancing_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
@@ -740,7 +740,7 @@ namespace{
 			}
 		}
 
-		std::cout << demand_total << "\n";
+		//std::cout << demand_total << "\n";
 	}
 
 	void power_supplier_balancing_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, bool DSO_filter_flag){
@@ -1103,7 +1103,8 @@ namespace{
 			redispatch_price(node_iter) /= redispatched_qaun;
 			//std::cout << redispatched_qaun << "\t" << redispatch_price(node_iter) << "\n";
 		}
-		//std::cout << "\n";
+		std::cout << redispatch_price;
+		std::cout << "\n";
 	}
 
 	void end_user_status_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, bool control_reserve_flag){
