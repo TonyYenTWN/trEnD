@@ -34,23 +34,23 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	TSO_Market_Set(Power_market_inform.TSO_Market, Power_network_inform, Time);
 	Flow_Based_Market_LP_Set(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
 
-	// Initialization of the DSO
-	DSO_Markets_Set(Power_market_inform.DSO_Markets, Power_network_inform, Time);
-	Power_market_inform.DSO_Problems = Problems (Power_market_inform.DSO_Markets.size());
-	for(int DSO_iter = 0; DSO_iter < Power_market_inform.DSO_Markets.size(); ++ DSO_iter){
-		Flow_Based_Market_LP_Set(Power_market_inform.DSO_Markets[DSO_iter], Power_market_inform.DSO_Problems[DSO_iter]);
-	}
-
-	// Initial estimation of market clearing price in the IMO
-	International_Market_Price_Estimation(0, Power_market_inform.International_Market, Power_market_inform.IMO_Problem, Power_network_inform);
-
-	// Bidding strategies of agents
-	agent::agents_set(Power_market_inform, Power_network_inform);
-
-	// Ideal market clearing in IMO
+//	// Initialization of the DSO
+//	DSO_Markets_Set(Power_market_inform.DSO_Markets, Power_network_inform, Time);
+//	Power_market_inform.DSO_Problems = Problems (Power_market_inform.DSO_Markets.size());
+//	for(int DSO_iter = 0; DSO_iter < Power_market_inform.DSO_Markets.size(); ++ DSO_iter){
+//		Flow_Based_Market_LP_Set(Power_market_inform.DSO_Markets[DSO_iter], Power_market_inform.DSO_Problems[DSO_iter]);
+//	}
+//
+//	// Initial estimation of market clearing price in the IMO
+//	International_Market_Price_Estimation(0, Power_market_inform.International_Market, Power_market_inform.IMO_Problem, Power_network_inform);
+//
+//	// Bidding strategies of agents
+//	agent::agents_set(Power_market_inform, Power_network_inform);
+//
+//	// Ideal market clearing in IMO
 //	Submitted_bid_calculation(Power_market_inform, Power_network_inform);
 //	International_Market_Optimization(0, Power_market_inform.International_Market, Power_market_inform.IMO_Problem);
-
+//
 //	// Equivalent redispatch bids of agents
 //	agent::agents_redispatch_update(0, Power_market_inform, Power_network_inform);
 //
@@ -61,9 +61,10 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 //		power_market::Filtered_bid_supply_calculation(0, Power_market_inform, Power_network_inform);
 //		agent::agents_filter_supply_update(0, Power_market_inform, Power_network_inform);
 //	}
-
-	// Redispatch in TSO
+//
+//	// Redispatch in TSO
 //	Confirmed_bid_calculation(0, Power_market_inform, Power_network_inform, DSO_filter_flag);
+//	//std::cout << Power_market_inform.TSO_Market.submitted_demand.sum() << "\t" << Power_market_inform.TSO_Market.submitted_supply.sum() << "\n";
 //	Flow_Based_Market_Optimization(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
 //	TSO_Market_Scheduled_Results_Get(0, Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
 
