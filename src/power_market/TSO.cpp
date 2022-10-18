@@ -6,12 +6,9 @@
 #include "power_market.h"
 
 void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::network_inform &Power_network_inform, int Time){
-//	double pi = boost::math::constants::pi<double>();
-
 	// Input parameters of TSO market
 	TSO_Market.num_zone = Power_network_inform.nodes.bidding_zone.size();
 	TSO_Market.time_intervals = Time;
-	//TSO_Market.set_bidded_price();
 	parameters::bidded_price(TSO_Market.bidded_price_map);
 
 	// Set node admittance matrix and line capacity matrix
@@ -42,6 +39,7 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 				TSO_Market.network.incidence.push_back(Eigen::Vector2i(row_iter, col_iter));
 				TSO_Market.network.admittance.push_back(admittance(row_iter , col_iter));
 				power_limit.push_back(capacity(row_iter , col_iter));
+				std::cout << TSO_Market.network.incidence.size() - 1 << ":\t" << admittance(row_iter , col_iter) << "\t" << capacity(row_iter , col_iter) << "\n";
 			}
 		}
 	}
