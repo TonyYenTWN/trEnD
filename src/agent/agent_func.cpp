@@ -1077,12 +1077,12 @@ namespace{
 		for(int node_iter = 0; node_iter < node_num; ++ node_iter){
 			double redispatched_qaun = Power_market_inform.TSO_Market.confirmed_demand(tick, node_iter);
 			redispatched_qaun += Power_market_inform.TSO_Market.confirmed_supply(tick, node_iter);
-			std::cout << Power_market_inform.TSO_Market.redispatched_cost(tick, node_iter) << "\t" << redispatched_qaun << "\t";
+			//std::cout << Power_market_inform.TSO_Market.redispatched_cost(tick, node_iter) << "\t" << redispatched_qaun << "\t";
 			redispatched_qaun -= std::max(Power_market_inform.TSO_Market.redispatched_demand(tick, node_iter), 0.);
 			redispatched_qaun -= std::max(Power_market_inform.TSO_Market.redispatched_supply(tick, node_iter), 0.);
 			redispatch_price(node_iter) = Power_market_inform.TSO_Market.redispatched_cost(tick, node_iter);
 			redispatch_price(node_iter) /= redispatched_qaun;
-			std::cout << redispatched_qaun << "\t" << redispatch_price(node_iter) << "\n";
+			//std::cout << redispatched_qaun << "\t" << redispatch_price(node_iter) << "\n";
 		}
 		//std::cout << "\n";
 	}
