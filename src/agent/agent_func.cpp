@@ -202,8 +202,8 @@ namespace{
 			int node_ID = Power_network_inform.points.node(point_ID);
 			int bz_ID = Power_network_inform.nodes.bidding_zone(node_ID);
 			Eigen::VectorXd bid_vec = Power_market_inform.International_Market.merit_order_curve.col(bz_ID);
+			bid_vec /= bid_vec.sum();
 			bid_vec *= Power_network_inform.plants.hydro.cap(agent_iter);
-			bid_vec /= (Power_market_inform.International_Market.merit_order_curve.col(bz_ID).sum());
 
 			if(Power_network_inform.plants.hydro.type(agent_iter) < 4){
 				agent::power_supplier::plant_profile profile_temp;
