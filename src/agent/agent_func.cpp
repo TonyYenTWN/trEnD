@@ -1032,7 +1032,7 @@ namespace{
 					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(tock) -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scheduled_demand(tock);
 				}
 
-
+				// Balancing settlement
 			}
 		}
 	}
