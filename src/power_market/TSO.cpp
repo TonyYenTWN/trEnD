@@ -334,7 +334,6 @@ void power_market::TSO_Market_Actual_Results_Get(int tick, market_inform &Market
 		}
 
 		// Store ratio at nodes
-		std::cout << node_iter << ":\t";
 		for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter){
 			if(Market.bidded_price_map.bidded_price(price_iter) >= Market.actual_price(tick, node_iter) || price_iter == Market.price_intervals + 1){
 				if(sol[row_start + price_iter] >= 0.){
@@ -352,9 +351,9 @@ void power_market::TSO_Market_Actual_Results_Get(int tick, market_inform &Market
 				break;
 			}
 		}
-		std::cout << Market.actual_ratio_demand(node_iter) << "\t" << Market.actual_ratio_supply(node_iter) << "\n";
+		//std::cout << node_iter << ":\t" << Market.actual_ratio_demand(node_iter) << "\t" << Market.actual_ratio_supply(node_iter) << "\n";
 	}
-	std::cout << "\n";
+	//std::cout << "\n";
 
 	std::cout << Market.actual_supply.row(tick).sum() << "\t" << Market.actual_demand.row(tick).sum() << "\n";
 	std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).array().abs().sum() << "\n";
