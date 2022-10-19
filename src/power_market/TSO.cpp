@@ -79,6 +79,12 @@ void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Powe
 	// Initialize submit bids of the TSO market
 	Market_Initialization(Power_market_inform.TSO_Market);
 
+	// Set reference price for redispatch settlement
+	for(int node_iter = 0; node_iter < Power_market_inform.TSO_Market.network.num_vertice; ++ node_iter){
+		int bz_ID = Power_network_inform.nodes.bidding_zone(node_iter);
+		Power_market_inform.TSO_Market.reference_price(node_iter) = Power_market_inform.International_Market.confirmed_price(bz_ID);
+	}
+
 	// Initialize boundary conditions with other bidding zones
 	TSO_boundary_update(tick, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform);
 

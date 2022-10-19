@@ -78,7 +78,10 @@ namespace power_market{
 
 	/**Information of a power market.*/
 	struct market_inform{
-		// Input parameters
+		/**
+		* @name input parameters
+		*/
+		/*@{*/
 		/**Number of bidding zones / nodes in the market.*/
 		int num_zone;
 		/**Indicate the index, after whose corresponding bidding zones are on the boundary and will only act as cross-border flow (for the IMO market only).*/
@@ -95,24 +98,38 @@ namespace power_market{
 		Eigen::MatrixXd merit_order_curve;
 		/**Default demand of biddings zones without cross-border flows (for the IMO market only).*/
 		Eigen::MatrixXd demand_default;			// Default demand profiles of the bidding zones; in later runs demand bids from Norway should come from lower level markets
+		/*@{*/
 
-		// Process Variables
+		/**
+		* @name process variables
+		*/
+		/*@{*/
 		/**Supply bid submitted in the bidding zones.*/
 		Eigen::MatrixXd submitted_supply;
 		/**Demand bid submitted in the bidding zones.*/
 		Eigen::MatrixXd submitted_demand;
+		/**Reference prices for each zone.*/
+		Eigen::VectorXd reference_price;
+		/**Ratio of supply confirmed at marginal price.*/
+		Eigen::VectorXd confirmed_ratio_supply;
+		/**Ratio of demand confirmed at marginal price.*/
+		Eigen::VectorXd confirmed_ratio_demand;
+		/**Ratio of actual supply at marginal price.*/
+		Eigen::VectorXd actual_ratio_supply;
+		/**Ratio of actual demand at marginal price.*/
+		Eigen::VectorXd actual_ratio_demand;
+		/*@{*/
 
-		// Output Variables
+		/**
+		* @name output variables
+		*/
+		/*@{*/
 		/**Confirmed supply quantity of the market.*/
 		Eigen::MatrixXd confirmed_supply;
 		/**Confirmed demand quantity of the market.*/
 		Eigen::MatrixXd confirmed_demand;
 		/**Confirmed market clearing price of the market.*/
 		Eigen::MatrixXd confirmed_price;
-		/**Ratio of supply confirmed at marginal price.*/
-		Eigen::VectorXd confirmed_ratio_supply;
-		/**Ratio of demand confirmed at marginal price.*/
-		Eigen::VectorXd confirmed_ratio_demand;
 		/**Upward redispatched supply quantity of the market.*/
 		Eigen::MatrixXd redispatched_supply_up;
 		/**Downward redispatched supply quantity of the market.*/
@@ -129,14 +146,15 @@ namespace power_market{
 		Eigen::MatrixXd actual_demand;
 		/** Market clearing price after control reserve activation of the market.*/
 		Eigen::MatrixXd actual_price;
-		/**Ratio of actual supply at marginal price.*/
-		Eigen::VectorXd actual_ratio_supply;
-		/**Ratio of actual demand at marginal price.*/
-		Eigen::VectorXd actual_ratio_demand;
+		/*@{*/
 
-		// Mixed Substructure
+		/**
+		* @name mixed substructure
+		*/
+		/*@{*/
 		/**Information of the corresponding power network of the market.*/
 		network_graph network;
+		/*@{*/
 	};
 
 	/**A vector of power markets. This type is used in setting the DSO markets.*/
