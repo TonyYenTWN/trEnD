@@ -63,8 +63,12 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 	TSO_Market.confirmed_price = Eigen::MatrixXd(Time, TSO_Market.num_zone);
 	TSO_Market.confirmed_ratio_supply = Eigen::VectorXd::Zero(TSO_Market.num_zone);
 	TSO_Market.confirmed_ratio_demand = Eigen::VectorXd::Zero(TSO_Market.num_zone);
-	TSO_Market.redispatched_supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
-	TSO_Market.redispatched_demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	//TSO_Market.redispatched_supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.redispatched_supply_up = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.redispatched_supply_down = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	//TSO_Market.redispatched_demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.redispatched_demand_up = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.redispatched_demand_down = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.redispatched_cost = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.actual_supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.actual_demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);

@@ -31,7 +31,7 @@ namespace power_market{
 		}
 
 		static inline double redispatch_price_max(){
-			double value = 0.;
+			double value = 100.;
 			return value;
 		}
 
@@ -114,9 +114,17 @@ namespace power_market{
 		/**Ratio of demand confirmed at marginal price.*/
 		Eigen::VectorXd confirmed_ratio_demand;
 		/**Redispatched supply quantity of the market.*/
-		Eigen::MatrixXd redispatched_supply;
+		//Eigen::MatrixXd redispatched_supply;
+		/**Upward redispatched supply quantity of the market.*/
+		Eigen::MatrixXd redispatched_supply_up;
+		/**Downward redispatched supply quantity of the market.*/
+		Eigen::MatrixXd redispatched_supply_down;
 		/**Redispatched demand quantity of the market.*/
-		Eigen::MatrixXd redispatched_demand;
+		//Eigen::MatrixXd redispatched_demand;
+		/**Upward redispatched demand quantity of the market.*/
+		Eigen::MatrixXd redispatched_demand_up;
+		/**Downward redispatched demand quantity of the market.*/
+		Eigen::MatrixXd redispatched_demand_down;
 		/**Redispatch cost of the market.*/
 		Eigen::MatrixXd redispatched_cost;
 		/**Actual supply quantity (after real time control reserve activation) of the market.*/
