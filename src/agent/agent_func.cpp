@@ -869,17 +869,15 @@ namespace{
 		for(int node_iter = 0; node_iter < node_num; ++ node_iter){
 			double redispatched_qaun = Power_market_inform.TSO_Market.confirmed_demand(tick, node_iter);
 			redispatched_qaun += Power_market_inform.TSO_Market.confirmed_supply(tick, node_iter);
-			//std::cout << Power_market_inform.TSO_Market.redispatched_cost(tick, node_iter) << "\t" << redispatched_qaun << "\t";
-			//redispatched_qaun -= std::max(Power_market_inform.TSO_Market.redispatched_demand(tick, node_iter), 0.);
-			//redispatched_qaun -= std::max(Power_market_inform.TSO_Market.redispatched_supply(tick, node_iter), 0.);
+			std::cout << Power_market_inform.TSO_Market.redispatched_cost(tick, node_iter) << "\t" << redispatched_qaun << "\t";
 			redispatched_qaun -= Power_market_inform.TSO_Market.redispatched_demand_up(tick, node_iter);
 			redispatched_qaun -= Power_market_inform.TSO_Market.redispatched_supply_up(tick, node_iter);
 			redispatch_price(node_iter) = Power_market_inform.TSO_Market.redispatched_cost(tick, node_iter);
 			redispatch_price(node_iter) /= redispatched_qaun;
-			//std::cout << redispatched_qaun << "\t" << redispatch_price(node_iter) << "\n";
+			std::cout << redispatched_qaun << "\t" << redispatch_price(node_iter) << "\n";
 		}
 		//std::cout << redispatch_price;
-		//std::cout << "\n";
+		std::cout << "\n";
 	}
 
 	void end_user_status_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, bool control_reserve_flag){
