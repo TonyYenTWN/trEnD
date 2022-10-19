@@ -64,7 +64,6 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 
 	// Redispatch in TSO
 	Confirmed_bid_calculation(0, Power_market_inform, Power_network_inform, DSO_filter_flag);
-	//std::cout << Power_market_inform.TSO_Market.submitted_demand.sum() << "\t" << Power_market_inform.TSO_Market.submitted_supply.sum() << "\n";
 	Flow_Based_Market_Optimization(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
 	TSO_Market_Scheduled_Results_Get(0, Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
 
@@ -78,8 +77,8 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 		TSO_Market_Actual_Results_Get(0, Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
 	}
 
-//	// Update state variables of agents
-//	agent::agents_status_update(0, Power_market_inform, Power_network_inform, control_reserve_flag);
+	// Update state variables of agents
+	agent::agents_status_update(0, Power_market_inform, Power_network_inform, control_reserve_flag);
 }
 
 void power_market::power_market_process_update(power_network::network_inform &Power_network_inform, market_whole_inform &Power_market_inform, bool DSO_filter_flag, bool control_reserve_flag){
