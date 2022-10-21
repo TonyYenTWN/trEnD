@@ -82,7 +82,7 @@ void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Powe
 	// Set reference price for redispatch settlement
 	for(int node_iter = 0; node_iter < Power_market_inform.TSO_Market.network.num_vertice; ++ node_iter){
 		int bz_ID = Power_network_inform.nodes.bidding_zone(node_iter);
-		Power_market_inform.TSO_Market.reference_price(node_iter) = Power_market_inform.International_Market.confirmed_price(bz_ID);
+		Power_market_inform.TSO_Market.reference_price(node_iter) = Power_market_inform.International_Market.confirmed_price(tick, bz_ID);
 	}
 
 	// Initialize boundary conditions with other bidding zones
