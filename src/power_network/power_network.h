@@ -239,6 +239,8 @@ namespace power_network{
 		* @name statistical parameters of power network
 		*/
 		/*@{*/
+		/** Density of power lines per point connecting distribution and transmission power network.*/
+		double line_density_connection = 1.;
 		/** Total number of power lines in the distribution network.*/
 		int line_num_distr = 124245;
 		/** Density of power lines per point in the distribution network.*/
