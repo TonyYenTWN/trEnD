@@ -877,7 +877,7 @@ namespace{
 			std::cout << redispatched_qaun << "\t" << redispatch_price(node_iter) << "\n";
 		}
 		//std::cout << redispatch_price;
-		std::cout << "\n";
+		//std::cout << "\n";
 	}
 
 	void end_user_status_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, bool control_reserve_flag){
