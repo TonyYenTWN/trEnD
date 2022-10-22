@@ -262,7 +262,8 @@ namespace power_network{
 		/** Shunt impedance (ohm per meter) of distribution line.*/
 		std::complex<double> z_distr_shunt = std::complex<double> (0., 0.);
 		/**Phase angle limits on a node.*/
-		double theta_limit = boost::math::constants::pi<double>() / 24.;
+		//double theta_limit = boost::math::constants::pi<double>() / 24.;
+		double theta_limit = boost::math::constants::pi<double>() / 12.;
 		/**Hash table (mapping) of per phase power flow limits on an edge at different voltage base levels, in MW.*/
 		std::map <int, double> power_limit;
 		/*@{*/
@@ -297,7 +298,7 @@ namespace power_network{
 					level_count += 1;
 					this->voltage_base_levels.insert(std::make_pair(voltage_max, level_count));
 					this->impedenace_base_levels.insert(std::make_pair(voltage_max, (double) voltage_max * voltage_max / this->s_base / 3.));
-					this->power_limit.insert(std::make_pair(voltage_max, (double) voltage_max));
+					this->power_limit.insert(std::make_pair(voltage_max, (double) 2 * voltage_max));
 					//std::cout << voltage_base_levels[voltage_max] << "\t" <<  voltage_max << "\t" << impedenace_base_levels[voltage_max] << "\n";
 				}
 			}
