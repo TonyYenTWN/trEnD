@@ -76,6 +76,22 @@ namespace power_market{
 		/*@{*/
 	};
 
+	/**Information of the settlement of a market.*/
+	struct settlement{
+		/**Upward supply quantity of the market.*/
+		Eigen::MatrixXd supply_up;
+		/**Downward supply quantity of the market.*/
+		Eigen::MatrixXd supply_down;
+		/**Upward demand quantity of the market.*/
+		Eigen::MatrixXd demand_up;
+		/**Downward demand quantity of the market.*/
+		Eigen::MatrixXd demand_down;
+		/**Supply cost of the market*/
+		Eigen::MatrixXd cost_supply;
+		/**Demand cost of the market*/
+		Eigen::MatrixXd cost_demand;
+	};
+
 	/**Information of a power market.*/
 	struct market_inform{
 		/**
@@ -130,16 +146,10 @@ namespace power_market{
 		Eigen::MatrixXd confirmed_demand;
 		/**Confirmed market clearing price of the market.*/
 		Eigen::MatrixXd confirmed_price;
-		/**Upward redispatched supply quantity of the market.*/
-		Eigen::MatrixXd redispatched_supply_up;
-		/**Downward redispatched supply quantity of the market.*/
-		Eigen::MatrixXd redispatched_supply_down;
-		/**Upward redispatched demand quantity of the market.*/
-		Eigen::MatrixXd redispatched_demand_up;
-		/**Downward redispatched demand quantity of the market.*/
-		Eigen::MatrixXd redispatched_demand_down;
-		/**Redispatch cost of the market.*/
-		Eigen::MatrixXd redispatched_cost;
+		/**Settlement for redispatch.*/
+		settlement redispatch;
+		/**Settlement for balancing.*/
+		settlement balancing;
 		/**Actual supply quantity (after real time control reserve activation) of the market.*/
 		Eigen::MatrixXd actual_supply;
 		/**Actual demand quantity (after real time control reserve activation) of the market.*/
@@ -232,7 +242,7 @@ namespace power_market{
 
 namespace power_market{
 	void TSO_Market_Set(market_inform&, power_network::network_inform&, int);
-	void Confirmed_bid_calculation(int, market_whole_inform&, power_network::network_inform&, bool);
+	void Confirmed_bid_calculation(int, market_whole_inform&, power_network::network_inform&);
 	void TSO_Market_Scheduled_Results_Get(int, market_inform&, alglib::minlpstate&);
 	void Balancing_bid_calculation(int, market_whole_inform&, power_network::network_inform&);
 	void TSO_Market_Actual_Results_Get(int, market_inform&, alglib::minlpstate&);

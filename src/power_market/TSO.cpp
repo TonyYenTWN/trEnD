@@ -63,11 +63,12 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 	TSO_Market.confirmed_price = Eigen::MatrixXd(Time, TSO_Market.num_zone);
 	TSO_Market.confirmed_ratio_supply = Eigen::VectorXd::Zero(TSO_Market.num_zone);
 	TSO_Market.confirmed_ratio_demand = Eigen::VectorXd::Zero(TSO_Market.num_zone);
-	TSO_Market.redispatched_supply_up = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
-	TSO_Market.redispatched_supply_down = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
-	TSO_Market.redispatched_demand_up = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
-	TSO_Market.redispatched_demand_down = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
-	TSO_Market.redispatched_cost = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.redispatch.supply_up = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.redispatch.supply_down = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.redispatch.demand_up = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.redispatch.demand_down = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.redispatch.cost_supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.redispatch.cost_demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.actual_supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.actual_demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.actual_price = Eigen::MatrixXd(Time, TSO_Market.num_zone);
@@ -75,7 +76,7 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 	TSO_Market.actual_ratio_demand = Eigen::VectorXd::Zero(TSO_Market.num_zone);
 }
 
-void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, bool DSO_filter_flag){
+void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
 	// Initialize submit bids of the TSO market
 	Market_Initialization(Power_market_inform.TSO_Market);
 
@@ -95,14 +96,8 @@ void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Powe
 		int node_ID = Power_network_inform.points.node(point_iter);
 
 		for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
-			if(DSO_filter_flag){
-				Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.filtered_demand;
-				Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.filtered_supply;
-			}
-			else{
-				Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand;
-				Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply;
-			}
+			Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand;
+			Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply;
 		}
 	}
 
@@ -129,14 +124,8 @@ void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Powe
 		int point_ID = Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].point_ID;
 		int node_ID = Power_network_inform.points.node(point_ID);
 
-		if(DSO_filter_flag){
-			Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids.filtered_supply;
-			Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids.filtered_demand;
-		}
-		else{
-			Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids.redispatch_supply;
-			Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids.redispatch_demand;
-		}
+		Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids.redispatch_supply;
+		Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids.redispatch_demand;
 	}
 
 	// Wind power plants
@@ -153,14 +142,8 @@ void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Powe
 		int point_ID = Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].point_ID;
 		int node_ID = Power_network_inform.points.node(point_ID);
 
-		if(DSO_filter_flag){
-			Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].bids.filtered_supply;
-			Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].bids.filtered_demand;
-		}
-		else{
-			Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].bids.redispatch_supply;
-			Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].bids.redispatch_demand;
-		}
+		Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].bids.redispatch_supply;
+		Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].bids.redispatch_demand;
 	}
 
 	// Pump storage
@@ -176,14 +159,8 @@ void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Powe
 		int point_ID = Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].point_ID;
 		int node_ID = Power_network_inform.points.node(point_ID);
 
-		if(DSO_filter_flag){
-			Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.filtered_supply;
-			Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.filtered_demand;
-		}
-		else{
-			Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.redispatch_supply;
-			Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.redispatch_demand;
-		}
+		Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.redispatch_supply;
+		Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.redispatch_demand;
 	}
 }
 

@@ -28,8 +28,8 @@ namespace agent{
 		Eigen::VectorXd redispatch_demand;
 
 		// Filtered bids into redisatch of TSO (for distributed resources)
-		Eigen::VectorXd filtered_supply;
-		Eigen::VectorXd filtered_demand;
+		Eigen::VectorXd filter_supply;
+		Eigen::VectorXd filter_demand;
 
 		// Equivalent bidding price when control reserve is activated
 		Eigen::VectorXd balancing_supply;
