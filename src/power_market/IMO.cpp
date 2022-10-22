@@ -134,11 +134,11 @@ void power_market::International_Market_Set(market_inform &International_Market,
 	power_market::Market_Initialization(International_Market);
 
 	// Initialization of output variables
-	International_Market.confirmed_supply = Eigen::MatrixXd::Zero(Time, International_Market.num_zone);
-	International_Market.confirmed_demand = Eigen::MatrixXd::Zero(Time, International_Market.num_zone);
-	International_Market.confirmed_price = Eigen::MatrixXd(Time, International_Market.num_zone);
-	International_Market.confirmed_ratio_supply = Eigen::VectorXd::Zero(International_Market.num_zone);
-	International_Market.confirmed_ratio_demand = Eigen::VectorXd::Zero(International_Market.num_zone);
+	International_Market.confirmed.supply = Eigen::MatrixXd::Zero(Time, International_Market.num_zone);
+	International_Market.confirmed.demand = Eigen::MatrixXd::Zero(Time, International_Market.num_zone);
+	International_Market.confirmed.price = Eigen::MatrixXd(Time, International_Market.num_zone);
+	International_Market.confirmed.ratio_supply = Eigen::VectorXd::Zero(International_Market.num_zone);
+	International_Market.confirmed.ratio_demand = Eigen::VectorXd::Zero(International_Market.num_zone);
 	International_Market.network.confirmed_power = Eigen::MatrixXd(Time, International_Market.network.num_edges);
 
 	// Update alglib object for optimization
@@ -345,33 +345,33 @@ void power_market::International_Market_Optimization(int tick, market_inform &Ma
 	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
 		// Store power source / sink
 		int row_start = Market.network.num_edges + Market.network.num_vertice + node_iter * (Market.price_intervals + 2);
-		Market.confirmed_supply(tick, node_iter) = (sol_vec.segment(row_start, Market.price_intervals + 2).array().max(0)).sum();
-		Market.confirmed_demand(tick, node_iter) = -(sol_vec.segment(row_start, Market.price_intervals + 2).array().min(0)).sum();
+		Market.confirmed.supply(tick, node_iter) = (sol_vec.segment(row_start, Market.price_intervals + 2).array().max(0)).sum();
+		Market.confirmed.demand(tick, node_iter) = -(sol_vec.segment(row_start, Market.price_intervals + 2).array().min(0)).sum();
 
 		// Store nodal prices
-		Market.confirmed_price(tick, node_iter) = Market.bidded_price_map.bidded_price(0) + rep.lagbc[row_start];
-		Market.confirmed_price(tick, node_iter) = int(Market.confirmed_price(tick, node_iter)) + .5;
-		if(Market.confirmed_price(tick, node_iter) < Market.bidded_price_map.bidded_price(1)){
-			Market.confirmed_price(tick, node_iter) = Market.bidded_price_map.bidded_price(0);
+		Market.confirmed.price(tick, node_iter) = Market.bidded_price_map.bidded_price(0) + rep.lagbc[row_start];
+		Market.confirmed.price(tick, node_iter) = int(Market.confirmed.price(tick, node_iter)) + .5;
+		if(Market.confirmed.price(tick, node_iter) < Market.bidded_price_map.bidded_price(1)){
+			Market.confirmed.price(tick, node_iter) = Market.bidded_price_map.bidded_price(0);
 		}
-		else if(Market.confirmed_price(tick, node_iter) > Market.bidded_price_map.bidded_price(Market.price_intervals)){
-			Market.confirmed_price(tick, node_iter) = Market.bidded_price_map.bidded_price(Market.price_intervals + 1);
+		else if(Market.confirmed.price(tick, node_iter) > Market.bidded_price_map.bidded_price(Market.price_intervals)){
+			Market.confirmed.price(tick, node_iter) = Market.bidded_price_map.bidded_price(Market.price_intervals + 1);
 		}
 
 		// Store ratio at nodes
 		for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter){
-			if(Market.bidded_price_map.bidded_price(price_iter) >= Market.confirmed_price(tick, node_iter) || price_iter == Market.price_intervals + 1){
+			if(Market.bidded_price_map.bidded_price(price_iter) >= Market.confirmed.price(tick, node_iter) || price_iter == Market.price_intervals + 1){
 				if(sol[row_start + price_iter] >= 0.){
-					Market.confirmed_ratio_demand(node_iter) = std::min(Market.submitted_demand(price_iter, node_iter), Market.submitted_supply(price_iter, node_iter) - sol[row_start + price_iter]);
-					Market.confirmed_ratio_supply(node_iter) = Market.confirmed_ratio_demand(node_iter) + sol[row_start + price_iter];
-					Market.confirmed_ratio_demand(node_iter) /= Market.submitted_demand(price_iter, node_iter) + 1E-12;
-					Market.confirmed_ratio_supply(node_iter) /= Market.submitted_supply(price_iter, node_iter) + 1E-12;
+					Market.confirmed.ratio_demand(node_iter) = std::min(Market.submitted_demand(price_iter, node_iter), Market.submitted_supply(price_iter, node_iter) - sol[row_start + price_iter]);
+					Market.confirmed.ratio_supply(node_iter) = Market.confirmed.ratio_demand(node_iter) + sol[row_start + price_iter];
+					Market.confirmed.ratio_demand(node_iter) /= Market.submitted_demand(price_iter, node_iter) + 1E-12;
+					Market.confirmed.ratio_supply(node_iter) /= Market.submitted_supply(price_iter, node_iter) + 1E-12;
 				}
 				else{
-					Market.confirmed_ratio_supply(node_iter) = std::min(Market.submitted_supply(price_iter, node_iter), Market.submitted_demand(price_iter, node_iter) + sol[row_start + price_iter]);
-					Market.confirmed_ratio_demand(node_iter) = Market.confirmed_ratio_supply(node_iter) - sol[row_start + price_iter];
-					Market.confirmed_ratio_demand(node_iter) /= Market.submitted_demand(price_iter, node_iter) + 1E-12;
-					Market.confirmed_ratio_supply(node_iter) /= Market.submitted_supply(price_iter, node_iter) + 1E-12;
+					Market.confirmed.ratio_supply(node_iter) = std::min(Market.submitted_supply(price_iter, node_iter), Market.submitted_demand(price_iter, node_iter) + sol[row_start + price_iter]);
+					Market.confirmed.ratio_demand(node_iter) = Market.confirmed.ratio_supply(node_iter) - sol[row_start + price_iter];
+					Market.confirmed.ratio_demand(node_iter) /= Market.submitted_demand(price_iter, node_iter) + 1E-12;
+					Market.confirmed.ratio_supply(node_iter) /= Market.submitted_supply(price_iter, node_iter) + 1E-12;
 				}
 				break;
 			}
@@ -384,7 +384,7 @@ void power_market::International_Market_Optimization(int tick, market_inform &Ma
 
 void power_market::International_Market_Output(market_inform &International_Market){
 	std::string fout_name = "output/IMO_confirmed_price.csv";
-	basic::write_file(International_Market.confirmed_price, fout_name, International_Market.zone_names);
+	basic::write_file(International_Market.confirmed.price, fout_name, International_Market.zone_names);
 }
 
 void power_market::International_Market_Price_Estimation(int tick, market_inform &International_Market, alglib::minlpstate &IMO_Problem, power_network::network_inform &Power_network_inform){

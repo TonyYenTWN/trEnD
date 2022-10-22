@@ -31,6 +31,10 @@ void power_market::Market_Initialization(market_inform &Market){
 	Market.submitted_supply = Eigen::MatrixXd::Zero(Market.price_intervals + 2, Market.num_zone);
 	Market.submitted_demand = Eigen::MatrixXd::Zero(Market.price_intervals + 2, Market.num_zone);
 	Market.reference_price = Eigen::VectorXd::Zero(Market.num_zone);
+	Market.confirmed.ratio_supply = Eigen::VectorXd::Zero(Market.num_zone);
+	Market.confirmed.ratio_demand = Eigen::VectorXd::Zero(Market.num_zone);
+	Market.actual.ratio_supply = Eigen::VectorXd::Zero(Market.num_zone);
+	Market.actual.ratio_demand = Eigen::VectorXd::Zero(Market.num_zone);
 }
 
 // ------------------------------------------------------------------------------------------------

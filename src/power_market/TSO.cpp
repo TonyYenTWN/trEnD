@@ -58,22 +58,24 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 	power_market::Market_Initialization(TSO_Market);
 
 	// Initialization of output variables
-	TSO_Market.confirmed_supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
-	TSO_Market.confirmed_demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
-	TSO_Market.confirmed_price = Eigen::MatrixXd(Time, TSO_Market.num_zone);
-	TSO_Market.confirmed_ratio_supply = Eigen::VectorXd::Zero(TSO_Market.num_zone);
-	TSO_Market.confirmed_ratio_demand = Eigen::VectorXd::Zero(TSO_Market.num_zone);
+	TSO_Market.confirmed.supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.confirmed.demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.confirmed.price = Eigen::MatrixXd(Time, TSO_Market.num_zone);
 	TSO_Market.redispatch.supply_up = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.redispatch.supply_down = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.redispatch.demand_up = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.redispatch.demand_down = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.redispatch.cost_supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.redispatch.cost_demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
-	TSO_Market.actual_supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
-	TSO_Market.actual_demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
-	TSO_Market.actual_price = Eigen::MatrixXd(Time, TSO_Market.num_zone);
-	TSO_Market.actual_ratio_supply = Eigen::VectorXd::Zero(TSO_Market.num_zone);
-	TSO_Market.actual_ratio_demand = Eigen::VectorXd::Zero(TSO_Market.num_zone);
+	TSO_Market.balancing.supply_up = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.balancing.supply_down = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.balancing.demand_up = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.balancing.demand_down = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.balancing.cost_supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.balancing.cost_demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.actual.supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.actual.demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.actual.price = Eigen::MatrixXd(Time, TSO_Market.num_zone);
 }
 
 void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
@@ -83,7 +85,7 @@ void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Powe
 	// Set reference price for redispatch settlement
 	for(int node_iter = 0; node_iter < Power_market_inform.TSO_Market.network.num_vertice; ++ node_iter){
 		int bz_ID = Power_network_inform.nodes.bidding_zone(node_iter);
-		Power_market_inform.TSO_Market.reference_price(node_iter) = Power_market_inform.International_Market.confirmed_price(tick, bz_ID);
+		Power_market_inform.TSO_Market.reference_price(node_iter) = Power_market_inform.International_Market.confirmed.price(tick, bz_ID);
 	}
 
 	// Initialize boundary conditions with other bidding zones
@@ -173,40 +175,40 @@ void power_market::TSO_Market_Scheduled_Results_Get(int tick, market_inform &Mar
 	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
 		// Store power source / sink
 		int row_start = 2 * Market.network.num_vertice + node_iter * (Market.price_intervals + 2);
-		Market.confirmed_supply(tick, node_iter) = (sol_vec.segment(row_start, Market.price_intervals + 2).array().max(0)).sum();
-		Market.confirmed_demand(tick, node_iter) = -(sol_vec.segment(row_start, Market.price_intervals + 2).array().min(0)).sum();
+		Market.confirmed.supply(tick, node_iter) = (sol_vec.segment(row_start, Market.price_intervals + 2).array().max(0)).sum();
+		Market.confirmed.demand(tick, node_iter) = -(sol_vec.segment(row_start, Market.price_intervals + 2).array().min(0)).sum();
 
 		// Store nodal prices
-		Market.confirmed_price(tick, node_iter) = Market.bidded_price_map.bidded_price(1) + rep.lagbc[row_start + 1];
-		Market.confirmed_price(tick, node_iter) = int(Market.confirmed_price(tick, node_iter)) + .5;
-		if(Market.confirmed_price(tick, node_iter) < Market.bidded_price_map.bidded_price(1)){
-			Market.confirmed_price(tick, node_iter) = Market.bidded_price_map.bidded_price(0);
+		Market.confirmed.price(tick, node_iter) = Market.bidded_price_map.bidded_price(0) + rep.lagbc[row_start];
+		Market.confirmed.price(tick, node_iter) = int(Market.confirmed.price(tick, node_iter)) + .5;
+		if(Market.confirmed.price(tick, node_iter) < Market.bidded_price_map.bidded_price(1)){
+			Market.confirmed.price(tick, node_iter) = Market.bidded_price_map.bidded_price(0);
 		}
-		else if(Market.confirmed_price(tick, node_iter) > Market.bidded_price_map.bidded_price(Market.price_intervals)){
-			Market.confirmed_price(tick, node_iter) = Market.bidded_price_map.bidded_price(Market.price_intervals + 1);
+		else if(Market.confirmed.price(tick, node_iter) > Market.bidded_price_map.bidded_price(Market.price_intervals)){
+			Market.confirmed.price(tick, node_iter) = Market.bidded_price_map.bidded_price(Market.price_intervals + 1);
 		}
 
 		// Store ratio at nodes
 		for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter){
-			if(Market.bidded_price_map.bidded_price(price_iter) >= Market.confirmed_price(tick, node_iter) || price_iter == Market.price_intervals + 1){
+			if(Market.bidded_price_map.bidded_price(price_iter) >= Market.confirmed.price(tick, node_iter) || price_iter == Market.price_intervals + 1){
 				if(sol[row_start + price_iter] >= 0.){
-					Market.confirmed_ratio_demand(node_iter) = std::min(Market.submitted_demand(price_iter, node_iter), Market.submitted_supply(price_iter, node_iter) - sol[row_start + price_iter]);
-					Market.confirmed_ratio_supply(node_iter) = Market.confirmed_ratio_demand(node_iter) + sol[row_start + price_iter];
-					Market.confirmed_ratio_demand(node_iter) /= Market.submitted_demand(price_iter, node_iter) + 1E-12;
-					Market.confirmed_ratio_supply(node_iter) /= Market.submitted_supply(price_iter, node_iter) + 1E-12;
+					Market.confirmed.ratio_demand(node_iter) = std::min(Market.submitted_demand(price_iter, node_iter), Market.submitted_supply(price_iter, node_iter) - sol[row_start + price_iter]);
+					Market.confirmed.ratio_supply(node_iter) = Market.confirmed.ratio_demand(node_iter) + sol[row_start + price_iter];
+					Market.confirmed.ratio_demand(node_iter) /= Market.submitted_demand(price_iter, node_iter) + 1E-12;
+					Market.confirmed.ratio_supply(node_iter) /= Market.submitted_supply(price_iter, node_iter) + 1E-12;
 				}
 				else{
-					Market.confirmed_ratio_supply(node_iter) = std::min(Market.submitted_supply(price_iter, node_iter), Market.submitted_demand(price_iter, node_iter) + sol[row_start + price_iter]);
-					Market.confirmed_ratio_demand(node_iter) = Market.confirmed_ratio_supply(node_iter) - sol[row_start + price_iter];
-					Market.confirmed_ratio_demand(node_iter) /= Market.submitted_demand(price_iter, node_iter) + 1E-12;
-					Market.confirmed_ratio_supply(node_iter) /= Market.submitted_supply(price_iter, node_iter) + 1E-12;
+					Market.confirmed.ratio_supply(node_iter) = std::min(Market.submitted_supply(price_iter, node_iter), Market.submitted_demand(price_iter, node_iter) + sol[row_start + price_iter]);
+					Market.confirmed.ratio_demand(node_iter) = Market.confirmed.ratio_supply(node_iter) - sol[row_start + price_iter];
+					Market.confirmed.ratio_demand(node_iter) /= Market.submitted_demand(price_iter, node_iter) + 1E-12;
+					Market.confirmed.ratio_supply(node_iter) /= Market.submitted_supply(price_iter, node_iter) + 1E-12;
 				}
 				break;
 			}
 		}
 	}
 
-	std::cout << Market.confirmed_supply.row(tick).sum() << "\t" << Market.confirmed_demand.row(tick).sum() << "\n";
+	std::cout << Market.confirmed.supply.row(tick).sum() << "\t" << Market.confirmed.demand.row(tick).sum() << "\n";
 	std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).array().abs().sum() << "\n";
 	std::cout << sol_vec.head(Market.network.num_vertice).minCoeff() << " " << sol_vec.head(Market.network.num_vertice).maxCoeff()  << "\n";
 	std::cout << sol_vec.tail(Market.network.num_edges).minCoeff() << " " << sol_vec.tail(Market.network.num_edges).maxCoeff() << "\n\n";
@@ -303,33 +305,33 @@ void power_market::TSO_Market_Actual_Results_Get(int tick, market_inform &Market
 	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
 		// Store power source / sink
 		int row_start = 2 * Market.network.num_vertice + node_iter * (Market.price_intervals + 2);
-		Market.actual_supply(tick, node_iter) = (sol_vec.segment(row_start, Market.price_intervals + 2).array().max(0)).sum();
-		Market.actual_demand(tick, node_iter) = -(sol_vec.segment(row_start, Market.price_intervals + 2).array().min(0)).sum();
+		Market.actual.supply(tick, node_iter) = (sol_vec.segment(row_start, Market.price_intervals + 2).array().max(0)).sum();
+		Market.actual.demand(tick, node_iter) = -(sol_vec.segment(row_start, Market.price_intervals + 2).array().min(0)).sum();
 
 		// Store nodal prices
-		Market.actual_price(tick, node_iter) = Market.bidded_price_map.bidded_price(1) + rep.lagbc[row_start + 1];
-		Market.actual_price(tick, node_iter) = int(Market.actual_price(tick, node_iter)) + .5;
-		if(Market.actual_price(tick, node_iter) < Market.actual_price(1)){
-			Market.actual_price(tick, node_iter) = Market.actual_price(0);
+		Market.actual.price(tick, node_iter) = Market.bidded_price_map.bidded_price(0) + rep.lagbc[row_start];
+		Market.actual.price(tick, node_iter) = int(Market.actual.price(tick, node_iter)) + .5;
+		if(Market.actual.price(tick, node_iter) < Market.bidded_price_map.bidded_price(1)){
+			Market.actual.price(tick, node_iter) = Market.bidded_price_map.bidded_price(0);
 		}
-		else if(Market.actual_price(tick, node_iter) > Market.bidded_price_map.bidded_price(Market.price_intervals)){
-			Market.actual_price(tick, node_iter) = Market.bidded_price_map.bidded_price(Market.price_intervals + 1);
+		else if(Market.actual.price(tick, node_iter) > Market.bidded_price_map.bidded_price(Market.price_intervals)){
+			Market.actual.price(tick, node_iter) = Market.bidded_price_map.bidded_price(Market.price_intervals + 1);
 		}
 
 		// Store ratio at nodes
 		for(int price_iter = 0; price_iter < Market.price_intervals + 2; ++ price_iter){
-			if(Market.bidded_price_map.bidded_price(price_iter) >= Market.actual_price(tick, node_iter) || price_iter == Market.price_intervals + 1){
+			if(Market.bidded_price_map.bidded_price(price_iter) >= Market.actual.price(tick, node_iter) || price_iter == Market.price_intervals + 1){
 				if(sol[row_start + price_iter] >= 0.){
-					Market.actual_ratio_demand(node_iter) = std::min(Market.submitted_demand(price_iter, node_iter), Market.submitted_supply(price_iter, node_iter) - sol[row_start + price_iter]);
-					Market.actual_ratio_supply(node_iter) = Market.actual_ratio_demand(node_iter) + sol[row_start + price_iter];
-					Market.actual_ratio_demand(node_iter) /= Market.submitted_demand(price_iter, node_iter) + 1E-12;
-					Market.actual_ratio_supply(node_iter) /= Market.submitted_supply(price_iter, node_iter) + 1E-12;
+					Market.actual.ratio_demand(node_iter) = std::min(Market.submitted_demand(price_iter, node_iter), Market.submitted_supply(price_iter, node_iter) - sol[row_start + price_iter]);
+					Market.actual.ratio_supply(node_iter) = Market.actual.ratio_demand(node_iter) + sol[row_start + price_iter];
+					Market.actual.ratio_demand(node_iter) /= Market.submitted_demand(price_iter, node_iter) + 1E-12;
+					Market.actual.ratio_supply(node_iter) /= Market.submitted_supply(price_iter, node_iter) + 1E-12;
 				}
 				else{
-					Market.actual_ratio_supply(node_iter) = std::min(Market.submitted_supply(price_iter, node_iter), Market.submitted_demand(price_iter, node_iter) + sol[row_start + price_iter]);
-					Market.actual_ratio_demand(node_iter) = Market.actual_ratio_supply(node_iter) - sol[row_start + price_iter];
-					Market.actual_ratio_demand(node_iter) /= Market.submitted_demand(price_iter, node_iter) + 1E-12;
-					Market.actual_ratio_supply(node_iter) /= Market.submitted_supply(price_iter, node_iter) + 1E-12;
+					Market.actual.ratio_supply(node_iter) = std::min(Market.submitted_supply(price_iter, node_iter), Market.submitted_demand(price_iter, node_iter) + sol[row_start + price_iter]);
+					Market.actual.ratio_demand(node_iter) = Market.actual.ratio_supply(node_iter) - sol[row_start + price_iter];
+					Market.actual.ratio_demand(node_iter) /= Market.submitted_demand(price_iter, node_iter) + 1E-12;
+					Market.actual.ratio_supply(node_iter) /= Market.submitted_supply(price_iter, node_iter) + 1E-12;
 				}
 				break;
 			}
@@ -338,7 +340,7 @@ void power_market::TSO_Market_Actual_Results_Get(int tick, market_inform &Market
 	}
 	//std::cout << "\n";
 
-	std::cout << Market.actual_supply.row(tick).sum() << "\t" << Market.actual_demand.row(tick).sum() << "\n";
+	std::cout << Market.actual.supply.row(tick).sum() << "\t" << Market.actual.demand.row(tick).sum() << "\n";
 	std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).array().abs().sum() << "\n";
 	std::cout << sol_vec.head(Market.network.num_vertice).minCoeff() << " " << sol_vec.head(Market.network.num_vertice).maxCoeff()  << "\n";
 	std::cout << sol_vec.tail(Market.network.num_edges).minCoeff() << " " << sol_vec.tail(Market.network.num_edges).maxCoeff() << "\n\n";

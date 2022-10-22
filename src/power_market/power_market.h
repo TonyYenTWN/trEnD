@@ -76,6 +76,20 @@ namespace power_market{
 		/*@{*/
 	};
 
+	/**Information of the results of a market.*/
+	struct results{
+		/**Supply quantity of the market.*/
+		Eigen::MatrixXd supply;
+		/**Demand quantity of the market.*/
+		Eigen::MatrixXd demand;
+		/**Market clearing price of the market.*/
+		Eigen::MatrixXd price;
+		/**Ratio of supply at marginal price.*/
+		Eigen::VectorXd ratio_supply;
+		/**Ratio of demand at marginal price.*/
+		Eigen::VectorXd ratio_demand;
+	};
+
 	/**Information of the settlement of a market.*/
 	struct settlement{
 		/**Upward supply quantity of the market.*/
@@ -126,36 +140,28 @@ namespace power_market{
 		Eigen::MatrixXd submitted_demand;
 		/**Reference prices for each zone.*/
 		Eigen::VectorXd reference_price;
-		/**Ratio of supply confirmed at marginal price.*/
-		Eigen::VectorXd confirmed_ratio_supply;
-		/**Ratio of demand confirmed at marginal price.*/
-		Eigen::VectorXd confirmed_ratio_demand;
-		/**Ratio of actual supply at marginal price.*/
-		Eigen::VectorXd actual_ratio_supply;
-		/**Ratio of actual demand at marginal price.*/
-		Eigen::VectorXd actual_ratio_demand;
+//		/**Ratio of supply confirmed at marginal price.*/
+//		Eigen::VectorXd confirmed_ratio_supply;
+//		/**Ratio of demand confirmed at marginal price.*/
+//		Eigen::VectorXd confirmed_ratio_demand;
+//		/**Ratio of actual supply at marginal price.*/
+//		Eigen::VectorXd actual_ratio_supply;
+//		/**Ratio of actual demand at marginal price.*/
+//		Eigen::VectorXd actual_ratio_demand;
 		/*@{*/
 
 		/**
 		* @name output variables
 		*/
 		/*@{*/
-		/**Confirmed supply quantity of the market.*/
-		Eigen::MatrixXd confirmed_supply;
-		/**Confirmed demand quantity of the market.*/
-		Eigen::MatrixXd confirmed_demand;
-		/**Confirmed market clearing price of the market.*/
-		Eigen::MatrixXd confirmed_price;
+		/**Confirmed scheduled result.*/
+		results confirmed;
+		/**Actual result.*/
+		results actual;
 		/**Settlement for redispatch.*/
 		settlement redispatch;
 		/**Settlement for balancing.*/
 		settlement balancing;
-		/**Actual supply quantity (after real time control reserve activation) of the market.*/
-		Eigen::MatrixXd actual_supply;
-		/**Actual demand quantity (after real time control reserve activation) of the market.*/
-		Eigen::MatrixXd actual_demand;
-		/** Market clearing price after control reserve activation of the market.*/
-		Eigen::MatrixXd actual_price;
 		/*@{*/
 
 		/**
@@ -256,7 +262,6 @@ namespace power_market{
 
 namespace power_market{
 	void DSO_Markets_Set(markets_inform&, power_network::network_inform&, int);
-	//void DSO_agents_update(int, agent::end_user::profiles&, market_inform&, market_inform&, power_network::network_inform&);
 	void Filtered_bid_demand_calculation(int, market_whole_inform&, power_network::network_inform&);
 	void Filtered_bid_supply_calculation(int, market_whole_inform&, power_network::network_inform&);
 	void DSO_Market_Results_Get(int, market_inform&, alglib::minlpstate&, power_network::DSO_cluster&, bool supply = 1);
