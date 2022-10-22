@@ -84,9 +84,9 @@ namespace power_market{
 		Eigen::MatrixXd demand;
 		/**Market clearing price of the market.*/
 		Eigen::MatrixXd price;
-		/**Ratio of supply at marginal price.*/
+		/**Ratio of supply at marginal price (process variable).*/
 		Eigen::VectorXd ratio_supply;
-		/**Ratio of demand at marginal price.*/
+		/**Ratio of demand at marginal price (process variable).*/
 		Eigen::VectorXd ratio_demand;
 	};
 
@@ -140,14 +140,6 @@ namespace power_market{
 		Eigen::MatrixXd submitted_demand;
 		/**Reference prices for each zone.*/
 		Eigen::VectorXd reference_price;
-//		/**Ratio of supply confirmed at marginal price.*/
-//		Eigen::VectorXd confirmed_ratio_supply;
-//		/**Ratio of demand confirmed at marginal price.*/
-//		Eigen::VectorXd confirmed_ratio_demand;
-//		/**Ratio of actual supply at marginal price.*/
-//		Eigen::VectorXd actual_ratio_supply;
-//		/**Ratio of actual demand at marginal price.*/
-//		Eigen::VectorXd actual_ratio_demand;
 		/*@{*/
 
 		/**
