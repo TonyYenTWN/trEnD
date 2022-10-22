@@ -647,8 +647,13 @@ namespace{
 
 				// Settlement of redispatch
 				agent_redispatch_settlement_calculation(tick, node_ID, Power_market_inform, original_price, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement);
+
+//				if(node_ID == 0){
+//					std::cout << point_iter << ":\t" << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.cleared_demand << "\t" << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.confirmed_demand << "\n";
+//				}
 			}
 		}
+//		std::cout << "\n";
 	}
 
 	void industrial_balancing_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
@@ -697,7 +702,12 @@ namespace{
 
 			// Settlement of redispatch
 			agent_redispatch_settlement_calculation(tick, node_ID, Power_market_inform, original_price, Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids, Power_market_inform.agent_profiles.industrial.HV[agent_iter].results, Power_market_inform.agent_profiles.industrial.HV[agent_iter].settlement);
+
+//			if(node_ID == 0){
+//				std::cout << point_ID << ":\t" << Power_market_inform.agent_profiles.industrial.HV[agent_iter].results.cleared_demand << "\t" << Power_market_inform.agent_profiles.industrial.HV[agent_iter].results.confirmed_demand << "\n";
+//			}
 		}
+//		std::cout << "\n";
 	}
 
 	void power_supplier_balancing_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, bool DSO_filter_flag){
@@ -740,7 +750,11 @@ namespace{
 			Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].settlement.utility.EOM += Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].results.confirmed_demand * Power_market_inform.price_map.bidded_price(price_interval + 1);
 
 			// Settlement of redispatch
-			agent_redispatch_settlement_calculation(tick, node_ID, Power_market_inform, original_price, Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].settlement);
+			//agent_redispatch_settlement_calculation(tick, node_ID, Power_market_inform, original_price, Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].settlement);
+
+//			if(node_ID == 0){
+//				std::cout << point_ID << ":\t" << Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].results.cleared_supply << "\t" << Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].results.confirmed_supply << "\n";
+//			}
 		}
 
 		int hydro_LV_plant_num = Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant.size();
@@ -779,7 +793,11 @@ namespace{
 			Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].settlement.utility.EOM += Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].results.confirmed_demand * Power_market_inform.price_map.bidded_price(price_interval + 1);
 
 			// Settlement of redispatch
-			agent_redispatch_settlement_calculation(tick, node_ID, Power_market_inform, original_price, Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].settlement);
+			//agent_redispatch_settlement_calculation(tick, node_ID, Power_market_inform, original_price, Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].settlement);
+
+//			if(node_ID == 0){
+//				std::cout << point_ID << ":\t" << Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].results.cleared_supply << "\t" << Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].results.confirmed_supply << "\n";
+//			}
 		}
 
 		int wind_HV_plant_num = Power_market_inform.agent_profiles.power_supplier.wind.HV_plant.size();
@@ -818,7 +836,11 @@ namespace{
 			Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].settlement.utility.EOM += Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].results.confirmed_demand * Power_market_inform.price_map.bidded_price(price_interval + 1);
 
 			// Settlement of redispatch
-			agent_redispatch_settlement_calculation(tick, node_ID, Power_market_inform, original_price, Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].settlement);
+			//agent_redispatch_settlement_calculation(tick, node_ID, Power_market_inform, original_price, Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].settlement);
+
+//			if(node_ID == 0){
+//				std::cout << point_ID << ":\t" << Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].results.cleared_supply << "\t" << Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].results.confirmed_supply << "\n";
+//			}
 		}
 
 		int wind_LV_plant_num = Power_market_inform.agent_profiles.power_supplier.wind.LV_plant.size();
@@ -857,8 +879,13 @@ namespace{
 			Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].settlement.utility.EOM += Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].results.confirmed_demand * Power_market_inform.price_map.bidded_price(price_interval + 1);
 
 			// Settlement of redispatch
-			agent_redispatch_settlement_calculation(tick, node_ID, Power_market_inform, original_price, Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].settlement);
+			//agent_redispatch_settlement_calculation(tick, node_ID, Power_market_inform, original_price, Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].settlement);
+
+//			if(node_ID == 0){
+//				std::cout << point_ID << ":\t" << Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].results.cleared_supply << "\t" << Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].results.confirmed_supply << "\n";
+//			}
 		}
+		//std::cout << "\n";
 	}
 
 	void agents_redispatch_settlement(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
@@ -868,16 +895,17 @@ namespace{
 		// Redispatch price per energy at each transmission node
 		for(int node_iter = 0; node_iter < node_num; ++ node_iter){
 			double redispatched_qaun = Power_market_inform.TSO_Market.confirmed_demand(tick, node_iter);
-			redispatched_qaun += Power_market_inform.TSO_Market.confirmed_supply(tick, node_iter);
-			std::cout << Power_market_inform.TSO_Market.redispatched_cost(tick, node_iter) << "\t" << redispatched_qaun << "\t";
+			//redispatched_qaun += Power_market_inform.TSO_Market.confirmed_supply(tick, node_iter);
 			redispatched_qaun -= Power_market_inform.TSO_Market.redispatched_demand_up(tick, node_iter);
-			redispatched_qaun -= Power_market_inform.TSO_Market.redispatched_supply_up(tick, node_iter);
+			//redispatched_qaun -= Power_market_inform.TSO_Market.redispatched_supply_up(tick, node_iter);
 			redispatch_price(node_iter) = Power_market_inform.TSO_Market.redispatched_cost(tick, node_iter);
 			redispatch_price(node_iter) /= redispatched_qaun;
-			std::cout << redispatched_qaun << "\t" << redispatch_price(node_iter) << "\n";
+//			std::cout << Power_market_inform.TSO_Market.redispatched_cost(tick, node_iter) << "\t";
+//			std::cout << redispatched_qaun + Power_market_inform.TSO_Market.redispatched_demand_down(tick, node_iter) << "\t";
+//			std::cout << Power_market_inform.TSO_Market.confirmed_demand(tick, node_iter) << "\t" << redispatch_price(node_iter) << "\n";
 		}
-		//std::cout << redispatch_price;
-		//std::cout << "\n";
+		std::cout << redispatch_price;
+		std::cout << "\n";
 	}
 
 	void end_user_status_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, bool control_reserve_flag){
