@@ -16,7 +16,7 @@ namespace agent{
 			}
 
 			static inline int sample_num(){
-				int value = 3;
+				int value = 1;
 				return value;
 			}
 		}
