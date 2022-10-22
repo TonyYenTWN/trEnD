@@ -31,7 +31,7 @@ namespace power_market{
 		}
 
 		static inline double redispatch_price_max(){
-			double value = 100.;
+			double value = 3000.;
 			return value;
 		}
 
