@@ -43,7 +43,7 @@ void power_market::TSO_boundary_update(int tick, market_inform &TSO_Market, mark
 			continue;
 		}
 		bool sink_flag = International_Market.network.confirmed_power(tick, edge_iter) >= 0.;
-		int price_ID = sink_flag * (International_Market.price_intervals + 1);
+		int price_ID = 1 + sink_flag * (International_Market.price_intervals - 1);
 		double source = -(1 - sink_flag) * International_Market.network.confirmed_power(tick, edge_iter);
 		double sink = sink_flag * International_Market.network.confirmed_power(tick, edge_iter);
 
