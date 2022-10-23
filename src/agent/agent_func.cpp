@@ -73,17 +73,23 @@ namespace{
 		results.cleared_demand += Power_market_inform.International_Market.confirmed.ratio_demand(bz_ID) * bids.filter_demand(original_price_ID);
 	}
 
-	void agent_actual_results_calculation(int node_ID, int marginal_price_ID, power_market::market_whole_inform &Power_market_inform, agent::bids &bids, agent::results &results){
+	void agent_actual_results_calculation(int node_ID, int marginal_price_ID, power_market::market_whole_inform &Power_market_inform, agent::bids &bids, agent::results &results, bool control_reserve_flag){
 		int price_interval = power_market::parameters::price_interval();
 
-		if(marginal_price_ID > 0){
-			results.actual_supply += bids.balancing_supply.head(marginal_price_ID).sum();
+		if(control_reserve_flag){
+			if(marginal_price_ID > 0){
+				results.actual_supply += bids.balancing_supply.head(marginal_price_ID).sum();
+			}
+			if(marginal_price_ID < price_interval + 1){
+				results.actual_demand += bids.balancing_demand.tail(price_interval + 1 - marginal_price_ID).sum();
+			}
+			results.actual_supply += Power_market_inform.TSO_Market.actual.ratio_supply(node_ID) * bids.balancing_supply(marginal_price_ID);
+			results.actual_demand += Power_market_inform.TSO_Market.actual.ratio_demand(node_ID) * bids.balancing_demand(marginal_price_ID);
 		}
-		if(marginal_price_ID < price_interval + 1){
-			results.actual_demand += bids.balancing_demand.tail(price_interval + 1 - marginal_price_ID).sum();
+		else{
+			results.actual_supply = results.confirmed_supply;
+			results.actual_demand= results.confirmed_demand;
 		}
-		results.actual_supply += Power_market_inform.TSO_Market.actual.ratio_supply(node_ID) * bids.balancing_supply(marginal_price_ID);
-		results.actual_demand += Power_market_inform.TSO_Market.actual.ratio_demand(node_ID) * bids.balancing_demand(marginal_price_ID);
 	}
 
 	void agent_redispatch_settlement_calculation(int tick, int node_ID, double original_price, power_market::market_whole_inform &Power_market_inform, agent::bids &bids, agent::results &results, agent::settlement &settlement){
@@ -1045,6 +1051,7 @@ namespace{
 
 	void industrial_status_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, bool control_reserve_flag){
 		int price_interval = power_market::parameters::price_interval();
+
 		int industrial_HV_num = Power_market_inform.agent_profiles.industrial.HV.size();
 		for(int agent_iter = 0; agent_iter < industrial_HV_num; ++ agent_iter){
 			int point_ID = Power_market_inform.agent_profiles.industrial.HV[agent_iter].point_ID;
@@ -1054,10 +1061,74 @@ namespace{
 			int marginal_price_ID = Power_market_inform.price_map.price_ID[marginal_price];
 
 			// Calculate actual results
-			agent_actual_results_calculation(node_ID, marginal_price_ID, Power_market_inform, Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids, Power_market_inform.agent_profiles.industrial.HV[agent_iter].results);
+			agent_actual_results_calculation(node_ID, marginal_price_ID, Power_market_inform, Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids, Power_market_inform.agent_profiles.industrial.HV[agent_iter].results, control_reserve_flag);
 
 			// Balancing settlement
 			agent_balancing_settlement_calculation(tick, node_ID, Power_market_inform, Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids, Power_market_inform.agent_profiles.industrial.HV[agent_iter].results, Power_market_inform.agent_profiles.industrial.HV[agent_iter].settlement);
+		}
+	}
+
+	void power_supplier_status_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, bool control_reserve_flag){
+		int price_interval = power_market::parameters::price_interval();
+
+		int hydro_HV_plant_num = Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant.size();
+		for(int agent_iter = 0; agent_iter < hydro_HV_plant_num; ++ agent_iter){
+			int point_ID = Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].point_ID;
+			int node_ID = Power_network_inform.points.node(point_ID);
+
+			double marginal_price = Power_market_inform.TSO_Market.actual.price(tick, node_ID);
+			int marginal_price_ID = Power_market_inform.price_map.price_ID[marginal_price];
+
+			// Calculate actual results
+			agent_actual_results_calculation(node_ID, marginal_price_ID, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].results, control_reserve_flag);
+
+			// Balancing settlement
+			agent_balancing_settlement_calculation(tick, node_ID, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].settlement);
+		}
+
+		int hydro_LV_plant_num = Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant.size();
+		for(int agent_iter = 0; agent_iter < hydro_LV_plant_num; ++ agent_iter){
+			int point_ID = Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].point_ID;
+			int node_ID = Power_network_inform.points.node(point_ID);
+
+			double marginal_price = Power_market_inform.TSO_Market.actual.price(tick, node_ID);
+			int marginal_price_ID = Power_market_inform.price_map.price_ID[marginal_price];
+
+			// Calculate actual results
+			agent_actual_results_calculation(node_ID, marginal_price_ID, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].results, control_reserve_flag);
+
+			// Balancing settlement
+			agent_balancing_settlement_calculation(tick, node_ID, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].settlement);
+		}
+
+		int wind_HV_plant_num = Power_market_inform.agent_profiles.power_supplier.wind.HV_plant.size();
+		for(int agent_iter = 0; agent_iter < wind_HV_plant_num; ++ agent_iter){
+			int point_ID = Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].point_ID;
+			int node_ID = Power_network_inform.points.node(point_ID);
+
+			double marginal_price = Power_market_inform.TSO_Market.actual.price(tick, node_ID);
+			int marginal_price_ID = Power_market_inform.price_map.price_ID[marginal_price];
+
+			// Calculate actual results
+			agent_actual_results_calculation(node_ID, marginal_price_ID, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].results, control_reserve_flag);
+
+			// Balancing settlement
+			agent_balancing_settlement_calculation(tick, node_ID, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].settlement);
+		}
+
+		int wind_LV_plant_num = Power_market_inform.agent_profiles.power_supplier.wind.LV_plant.size();
+		for(int agent_iter = 0; agent_iter < wind_LV_plant_num; ++ agent_iter){
+			int point_ID = Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].point_ID;
+			int node_ID = Power_network_inform.points.node(point_ID);
+
+			double marginal_price = Power_market_inform.TSO_Market.actual.price(tick, node_ID);
+			int marginal_price_ID = Power_market_inform.price_map.price_ID[marginal_price];
+
+			// Calculate actual results
+			agent_actual_results_calculation(node_ID, marginal_price_ID, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].results, control_reserve_flag);
+
+			// Balancing settlement
+			agent_balancing_settlement_calculation(tick, node_ID, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].settlement);
 		}
 	}
 
@@ -1280,6 +1351,8 @@ void agent::agents_balancing_update(int tick, power_market::market_whole_inform 
 
 void agent::agents_status_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, bool control_reserve_flag){
 	end_user_status_update(tick, Power_market_inform, Power_network_inform, control_reserve_flag);
+	industrial_status_update(tick, Power_market_inform, Power_network_inform, control_reserve_flag);
+	power_supplier_status_update(tick, Power_market_inform, Power_network_inform, control_reserve_flag);
 }
 
 void agent::agents_submit_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
