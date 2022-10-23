@@ -885,12 +885,12 @@ namespace{
 			redispatched_qaun_demand -= Power_market_inform.TSO_Market.redispatch.demand_up(tick, node_iter);
 			redispatch_price_demand(node_iter) = Power_market_inform.TSO_Market.redispatch.cost_demand(tick, node_iter);
 			redispatch_price_demand(node_iter) /= redispatched_qaun_demand;
-			std::cout << Power_market_inform.TSO_Market.redispatch.cost_demand(tick, node_iter) << "\t";
-			std::cout << redispatched_qaun_demand + Power_market_inform.TSO_Market.redispatch.demand_down(tick, node_iter) << "\t";
-			std::cout << Power_market_inform.TSO_Market.confirmed.demand(tick, node_iter) << "\t" << redispatch_price_demand(node_iter) << "\n";
+			//std::cout << Power_market_inform.TSO_Market.redispatch.cost_demand(tick, node_iter) << "\t";
+			//std::cout << redispatched_qaun_demand + Power_market_inform.TSO_Market.redispatch.demand_down(tick, node_iter) << "\t";
+			//std::cout << Power_market_inform.TSO_Market.confirmed.demand(tick, node_iter) << "\t" << redispatch_price_demand(node_iter) << "\n";
 		}
 		//std::cout << redispatch_price_demand;
-		std::cout << "\n";
+		//std::cout << "\n";
 	}
 
 	void end_user_status_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, bool control_reserve_flag){
@@ -1132,6 +1132,23 @@ namespace{
 		}
 	}
 
+	void agents_balancing_settlement(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
+		int node_num = Power_market_inform.TSO_Market.network.num_vertice;
+		Eigen::VectorXd balancing_price_demand(node_num);
+
+		// Balancing price per energy at each transmission node
+		for(int node_iter = 0; node_iter < node_num; ++ node_iter){
+			double balancinged_qaun_demand = Power_market_inform.TSO_Market.confirmed.demand(tick, node_iter);
+			balancing_price_demand(node_iter) = Power_market_inform.TSO_Market.balancing.cost_demand(tick, node_iter);
+			balancing_price_demand(node_iter) /= balancinged_qaun_demand;
+			//std::cout << Power_market_inform.TSO_Market.balancing.cost_demand(tick, node_iter) << "\t";
+			//std::cout <<  Power_market_inform.TSO_Market.confirmed.demand(tick, node_iter) << "\t";
+			//std::cout << Power_market_inform.TSO_Market.actual.demand(tick, node_iter) << "\t" << balancing_price_demand(node_iter) << "\n";
+		}
+		//std::cout << balancing_price_demand;
+		//std::cout << "\n";
+	}
+
 	void aggregator_price_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
 		int foresight_time = agent::aggregator::parameters::foresight_time();
 		int aggregator_num = Power_market_inform.agent_profiles.aggregators.size();
@@ -1353,6 +1370,7 @@ void agent::agents_status_update(int tick, power_market::market_whole_inform &Po
 	end_user_status_update(tick, Power_market_inform, Power_network_inform, control_reserve_flag);
 	industrial_status_update(tick, Power_market_inform, Power_network_inform, control_reserve_flag);
 	power_supplier_status_update(tick, Power_market_inform, Power_network_inform, control_reserve_flag);
+	agents_balancing_settlement(tick, Power_market_inform, Power_network_inform);
 }
 
 void agent::agents_submit_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
