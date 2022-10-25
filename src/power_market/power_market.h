@@ -92,18 +92,22 @@ namespace power_market{
 
 	/**Information of the settlement of a market.*/
 	struct settlement{
-		/**Upward supply quantity of the market.*/
+		/**Upward supply quantity of the process.*/
 		Eigen::MatrixXd supply_up;
-		/**Downward supply quantity of the market.*/
+		/**Downward supply quantity of the process.*/
 		Eigen::MatrixXd supply_down;
-		/**Upward demand quantity of the market.*/
+		/**Upward demand quantity of the process.*/
 		Eigen::MatrixXd demand_up;
-		/**Downward demand quantity of the market.*/
+		/**Downward demand quantity of the process.*/
 		Eigen::MatrixXd demand_down;
-		/**Supply cost of the market*/
-		Eigen::MatrixXd cost_supply;
-		/**Demand cost of the market*/
-		Eigen::MatrixXd cost_demand;
+		/**Supply cost of the process*/
+		Eigen::MatrixXd price_supply;
+		/**Demand cost of the process*/
+		Eigen::MatrixXd price_demand;
+		/**Total cost of the process*/
+		Eigen::MatrixXd cost;
+		/**Total utility of the process*/
+		Eigen::MatrixXd utility;
 	};
 
 	/**Information of a power market.*/
@@ -150,6 +154,8 @@ namespace power_market{
 		results confirmed;
 		/**Actual result.*/
 		results actual;
+		/**Settlement for EOM.*/
+		settlement EOM;
 		/**Settlement for redispatch.*/
 		settlement redispatch;
 		/**Settlement for balancing.*/
