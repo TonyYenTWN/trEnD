@@ -3,15 +3,21 @@
 
 namespace{
 	void agent_settlement_set(agent::settlement &settlement){
-		settlement.cost.balancing = 0.;
-		settlement.cost.EOM = 0.;
-		settlement.cost.redispatch = 0.;
+		settlement.cost_demand.balancing = 0.;
+		settlement.cost_demand.EOM = 0.;
+		settlement.cost_demand.redispatch = 0.;
+		settlement.cost_supply.balancing = 0.;
+		settlement.cost_supply.EOM = 0.;
+		settlement.cost_supply.redispatch = 0.;
 		settlement.price.balancing = 0.;
 		settlement.price.EOM = 0.;
 		settlement.price.redispatch = 0.;
-		settlement.utility.balancing = 0.;
-		settlement.utility.EOM = 0.;
-		settlement.utility.redispatch = 0.;
+		settlement.utility_demand.balancing = 0.;
+		settlement.utility_demand.EOM = 0.;
+		settlement.utility_demand.redispatch = 0.;
+		settlement.utility_supply.balancing = 0.;
+		settlement.utility_supply.EOM = 0.;
+		settlement.utility_supply.redispatch = 0.;
 		settlement.volume_demand.balancing = 0.;
 		settlement.volume_demand.EOM = 0.;
 		settlement.volume_demand.redispatch = 0.;
@@ -104,14 +110,14 @@ namespace{
 			if(cleared_supply_gap > margin_quan_supply){
 				cleared_supply_gap -= margin_quan_supply;
 				settlement.volume_supply.EOM += margin_quan_supply;
-				settlement.utility.EOM += original_price * margin_quan_supply;
-				settlement.cost.EOM += price_iter * margin_quan_supply;
+				settlement.utility_supply.EOM += original_price * margin_quan_supply;
+				settlement.cost_supply.EOM += price_iter * margin_quan_supply;
 				Power_market_inform.TSO_Market.EOM.cost(tick, node_ID) += price_iter * margin_quan_supply;
 			}
 			else{
 				settlement.volume_supply.EOM += cleared_supply_gap;
-				settlement.utility.EOM += original_price * cleared_supply_gap;
-				settlement.cost.EOM += price_iter * cleared_supply_gap;
+				settlement.utility_supply.EOM += original_price * cleared_supply_gap;
+				settlement.cost_supply.EOM += price_iter * cleared_supply_gap;
 				Power_market_inform.TSO_Market.EOM.cost(tick, node_ID) += price_iter * margin_quan_supply;
 				break;
 			}
@@ -126,13 +132,13 @@ namespace{
 			if(cleared_demand_gap > margin_quan_demand){
 				cleared_demand_gap -= margin_quan_demand;
 				settlement.volume_demand.EOM += margin_quan_demand;
-				settlement.utility.EOM += price_iter * margin_quan_demand;
+				settlement.utility_demand.EOM += price_iter * margin_quan_demand;
 				settlement.price.EOM += original_price * margin_quan_demand;
 				Power_market_inform.TSO_Market.EOM.utility(tick, node_ID) += price_iter * margin_quan_demand;
 			}
 			else{
 				settlement.volume_demand.EOM += cleared_demand_gap;
-				settlement.utility.EOM += price_iter * cleared_demand_gap;
+				settlement.utility_demand.EOM += price_iter * cleared_demand_gap;
 				settlement.price.EOM += original_price * cleared_demand_gap;
 				Power_market_inform.TSO_Market.EOM.utility(tick, node_ID) += price_iter * margin_quan_demand;
 				break;
@@ -181,16 +187,18 @@ namespace{
 				max_supply_gap -= margin_quan_supply;
 				Power_market_inform.TSO_Market.redispatch.supply_down(tick, node_ID) += reduced_flag_supply * margin_quan_supply;
 				Power_market_inform.TSO_Market.redispatch.supply_up(tick, node_ID) += (1 - reduced_flag_supply) * margin_quan_supply;
-				settlement.volume_supply.redispatch +=  (1 - 2 * reduced_flag_supply) * margin_quan_supply;
 				Power_market_inform.TSO_Market.redispatch.price_supply(tick, node_ID) += redispatch_price * margin_quan_supply;
-				settlement.utility.redispatch += redispatch_price * margin_quan_supply;
+				settlement.volume_supply.redispatch +=  (1 - 2 * reduced_flag_supply) * margin_quan_supply;
+				settlement.utility_supply.redispatch += (1 - 2 * reduced_flag_supply) * original_price * margin_quan_supply;
+				settlement.cost_supply.redispatch += (1 - 2 * reduced_flag_supply) * price_iter * margin_quan_supply;
 			}
 			else{
 				Power_market_inform.TSO_Market.redispatch.supply_down(tick, node_ID) += reduced_flag_supply * max_supply_gap;
 				Power_market_inform.TSO_Market.redispatch.supply_up(tick, node_ID) += (1 - reduced_flag_supply) * max_supply_gap;
-				settlement.volume_supply.redispatch +=  (1 - 2 * reduced_flag_supply) * max_supply_gap;
 				Power_market_inform.TSO_Market.redispatch.price_supply(tick, node_ID) += redispatch_price * max_supply_gap;
-				settlement.utility.redispatch += redispatch_price * max_supply_gap;
+				settlement.volume_supply.redispatch +=  (1 - 2 * reduced_flag_supply) * max_supply_gap;
+				settlement.utility_supply.redispatch += (1 - 2 * reduced_flag_supply) * original_price * max_supply_gap;
+				settlement.cost_supply.redispatch += (1 - 2 * reduced_flag_supply) * price_iter * max_supply_gap;
 				break;
 			}
 		}
@@ -231,16 +239,18 @@ namespace{
 				max_demand_gap -= margin_quan_demand;
 				Power_market_inform.TSO_Market.redispatch.demand_down(tick, node_ID) += reduced_flag_demand * margin_quan_demand;
 				Power_market_inform.TSO_Market.redispatch.demand_up(tick, node_ID) += (1 - reduced_flag_demand) * margin_quan_demand;
-				settlement.volume_demand.redispatch +=  (1 - 2 * reduced_flag_demand) * margin_quan_demand;
 				Power_market_inform.TSO_Market.redispatch.price_demand(tick, node_ID) += redispatch_price * margin_quan_demand;
-				settlement.utility.redispatch += redispatch_price * margin_quan_demand;
+				settlement.volume_demand.redispatch +=  (1 - 2 * reduced_flag_demand) * margin_quan_demand;
+				settlement.utility_demand.redispatch += (1 - 2 * reduced_flag_demand) * price_iter * margin_quan_demand;
+				settlement.cost_demand.redispatch += (1 - 2 * reduced_flag_demand) * original_price * margin_quan_demand;
 			}
 			else{
 				Power_market_inform.TSO_Market.redispatch.demand_down(tick, node_ID) += reduced_flag_demand * max_demand_gap;
 				Power_market_inform.TSO_Market.redispatch.demand_up(tick, node_ID) += (1 - reduced_flag_demand) * max_demand_gap;
-				settlement.volume_demand.redispatch +=  (1 - 2 * reduced_flag_demand) * max_demand_gap;
 				Power_market_inform.TSO_Market.redispatch.price_demand(tick, node_ID) += redispatch_price * max_demand_gap;
-				settlement.utility.redispatch += redispatch_price * max_demand_gap;
+				settlement.volume_demand.redispatch +=  (1 - 2 * reduced_flag_demand) * max_demand_gap;
+				settlement.utility_demand.redispatch += (1 - 2 * reduced_flag_demand) * price_iter * max_demand_gap;
+				settlement.cost_demand.redispatch += (1 - 2 * reduced_flag_demand) * original_price * max_demand_gap;
 				break;
 			}
 		}
@@ -285,8 +295,8 @@ namespace{
 				Power_market_inform.TSO_Market.balancing.supply_up(tick, node_ID) += (1 - reduced_flag_supply) * margin_quan_supply;
 				settlement.volume_supply.redispatch +=  (1 - 2 * reduced_flag_supply) * margin_quan_supply;
 				Power_market_inform.TSO_Market.balancing.price_supply(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * margin_quan_supply;
-				settlement.utility.balancing += (2 * reduced_flag_supply - 1) * balancing_price * margin_quan_supply;
-				settlement.cost.balancing += (1 - 2 * reduced_flag_supply) * balancing_price * margin_quan_supply;
+				settlement.utility_supply.balancing += (2 * reduced_flag_supply - 1) * balancing_price * margin_quan_supply;
+				settlement.cost_supply.balancing += (1 - 2 * reduced_flag_supply) * balancing_price * margin_quan_supply;
 			}
 		}
 
@@ -325,8 +335,8 @@ namespace{
 				Power_market_inform.TSO_Market.balancing.demand_up(tick, node_ID) += (1 - reduced_flag_demand) * margin_quan_demand;
 				settlement.volume_demand.redispatch +=  (1 - 2 * reduced_flag_demand) * margin_quan_demand;
 				Power_market_inform.TSO_Market.balancing.price_demand(tick, node_ID) += (2 * reduced_flag_demand - 1) * balancing_price * margin_quan_demand;
-				settlement.utility.balancing += (1 - 2 * reduced_flag_demand) * balancing_price * margin_quan_demand;
-				settlement.cost.balancing += (2 * reduced_flag_demand - 1) * balancing_price * margin_quan_demand;
+				settlement.utility_demand.balancing += (1 - 2 * reduced_flag_demand) * balancing_price * margin_quan_demand;
+				settlement.cost_demand.balancing += (2 * reduced_flag_demand - 1) * balancing_price * margin_quan_demand;
 			}
 		}
 	}

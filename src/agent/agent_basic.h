@@ -60,10 +60,12 @@ namespace agent{
 		settlement_process volume_supply;
 		settlement_process volume_demand;
 		// Cost of supplying service
-		settlement_process cost;
+		settlement_process cost_supply;
+		settlement_process cost_demand;
 		// Price of using service
 		settlement_process price;
 		// Utility of using service
-		settlement_process utility;
+		settlement_process utility_supply;
+		settlement_process utility_demand;
 	};
 }
