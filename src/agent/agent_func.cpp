@@ -447,34 +447,120 @@ namespace{
 		bool reduced_flag_supply = (actual_supply_gap == min_supply_gap);
 		double margin_quan_supply;
 		int margin_ID_supply;
-		for(int price_iter = 0; price_iter < price_interval; ++ price_iter){
-			margin_quan_supply = bids.balancing_supply(price_iter);
+		if(bids.submitted_supply_inflex.sum() < min_supply_gap){
+			min_supply_gap -= bids.submitted_supply_inflex.sum();
+			max_supply_gap -= bids.submitted_supply_inflex.sum();
+			for(int price_iter = 0; price_iter < price_interval; ++ price_iter){
+				margin_quan_supply = bids.submitted_supply_flex(price_iter);
 
-			if(min_supply_gap > margin_quan_supply){
-				min_supply_gap -= margin_quan_supply;
-				max_supply_gap -= margin_quan_supply;
+				if(min_supply_gap > margin_quan_supply){
+					min_supply_gap -= margin_quan_supply;
+					max_supply_gap -= margin_quan_supply;
+				}
+				else{
+					max_supply_gap -= min_supply_gap;
+					margin_quan_supply -= min_supply_gap;
+					margin_ID_supply = price_iter ;
+					break;
+				}
 			}
-			else{
-				max_supply_gap -= min_supply_gap;
-				margin_quan_supply -= min_supply_gap;
-				margin_ID_supply = price_iter ;
-				break;
+			for(int price_iter = margin_ID_supply; price_iter < price_interval; ++ price_iter){
+				double balancing_price = Power_market_inform.price_map.bidded_price(price_iter);
+
+				if(price_iter > margin_ID_supply){
+					margin_quan_supply = bids.submitted_supply_flex(price_iter);
+				}
+
+				if(max_supply_gap > margin_quan_supply){
+					max_supply_gap -= margin_quan_supply;
+					Power_market_inform.TSO_Market.balancing.supply_down(tick, node_ID) += reduced_flag_supply * margin_quan_supply;
+					Power_market_inform.TSO_Market.balancing.supply_up(tick, node_ID) += (1 - reduced_flag_supply) * margin_quan_supply;
+					Power_market_inform.TSO_Market.balancing.price_supply(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * margin_quan_supply;
+					Power_market_inform.TSO_Market.balancing.cost(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * margin_quan_supply;
+					settlement.volume_supply.redispatch +=  (1 - 2 * reduced_flag_supply) * margin_quan_supply;
+					settlement.cost_supply.balancing += (1 - 2 * reduced_flag_supply) * balancing_price * margin_quan_supply;
+				}
+				else{
+					Power_market_inform.TSO_Market.balancing.supply_down(tick, node_ID) += reduced_flag_supply * max_supply_gap;
+					Power_market_inform.TSO_Market.balancing.supply_up(tick, node_ID) += (1 - reduced_flag_supply) * max_supply_gap;
+					Power_market_inform.TSO_Market.balancing.price_supply(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * max_supply_gap;
+					Power_market_inform.TSO_Market.balancing.cost(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * max_supply_gap;
+					settlement.volume_supply.redispatch +=  (1 - 2 * reduced_flag_supply) * max_supply_gap;
+					settlement.cost_supply.balancing += (1 - 2 * reduced_flag_supply) * balancing_price * max_supply_gap;
+					max_supply_gap = 0.;
+					break;
+				}
 			}
 		}
-		for(int price_iter = margin_ID_supply; price_iter < price_interval; ++ price_iter){
-			double balancing_price = Power_market_inform.price_map.bidded_price(price_iter);
+		else{
+			for(int price_iter = 0; price_iter < price_interval; ++ price_iter){
+				margin_quan_supply = bids.submitted_supply_inflex(price_iter);
 
-			if(price_iter > margin_ID_supply){
-				margin_quan_supply = bids.balancing_supply(price_iter);
+				if(min_supply_gap > margin_quan_supply){
+					min_supply_gap -= margin_quan_supply;
+					max_supply_gap -= margin_quan_supply;
+				}
+				else{
+					max_supply_gap -= min_supply_gap;
+					margin_quan_supply -= min_supply_gap;
+					margin_ID_supply = price_iter ;
+					break;
+				}
+			}
+			for(int price_iter = margin_ID_supply; price_iter < price_interval; ++ price_iter){
+				double balancing_price = Power_market_inform.price_map.bidded_price(0);
+
+				if(price_iter > margin_ID_supply){
+					margin_quan_supply = bids.submitted_supply_inflex(price_iter);
+				}
+
+				if(max_supply_gap > margin_quan_supply){
+					max_supply_gap -= margin_quan_supply;
+					Power_market_inform.TSO_Market.balancing.supply_down(tick, node_ID) += reduced_flag_supply * margin_quan_supply;
+					Power_market_inform.TSO_Market.balancing.supply_up(tick, node_ID) += (1 - reduced_flag_supply) * margin_quan_supply;
+					Power_market_inform.TSO_Market.balancing.price_supply(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * margin_quan_supply;
+					Power_market_inform.TSO_Market.balancing.cost(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * margin_quan_supply;
+					settlement.volume_supply.redispatch +=  (1 - 2 * reduced_flag_supply) * margin_quan_supply;
+					settlement.cost_supply.balancing += (1 - 2 * reduced_flag_supply) * balancing_price * margin_quan_supply;
+				}
+				else{
+					Power_market_inform.TSO_Market.balancing.supply_down(tick, node_ID) += reduced_flag_supply * max_supply_gap;
+					Power_market_inform.TSO_Market.balancing.supply_up(tick, node_ID) += (1 - reduced_flag_supply) * max_supply_gap;
+					Power_market_inform.TSO_Market.balancing.price_supply(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * max_supply_gap;
+					Power_market_inform.TSO_Market.balancing.cost(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * max_supply_gap;
+					settlement.volume_supply.redispatch +=  (1 - 2 * reduced_flag_supply) * max_supply_gap;
+					settlement.cost_supply.balancing += (1 - 2 * reduced_flag_supply) * balancing_price * max_supply_gap;
+					max_supply_gap = 0.;
+					break;
+				}
 			}
 
-			if(max_supply_gap > margin_quan_supply){
-				max_supply_gap -= margin_quan_supply;
-				Power_market_inform.TSO_Market.balancing.supply_down(tick, node_ID) += reduced_flag_supply * margin_quan_supply;
-				Power_market_inform.TSO_Market.balancing.supply_up(tick, node_ID) += (1 - reduced_flag_supply) * margin_quan_supply;
-				Power_market_inform.TSO_Market.balancing.price_supply(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * margin_quan_supply;
-				settlement.volume_supply.redispatch +=  (1 - 2 * reduced_flag_supply) * margin_quan_supply;
-				settlement.cost_supply.balancing += (1 - 2 * reduced_flag_supply) * balancing_price * margin_quan_supply;
+			if(max_supply_gap > 0.){
+				for(int price_iter = 0; price_iter < price_interval; ++ price_iter){
+					double balancing_price = Power_market_inform.price_map.bidded_price(price_iter);
+
+					margin_quan_supply = bids.submitted_supply_flex(price_iter);
+
+					if(max_supply_gap > margin_quan_supply){
+						max_supply_gap -= margin_quan_supply;
+						Power_market_inform.TSO_Market.balancing.supply_down(tick, node_ID) += reduced_flag_supply * margin_quan_supply;
+						Power_market_inform.TSO_Market.balancing.supply_up(tick, node_ID) += (1 - reduced_flag_supply) * margin_quan_supply;
+						Power_market_inform.TSO_Market.balancing.price_supply(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * margin_quan_supply;
+						Power_market_inform.TSO_Market.balancing.cost(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * margin_quan_supply;
+						settlement.volume_supply.redispatch +=  (1 - 2 * reduced_flag_supply) * margin_quan_supply;
+						settlement.cost_supply.balancing += (1 - 2 * reduced_flag_supply) * balancing_price * margin_quan_supply;
+					}
+					else{
+						Power_market_inform.TSO_Market.balancing.supply_down(tick, node_ID) += reduced_flag_supply * max_supply_gap;
+						Power_market_inform.TSO_Market.balancing.supply_up(tick, node_ID) += (1 - reduced_flag_supply) * max_supply_gap;
+						Power_market_inform.TSO_Market.balancing.price_supply(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * max_supply_gap;
+						Power_market_inform.TSO_Market.balancing.cost(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * max_supply_gap;
+						settlement.volume_supply.redispatch +=  (1 - 2 * reduced_flag_supply) * max_supply_gap;
+						settlement.cost_supply.balancing += (1 - 2 * reduced_flag_supply) * balancing_price * max_supply_gap;
+						max_supply_gap = 0.;
+						break;
+					}
+				}
 			}
 		}
 
@@ -486,34 +572,97 @@ namespace{
 		bool reduced_flag_demand = (actual_demand_gap == min_demand_gap);
 		double margin_quan_demand;
 		int margin_ID_demand;
-		for(int price_iter = 0; price_iter < price_interval; ++ price_iter){
-			margin_quan_demand = bids.balancing_demand(price_iter);
+		if(bids.submitted_demand_inflex.sum() < min_demand_gap){
+			min_demand_gap -= bids.submitted_demand_inflex.sum();
+			max_demand_gap -= bids.submitted_demand_inflex.sum();
 
-			if(min_demand_gap > margin_quan_demand){
-				min_demand_gap -= margin_quan_demand;
-				max_demand_gap -= margin_quan_demand;
+			for(int price_iter = 0; price_iter < price_interval; ++ price_iter){
+				margin_quan_demand = bids.submitted_demand_flex(price_iter);
+
+				if(min_demand_gap > margin_quan_demand){
+					min_demand_gap -= margin_quan_demand;
+					max_demand_gap -= margin_quan_demand;
+				}
+				else{
+					max_demand_gap -= min_demand_gap;
+					margin_quan_demand -= min_demand_gap;
+					margin_ID_demand = price_iter ;
+					break;
+				}
 			}
-			else{
-				max_demand_gap -= min_demand_gap;
-				margin_quan_demand -= min_demand_gap;
-				margin_ID_demand = price_iter ;
-				break;
+			for(int price_iter = margin_ID_demand; price_iter >= 0; -- price_iter){
+				double balancing_price = Power_market_inform.price_map.bidded_price(price_iter);
+
+				if(price_iter > margin_ID_demand){
+					margin_quan_demand = bids.submitted_demand_flex(price_iter);
+				}
+
+				if(max_demand_gap > margin_quan_demand){
+					max_demand_gap -= margin_quan_demand;
+					Power_market_inform.TSO_Market.balancing.demand_down(tick, node_ID) += reduced_flag_demand * margin_quan_demand;
+					Power_market_inform.TSO_Market.balancing.demand_up(tick, node_ID) += (1 - reduced_flag_demand) * margin_quan_demand;
+					Power_market_inform.TSO_Market.balancing.price_demand(tick, node_ID) += -(1 - 2 * reduced_flag_demand) * balancing_price * margin_quan_demand;
+					Power_market_inform.TSO_Market.balancing.utility(tick, node_ID) += (1 - 2 * reduced_flag_demand) * balancing_price * margin_quan_demand;
+					settlement.volume_demand.redispatch +=  (1 - 2 * reduced_flag_demand) * margin_quan_demand;
+					settlement.utility_demand.balancing += (1 - 2 * reduced_flag_demand) * balancing_price * margin_quan_demand;
+					max_demand_gap = 0.;
+					break;
+				}
 			}
 		}
-		for(int price_iter = margin_ID_demand; price_iter >= 0; -- price_iter){
-			double balancing_price = Power_market_inform.price_map.bidded_price(price_iter);
+		else{
+			for(int price_iter = 0; price_iter < price_interval; ++ price_iter){
+				margin_quan_demand = bids.submitted_demand_inflex(price_iter);
 
-			if(price_iter > margin_ID_demand){
-				margin_quan_demand = bids.balancing_demand(price_iter);
+				if(min_demand_gap > margin_quan_demand){
+					min_demand_gap -= margin_quan_demand;
+					max_demand_gap -= margin_quan_demand;
+				}
+				else{
+					max_demand_gap -= min_demand_gap;
+					margin_quan_demand -= min_demand_gap;
+					margin_ID_demand = price_iter ;
+					break;
+				}
+			}
+			for(int price_iter = margin_ID_demand; price_iter >= 0; -- price_iter){
+				double balancing_price = Power_market_inform.price_map.bidded_price(price_interval - 1);
+
+				if(price_iter > margin_ID_demand){
+					margin_quan_demand = bids.submitted_demand_inflex(price_iter);
+				}
+
+				if(max_demand_gap > margin_quan_demand){
+					max_demand_gap -= margin_quan_demand;
+					Power_market_inform.TSO_Market.balancing.demand_down(tick, node_ID) += reduced_flag_demand * margin_quan_demand;
+					Power_market_inform.TSO_Market.balancing.demand_up(tick, node_ID) += (1 - reduced_flag_demand) * margin_quan_demand;
+					Power_market_inform.TSO_Market.balancing.price_demand(tick, node_ID) += -(1 - 2 * reduced_flag_demand) * balancing_price * margin_quan_demand;
+					Power_market_inform.TSO_Market.balancing.utility(tick, node_ID) += (1 - 2 * reduced_flag_demand) * balancing_price * margin_quan_demand;
+					settlement.volume_demand.redispatch +=  (1 - 2 * reduced_flag_demand) * margin_quan_demand;
+					settlement.utility_demand.balancing += (1 - 2 * reduced_flag_demand) * balancing_price * margin_quan_demand;
+					max_demand_gap = 0.;
+					break;
+				}
 			}
 
-			if(max_demand_gap > margin_quan_demand){
-				max_demand_gap -= margin_quan_demand;
-				Power_market_inform.TSO_Market.balancing.demand_down(tick, node_ID) += reduced_flag_demand * margin_quan_demand;
-				Power_market_inform.TSO_Market.balancing.demand_up(tick, node_ID) += (1 - reduced_flag_demand) * margin_quan_demand;
-				Power_market_inform.TSO_Market.balancing.price_demand(tick, node_ID) += -(1 - 2 * reduced_flag_demand) * balancing_price * margin_quan_demand;
-				settlement.volume_demand.redispatch +=  (1 - 2 * reduced_flag_demand) * margin_quan_demand;
-				settlement.utility_demand.balancing += (1 - 2 * reduced_flag_demand) * balancing_price * margin_quan_demand;
+			if(max_demand_gap > 0.){
+				for(int price_iter = margin_ID_demand; price_iter >= 0; -- price_iter){
+					double balancing_price = Power_market_inform.price_map.bidded_price(price_iter);
+
+					margin_quan_demand = bids.submitted_demand_flex(price_iter);
+
+					if(max_demand_gap > margin_quan_demand){
+						max_demand_gap -= margin_quan_demand;
+						Power_market_inform.TSO_Market.balancing.demand_down(tick, node_ID) += reduced_flag_demand * margin_quan_demand;
+						Power_market_inform.TSO_Market.balancing.demand_up(tick, node_ID) += (1 - reduced_flag_demand) * margin_quan_demand;
+						Power_market_inform.TSO_Market.balancing.price_demand(tick, node_ID) += -(1 - 2 * reduced_flag_demand) * balancing_price * margin_quan_demand;
+						Power_market_inform.TSO_Market.balancing.utility(tick, node_ID) += (1 - 2 * reduced_flag_demand) * balancing_price * margin_quan_demand;
+						settlement.volume_demand.redispatch +=  (1 - 2 * reduced_flag_demand) * margin_quan_demand;
+						settlement.utility_demand.balancing += (1 - 2 * reduced_flag_demand) * balancing_price * margin_quan_demand;
+						max_demand_gap = 0.;
+						break;
+					}
+				}
 			}
 		}
 	}
