@@ -63,6 +63,8 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 	TSO_Market.confirmed.price = Eigen::MatrixXd(Time, TSO_Market.num_zone);
 	TSO_Market.EOM.cost = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.EOM.utility = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.redispatch.cost = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.redispatch.utility = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.redispatch.supply_up = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.redispatch.supply_down = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.redispatch.demand_up = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
