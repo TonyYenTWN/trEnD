@@ -1300,20 +1300,48 @@ namespace{
 
 	void agents_redispatch_settlement(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
 		int node_num = Power_market_inform.TSO_Market.network.num_vertice;
-		Eigen::VectorXd redispatch_price_demand(node_num);
+		int bz_num = Power_market_inform.International_Market.num_zone;
+		Eigen::VectorXd redispatch_demand = Eigen::VectorXd::Zero(bz_num);
+		Eigen::VectorXd redispatch_supply = Eigen::VectorXd::Zero(bz_num);
 
 		// Redispatch price per energy at each transmission node
 		for(int node_iter = 0; node_iter < node_num; ++ node_iter){
-			double redispatched_qaun_demand = Power_market_inform.TSO_Market.confirmed.demand(tick, node_iter);
-			redispatched_qaun_demand -= Power_market_inform.TSO_Market.redispatch.demand_up(tick, node_iter);
-			redispatch_price_demand(node_iter) = Power_market_inform.TSO_Market.redispatch.price_demand(tick, node_iter);
-			redispatch_price_demand(node_iter) /= redispatched_qaun_demand;
-			//std::cout << Power_market_inform.TSO_Market.redispatch.cost_demand(tick, node_iter) << "\t";
-			//std::cout << redispatched_qaun_demand + Power_market_inform.TSO_Market.redispatch.demand_down(tick, node_iter) << "\t";
-			//std::cout << Power_market_inform.TSO_Market.confirmed.demand(tick, node_iter) << "\t" << redispatch_price_demand(node_iter) << "\n";
+			int bz_ID = Power_network_inform.nodes.bidding_zone(node_iter);
+
+			Power_market_inform.International_Market.redispatch.price_demand(tick, bz_ID) += Power_market_inform.TSO_Market.redispatch.price_demand(tick, node_iter);
+			Power_market_inform.International_Market.redispatch.price_supply(tick, bz_ID) += Power_market_inform.TSO_Market.redispatch.price_supply(tick, node_iter);
+			redispatch_demand(bz_ID) = Power_market_inform.International_Market.confirmed.demand(tick, bz_ID);
+			redispatch_demand(bz_ID) -= Power_market_inform.TSO_Market.redispatch.demand_down(tick, node_iter);
+			redispatch_supply(bz_ID) = Power_market_inform.International_Market.confirmed.supply(tick, bz_ID);
+			redispatch_supply(bz_ID) -= Power_market_inform.TSO_Market.redispatch.supply_down(tick, node_iter);
 		}
-		//std::cout << redispatch_price_demand;
-		//std::cout << "\n";
+
+		Power_market_inform.International_Market.redispatch.price_demand.row(tick) = Power_market_inform.International_Market.redispatch.price_demand.row(tick).array() / redispatch_demand.array();
+		Power_market_inform.International_Market.redispatch.price_supply.row(tick) = Power_market_inform.International_Market.redispatch.price_supply.row(tick).array() / redispatch_supply.array();
+
+		// End-users
+		int point_num = Power_network_inform.points.bidding_zone.size();
+		int sample_num = agent::end_user::parameters::sample_num();
+		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
+			int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
+
+			for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
+				double redispatch_price =  Power_market_inform.International_Market.redispatch.price_demand(tick, bz_ID);
+				redispatch_price *= std::min(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.cleared_demand, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.confirmed_demand);
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.price.redispatch += redispatch_price;
+				//std::cout << redispatch_price << "\n";
+			}
+		}
+
+		// Industrial demand
+		int industrial_HV_num = Power_market_inform.agent_profiles.industrial.HV.size();
+		for(int agent_iter = 0; agent_iter < industrial_HV_num; ++ agent_iter){
+			int point_ID = Power_market_inform.agent_profiles.industrial.HV[agent_iter].point_ID;
+			int bz_ID = Power_network_inform.points.bidding_zone(point_ID);
+			double redispatch_price =  Power_market_inform.International_Market.redispatch.price_demand(tick, bz_ID);
+			redispatch_price *= std::min(Power_market_inform.agent_profiles.industrial.HV[agent_iter].results.cleared_demand, Power_market_inform.agent_profiles.industrial.HV[agent_iter].results.confirmed_demand);
+			Power_market_inform.agent_profiles.industrial.HV[agent_iter].operation.settlement.price.redispatch += redispatch_price;
+		}
 	}
 
 	void end_user_status_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, bool control_reserve_flag){
@@ -1557,13 +1585,19 @@ namespace{
 
 	void agents_balancing_settlement(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
 		int node_num = Power_market_inform.TSO_Market.network.num_vertice;
-		Eigen::VectorXd balancing_price_demand(node_num);
+		//int bz_num
+
+		//Eigen::VectorXd balancing_price_demand(node_num);
 
 		// Balancing price per energy at each transmission node
 		for(int node_iter = 0; node_iter < node_num; ++ node_iter){
-			double balancinged_qaun_demand = Power_market_inform.TSO_Market.confirmed.demand(tick, node_iter);
-			balancing_price_demand(node_iter) = Power_market_inform.TSO_Market.balancing.price_demand(tick, node_iter);
-			balancing_price_demand(node_iter) /= balancinged_qaun_demand;
+			int bz_ID = Power_network_inform.nodes.bidding_zone(node_iter);
+			//Power_market_inform.International_Market.redispatch.demand_down
+
+
+			//double balancinged_qaun_demand = Power_market_inform.TSO_Market.confirmed.demand(tick, node_iter);
+			//balancing_price_demand(node_iter) = Power_market_inform.TSO_Market.balancing.price_demand(tick, node_iter);
+			//balancing_price_demand(node_iter) /= balancinged_qaun_demand;
 			//std::cout << Power_market_inform.TSO_Market.balancing.cost_demand(tick, node_iter) << "\t";
 			//std::cout <<  Power_market_inform.TSO_Market.confirmed.demand(tick, node_iter) << "\t";
 			//std::cout << Power_market_inform.TSO_Market.actual.demand(tick, node_iter) << "\t" << balancing_price_demand(node_iter) << "\n";
