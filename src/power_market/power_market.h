@@ -31,7 +31,7 @@ namespace power_market{
 		}
 
 		static inline double redispatch_price_max(){
-			double value = 3000.;
+			double value = 1000.;
 			return value;
 		}
 
@@ -104,6 +104,10 @@ namespace power_market{
 		Eigen::MatrixXd price_supply;
 		/**Demand cost of the process*/
 		Eigen::MatrixXd price_demand;
+		/**Upward flexibility cost of the process*/
+		Eigen::MatrixXd price_up;
+		/**Downward flexibility cost of the process*/
+		Eigen::MatrixXd price_down;
 		/**Total cost of the process*/
 		Eigen::MatrixXd cost;
 		/**Total utility of the process*/

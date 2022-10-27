@@ -77,8 +77,8 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 	TSO_Market.balancing.supply_down = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.balancing.demand_up = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.balancing.demand_down = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
-	TSO_Market.balancing.price_supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
-	TSO_Market.balancing.price_demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.balancing.price_up = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.balancing.price_down = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.actual.supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.actual.demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.actual.price = Eigen::MatrixXd(Time, TSO_Market.num_zone);

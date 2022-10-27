@@ -334,7 +334,7 @@ namespace{
 					redispatch_price = std::min(redispatch_price, redispatch_price_max);
 				}
 
-				if(price_iter > margin_ID_demand){
+				if(price_iter < margin_ID_demand){
 					margin_quan_demand = bids.submitted_demand_flex(price_iter);
 				}
 
@@ -383,7 +383,7 @@ namespace{
 					redispatch_price = std::min(redispatch_price, redispatch_price_max);
 				}
 
-				if(price_iter > margin_ID_demand){
+				if(price_iter < margin_ID_demand){
 					margin_quan_demand = bids.submitted_demand_inflex(price_iter);
 				}
 
@@ -493,17 +493,19 @@ namespace{
 					max_supply_gap -= margin_quan_supply;
 					Power_market_inform.TSO_Market.balancing.supply_down(tick, node_ID) += reduced_flag_supply * margin_quan_supply;
 					Power_market_inform.TSO_Market.balancing.supply_up(tick, node_ID) += (1 - reduced_flag_supply) * margin_quan_supply;
-					Power_market_inform.TSO_Market.balancing.price_supply(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * margin_quan_supply;
+					Power_market_inform.TSO_Market.balancing.price_up(tick, node_ID) += (1 - reduced_flag_supply) * balancing_price * margin_quan_supply;
+					Power_market_inform.TSO_Market.balancing.price_down(tick, node_ID) += -reduced_flag_supply * balancing_price * margin_quan_supply;
 					Power_market_inform.TSO_Market.balancing.cost(tick, node_ID) += (1 - 2 * reduced_flag_supply) * current_price * margin_quan_supply;
-					settlement.volume_supply.redispatch +=  (1 - 2 * reduced_flag_supply) * margin_quan_supply;
+					settlement.volume_supply.balancing +=  (1 - 2 * reduced_flag_supply) * margin_quan_supply;
 					settlement.cost_supply.balancing += (1 - 2 * reduced_flag_supply) * current_price * margin_quan_supply;
 				}
 				else{
 					Power_market_inform.TSO_Market.balancing.supply_down(tick, node_ID) += reduced_flag_supply * max_supply_gap;
 					Power_market_inform.TSO_Market.balancing.supply_up(tick, node_ID) += (1 - reduced_flag_supply) * max_supply_gap;
-					Power_market_inform.TSO_Market.balancing.price_supply(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * max_supply_gap;
+					Power_market_inform.TSO_Market.balancing.price_up(tick, node_ID) += (1 - reduced_flag_supply) * balancing_price * max_supply_gap;
+					Power_market_inform.TSO_Market.balancing.price_down(tick, node_ID) += -reduced_flag_supply * balancing_price * max_supply_gap;
 					Power_market_inform.TSO_Market.balancing.cost(tick, node_ID) += (1 - 2 * reduced_flag_supply) * current_price * max_supply_gap;
-					settlement.volume_supply.redispatch +=  (1 - 2 * reduced_flag_supply) * max_supply_gap;
+					settlement.volume_supply.balancing +=  (1 - 2 * reduced_flag_supply) * max_supply_gap;
 					settlement.cost_supply.balancing += (1 - 2 * reduced_flag_supply) * current_price * max_supply_gap;
 					max_supply_gap = 0.;
 					break;
@@ -536,17 +538,19 @@ namespace{
 					max_supply_gap -= margin_quan_supply;
 					Power_market_inform.TSO_Market.balancing.supply_down(tick, node_ID) += reduced_flag_supply * margin_quan_supply;
 					Power_market_inform.TSO_Market.balancing.supply_up(tick, node_ID) += (1 - reduced_flag_supply) * margin_quan_supply;
-					Power_market_inform.TSO_Market.balancing.price_supply(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * margin_quan_supply;
+					Power_market_inform.TSO_Market.balancing.price_up(tick, node_ID) += (1 - reduced_flag_supply) * balancing_price * margin_quan_supply;
+					Power_market_inform.TSO_Market.balancing.price_down(tick, node_ID) += -reduced_flag_supply * balancing_price * margin_quan_supply;
 					Power_market_inform.TSO_Market.balancing.cost(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * margin_quan_supply;
-					settlement.volume_supply.redispatch +=  (1 - 2 * reduced_flag_supply) * margin_quan_supply;
+					settlement.volume_supply.balancing +=  (1 - 2 * reduced_flag_supply) * margin_quan_supply;
 					settlement.cost_supply.balancing += (1 - 2 * reduced_flag_supply) * balancing_price * margin_quan_supply;
 				}
 				else{
 					Power_market_inform.TSO_Market.balancing.supply_down(tick, node_ID) += reduced_flag_supply * max_supply_gap;
 					Power_market_inform.TSO_Market.balancing.supply_up(tick, node_ID) += (1 - reduced_flag_supply) * max_supply_gap;
-					Power_market_inform.TSO_Market.balancing.price_supply(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * max_supply_gap;
+					Power_market_inform.TSO_Market.balancing.price_up(tick, node_ID) += (1 - reduced_flag_supply) * balancing_price * max_supply_gap;
+					Power_market_inform.TSO_Market.balancing.price_down(tick, node_ID) += -reduced_flag_supply * balancing_price * max_supply_gap;
 					Power_market_inform.TSO_Market.balancing.cost(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * max_supply_gap;
-					settlement.volume_supply.redispatch +=  (1 - 2 * reduced_flag_supply) * max_supply_gap;
+					settlement.volume_supply.balancing +=  (1 - 2 * reduced_flag_supply) * max_supply_gap;
 					settlement.cost_supply.balancing += (1 - 2 * reduced_flag_supply) * balancing_price * max_supply_gap;
 					max_supply_gap = 0.;
 					break;
@@ -570,18 +574,20 @@ namespace{
 						max_supply_gap -= margin_quan_supply;
 						Power_market_inform.TSO_Market.balancing.supply_down(tick, node_ID) += reduced_flag_supply * margin_quan_supply;
 						Power_market_inform.TSO_Market.balancing.supply_up(tick, node_ID) += (1 - reduced_flag_supply) * margin_quan_supply;
-						Power_market_inform.TSO_Market.balancing.price_supply(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * margin_quan_supply;
-						Power_market_inform.TSO_Market.balancing.cost(tick, node_ID) += (1 - 2 * reduced_flag_supply) * current_price * margin_quan_supply;
-						settlement.volume_supply.redispatch +=  (1 - 2 * reduced_flag_supply) * margin_quan_supply;
-						settlement.cost_supply.balancing += (1 - 2 * reduced_flag_supply) * current_price * margin_quan_supply;
+						Power_market_inform.TSO_Market.balancing.price_up(tick, node_ID) += (1 - reduced_flag_supply) * balancing_price * margin_quan_supply;
+						Power_market_inform.TSO_Market.balancing.price_down(tick, node_ID) += -reduced_flag_supply * balancing_price * margin_quan_supply;
+						Power_market_inform.TSO_Market.balancing.cost(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * margin_quan_supply;
+						settlement.volume_supply.balancing +=  (1 - 2 * reduced_flag_supply) * margin_quan_supply;
+						settlement.cost_supply.balancing += (1 - 2 * reduced_flag_supply) * balancing_price * margin_quan_supply;
 					}
 					else{
 						Power_market_inform.TSO_Market.balancing.supply_down(tick, node_ID) += reduced_flag_supply * max_supply_gap;
 						Power_market_inform.TSO_Market.balancing.supply_up(tick, node_ID) += (1 - reduced_flag_supply) * max_supply_gap;
-						Power_market_inform.TSO_Market.balancing.price_supply(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * max_supply_gap;
-						Power_market_inform.TSO_Market.balancing.cost(tick, node_ID) += (1 - 2 * reduced_flag_supply) * current_price * max_supply_gap;
-						settlement.volume_supply.redispatch +=  (1 - 2 * reduced_flag_supply) * max_supply_gap;
-						settlement.cost_supply.balancing += (1 - 2 * reduced_flag_supply) * current_price * max_supply_gap;
+						Power_market_inform.TSO_Market.balancing.price_up(tick, node_ID) += (1 - reduced_flag_supply) * balancing_price * max_supply_gap;
+						Power_market_inform.TSO_Market.balancing.price_down(tick, node_ID) += -reduced_flag_supply * balancing_price * max_supply_gap;
+						Power_market_inform.TSO_Market.balancing.cost(tick, node_ID) += (1 - 2 * reduced_flag_supply) * balancing_price * max_supply_gap;
+						settlement.volume_supply.balancing +=  (1 - 2 * reduced_flag_supply) * max_supply_gap;
+						settlement.cost_supply.balancing += (1 - 2 * reduced_flag_supply) * balancing_price * max_supply_gap;
 						max_supply_gap = 0.;
 						break;
 					}
@@ -625,7 +631,7 @@ namespace{
 					balancing_price = Power_market_inform.price_map.bidded_price(price_interval - 1);
 				}
 
-				if(price_iter > margin_ID_demand){
+				if(price_iter < margin_ID_demand){
 					margin_quan_demand = bids.submitted_demand_flex(price_iter);
 				}
 
@@ -633,17 +639,19 @@ namespace{
 					max_demand_gap -= margin_quan_demand;
 					Power_market_inform.TSO_Market.balancing.demand_down(tick, node_ID) += reduced_flag_demand * margin_quan_demand;
 					Power_market_inform.TSO_Market.balancing.demand_up(tick, node_ID) += (1 - reduced_flag_demand) * margin_quan_demand;
-					Power_market_inform.TSO_Market.balancing.price_demand(tick, node_ID) += -(1 - 2 * reduced_flag_demand) * balancing_price * margin_quan_demand;
+					Power_market_inform.TSO_Market.balancing.price_up(tick, node_ID) += reduced_flag_demand * balancing_price * margin_quan_demand;
+					Power_market_inform.TSO_Market.balancing.price_down(tick, node_ID) += -(1 - reduced_flag_demand) * balancing_price * margin_quan_demand;
 					Power_market_inform.TSO_Market.balancing.utility(tick, node_ID) += (1 - 2 * reduced_flag_demand) * current_price * margin_quan_demand;
-					settlement.volume_demand.redispatch +=  (1 - 2 * reduced_flag_demand) * margin_quan_demand;
+					settlement.volume_demand.balancing +=  (1 - 2 * reduced_flag_demand) * margin_quan_demand;
 					settlement.utility_demand.balancing += (1 - 2 * reduced_flag_demand) * current_price * margin_quan_demand;
 				}
 				else{
 					Power_market_inform.TSO_Market.balancing.demand_down(tick, node_ID) += reduced_flag_demand * max_demand_gap;
 					Power_market_inform.TSO_Market.balancing.demand_up(tick, node_ID) += (1 - reduced_flag_demand) * max_demand_gap;
-					Power_market_inform.TSO_Market.balancing.price_demand(tick, node_ID) += -(1 - 2 * reduced_flag_demand) * balancing_price * max_demand_gap;
+					Power_market_inform.TSO_Market.balancing.price_up(tick, node_ID) += reduced_flag_demand * balancing_price * max_demand_gap;
+					Power_market_inform.TSO_Market.balancing.price_down(tick, node_ID) += -(1 - reduced_flag_demand) * balancing_price * max_demand_gap;
 					Power_market_inform.TSO_Market.balancing.utility(tick, node_ID) += (1 - 2 * reduced_flag_demand) * current_price * max_demand_gap;
-					settlement.volume_demand.redispatch +=  (1 - 2 * reduced_flag_demand) * max_demand_gap;
+					settlement.volume_demand.balancing +=  (1 - 2 * reduced_flag_demand) * max_demand_gap;
 					settlement.utility_demand.balancing += (1 - 2 * reduced_flag_demand) * current_price * max_demand_gap;
 					max_demand_gap = 0.;
 					break;
@@ -667,8 +675,9 @@ namespace{
 			}
 			for(int price_iter = margin_ID_demand; price_iter >= 0; -- price_iter){
 				double balancing_price = Power_market_inform.price_map.bidded_price(price_interval - 1);
+				double current_price = Power_market_inform.price_map.bidded_price(price_iter);
 
-				if(price_iter > margin_ID_demand){
+				if(price_iter < margin_ID_demand){
 					margin_quan_demand = bids.submitted_demand_inflex(price_iter);
 				}
 
@@ -676,18 +685,20 @@ namespace{
 					max_demand_gap -= margin_quan_demand;
 					Power_market_inform.TSO_Market.balancing.demand_down(tick, node_ID) += reduced_flag_demand * margin_quan_demand;
 					Power_market_inform.TSO_Market.balancing.demand_up(tick, node_ID) += (1 - reduced_flag_demand) * margin_quan_demand;
-					Power_market_inform.TSO_Market.balancing.price_demand(tick, node_ID) += -(1 - 2 * reduced_flag_demand) * balancing_price * margin_quan_demand;
-					Power_market_inform.TSO_Market.balancing.utility(tick, node_ID) += (1 - 2 * reduced_flag_demand) * balancing_price * margin_quan_demand;
-					settlement.volume_demand.redispatch +=  (1 - 2 * reduced_flag_demand) * margin_quan_demand;
-					settlement.utility_demand.balancing += (1 - 2 * reduced_flag_demand) * balancing_price * margin_quan_demand;
+					Power_market_inform.TSO_Market.balancing.price_up(tick, node_ID) += reduced_flag_demand * balancing_price * margin_quan_demand;
+					Power_market_inform.TSO_Market.balancing.price_down(tick, node_ID) += -(1 - reduced_flag_demand) * balancing_price * margin_quan_demand;
+					Power_market_inform.TSO_Market.balancing.utility(tick, node_ID) += (1 - 2 * reduced_flag_demand) * current_price * margin_quan_demand;
+					settlement.volume_demand.balancing +=  (1 - 2 * reduced_flag_demand) * margin_quan_demand;
+					settlement.utility_demand.balancing += (1 - 2 * reduced_flag_demand) * current_price * margin_quan_demand;
 				}
 				else{
 					Power_market_inform.TSO_Market.balancing.demand_down(tick, node_ID) += reduced_flag_demand * max_demand_gap;
 					Power_market_inform.TSO_Market.balancing.demand_up(tick, node_ID) += (1 - reduced_flag_demand) * max_demand_gap;
-					Power_market_inform.TSO_Market.balancing.price_demand(tick, node_ID) += -(1 - 2 * reduced_flag_demand) * balancing_price * max_demand_gap;
-					Power_market_inform.TSO_Market.balancing.utility(tick, node_ID) += (1 - 2 * reduced_flag_demand) * balancing_price * max_demand_gap;
-					settlement.volume_demand.redispatch +=  (1 - 2 * reduced_flag_demand) * max_demand_gap;
-					settlement.utility_demand.balancing += (1 - 2 * reduced_flag_demand) * balancing_price * max_demand_gap;
+					Power_market_inform.TSO_Market.balancing.price_up(tick, node_ID) += reduced_flag_demand * balancing_price * max_demand_gap;
+					Power_market_inform.TSO_Market.balancing.price_down(tick, node_ID) += -(1 - reduced_flag_demand) * balancing_price * max_demand_gap;
+					Power_market_inform.TSO_Market.balancing.utility(tick, node_ID) += (1 - 2 * reduced_flag_demand) * current_price * max_demand_gap;
+					settlement.volume_demand.balancing +=  (1 - 2 * reduced_flag_demand) * max_demand_gap;
+					settlement.utility_demand.balancing += (1 - 2 * reduced_flag_demand) * current_price * max_demand_gap;
 					max_demand_gap = 0.;
 					break;
 				}
@@ -710,17 +721,19 @@ namespace{
 						max_demand_gap -= margin_quan_demand;
 						Power_market_inform.TSO_Market.balancing.demand_down(tick, node_ID) += reduced_flag_demand * margin_quan_demand;
 						Power_market_inform.TSO_Market.balancing.demand_up(tick, node_ID) += (1 - reduced_flag_demand) * margin_quan_demand;
-						Power_market_inform.TSO_Market.balancing.price_demand(tick, node_ID) += -(1 - 2 * reduced_flag_demand) * balancing_price * margin_quan_demand;
+						Power_market_inform.TSO_Market.balancing.price_up(tick, node_ID) += reduced_flag_demand * balancing_price * margin_quan_demand;
+						Power_market_inform.TSO_Market.balancing.price_down(tick, node_ID) += -(1 - reduced_flag_demand) * balancing_price * margin_quan_demand;
 						Power_market_inform.TSO_Market.balancing.utility(tick, node_ID) += (1 - 2 * reduced_flag_demand) * current_price * margin_quan_demand;
-						settlement.volume_demand.redispatch +=  (1 - 2 * reduced_flag_demand) * margin_quan_demand;
+						settlement.volume_demand.balancing +=  (1 - 2 * reduced_flag_demand) * margin_quan_demand;
 						settlement.utility_demand.balancing += (1 - 2 * reduced_flag_demand) * current_price * margin_quan_demand;
 					}
 					else{
 						Power_market_inform.TSO_Market.balancing.demand_down(tick, node_ID) += reduced_flag_demand * max_demand_gap;
 						Power_market_inform.TSO_Market.balancing.demand_up(tick, node_ID) += (1 - reduced_flag_demand) * max_demand_gap;
-						Power_market_inform.TSO_Market.balancing.price_demand(tick, node_ID) += -(1 - 2 * reduced_flag_demand) * balancing_price * max_demand_gap;
+						Power_market_inform.TSO_Market.balancing.price_up(tick, node_ID) += reduced_flag_demand * balancing_price * max_demand_gap;
+						Power_market_inform.TSO_Market.balancing.price_down(tick, node_ID) += -(1 - reduced_flag_demand) * balancing_price * max_demand_gap;
 						Power_market_inform.TSO_Market.balancing.utility(tick, node_ID) += (1 - 2 * reduced_flag_demand) * current_price * max_demand_gap;
-						settlement.volume_demand.redispatch +=  (1 - 2 * reduced_flag_demand) * max_demand_gap;
+						settlement.volume_demand.balancing +=  (1 - 2 * reduced_flag_demand) * max_demand_gap;
 						settlement.utility_demand.balancing += (1 - 2 * reduced_flag_demand) * current_price * max_demand_gap;
 						max_demand_gap = 0.;
 						break;
@@ -1300,24 +1313,35 @@ namespace{
 
 	void agents_redispatch_settlement(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
 		int node_num = Power_market_inform.TSO_Market.network.num_vertice;
-		int bz_num = Power_market_inform.International_Market.num_zone;
-		Eigen::VectorXd redispatch_demand = Eigen::VectorXd::Zero(bz_num);
-		Eigen::VectorXd redispatch_supply = Eigen::VectorXd::Zero(bz_num);
+		int bz_num = Power_market_inform.International_Market.cross_border_zone_start;
+		Eigen::VectorXd redispatch_confirmed_demand = Eigen::VectorXd::Zero(bz_num);
+		Eigen::VectorXd redispatch_confirmed_supply = Eigen::VectorXd::Zero(bz_num);
+		Eigen::VectorXd redispatch_cost_supply_self = Eigen::VectorXd::Zero(bz_num);
+		Eigen::VectorXd redispatch_cost_supply_export = Eigen::VectorXd::Zero(bz_num);
+		Eigen::VectorXd redispatch_quan_supply_import = Eigen::VectorXd::Zero(bz_num);
 
 		// Redispatch price per energy at each transmission node
 		for(int node_iter = 0; node_iter < node_num; ++ node_iter){
 			int bz_ID = Power_network_inform.nodes.bidding_zone(node_iter);
 
 			Power_market_inform.International_Market.redispatch.price_demand(tick, bz_ID) += Power_market_inform.TSO_Market.redispatch.price_demand(tick, node_iter);
+			redispatch_confirmed_demand(bz_ID) += Power_market_inform.TSO_Market.confirmed.demand(tick, node_iter);
+
 			Power_market_inform.International_Market.redispatch.price_supply(tick, bz_ID) += Power_market_inform.TSO_Market.redispatch.price_supply(tick, node_iter);
-			redispatch_demand(bz_ID) = Power_market_inform.International_Market.confirmed.demand(tick, bz_ID);
-			redispatch_demand(bz_ID) -= Power_market_inform.TSO_Market.redispatch.demand_down(tick, node_iter);
-			redispatch_supply(bz_ID) = Power_market_inform.International_Market.confirmed.supply(tick, bz_ID);
-			redispatch_supply(bz_ID) -= Power_market_inform.TSO_Market.redispatch.supply_down(tick, node_iter);
+			redispatch_confirmed_supply(bz_ID) += Power_market_inform.TSO_Market.confirmed.supply(tick, node_iter);
 		}
 
-		Power_market_inform.International_Market.redispatch.price_demand.row(tick) = Power_market_inform.International_Market.redispatch.price_demand.row(tick).array() / redispatch_demand.array();
-		Power_market_inform.International_Market.redispatch.price_supply.row(tick) = Power_market_inform.International_Market.redispatch.price_supply.row(tick).array() / redispatch_supply.array();
+		for(int zone_iter = 0; zone_iter < bz_num; ++ zone_iter){
+			redispatch_cost_supply_self(zone_iter) = Power_market_inform.International_Market.redispatch.price_supply(tick, zone_iter) * std::min(redispatch_confirmed_demand(zone_iter), redispatch_confirmed_supply(zone_iter)) / redispatch_confirmed_supply(zone_iter);
+			redispatch_quan_supply_import(zone_iter) = redispatch_confirmed_demand(zone_iter) - std::min(redispatch_confirmed_demand(zone_iter), redispatch_confirmed_supply(zone_iter));
+			redispatch_cost_supply_export(zone_iter) = Power_market_inform.International_Market.redispatch.price_supply(tick, zone_iter) - redispatch_cost_supply_self(zone_iter);
+		}
+
+		for(int zone_iter = 0; zone_iter < bz_num; ++ zone_iter){
+			Power_market_inform.International_Market.redispatch.price_demand(tick, zone_iter) += redispatch_cost_supply_self(zone_iter);
+			Power_market_inform.International_Market.redispatch.price_demand(tick, zone_iter) += redispatch_quan_supply_import(zone_iter) / redispatch_quan_supply_import.sum() * redispatch_cost_supply_export.sum();
+			Power_market_inform.International_Market.redispatch.price_demand(tick, zone_iter) /= std::min(Power_market_inform.International_Market.confirmed.demand(tick, zone_iter), redispatch_confirmed_demand(zone_iter));
+		}
 
 		// End-users
 		int point_num = Power_network_inform.points.bidding_zone.size();
@@ -1329,7 +1353,6 @@ namespace{
 				double redispatch_price =  Power_market_inform.International_Market.redispatch.price_demand(tick, bz_ID);
 				redispatch_price *= std::min(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.cleared_demand, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.confirmed_demand);
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.price.redispatch += redispatch_price;
-				//std::cout << redispatch_price << "\n";
 			}
 		}
 
@@ -1340,7 +1363,7 @@ namespace{
 			int bz_ID = Power_network_inform.points.bidding_zone(point_ID);
 			double redispatch_price =  Power_market_inform.International_Market.redispatch.price_demand(tick, bz_ID);
 			redispatch_price *= std::min(Power_market_inform.agent_profiles.industrial.HV[agent_iter].results.cleared_demand, Power_market_inform.agent_profiles.industrial.HV[agent_iter].results.confirmed_demand);
-			Power_market_inform.agent_profiles.industrial.HV[agent_iter].operation.settlement.price.redispatch += redispatch_price;
+			Power_market_inform.agent_profiles.industrial.HV[agent_iter].settlement.price.redispatch += redispatch_price;
 		}
 	}
 
@@ -1585,25 +1608,31 @@ namespace{
 
 	void agents_balancing_settlement(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
 		int node_num = Power_market_inform.TSO_Market.network.num_vertice;
-		//int bz_num
-
-		//Eigen::VectorXd balancing_price_demand(node_num);
+		int bz_num = Power_market_inform.International_Market.cross_border_zone_start;
+		Eigen::VectorXd imbalance_total = Eigen::VectorXd::Zero(bz_num);
+		Eigen::VectorXd imbalance_up = Eigen::VectorXd::Zero(bz_num);
+		Eigen::VectorXd imbalance_down = Eigen::VectorXd::Zero(bz_num);
 
 		// Balancing price per energy at each transmission node
 		for(int node_iter = 0; node_iter < node_num; ++ node_iter){
 			int bz_ID = Power_network_inform.nodes.bidding_zone(node_iter);
-			//Power_market_inform.International_Market.redispatch.demand_down
+			Power_market_inform.International_Market.balancing.price_down(tick, bz_ID) += Power_market_inform.TSO_Market.balancing.price_down(tick, node_iter);
+			Power_market_inform.International_Market.balancing.price_up(tick, bz_ID) += Power_market_inform.TSO_Market.balancing.price_up(tick, node_iter);
 
+			imbalance_total(bz_ID) += Power_market_inform.TSO_Market.actual.supply(tick, node_iter);
+			imbalance_total(bz_ID) -= Power_market_inform.TSO_Market.confirmed.supply(tick, node_iter);
+			imbalance_total(bz_ID) -= Power_market_inform.TSO_Market.actual.demand(tick, node_iter);
+			imbalance_total(bz_ID) += Power_market_inform.TSO_Market.confirmed.demand(tick, node_iter);
 
-			//double balancinged_qaun_demand = Power_market_inform.TSO_Market.confirmed.demand(tick, node_iter);
-			//balancing_price_demand(node_iter) = Power_market_inform.TSO_Market.balancing.price_demand(tick, node_iter);
-			//balancing_price_demand(node_iter) /= balancinged_qaun_demand;
-			//std::cout << Power_market_inform.TSO_Market.balancing.cost_demand(tick, node_iter) << "\t";
-			//std::cout <<  Power_market_inform.TSO_Market.confirmed.demand(tick, node_iter) << "\t";
-			//std::cout << Power_market_inform.TSO_Market.actual.demand(tick, node_iter) << "\t" << balancing_price_demand(node_iter) << "\n";
+			imbalance_up(bz_ID) += Power_market_inform.TSO_Market.balancing.supply_up(tick, node_iter);
+			imbalance_up(bz_ID) += Power_market_inform.TSO_Market.balancing.demand_down(tick, node_iter);
+			imbalance_down(bz_ID) += Power_market_inform.TSO_Market.balancing.supply_down(tick, node_iter);
+			imbalance_down(bz_ID) += Power_market_inform.TSO_Market.balancing.demand_up(tick, node_iter);
 		}
-		//std::cout << balancing_price_demand;
-		//std::cout << "\n";
+		for(int zone_iter = 0; zone_iter < bz_num; ++ zone_iter){
+			Power_market_inform.International_Market.balancing.price_down(tick, zone_iter) /= imbalance_up(zone_iter);
+			Power_market_inform.International_Market.balancing.price_up(tick, zone_iter) /= imbalance_down(zone_iter);
+		}
 	}
 
 	void aggregator_price_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){

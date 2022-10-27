@@ -142,6 +142,8 @@ void power_market::International_Market_Set(market_inform &International_Market,
 	International_Market.network.confirmed_power = Eigen::MatrixXd::Zero(Time, International_Market.network.num_edges);
 	International_Market.redispatch.price_demand = Eigen::MatrixXd::Zero(Time, International_Market.num_zone);
 	International_Market.redispatch.price_supply = Eigen::MatrixXd::Zero(Time, International_Market.num_zone);
+	International_Market.balancing.price_down = Eigen::MatrixXd::Zero(Time, International_Market.num_zone);
+	International_Market.balancing.price_up = Eigen::MatrixXd::Zero(Time, International_Market.num_zone);
 
 	// Update alglib object for optimization
 	// -------------------------------------------------------------------------------
