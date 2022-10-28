@@ -614,9 +614,9 @@ namespace{
 				std::cout << bids.submitted_demand_inflex.sum() << "\t" << bids.submitted_demand_flex.sum() << "\t";
 			}
 
-		if(bids.submitted_demand_inflex.sum() + bids.imbalance_demand < min_demand_gap){
-			min_demand_gap -= bids.submitted_demand_inflex.sum() + bids.imbalance_demand;
-			max_demand_gap -= bids.submitted_demand_inflex.sum() + bids.imbalance_demand;
+		if(bids.submitted_demand_inflex.sum() + bids.imbalance_demand.sum() < min_demand_gap){
+			min_demand_gap -= bids.submitted_demand_inflex.sum() + bids.imbalance_demand.sum();
+			max_demand_gap -= bids.submitted_demand_inflex.sum() + bids.imbalance_demand.sum();
 
 			for(int price_iter = price_interval + 1; price_iter >= 0; -- price_iter){
 				margin_quan_demand = bids.submitted_demand_flex(price_iter);
@@ -672,7 +672,7 @@ namespace{
 		else{
 			for(int price_iter = price_interval + 1; price_iter >= 0; -- price_iter){
 				margin_quan_demand = bids.submitted_demand_inflex(price_iter);
-				margin_quan_demand += (price_iter == price_interval + 1) * bids.imbalance_demand;
+				margin_quan_demand += bids.imbalance_demand(price_iter);
 
 				if(min_demand_gap > margin_quan_demand){
 					min_demand_gap -= margin_quan_demand;
