@@ -48,6 +48,7 @@ namespace{
 		bids.filter_demand = Eigen::VectorXd::Zero(price_interval + 2);
 		bids.balancing_supply = Eigen::VectorXd::Zero(price_interval + 2);
 		bids.balancing_demand = Eigen::VectorXd::Zero(price_interval + 2);
+		bids.imbalance_demand = Eigen::VectorXd::Zero(price_interval + 2);
 	}
 
 	void agent_submitted_bids_scale(double scale, agent::bids &bids){
@@ -609,13 +610,13 @@ namespace{
 		bool reduced_flag_demand = (actual_demand_gap == min_demand_gap);
 		double margin_quan_demand;
 		int margin_ID_demand;
-		if(bids.submitted_demand_inflex.sum() < min_demand_gap){
 			if(node_ID == 0){
-				std::cout << bids.submitted_demand_inflex.sum() << "\t";
+				std::cout << bids.submitted_demand_inflex.sum() << "\t" << bids.submitted_demand_flex.sum() << "\t";
 			}
 
-			min_demand_gap -= bids.submitted_demand_inflex.sum();
-			max_demand_gap -= bids.submitted_demand_inflex.sum();
+		if(bids.submitted_demand_inflex.sum() + bids.imbalance_demand < min_demand_gap){
+			min_demand_gap -= bids.submitted_demand_inflex.sum() + bids.imbalance_demand;
+			max_demand_gap -= bids.submitted_demand_inflex.sum() + bids.imbalance_demand;
 
 			for(int price_iter = price_interval + 1; price_iter >= 0; -- price_iter){
 				margin_quan_demand = bids.submitted_demand_flex(price_iter);
@@ -671,6 +672,7 @@ namespace{
 		else{
 			for(int price_iter = price_interval + 1; price_iter >= 0; -- price_iter){
 				margin_quan_demand = bids.submitted_demand_inflex(price_iter);
+				margin_quan_demand += (price_iter == price_interval + 1) * bids.imbalance_demand;
 
 				if(min_demand_gap > margin_quan_demand){
 					min_demand_gap -= margin_quan_demand;
@@ -1198,6 +1200,7 @@ namespace{
 				// Imbalance accounting
 				double imbalance = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.confirmed_demand;
 				imbalance *= Power_network_inform.points.imbalance_field(point_iter, tick);
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.imbalance_demand(price_interval + 1) += imbalance;
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.balancing_demand(price_interval + 1) += imbalance;
 				//Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.balancing_demand(price_interval + 1) += (imbalance >= 0.) * imbalance;
 				//Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.balancing_supply(0) -= (imbalance < 0.) * imbalance;
@@ -1231,6 +1234,7 @@ namespace{
 
 			double imbalance = Power_market_inform.agent_profiles.industrial.HV[agent_iter].results.actual_demand;
 			imbalance *= Power_network_inform.points.imbalance_field(point_ID, tick);
+			Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids.imbalance_demand(price_interval + 1) += imbalance;
 			Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids.balancing_demand(price_interval + 1) += imbalance;
 			//Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids.balancing_demand(price_interval + 1) += (imbalance >= 0.) * imbalance;
 			//Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids.balancing_supply(0) -= (imbalance < 0.) * imbalance;

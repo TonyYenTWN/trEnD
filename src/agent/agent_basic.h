@@ -31,7 +31,8 @@ namespace agent{
 		Eigen::VectorXd filter_supply;
 		Eigen::VectorXd filter_demand;
 
-		// Equivalent bidding price when control reserve is activated
+		// Equivalent bids when control reserve is activated
+		Eigen::VectorXd imbalance_demand;
 		Eigen::VectorXd balancing_supply;
 		Eigen::VectorXd balancing_demand;
 	};
