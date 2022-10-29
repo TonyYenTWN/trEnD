@@ -5,6 +5,7 @@
 #define MARKET_OBJECT
 
 #include "src/agent/aggregator.h"
+#include "src/agent/cross_border.h"
 #include "src/agent/end-user.h"
 #include "src/agent/industrial.h"
 #include "src/agent/power_supplier.h"

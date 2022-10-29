@@ -2,6 +2,7 @@
 #pragma once
 #include "src/power_market/power_market.h"
 #include "aggregator.h"
+#include "cross_border.h"
 #include "end-user.h"
 #include "industrial.h"
 #include "power_supplier.h"
