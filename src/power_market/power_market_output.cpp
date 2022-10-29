@@ -7,7 +7,7 @@
 // Generic functions for all market types
 // ------------------------------------------------------------------------------------------------
 namespace{
-	void Market_results_print(power_market::market_inform Market, std::string name, bool nodal){
+	void Market_results_print(power_market::market_inform Market, std::string name, bool nodal = 1){
 		std::string fout_name;
 
 		// Confirmed results
