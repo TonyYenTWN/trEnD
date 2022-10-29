@@ -38,6 +38,7 @@
 		<Unit filename="src/agent/agent_func.cpp" />
 		<Unit filename="src/agent/agent_func.h" />
 		<Unit filename="src/agent/aggregator.h" />
+		<Unit filename="src/agent/cross_border.h" />
 		<Unit filename="src/agent/end-user.cpp" />
 		<Unit filename="src/agent/end-user.h" />
 		<Unit filename="src/agent/industrial.h" />
