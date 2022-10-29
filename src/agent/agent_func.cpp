@@ -610,9 +610,9 @@ namespace{
 		bool reduced_flag_demand = (actual_demand_gap == min_demand_gap);
 		double margin_quan_demand;
 		int margin_ID_demand;
-			if(node_ID == 0){
-				std::cout << bids.submitted_demand_inflex.sum() << "\t" << bids.submitted_demand_flex.sum() << "\t";
-			}
+//		if(node_ID == 0){
+//			std::cout << bids.submitted_demand_inflex.sum() << "\t" << bids.submitted_demand_flex.sum() << "\t";
+//		}
 
 		if(bids.submitted_demand_inflex.sum() + bids.imbalance_demand.sum() < min_demand_gap){
 			min_demand_gap -= bids.submitted_demand_inflex.sum() + bids.imbalance_demand.sum();
