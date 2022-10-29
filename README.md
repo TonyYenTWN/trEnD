@@ -22,6 +22,7 @@ Welcome to trEnD, a c++ based model of the energy transition, focusing on the en
     - [Market Clearing](#market-clearing)
     - [Redispatch](#redispatch)
     - [Control Reserve Activation](#control-reserve-activation)
+  - [Settlement Stage](#settlement-stage)
 
 - [Documentation of Source Codes](#documentation-of-source-codes)
 
@@ -96,6 +97,8 @@ You will be asked to type in the values for some boolean variables at the beginn
 ### Redispatch
 
 ### Control Reserve Activation
+
+## Settlement Stage
 
 # Documentation of Source Codes
 Below is a summary of what the source codes do, categorized by the subfolders in [src](https://github.com/TonyYenTWN/trEnD/tree/main/src) folder. The full documentation can be found at [the github-pages of this repository](https://tonyyentwn.github.io/trEnD).
