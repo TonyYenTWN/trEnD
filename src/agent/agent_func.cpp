@@ -789,45 +789,26 @@ namespace{
 		return aggregator_profiles;
 	}
 
-	agent::cross_border::zonal_profiles cross_border_set(power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
-		int ez_num = Power_market_inform.International_Market.num_zone - Power_market_inform.International_Market.cross_border_zone_start;
+	agent::cross_border::edge_profiles cross_border_set(power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
+		int edge_num = Power_market_inform.International_Market.network.num_edges;
+		agent::cross_border::edge_profiles cross_border_profiles(edge_num);
+		for(int edge_iter = 0; edge_iter < edge_num; ++ edge_iter){
+			cross_border_profiles[edge_iter].node_num = Power_network_inform.cbt.entry_node_num[edge_iter];
+			cross_border_profiles[edge_iter].entry_bz_ID = Power_network_inform.cbt.entry_bz(edge_iter);
 
-		agent::cross_border::zonal_profiles cross_border_profiles(ez_num);
-		for(int zone_iter = 0; zone_iter < ez_num; ++ zone_iter){
-			cross_border_profiles[zone_iter].exchange_zone_ID = Power_market_inform.International_Market.cross_border_zone_start + zone_iter;
-			cross_border_profiles[zone_iter].node_num = Power_network_inform.cbt.entry_node_num[zone_iter];
-
-			int node_num = cross_border_profiles[zone_iter].node_num;
-			cross_border_profiles[zone_iter].profiles = agent::cross_border::profiles(node_num);
+			int node_num = cross_border_profiles[edge_iter].node_num;
+			cross_border_profiles[edge_iter].profiles = agent::cross_border::profiles(node_num);
 			for(int node_iter = 0; node_iter < node_num; ++ node_iter){
 				// Set entry node
-				cross_border_profiles[zone_iter].profiles[node_iter].node_ID = Power_network_inform.cbt.entry_nodes(zone_iter, node_iter);
+				cross_border_profiles[edge_iter].profiles[node_iter].node_ID = Power_network_inform.cbt.entry_nodes(edge_iter, node_iter);
 
 				// Set bids and results information
-				agent_bids_initialization(cross_border_profiles[zone_iter].profiles[node_iter].bids);
-				agent_results_set(cross_border_profiles[zone_iter].profiles[node_iter].results);
-				agent_settlement_set(cross_border_profiles[zone_iter].profiles[node_iter].settlement);
+				agent_results_set(cross_border_profiles[edge_iter].profiles[node_iter].results);
+				agent_settlement_set(cross_border_profiles[edge_iter].profiles[node_iter].settlement);
 			}
 		}
 
-		// Store cross-border transmission flow as inflexible supply / demand at entry nodes
-		for(int edge_iter = 0; edge_iter < Power_market_inform.International_Market.network.num_edges; ++ edge_iter){
-			if(Power_market_inform.International_Market.network.incidence[edge_iter](1) < Power_market_inform.International_Market.cross_border_zone_start){
-				continue;
-			}
-
-			bool sink_flag = Power_market_inform.International_Market.network.confirmed_power(0, edge_iter) >= 0.;
-			int price_ID = 1 + sink_flag * (Power_market_inform.International_Market.price_intervals - 1);
-			double source = -(1 - sink_flag) * Power_market_inform.International_Market.network.confirmed_power(0, edge_iter);
-			double sink = sink_flag * Power_market_inform.International_Market.network.confirmed_power(0, edge_iter);
-
-			int ez_ID = Power_market_inform.International_Market.network.incidence[edge_iter](1) - Power_market_inform.International_Market.cross_border_zone_start;
-			int node_num = cross_border_profiles[ez_ID].node_num;
-			for(int node_iter = 0; node_iter < node_num; ++ node_iter){
-				cross_border_profiles[ez_ID].profiles[node_iter].bids.submitted_supply_inflex(price_ID) += source / node_num;
-				cross_border_profiles[ez_ID].profiles[node_iter].bids.submitted_demand_inflex(price_ID) += sink / node_num;
-			}
-		}
+		return cross_border_profiles;
 	}
 
 	agent::end_user::profiles end_user_set(power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
@@ -1056,6 +1037,44 @@ namespace{
 		}
 
 		return power_supplier_profiles;
+	}
+
+	void cross_border_redispatch_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
+		int edge_num = Power_market_inform.agent_profiles.cross_border.size();
+
+		for(int edge_iter = 0; edge_iter < edge_num; ++ edge_iter){
+			int node_num = Power_market_inform.agent_profiles.cross_border[edge_iter].node_num;
+			int entry_bz_ID = Power_market_inform.agent_profiles.cross_border[edge_iter].entry_bz_ID;
+
+			// Store cross-border transmission flow as inflexible supply / demand at entry nodes
+			if(node_num == 0){
+				continue;
+			}
+			bool sink_flag = Power_market_inform.International_Market.network.confirmed_power(tick, edge_iter) >= 0.;
+			int price_inflex_ID = 1 + sink_flag * (Power_market_inform.International_Market.price_intervals - 1);
+			int price_flex_ID = Power_market_inform.International_Market.confirmed.price(tick, entry_bz_ID);
+			double source = -(1 - sink_flag) * Power_market_inform.International_Market.network.confirmed_power(tick, edge_iter);
+			double sink = sink_flag * Power_market_inform.International_Market.network.confirmed_power(tick, edge_iter);
+
+			for(int node_iter = 0; node_iter < node_num; ++ node_iter){
+				int node_ID = Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].node_ID;
+				int bz_ID = Power_network_inform.nodes.bidding_zone(node_ID);
+
+				agent_bids_initialization(Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].bids);
+				Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].results.cleared_supply = source / node_num;
+				Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].results.cleared_demand = sink / node_num;
+				Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].bids.submitted_supply_flex(price_flex_ID) = source / node_num;
+				Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].bids.submitted_demand_flex(price_flex_ID) = sink / node_num;
+				Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].bids.redispatch_supply(price_inflex_ID) = source / node_num;
+				Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].bids.redispatch_demand(price_inflex_ID) = sink / node_num;
+				Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].bids.balancing_supply(price_inflex_ID) = source / node_num;
+				Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].bids.balancing_demand(price_inflex_ID) = sink / node_num;
+
+				// Settlement in EOM
+				double original_price = Power_market_inform.International_Market.confirmed.price(tick, bz_ID);
+				agent_EOM_settlement_calculation(tick, node_ID, original_price, Power_market_inform, Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].bids, Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].results, Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].settlement);
+			}
+		}
 	}
 
 	void end_user_redispatch_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
@@ -1951,12 +1970,14 @@ namespace{
 
 void agent::agents_set(power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
 	Power_market_inform.agent_profiles.aggregators = aggregator_set(Power_market_inform.International_Market, Power_network_inform);
+	Power_market_inform.agent_profiles.cross_border = cross_border_set(Power_market_inform, Power_network_inform);
 	Power_market_inform.agent_profiles.end_users = end_user_set(Power_market_inform, Power_network_inform);
 	Power_market_inform.agent_profiles.industrial = industrial_set(Power_network_inform);
 	Power_market_inform.agent_profiles.power_supplier = power_supplier_set(Power_market_inform, Power_network_inform);
 }
 
 void agent::agents_redispatch_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
+	cross_border_redispatch_update(tick, Power_market_inform, Power_network_inform);
 	end_user_redispatch_update(tick, Power_market_inform, Power_network_inform);
 }
 

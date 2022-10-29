@@ -40,26 +40,25 @@ void power_market::Market_Initialization(market_inform &Market){
 // ------------------------------------------------------------------------------------------------
 // Functions involving multiple markets
 // ------------------------------------------------------------------------------------------------
-void power_market::TSO_boundary_update(int tick, market_inform &TSO_Market, market_inform &International_Market, power_network::network_inform &Power_network_inform){
-	// Store cross-border transmission flow as inflexible supply / demand at entry nodes of TSO
-	for(int edge_iter = 0; edge_iter < International_Market.network.num_edges; ++ edge_iter){
-		if(International_Market.network.incidence[edge_iter](1) < International_Market.cross_border_zone_start){
-			continue;
-		}
-		bool sink_flag = International_Market.network.confirmed_power(tick, edge_iter) >= 0.;
-		int price_ID = 1 + sink_flag * (International_Market.price_intervals - 1);
-		double source = -(1 - sink_flag) * International_Market.network.confirmed_power(tick, edge_iter);
-		double sink = sink_flag * International_Market.network.confirmed_power(tick, edge_iter);
-
-		int zone_ID = International_Market.network.incidence[edge_iter](1) - International_Market.cross_border_zone_start;
-		int node_num = Power_network_inform.cbt.entry_node_num[zone_ID];
-		for(int node_iter = 0; node_iter < node_num; ++ node_iter){
-			int node_ID = Power_network_inform.cbt.entry_nodes(zone_ID, node_iter);
-			TSO_Market.submitted_supply(price_ID, node_ID) += source / node_num;
-			TSO_Market.submitted_demand(price_ID, node_ID) += sink / node_num;
-		}
-	}
-}
+//void power_market::TSO_boundary_update(int tick, market_inform &TSO_Market, market_inform &International_Market, power_network::network_inform &Power_network_inform){
+//	// Store cross-border transmission flow as inflexible supply / demand at entry nodes of TSO
+//	for(int edge_iter = 0; edge_iter < International_Market.network.num_edges; ++ edge_iter){
+//		if(International_Market.network.incidence[edge_iter](1) < International_Market.cross_border_zone_start){
+//			continue;
+//		}
+//		bool sink_flag = International_Market.network.confirmed_power(tick, edge_iter) >= 0.;
+//		int price_ID = 1 + sink_flag * (International_Market.price_intervals - 1);
+//		double source = -(1 - sink_flag) * International_Market.network.confirmed_power(tick, edge_iter);
+//		double sink = sink_flag * International_Market.network.confirmed_power(tick, edge_iter);
+//
+//		int node_num = Power_network_inform.cbt.entry_node_num[edge_iter];
+//		for(int node_iter = 0; node_iter < node_num; ++ node_iter){
+//			int node_ID = Power_network_inform.cbt.entry_nodes(edge_iter, node_iter);
+//			TSO_Market.submitted_supply(price_ID, node_ID) += source / node_num;
+//			TSO_Market.submitted_demand(price_ID, node_ID) += sink / node_num;
+//		}
+//	}
+//}
 
 // ------------------------------------------------------------------------------------------------
 // Specific functions for for flow-based markets

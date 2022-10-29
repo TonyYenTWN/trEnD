@@ -95,7 +95,20 @@ void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Powe
 	}
 
 	// Initialize boundary conditions with other bidding zones
-	TSO_boundary_update(tick, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform);
+	//TSO_boundary_update(tick, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform);
+	int edge_num = Power_market_inform.agent_profiles.cross_border.size();
+	for(int edge_iter = 0; edge_iter < edge_num; ++ edge_iter){
+		int node_num = Power_market_inform.agent_profiles.cross_border[edge_iter].node_num;
+		if(node_num == 0){
+			continue;
+		}
+
+		for(int node_iter = 0; node_iter < node_num; ++ node_iter){
+			int node_ID = Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].node_ID;
+			Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].bids.redispatch_demand;
+			Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].bids.redispatch_supply;
+		}
+	}
 
 	// Residential demand
 	int point_num = Power_network_inform.points.bidding_zone.size();
@@ -225,7 +238,20 @@ void power_market::Balancing_bid_calculation(int tick, market_whole_inform &Powe
 	Market_Initialization(Power_market_inform.TSO_Market);
 
 	// Initialize boundary conditions with other bidding zones
-	TSO_boundary_update(tick, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform);
+	//TSO_boundary_update(tick, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform);
+	int edge_num = Power_market_inform.agent_profiles.cross_border.size();
+	for(int edge_iter = 0; edge_iter < edge_num; ++ edge_iter){
+		int node_num = Power_market_inform.agent_profiles.cross_border[edge_iter].node_num;
+		if(node_num == 0){
+			continue;
+		}
+
+		for(int node_iter = 0; node_iter < node_num; ++ node_iter){
+			int node_ID = Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].node_ID;
+			Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].bids.balancing_demand;
+			Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].bids.balancing_supply;
+		}
+	}
 
 	// Residential demand
 	int point_num = Power_network_inform.points.bidding_zone.size();

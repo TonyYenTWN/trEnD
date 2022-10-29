@@ -190,6 +190,7 @@ namespace power_market{
 	/**Information of agents*/
 	struct agent_profiles{
 		agent::aggregator::profiles aggregators;
+		agent::cross_border::edge_profiles cross_border;
 		agent::end_user::profiles end_users;
 		agent::industrial::profiles industrial;
 		agent::power_supplier::profiles power_supplier;
@@ -216,7 +217,7 @@ namespace power_market{
 
 namespace power_market{
 	void Market_Initialization(market_inform&);
-	void TSO_boundary_update(int, market_inform&, market_inform&, power_network::network_inform&);
+	//void TSO_boundary_update(int, market_inform&, market_inform&, power_network::network_inform&);
 	void Flow_Based_Market_LP_Set(market_inform&, alglib::minlpstate&);
 	void Flow_Based_Market_Optimization(market_inform&, alglib::minlpstate&);
 	void default_demand_set(power_network::network_inform&, market_whole_inform&);

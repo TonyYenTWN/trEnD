@@ -12,11 +12,11 @@ namespace agent{
 		};
 		typedef std::vector <profile> profiles;
 
-		struct zonal_profile{
-			int exchange_zone_ID;
+		struct edge_profile{
 			int node_num;
+			int entry_bz_ID;
 			profiles profiles;
 		};
-		typedef std::vector <zonal_profile> zonal_profiles;
+		typedef std::vector <edge_profile> edge_profiles;
 	}
 }
