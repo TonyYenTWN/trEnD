@@ -21,42 +21,42 @@ namespace{
 		if(!nodal){
 			fout_name = "csv/output/" + name + "_confirmed_power.csv";
 			basic::write_file(Market.network.confirmed_power, fout_name, Market.zone_names);
-			return;
 		}
+		else{
+			// EOM settlement
+			fout_name = "csv/output/" + name + "_EOM_cost.csv";
+			basic::write_file(Market.EOM.cost, fout_name, Market.zone_names);
+			fout_name = "csv/output/" + name + "_EOM_utility.csv";
+			basic::write_file(Market.EOM.utility, fout_name, Market.zone_names);
 
-		// EOM settlement
-		fout_name = "csv/output/" + name + "_EOM_cost.csv";
-		basic::write_file(Market.EOM.cost, fout_name, Market.zone_names);
-		fout_name = "csv/output/" + name + "_EOM_utility.csv";
-		basic::write_file(Market.EOM.utility, fout_name, Market.zone_names);
+			// Redispatch settlement
+			fout_name = "csv/output/" + name + "_redispatch_cost.csv";
+			basic::write_file(Market.redispatch.cost, fout_name, Market.zone_names);
+			fout_name = "csv/output/" + name + "_redispatch_utility.csv";
+			basic::write_file(Market.redispatch.utility, fout_name, Market.zone_names);
+			fout_name = "csv/output/" + name + "_redispatch_demand.csv";
+			basic::write_file(Market.redispatch.demand_up - Market.redispatch.demand_down, fout_name, Market.zone_names);
+			fout_name = "csv/output/" + name + "_redispatch_supply.csv";
+			basic::write_file(Market.redispatch.supply_up - Market.redispatch.supply_down, fout_name, Market.zone_names);
 
-		// Redispatch settlement
-		fout_name = "csv/output/" + name + "_redispatch_cost.csv";
-		basic::write_file(Market.redispatch.cost, fout_name, Market.zone_names);
-		fout_name = "csv/output/" + name + "_redispatch_utility.csv";
-		basic::write_file(Market.redispatch.utility, fout_name, Market.zone_names);
-		fout_name = "csv/output/" + name + "_redispatch_demand.csv";
-		basic::write_file(Market.redispatch.demand_up - Market.redispatch.demand_down, fout_name, Market.zone_names);
-		fout_name = "csv/output/" + name + "_redispatch_supply.csv";
-		basic::write_file(Market.redispatch.supply_up - Market.redispatch.supply_down, fout_name, Market.zone_names);
+			// Actual results
+			fout_name = "csv/output/" + name + "_actual_price.csv";
+			basic::write_file(Market.actual.price, fout_name, Market.zone_names);
+			fout_name = "csv/output/" + name + "_actual_demand.csv";
+			basic::write_file(Market.actual.demand, fout_name, Market.zone_names);
+			fout_name = "csv/output/" + name + "_actual_supply.csv";
+			basic::write_file(Market.actual.supply, fout_name, Market.zone_names);
 
-		// Actual results
-		fout_name = "csv/output/" + name + "_actual_price.csv";
-		basic::write_file(Market.actual.price, fout_name, Market.zone_names);
-		fout_name = "csv/output/" + name + "_actual_demand.csv";
-		basic::write_file(Market.actual.demand, fout_name, Market.zone_names);
-		fout_name = "csv/output/" + name + "_actual_supply.csv";
-		basic::write_file(Market.actual.supply, fout_name, Market.zone_names);
-
-		// Balancing settlement
-		fout_name = "csv/output/" + name + "_balancing_cost.csv";
-		basic::write_file(Market.balancing.cost, fout_name, Market.zone_names);
-		fout_name = "csv/output/" + name + "_balancing_utility.csv";
-		basic::write_file(Market.balancing.utility, fout_name, Market.zone_names);
-		fout_name = "csv/output/" + name + "_balancing_demand.csv";
-		basic::write_file(Market.balancing.demand_up - Market.balancing.demand_down, fout_name, Market.zone_names);
-		fout_name = "csv/output/" + name + "_balancing_supply.csv";
-		basic::write_file(Market.balancing.supply_up - Market.balancing.supply_down, fout_name, Market.zone_names);
+			// Balancing settlement
+			fout_name = "csv/output/" + name + "_balancing_cost.csv";
+			basic::write_file(Market.balancing.cost, fout_name, Market.zone_names);
+			fout_name = "csv/output/" + name + "_balancing_utility.csv";
+			basic::write_file(Market.balancing.utility, fout_name, Market.zone_names);
+			fout_name = "csv/output/" + name + "_balancing_demand.csv";
+			basic::write_file(Market.balancing.demand_up - Market.balancing.demand_down, fout_name, Market.zone_names);
+			fout_name = "csv/output/" + name + "_balancing_supply.csv";
+			basic::write_file(Market.balancing.supply_up - Market.balancing.supply_down, fout_name, Market.zone_names);
+		}
 	}
 }
 
