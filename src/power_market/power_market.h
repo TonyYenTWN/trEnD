@@ -277,3 +277,13 @@ namespace power_market{
 }
 
 #endif
+
+// Functions for output results
+#ifndef MARKET_OUTPUT
+#define MARKET_OUTPUT
+
+namespace power_market{
+	void Markets_results_print(market_whole_inform&);
+}
+
+#endif

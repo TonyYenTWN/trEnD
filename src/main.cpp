@@ -77,6 +77,9 @@ int main(){
 	if(process_par.simulation_flag){
 		power_market::power_market_process_set(Power_network_inform, Power_market_inform, process_par.DSO_filter_flag, process_par.control_reserve_flag);
 		power_market::power_market_process_update(Power_network_inform, Power_market_inform, process_par.DSO_filter_flag, process_par.control_reserve_flag);
+
+		// Output results
+		power_market::Markets_results_print(Power_market_inform);
 	}
 }
 //	std::cin.get();

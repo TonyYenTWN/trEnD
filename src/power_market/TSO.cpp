@@ -1,7 +1,5 @@
 // Source file for re-dispatch and tertiary control reserve market clearing of TSO in Norway
 #include <iostream>
-//#include <chrono>
-//#include "../basic/LP_gpa.h"
 #include "src/basic/rw_csv.h"
 #include "power_market.h"
 
@@ -10,6 +8,13 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 	TSO_Market.num_zone = Power_network_inform.nodes.bidding_zone.size();
 	TSO_Market.time_intervals = Time;
 	parameters::bidded_price(TSO_Market.bidded_price_map);
+
+	// Set zone names
+	TSO_Market.zone_names.reserve(TSO_Market.num_zone);
+	for(int zone_iter = 0; zone_iter < TSO_Market.num_zone; ++ zone_iter){
+		std::string zone_name = "Node_" + std::to_string(zone_iter);
+		TSO_Market.zone_names.push_back(zone_name);
+	}
 
 	// Set node admittance matrix and line capacity matrix
 	TSO_Market.network.num_vertice = TSO_Market.num_zone;
