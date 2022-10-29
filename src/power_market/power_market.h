@@ -35,6 +35,11 @@ namespace power_market{
 			return value;
 		}
 
+		static inline double balancing_price_max(){
+			double value = 1000.;
+			return value;
+		}
+
 		void bidded_price(price_ID_bimap&);
 	}
 
