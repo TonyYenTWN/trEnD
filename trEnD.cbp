@@ -37,6 +37,7 @@
 		<Unit filename="src/agent/agent_basic.h" />
 		<Unit filename="src/agent/agent_func.cpp" />
 		<Unit filename="src/agent/agent_func.h" />
+		<Unit filename="src/agent/agent_output.cpp" />
 		<Unit filename="src/agent/aggregator.h" />
 		<Unit filename="src/agent/cross_border.h" />
 		<Unit filename="src/agent/end-user.cpp" />
@@ -72,6 +73,7 @@
 		<Unit filename="src/power_market/TSO.cpp" />
 		<Unit filename="src/power_market/power_market.h" />
 		<Unit filename="src/power_market/power_market_func.cpp" />
+		<Unit filename="src/power_market/power_market_output.cpp" />
 		<Unit filename="src/power_market/power_market_proc.cpp" />
 		<Unit filename="src/power_network/power_flow_analysis.cpp" />
 		<Unit filename="src/power_network/power_network.h" />
