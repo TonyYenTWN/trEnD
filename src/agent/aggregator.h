@@ -11,7 +11,7 @@ namespace agent{
 			}
 
 			static inline double arbitrage_demand(){
-				double value = 50.;
+				double value = 10.;
 				return value;
 			}
 
