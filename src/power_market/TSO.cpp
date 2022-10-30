@@ -52,8 +52,8 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 
 	// Set voltage and power constraints at each edge
 	TSO_Market.network.voltage_constraint = Eigen::MatrixXd::Ones(TSO_Market.network.num_vertice, 2);
-	TSO_Market.network.voltage_constraint.col(0) *= -Power_network_inform.tech_parameters.theta_limit;
-	TSO_Market.network.voltage_constraint.col(1) *= Power_network_inform.tech_parameters.theta_limit;
+	TSO_Market.network.voltage_constraint.col(0) *= -Power_network_inform.tech_parameters.theta_trans_limit;
+	TSO_Market.network.voltage_constraint.col(1) *= Power_network_inform.tech_parameters.theta_trans_limit;
 	TSO_Market.network.power_constraint = Eigen::MatrixXd (TSO_Market.network.num_edges, 2);
 	TSO_Market.network.power_constraint.col(1) = Eigen::Map <Eigen::VectorXd> (power_limit.data(), power_limit.size());
 	TSO_Market.network.power_constraint.col(1) /= Power_network_inform.tech_parameters.s_base;

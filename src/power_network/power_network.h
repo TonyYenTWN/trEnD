@@ -263,9 +263,10 @@ namespace power_network{
 		std::complex<double> z_distr_series = std::complex<double> (0., 5. * pow(10., -4.));
 		/** Shunt impedance (ohm per meter) of distribution line.*/
 		std::complex<double> z_distr_shunt = std::complex<double> (0., 0.);
-		/**Phase angle limits on a node.*/
-		//double theta_limit = boost::math::constants::pi<double>() / 12.;
-		double theta_limit = boost::math::constants::pi<double>() / 9.;
+		/**Phase angle limits on a transmission node.*/
+		double theta_trans_limit = boost::math::constants::pi<double>() / 9.;
+		/**Phase angle limits on a distribution node.*/
+		double theta_distr_limit = boost::math::constants::pi<double>() / 18.;
 		/**Hash table (mapping) of per phase power flow limits on an edge at different voltage base levels, in MW.*/
 		std::map <int, double> power_limit;
 		/*@{*/
