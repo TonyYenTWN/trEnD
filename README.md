@@ -77,7 +77,7 @@ Remember to add the project's top-level directory (the directory which stores th
 
 ## Executing the Binary File
 You will be asked to type in the values for some boolean variables at the beginning of the program. These boolean variables determine which modules of the program will be run. The questions will be shown in the following order:
-- "Default procedure?": If you type 1 (yes) for this question, the default settings of the program (no estimation of spatial fields, simulation without DSO filtering bids during redispatch).
+- "Default procedure?": If you type 1 (yes) for this question, the simulation will be run under the default settings of the program (no estimation of spatial fields, simulation without DSO filtering bids during redispatch), and the questions below will not be asked.
 - "Estimate spatial fields?": If you type 1 (yes) for this question, the necessary spatial fields will be estimated first and stored in the [Processed/spatial_field](https://github.com/TonyYenTWN/trEnD/tree/main/csv/processed/spatial_field) folder.
 - "Simulate operation?": If you type 1 (yes) for this question, the program will simulate the operation of the power market.
 - "DSOs filter bids?": This question only appears when you have answered "yes" to "Simulate operation?". If you type 1 (yes) for this question, the DSOs will filter submitted bids in their operation area during redispatch.
