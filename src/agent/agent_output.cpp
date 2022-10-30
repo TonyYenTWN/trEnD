@@ -9,12 +9,16 @@ namespace{
 		var_names.push_back("EOM_cost");
 		var_names.push_back("EOM_utility");
 		var_names.push_back("EOM_price");
-		var_names.push_back("redispatched_supply");
-		var_names.push_back("redispatched_demand");
-		var_names.push_back("redispatched_cost");
-		var_names.push_back("redispatched_utility");
-		var_names.push_back("redispatched_price");
-		var_names.push_back("redispatched_reimbursement");
+		var_names.push_back("redispatch_supply");
+		var_names.push_back("redispatch_demand");
+		var_names.push_back("redispatch_cost");
+		var_names.push_back("redispatch_utility");
+		var_names.push_back("redispatch_price");
+		var_names.push_back("redispatch_reimbursement");
+		var_names.push_back("balancing_supply");
+		var_names.push_back("balancing_demand");
+		var_names.push_back("balancing_cost");
+		var_names.push_back("balancing_utility");
 
 		return var_names;
 	}
@@ -30,7 +34,13 @@ namespace{
 		output_row(5) = settlement.volume_supply.redispatch;
 		output_row(6) = settlement.volume_demand.redispatch;
 		output_row(7) = settlement.cost_supply.redispatch;
-		output_row(8) = settlement.utility_supply.redispatch;
+		output_row(8) = settlement.utility_demand.redispatch;
+		output_row(9) = settlement.price.redispatch;
+		output_row(10) =  settlement.cost_supply.redispatch - settlement.utility_supply.redispatch;
+		output_row(10) += settlement.cost_demand.redispatch - settlement.utility_demand.redispatch;
+		output_row(11) = settlement.volume_supply.balancing;
+		output_row(12) = settlement.volume_demand.balancing;
+		output_row(13) = settlement.cost_supply.balancing;
 
 		return output_row;
 	}
@@ -49,23 +59,31 @@ namespace{
 		basic::write_file(Output_data, fout_name, var_names);
 	}
 
-//	void cross_border_settlement_print(power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
-//		int edge_num = Power_market_inform.agent_profiles.cross_border.size();
-//		std::vector <std::string> var_names = var_names_set();
-//		int var_num = var_names.size();
-//		Eigen::MatrixXd Output_data = Eigen::MatrixXd::Zero(edge_num, var_num);
-//
-//		for(int edge_iter = 0; edge_iter < edge_num; ++ edge_iter){
-//			int node_num = Power_market_inform.agent_profiles.cross_border[edge_iter].node_num;
-//
-//			if(node_num == 0){
-//				continue;
-//			}
-//			for(int node_iter = 0; node_iter < node_num; ++ node_iter){
-//
-//			}
-//		}
-//	}
+	void cross_border_settlement_print(power_market::market_whole_inform &Power_market_inform){
+		int edge_num = Power_market_inform.agent_profiles.cross_border.size();
+		std::vector <std::string> var_names = var_names_set();
+		int var_num = var_names.size();
+		std::vector <Eigen::RowVectorXd> stored_information;
+		stored_information.reserve(2 * edge_num);
+
+		for(int edge_iter = 0; edge_iter < edge_num; ++ edge_iter){
+			int node_num = Power_market_inform.agent_profiles.cross_border[edge_iter].node_num;
+
+			if(node_num == 0){
+				continue;
+			}
+			for(int node_iter = 0; node_iter < node_num; ++ node_iter){
+				stored_information.push_back(output_row_store(var_num, Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].settlement));
+			}
+		}
+
+		Eigen::MatrixXd Output_data = Eigen::MatrixXd::Zero(stored_information.size(), var_num);
+		for(int row_iter = 0; row_iter < stored_information.size(); ++ row_iter){
+			Output_data.row(row_iter) = stored_information[row_iter];
+		}
+		std::string fout_name = "csv/output/agent/cross_border.csv";
+		basic::write_file(Output_data, fout_name, var_names);
+	}
 
 	void end_users_settlement_print(power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
 		int point_num = Power_network_inform.points.bidding_zone.size();
@@ -157,6 +175,7 @@ namespace{
 
 void agent::agents_results_print(power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
 	aggregators_settlement_print(Power_market_inform);
+	cross_border_settlement_print(Power_market_inform);
 	end_users_settlement_print(Power_market_inform, Power_network_inform);
 	industrial_settlement_print(Power_market_inform);
 	power_supplier_settlement_print(Power_market_inform);
