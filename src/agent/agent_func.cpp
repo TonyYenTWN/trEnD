@@ -1544,8 +1544,7 @@ namespace{
 			for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
 				double redispatch_price =  Power_market_inform.International_Market.redispatch.price_demand(tick, bz_ID);
 				redispatch_price *= std::min(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.cleared_demand, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.confirmed_demand);
-				Power_market_inform.agent_profiles.aggregators[point_iter].settlement.price.redispatch += redispatch_price;
-				//Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.price.redispatch += redispatch_price;
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.price.redispatch += redispatch_price;
 			}
 		}
 
@@ -1906,8 +1905,7 @@ namespace{
 					balancing_price = Power_market_inform.International_Market.balancing.price_up(tick, bz_ID);
 					balancing_price *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_demand.balancing - Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_supply.balancing;
 				}
-				Power_market_inform.agent_profiles.aggregators[point_iter].settlement.price.balancing += balancing_price;
-				//Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.price.balancing += balancing_price;
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.price.balancing += balancing_price;
 
 			}
 		}
