@@ -9,13 +9,28 @@ namespace agent{
 				int value = 24;
 				return value;
 			}
+
+			static inline double arbitrage_demand(){
+				double value = 20.;
+				return value;
+			}
+
+			static inline double arbitrage_supply(){
+				double value = 10.;
+				return value;
+			}
 		}
 
 		struct profile{
 			int point_ID;
+			double arbitrage_demand;
+			double arbitrage_supply;
 			Eigen::VectorXd price_expected_profile;
 			Eigen::VectorXd price_demand_profile;
 			Eigen::VectorXd price_supply_profile;
+			bids bids;
+			results results;
+			settlement settlement;
 		};
 
 		typedef std::vector <profile> profiles;
