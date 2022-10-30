@@ -110,6 +110,18 @@ namespace{
 		// Supply side
 		double cleared_supply_gap = results.cleared_supply;
 		double margin_quan_supply;
+		// Determine the markup cost if no supply quantity is served
+		for(int price_iter = 0; price_iter < price_interval; ++ price_iter){
+			double current_price = Power_market_inform.price_map.bidded_price(price_iter);
+			if(current_price >= 0.){
+				break;
+			}
+
+			margin_quan_supply = bids.submitted_supply_inflex(price_iter);
+			margin_quan_supply += bids.submitted_supply_flex(price_iter);
+			settlement.cost_supply.EOM += -current_price * margin_quan_supply;
+			Power_market_inform.TSO_Market.EOM.cost(tick, node_ID) += -current_price * margin_quan_supply;
+		}
 		for(int price_iter = 0; price_iter < price_interval; ++ price_iter){
 			double current_price = (1 - inflex_price) * Power_market_inform.price_map.bidded_price(price_iter);
 
