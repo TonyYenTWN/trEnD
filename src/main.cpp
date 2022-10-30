@@ -1,6 +1,7 @@
 // Source file for the main procedure of the power market clearing
-#include "power_network/power_network.h"
-#include "power_market/power_market.h"
+#include "src/agent/agent_func.h"
+#include "src/power_network/power_network.h"
+#include "src/power_market/power_market.h"
 #include "src/spatial_field/spatial_field.h"
 
 namespace{
@@ -80,6 +81,7 @@ int main(){
 
 		// Output results
 		power_market::Markets_results_print(Power_market_inform);
+		agent::agents_results_print(Power_market_inform, Power_network_inform);
 	}
 }
 //	std::cin.get();
