@@ -242,7 +242,7 @@ namespace{
 			}
 			for(int price_iter = margin_ID_supply; price_iter < price_interval; ++ price_iter){
 				double current_price = Power_market_inform.price_map.bidded_price(price_iter);
-				double redispatch_price = abs(original_price - Power_market_inform.price_map.bidded_price(0));
+				double redispatch_price = abs(original_price - current_price);
 				if(reduced_flag_supply){
 					redispatch_price = std::min(redispatch_price, redispatch_price_max);
 				}
@@ -386,7 +386,7 @@ namespace{
 			}
 			for(int price_iter = margin_ID_demand; price_iter >= 0; -- price_iter){
 				double current_price = Power_market_inform.price_map.bidded_price(price_iter);
-				double redispatch_price = abs(original_price - Power_market_inform.price_map.bidded_price(price_interval + 1));
+				double redispatch_price = abs(original_price - current_price);
 				if(reduced_flag_demand){
 					redispatch_price = std::min(redispatch_price, redispatch_price_max);
 				}
@@ -1068,7 +1068,8 @@ namespace{
 			}
 			bool sink_flag = Power_market_inform.International_Market.network.confirmed_power(tick, edge_iter) >= 0.;
 			int price_inflex_ID = 1 + sink_flag * (Power_market_inform.International_Market.price_intervals - 1);
-			int price_flex_ID = Power_market_inform.International_Market.confirmed.price(tick, entry_bz_ID);
+			double price_flex = Power_market_inform.International_Market.confirmed.price(tick, entry_bz_ID);
+			int price_flex_ID = Power_market_inform.price_map.price_ID[price_flex];
 			double source = -(1 - sink_flag) * Power_market_inform.International_Market.network.confirmed_power(tick, edge_iter);
 			double sink = sink_flag * Power_market_inform.International_Market.network.confirmed_power(tick, edge_iter);
 
