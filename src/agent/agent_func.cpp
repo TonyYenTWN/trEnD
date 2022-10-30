@@ -112,6 +112,7 @@ namespace{
 		double margin_quan_supply;
 		for(int price_iter = 0; price_iter < price_interval; ++ price_iter){
 			double current_price = (1 - inflex_price) * Power_market_inform.price_map.bidded_price(price_iter);
+			current_price = std::max(current_price, 0.);    // avoid negative prices
 
 			margin_quan_supply = bids.submitted_supply_inflex(price_iter);
 			margin_quan_supply += bids.submitted_supply_flex(price_iter);
@@ -1383,7 +1384,7 @@ namespace{
 			agent_scheduled_results_calculation(bz_ID, node_ID, marginal_price_ID, original_price_ID, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].results);
 
 			// Settlement in EOM
-			agent_EOM_settlement_calculation(tick, node_ID, original_price, original_price, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].settlement);
+			agent_EOM_settlement_calculation(tick, node_ID, original_price, original_price, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].settlement, 0);
 
 			// Settlement of redispatch
 			agent_redispatch_settlement_calculation(tick, node_ID, original_price, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].settlement);
