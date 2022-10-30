@@ -386,10 +386,10 @@ void power_market::International_Market_Optimization(int tick, market_inform &Ma
 	Market.network.confirmed_power.row(tick) = sol_vec.head(Market.network.num_edges);
 }
 
-void power_market::International_Market_Output(market_inform &International_Market){
-	std::string fout_name = "output/IMO_confirmed_price.csv";
-	basic::write_file(International_Market.confirmed.price, fout_name, International_Market.zone_names);
-}
+//void power_market::International_Market_Output(market_inform &International_Market){
+//	std::string fout_name = "output/IMO_confirmed_price.csv";
+//	basic::write_file(International_Market.confirmed.price, fout_name, International_Market.zone_names);
+//}
 
 void power_market::International_Market_Price_Estimation(int tick, market_inform &International_Market, alglib::minlpstate &IMO_Problem, power_network::network_inform &Power_network_inform){
 	int foresight_time = agent::aggregator::parameters::foresight_time();

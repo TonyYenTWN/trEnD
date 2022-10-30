@@ -134,7 +134,7 @@ namespace power_market{
 		int time_intervals;
 		/**Total price intervals for flexible supply and demand in the model.*/
 		int price_intervals = parameters::price_interval();
-		/**Name of bidding zones (for the IMO market only).*/
+		/**Name of bidding zones (for the IMO market and TSO market).*/
 		std::vector<std::string> zone_names;
 		/**Bidding prices in the model.*/
 		parameters::price_ID_bimap bidded_price_map;
@@ -245,7 +245,7 @@ namespace power_market{
 	void International_Market_Set(market_inform&, alglib::minlpstate&, power_network::network_inform&, int, fin_market);
 	void Submitted_bid_calculation(market_whole_inform&, power_network::network_inform&);
 	void International_Market_Optimization(int, market_inform&, alglib::minlpstate&);
-	void International_Market_Output(market_inform&);
+//	void International_Market_Output(market_inform&);
 	void International_Market_Price_Estimation(int, market_inform&, alglib::minlpstate&, power_network::network_inform&);
 }
 
