@@ -80,7 +80,7 @@ int main(){
 		power_market::power_market_process_update(Power_network_inform, Power_market_inform, process_par.DSO_filter_flag, process_par.control_reserve_flag);
 
 		// Output results
-		power_market::Markets_results_print(Power_market_inform);
+		//power_market::Markets_results_print(Power_market_inform);
 		agent::agents_results_print(Power_market_inform, Power_network_inform);
 	}
 }
