@@ -526,7 +526,7 @@ void spatial_field::spatial_field_store(power_network::network_inform &Power_net
 	Power_network_inform.points.solar_cf = Eigen::MatrixXd(row_num, Time);
 
 	//for(int tick = 0; tick < Time; ++ tick){
-	for(int tick = 0; tick < 25; ++ tick){
+	for(int tick = 0; tick < 200; ++ tick){
 		// Find zeros before the number
 		int count_zeros = 0;
 		int tick_temp = tick;
