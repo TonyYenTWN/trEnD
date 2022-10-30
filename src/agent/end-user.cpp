@@ -311,9 +311,9 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 	}
 
 	int price_demand_inflex_ID = price_interval + 1;
-	int price_demand_flex_ID = price_interval + 1;
+	int price_demand_flex_ID = profile.operation.price_demand_profile(0);
 	int price_supply_inflex_ID = 0;
-	int price_supply_flex_ID = 0;
+	int price_supply_flex_ID = profile.operation.price_supply_profile(0);
 	profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::max(sol[5], 0.);
 	profile.operation.bids.submitted_supply_inflex(0) += -std::min(sol[5], 0.);
 	profile.operation.bids.submitted_demand_inflex(price_supply_inflex_ID) += sol[14];
