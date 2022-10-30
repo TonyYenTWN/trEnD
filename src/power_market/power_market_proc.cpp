@@ -85,42 +85,44 @@ void power_market::power_market_process_update(power_network::network_inform &Po
 	int Time = parameters::Time();
 	int tick = 1;
 
-	// Initial estimation of market clearing price in the IMO
-	International_Market_Price_Estimation(tick, Power_market_inform.International_Market, Power_market_inform.IMO_Problem, Power_network_inform);
+	for(int tick = 1; tick < 24; ++ tick){
+		// Initial estimation of market clearing price in the IMO
+		International_Market_Price_Estimation(tick, Power_market_inform.International_Market, Power_market_inform.IMO_Problem, Power_network_inform);
 
-	// Bidding strategies of agents
-	agent::agents_submit_update(tick, Power_market_inform, Power_network_inform);
+		// Bidding strategies of agents
+		agent::agents_submit_update(tick, Power_market_inform, Power_network_inform);
 
-	// Ideal market clearing in IMO
-	Submitted_bid_calculation(Power_market_inform, Power_network_inform);
-	International_Market_Optimization(tick, Power_market_inform.International_Market, Power_market_inform.IMO_Problem);
+		// Ideal market clearing in IMO
+		Submitted_bid_calculation(Power_market_inform, Power_network_inform);
+		International_Market_Optimization(tick, Power_market_inform.International_Market, Power_market_inform.IMO_Problem);
 
-	// Equivalent redispatch bids of agents
-	agent::agents_redispatch_update(tick, Power_market_inform, Power_network_inform);
+		// Equivalent redispatch bids of agents
+		agent::agents_redispatch_update(tick, Power_market_inform, Power_network_inform);
 
-	// Redispatch in DSO
-	if(DSO_filter_flag){
-		power_market::Filtered_bid_demand_calculation(tick, Power_market_inform, Power_network_inform);
-		agent::agents_filter_demand_update(tick, Power_market_inform, Power_network_inform);
-		power_market::Filtered_bid_supply_calculation(tick, Power_market_inform, Power_network_inform);
-		agent::agents_filter_supply_update(tick, Power_market_inform, Power_network_inform);
-	}
+		// Redispatch in DSO
+		if(DSO_filter_flag){
+			power_market::Filtered_bid_demand_calculation(tick, Power_market_inform, Power_network_inform);
+			agent::agents_filter_demand_update(tick, Power_market_inform, Power_network_inform);
+			power_market::Filtered_bid_supply_calculation(tick, Power_market_inform, Power_network_inform);
+			agent::agents_filter_supply_update(tick, Power_market_inform, Power_network_inform);
+		}
 
-	// Redispatch in TSO
-	Confirmed_bid_calculation(tick, Power_market_inform, Power_network_inform);
-	Flow_Based_Market_Optimization(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
-	TSO_Market_Scheduled_Results_Get(tick, Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
-
-	// Equivalent balancing bids of agents
-	agent::agents_balancing_update(tick, Power_market_inform, Power_network_inform);
-
-	// Control reserve activation in TSO
-	if(control_reserve_flag){
-		Balancing_bid_calculation(tick, Power_market_inform, Power_network_inform);
+		// Redispatch in TSO
+		Confirmed_bid_calculation(tick, Power_market_inform, Power_network_inform);
 		Flow_Based_Market_Optimization(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
-		TSO_Market_Actual_Results_Get(tick, Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
-	}
+		TSO_Market_Scheduled_Results_Get(tick, Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
 
-	// Update state variables of agents
-	agent::agents_status_update(tick, Power_market_inform, Power_network_inform, control_reserve_flag);
+		// Equivalent balancing bids of agents
+		agent::agents_balancing_update(tick, Power_market_inform, Power_network_inform);
+
+		// Control reserve activation in TSO
+		if(control_reserve_flag){
+			Balancing_bid_calculation(tick, Power_market_inform, Power_network_inform);
+			Flow_Based_Market_Optimization(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
+			TSO_Market_Actual_Results_Get(tick, Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
+		}
+
+		// Update state variables of agents
+		agent::agents_status_update(tick, Power_market_inform, Power_network_inform, control_reserve_flag);
+	}
 }
