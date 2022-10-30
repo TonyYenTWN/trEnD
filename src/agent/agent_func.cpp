@@ -112,7 +112,6 @@ namespace{
 		double margin_quan_supply;
 		for(int price_iter = 0; price_iter < price_interval; ++ price_iter){
 			double current_price = (1 - inflex_price) * Power_market_inform.price_map.bidded_price(price_iter);
-			current_price = std::max(current_price, 0.);    // avoid negative prices
 
 			margin_quan_supply = bids.submitted_supply_inflex(price_iter);
 			margin_quan_supply += bids.submitted_supply_flex(price_iter);
@@ -139,10 +138,11 @@ namespace{
 		for(int price_iter = price_interval + 1; price_iter >= 0; -- price_iter){
 			double current_price;
 			current_price = (1 - inflex_price) * Power_market_inform.price_map.bidded_price(price_iter);
-			current_price = inflex_price * Power_market_inform.price_map.bidded_price(price_interval + 1);
+			current_price += inflex_price * Power_market_inform.price_map.bidded_price(price_interval + 1);
 
 			margin_quan_demand = bids.submitted_demand_inflex(price_iter);
 			margin_quan_demand += bids.submitted_demand_flex(price_iter);
+
 			if(cleared_demand_gap > margin_quan_demand){
 				cleared_demand_gap -= margin_quan_demand;
 				settlement.volume_demand.EOM += margin_quan_demand;
