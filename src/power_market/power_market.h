@@ -79,12 +79,8 @@ namespace power_market{
 		/*@{*/
 		/**Confirmed power flow across each edge; a positive value indicates flowing from start to end.*/
 		Eigen::MatrixXd confirmed_power;
-//		/**Phase angle across each node.*/
-//		Eigen::MatrixXd confirmed_theta;
 		/**Actual power flow across each edge; a positive value indicates flowing from start to end.*/
 		Eigen::MatrixXd actual_power;
-//		/**Phase angle across each node.*/
-//		Eigen::MatrixXd actual_theta;
 		/*@{*/
 	};
 
