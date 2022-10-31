@@ -301,7 +301,7 @@ namespace power_network{
 					level_count += 1;
 					this->voltage_base_levels.insert(std::make_pair(voltage_max, level_count));
 					this->impedenace_base_levels.insert(std::make_pair(voltage_max, (double) voltage_max * voltage_max / this->s_base * 3));
-					this->power_limit.insert(std::make_pair(voltage_max, (double) 2 * voltage_max));
+					this->power_limit.insert(std::make_pair(voltage_max, (double) 2.5 * voltage_max));
 					//std::cout << voltage_base_levels[voltage_max] << "\t" <<  voltage_max << "\t" << impedenace_base_levels[voltage_max] << "\n";
 				}
 			}
