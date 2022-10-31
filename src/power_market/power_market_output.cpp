@@ -22,7 +22,7 @@ namespace{
 		basic::write_file(Market.confirmed.demand, fout_name, Market.zone_names);
 		fout_name = "csv/output/power_market/" + name + "_confirmed_supply.csv";
 		basic::write_file(Market.confirmed.supply, fout_name, Market.zone_names);
-		fout_name = "csv/output/power_market/" + name + "_confirmed_power.csv";
+		fout_name = "csv/output/power_market/" + name + "_confirmed_DC_power.csv";
 		basic::write_file(Market.network.confirmed_power, fout_name, edge_names);
 
 		if(!nodal){
@@ -52,7 +52,7 @@ namespace{
 		basic::write_file(Market.actual.demand, fout_name, Market.zone_names);
 		fout_name = "csv/output/power_market/" + name + "_actual_supply.csv";
 		basic::write_file(Market.actual.supply, fout_name, Market.zone_names);
-		fout_name = "csv/output/power_market/" + name + "_actual_power.csv";
+		fout_name = "csv/output/power_market/" + name + "_actual_DC_power.csv";
 		basic::write_file(Market.network.actual_power, fout_name, edge_names);
 
 		// Balancing settlement
