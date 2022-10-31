@@ -66,6 +66,7 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 	TSO_Market.confirmed.supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.confirmed.demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.confirmed.price = Eigen::MatrixXd(Time, TSO_Market.num_zone);
+	TSO_Market.network.confirmed_power = Eigen::MatrixXd(Time, TSO_Market.num_zone);
 	TSO_Market.EOM.cost = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.EOM.utility = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.redispatch.cost = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
@@ -87,6 +88,7 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 	TSO_Market.actual.supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.actual.demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.actual.price = Eigen::MatrixXd(Time, TSO_Market.num_zone);
+	TSO_Market.network.actual_power = Eigen::MatrixXd(Time, TSO_Market.num_zone);
 }
 
 void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
@@ -232,6 +234,9 @@ void power_market::TSO_Market_Scheduled_Results_Get(int tick, market_inform &Mar
 		}
 	}
 
+	// Store scheduled power flow
+	Market.network.confirmed_power.row(tick) = sol_vec.tail(Market.network.num_edges);
+
 	std::cout << Market.confirmed.supply.row(tick).sum() << "\t" << Market.confirmed.demand.row(tick).sum() << "\n";
 	std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).array().abs().sum() << "\n";
 	std::cout << sol_vec.head(Market.network.num_vertice).minCoeff() << " " << sol_vec.head(Market.network.num_vertice).maxCoeff()  << "\n";
@@ -376,6 +381,9 @@ void power_market::TSO_Market_Actual_Results_Get(int tick, market_inform &Market
 		//std::cout << node_iter << ":\t" << Market.actual_ratio_demand(node_iter) << "\t" << Market.actual_ratio_supply(node_iter) << "\n";
 	}
 	//std::cout << "\n";
+
+	// Store scheduled power flow
+	Market.network.actual_power.row(tick) = sol_vec.tail(Market.network.num_edges);
 
 	std::cout << Market.actual.supply.row(tick).sum() << "\t" << Market.actual.demand.row(tick).sum() << "\n";
 	std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).array().abs().sum() << "\n";

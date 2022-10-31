@@ -7,6 +7,14 @@ namespace{
 	void Market_results_print(power_market::market_inform Market, std::string name, bool nodal = 1){
 		std::string fout_name;
 
+		// Set edge names
+		std::vector <std::string> edge_names;
+		edge_names.reserve(Market.network.num_edges);
+		for(int edge_iter = 0; edge_iter < Market.network.num_edges; ++ edge_iter){
+			std::string edge_name = "Edge_" + std::to_string(edge_iter);
+			edge_names.push_back(edge_name);
+		}
+
 		// Confirmed results
 		fout_name = "csv/output/power_market/" + name + "_confirmed_price.csv";
 		basic::write_file(Market.confirmed.price, fout_name, Market.zone_names);
@@ -14,18 +22,10 @@ namespace{
 		basic::write_file(Market.confirmed.demand, fout_name, Market.zone_names);
 		fout_name = "csv/output/power_market/" + name + "_confirmed_supply.csv";
 		basic::write_file(Market.confirmed.supply, fout_name, Market.zone_names);
+		fout_name = "csv/output/power_market/" + name + "_confirmed_power.csv";
+		basic::write_file(Market.network.confirmed_power, fout_name, edge_names);
 
 		if(!nodal){
-			// Set edge names
-			std::vector <std::string> edge_names;
-			edge_names.reserve(Market.network.num_edges);
-			for(int edge_iter = 0; edge_iter < Market.network.num_edges; ++ edge_iter){
-				std::string edge_name = "Edge_" + std::to_string(edge_iter);
-				edge_names.push_back(edge_name);
-			}
-
-			fout_name = "csv/output/power_market/" + name + "_confirmed_power.csv";
-			basic::write_file(Market.network.confirmed_power, fout_name, edge_names);
 			return;
 		}
 
@@ -52,6 +52,8 @@ namespace{
 		basic::write_file(Market.actual.demand, fout_name, Market.zone_names);
 		fout_name = "csv/output/power_market/" + name + "_actual_supply.csv";
 		basic::write_file(Market.actual.supply, fout_name, Market.zone_names);
+		fout_name = "csv/output/power_market/" + name + "_actual_power.csv";
+		basic::write_file(Market.network.actual_power, fout_name, edge_names);
 
 		// Balancing settlement
 		fout_name = "csv/output/power_market/" + name + "_balancing_cost.csv";

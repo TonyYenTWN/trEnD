@@ -1624,6 +1624,13 @@ namespace{
 					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_demand = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.confirmed_demand;
 				}
 
+				// Totally inflexible end-user don't need to calculate gap
+				if(!Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.dynamic_tariff){
+					// Balancing settlement
+					agent_balancing_settlement_calculation(tick, node_ID, Power_market_inform, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.control_reserve);
+					break;
+				}
+
 				double gap = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_demand;
 				gap -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_supply;
 				gap -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex.sum();
@@ -1995,6 +2002,7 @@ namespace{
 				agent_bids_initialization(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids);
 				agent_results_set(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results);
 
+				// Totally inflexible end-user, demand profile as default
 				if(!Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.dynamic_tariff){
 					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick);
 
