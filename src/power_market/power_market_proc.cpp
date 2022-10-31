@@ -86,6 +86,8 @@ void power_market::power_market_process_update(power_network::network_inform &Po
 	int tick = 1;
 
 	for(int tick = 1; tick < 24; ++ tick){
+		std::cout << "Time:\t" << tick << ":\n";
+
 		// Initial estimation of market clearing price in the IMO
 		International_Market_Price_Estimation(tick, Power_market_inform.International_Market, Power_market_inform.IMO_Problem, Power_network_inform);
 
