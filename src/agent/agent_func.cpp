@@ -858,19 +858,20 @@ namespace{
 		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
 			for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
 				// Initialization of investment parameters
-				end_user_profiles[point_iter][sample_iter].investment.decision.dynamic_tariff = 1;
-				end_user_profiles[point_iter][sample_iter].investment.decision.smart_appliance = 1;
-				end_user_profiles[point_iter][sample_iter].investment.decision.PV = 1;
-				end_user_profiles[point_iter][sample_iter].investment.decision.BESS = 1;
-				end_user_profiles[point_iter][sample_iter].investment.decision.EV_self_charging = 1;
-				end_user_profiles[point_iter][sample_iter].investment.decision.reverse_flow = 1;
-				end_user_profiles[point_iter][sample_iter].investment.decision.redispatch = 1;
-				end_user_profiles[point_iter][sample_iter].investment.decision.control_reserve = 1;
+				end_user_profiles[point_iter][sample_iter].investment.decision.dynamic_tariff = 0;
+				end_user_profiles[point_iter][sample_iter].investment.decision.smart_appliance = 0;
+				end_user_profiles[point_iter][sample_iter].investment.decision.PV = 0;
+				end_user_profiles[point_iter][sample_iter].investment.decision.BESS = 0;
+				end_user_profiles[point_iter][sample_iter].investment.decision.EV_self_charging = 0;
+				end_user_profiles[point_iter][sample_iter].investment.decision.reverse_flow = 0;
+				end_user_profiles[point_iter][sample_iter].investment.decision.redispatch = 0;
+				end_user_profiles[point_iter][sample_iter].investment.decision.control_reserve = 0;
 
 				// Initialization of operational parameters
 				end_user_profiles[point_iter][sample_iter].operation.foresight_time = foresight_time;
 				end_user_profiles[point_iter][sample_iter].operation.weight = weight(sample_iter);
 				end_user_profiles[point_iter][sample_iter].operation.PV_scale = .01;
+				end_user_profiles[point_iter][sample_iter].operation.PV_scale *= end_user_profiles[point_iter][sample_iter].investment.decision.PV;
 				int load_shift_time_temp = std::min(load_shift_time, foresight_time / 2);
 				end_user_profiles[point_iter][sample_iter].operation.smart_appliance.shift_time = load_shift_time_temp;
 				end_user_profiles[point_iter][sample_iter].operation.BESS.soc = end_user_profiles[point_iter][sample_iter].operation.BESS.energy_scale / 2;
@@ -901,6 +902,18 @@ namespace{
 				agent_bids_initialization(end_user_profiles[point_iter][sample_iter].operation.bids);
 				agent_results_set(end_user_profiles[point_iter][sample_iter].operation.results);
 				agent_settlement_set(end_user_profiles[point_iter][sample_iter].operation.settlement);
+
+				// Totally inflexible end-user, demand profile as default
+				if(!end_user_profiles[point_iter][sample_iter].investment.decision.dynamic_tariff){
+					end_user_profiles[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) = Power_network_inform.points.nominal_mean_demand_field(point_iter, 0);
+
+					// Scale the bids correctly
+					double scale = end_user_profiles[point_iter][sample_iter].operation.weight;
+					scale *= agent::parameters::residential_ratio();
+					scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
+					agent_submitted_bids_scale(scale, end_user_profiles[point_iter][sample_iter].operation.bids);
+					break;
+				}
 
 				// Optimization and update process variables
 				agent::end_user::end_user_LP_optimize(0, end_user_profiles[point_iter][sample_iter]);
@@ -1981,6 +1994,17 @@ namespace{
 				// Set bids and results information
 				agent_bids_initialization(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids);
 				agent_results_set(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results);
+
+				if(!Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.dynamic_tariff){
+					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick);
+
+					// Scale the bids correctly
+					double scale = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.weight;
+					scale *= agent::parameters::residential_ratio();
+					scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
+					agent_submitted_bids_scale(scale, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids);
+					break;
+				}
 
 				// Optimization and update process variables
 				agent::end_user::end_user_LP_optimize(tick, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter]);
