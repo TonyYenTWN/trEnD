@@ -17,8 +17,10 @@ namespace{
 		var_names.push_back("redispatch_utility");
 		var_names.push_back("redispatch_price");
 		var_names.push_back("redispatch_reimbursement");
-		var_names.push_back("balancing_supply");
-		var_names.push_back("balancing_demand");
+		var_names.push_back("balancing_supply_up");
+		var_names.push_back("balancing_supply_down");
+		var_names.push_back("balancing_demand_up");
+		var_names.push_back("balancing_demand_down");
 		var_names.push_back("balancing_cost");
 		var_names.push_back("balancing_utility");
 
@@ -41,9 +43,11 @@ namespace{
 		output_row(10) = settlement.utility_demand.redispatch;
 		output_row(11) = settlement.price.redispatch;
 		output_row(12) = settlement.reimburse.redispatch;
-		output_row(13) = settlement.volume_supply.balancing;
-		output_row(14) = settlement.volume_demand.balancing;
-		output_row(15) = settlement.cost_supply.balancing;
+		output_row(13) = settlement.volume_supply_up.balancing;
+		output_row(14) = settlement.volume_supply_down.balancing;
+		output_row(15) = settlement.volume_demand_up.balancing;
+		output_row(16) = settlement.volume_demand_down.balancing;
+		output_row(17) = settlement.cost_supply.balancing;
 
 		return output_row;
 	}
