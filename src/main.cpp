@@ -1,55 +1,13 @@
 // Source file for the main procedure of the power market clearing
 #include "src/agent/agent_func.h"
+//#include "src/configuration/configuration.h"
 #include "src/power_network/power_network.h"
 #include "src/power_market/power_market.h"
 #include "src/spatial_field/spatial_field.h"
 
-namespace{
-	struct process_bool{
-		bool default_flag;
-		bool estimation_flag;
-		bool simulation_flag;
-		bool DSO_filter_flag;
-		bool control_reserve_flag;
-
-		void process_default_get(){
-			std::cout << "Default procedure?        Yes: 1 / No: 0 | ";
-			std::cin >> this->default_flag;
-			std::cout << "\n";
-		}
-
-		void process_bool_set(){
-			this->estimation_flag = 0;
-			this->simulation_flag = 1;
-			this->DSO_filter_flag = 0;
-			this->control_reserve_flag = 1;
-		}
-
-		void process_bool_input(){
-			std::cout << "Estimate spatial fields?  Yes: 1 / No: 0 | ";
-			std::cin >> this->estimation_flag;
-			std::cout << "\n";
-
-			std::cout << "Simulate operation?       Yes: 1 / No: 0 | ";
-			std::cin >> this->simulation_flag;
-			std::cout << "\n";
-
-			if(this->simulation_flag == 1){
-				std::cout << "DSOs filter bids?         Yes: 1 / No: 0 | ";
-				std::cin >> this->DSO_filter_flag;
-				std::cout << "\n";
-
-				std::cout << "Control reserve?          Yes: 1 / No: 0 | ";
-				std::cin >> this->control_reserve_flag;
-				std::cout << "\n";
-			}
-		}
-	};
-}
-
 int main(){
 	// Set booleans for the process
-	process_bool process_par;
+	configuration::process_config process_par;
 	process_par.process_default_get();
 	if(!process_par.default_flag){
 		process_par.process_bool_input();
@@ -69,15 +27,15 @@ int main(){
 
 	// Spatial fields estimation
 	if(process_par.estimation_flag){
-		spatial_field::demand_imbalance_estimation(Power_network_inform, Power_market_inform.International_Market);
-		spatial_field::wind_on_cf_estimation(Power_network_inform);
-		spatial_field::solar_radiation_estimation(Power_network_inform);
+		spatial_field::demand_imbalance_estimation(Power_network_inform, Power_market_inform.International_Market, process_par);
+		spatial_field::wind_on_cf_estimation(Power_network_inform, process_par);
+		spatial_field::solar_radiation_estimation(Power_network_inform, process_par);
 	}
 
 	// Power market processes
 	if(process_par.simulation_flag){
-		power_market::power_market_process_set(Power_network_inform, Power_market_inform, process_par.DSO_filter_flag, process_par.control_reserve_flag);
-		power_market::power_market_process_update(Power_network_inform, Power_market_inform, process_par.DSO_filter_flag, process_par.control_reserve_flag);
+		power_market::power_market_process_set(Power_network_inform, Power_market_inform, process_par);
+		power_market::power_market_process_update(Power_network_inform, Power_market_inform, process_par);
 
 		// Output results
 		power_market::Markets_results_print(Power_market_inform);

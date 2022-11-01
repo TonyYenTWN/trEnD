@@ -64,7 +64,7 @@ namespace{
 	}
 }
 
-void spatial_field::demand_imbalance_estimation(power_network::network_inform &Power_network_inform, power_market::market_inform &International_Market){
+void spatial_field::demand_imbalance_estimation(power_network::network_inform &Power_network_inform, power_market::market_inform &International_Market, configuration::process_config &process_par){
 	int bz_num = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
 	int point_num = Power_network_inform.points.bidding_zone.size();
 	int Time = power_market::parameters::Time();
@@ -175,7 +175,7 @@ void spatial_field::demand_imbalance_estimation(power_network::network_inform &P
 	imbalance.mu_scale = imbalance.mu;
 
 	// Run the algorithm for each time slice
-	for(int tick = 0; tick < 25; ++ tick){
+	for(int tick = process_par.time_boundary[0]; tick < process_par.time_boundary[0] + process_par.time_boundary[1]; ++ tick){
 		nominal_demand.mu_mean = Demand_ts.row(tick);
 
 		// Estimation step
@@ -229,7 +229,7 @@ void spatial_field::demand_imbalance_estimation(power_network::network_inform &P
 }
 
 // Function that calculates onshore wind capacity factor field
-void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_network_inform){
+void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_network_inform, configuration::process_config &process_par){
 	int bz_num = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
 	int point_num = Power_network_inform.points.bidding_zone.size();
 	int Time = power_market::parameters::Time();
@@ -320,7 +320,7 @@ void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_n
 	wind_on_cf.x = wind_on_cf.x_scale;
 
 	// Run the algorithm for each time slice
-	for(int tick = 0; tick < 25; ++ tick){
+	for(int tick = process_par.time_boundary[0]; tick < process_par.time_boundary[0] + process_par.time_boundary[1]; ++ tick){
 		wind_on_cf.mu_mean = (Wind_on_ts.row(tick)).segment(fin_wind_on_row_name, bz_num);
 		wind_on_cf.mu_mean = Redundant_col * wind_on_cf.mu_mean;
 
@@ -347,7 +347,7 @@ void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_n
 }
 
 // Function that calculates solar radiation field
-void spatial_field::solar_radiation_estimation(power_network::network_inform &Power_network_inform){
+void spatial_field::solar_radiation_estimation(power_network::network_inform &Power_network_inform, configuration::process_config &process_par){
 	int point_num = Power_network_inform.points.bidding_zone.size();
 	int Time = power_market::parameters::Time();
 	double pi = boost::math::constants::pi<double>();
@@ -447,7 +447,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 	solar_radiation.x = solar_radiation.x_scale;
 
 	// Run the algorithm for each time slice
-	for(int tick = 0; tick < 25; ++ tick){
+	for(int tick = process_par.time_boundary[0]; tick < process_par.time_boundary[0] + process_par.time_boundary[1]; ++ tick){
 		Eigen::VectorXd solar_radiation_temp = -Eigen::VectorXd::Ones(station_num);
 		for(int station_iter = 0; station_iter < station_num; ++ station_iter){
 			int col_ID = station_iter + fin_solar_row_name;
@@ -518,7 +518,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 }
 
 // Function that stores processed mean demand field
-void spatial_field::spatial_field_store(power_network::network_inform &Power_network_inform, fin_field fin_field_processed, int Time){
+void spatial_field::spatial_field_store(power_network::network_inform &Power_network_inform, fin_field fin_field_processed, configuration::process_config &process_par, int Time){
 	int row_num = Power_network_inform.points.bidding_zone.rows();
 	Power_network_inform.points.nominal_mean_demand_field = Eigen::MatrixXd(row_num, Time);
 	Power_network_inform.points.imbalance_field = Eigen::MatrixXd(row_num, Time);
@@ -526,7 +526,7 @@ void spatial_field::spatial_field_store(power_network::network_inform &Power_net
 	Power_network_inform.points.solar_cf = Eigen::MatrixXd(row_num, Time);
 
 	//for(int tick = 0; tick < Time; ++ tick){
-	for(int tick = 0; tick < 200; ++ tick){
+	for(int tick = process_par.time_boundary[0]; tick < process_par.time_boundary[0] + process_par.time_boundary[1]; ++ tick){
 		// Find zeros before the number
 		int count_zeros = 0;
 		int tick_temp = tick;

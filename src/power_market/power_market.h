@@ -12,6 +12,7 @@
 #include "src/alglib/optimization.h"
 #include "src/basic/basic_definitions.h"
 #include "src/basic/eigen_sparse.h"
+#include "src/configuration/configuration.h"
 #include "src/power_network/power_network.h"
 
 namespace power_market{
@@ -221,12 +222,11 @@ namespace power_market{
 
 namespace power_market{
 	void Market_Initialization(market_inform&);
-	//void TSO_boundary_update(int, market_inform&, market_inform&, power_network::network_inform&);
 	void Flow_Based_Market_LP_Set(market_inform&, alglib::minlpstate&);
 	void Flow_Based_Market_Optimization(market_inform&, alglib::minlpstate&);
 	void default_demand_set(power_network::network_inform&, market_whole_inform&);
-	void power_market_process_set(power_network::network_inform&, market_whole_inform&, bool, bool);
-	void power_market_process_update(power_network::network_inform&, market_whole_inform&, bool, bool);
+	void power_market_process_set(power_network::network_inform&, market_whole_inform&, configuration::process_config &);
+	void power_market_process_update(power_network::network_inform&, market_whole_inform&, configuration::process_config&);
 }
 
 #endif
@@ -249,7 +249,6 @@ namespace power_market{
 	void International_Market_Set(market_inform&, alglib::minlpstate&, power_network::network_inform&, int, fin_market);
 	void Submitted_bid_calculation(market_whole_inform&, power_network::network_inform&);
 	void International_Market_Optimization(int, market_inform&, alglib::minlpstate&);
-//	void International_Market_Output(market_inform&);
 	void International_Market_Price_Estimation(int, market_inform&, alglib::minlpstate&, power_network::network_inform&);
 }
 

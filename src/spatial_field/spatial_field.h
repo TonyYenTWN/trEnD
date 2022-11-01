@@ -5,6 +5,7 @@
 
 #include <boost/math/distributions/normal.hpp>
 #include "src/basic/rw_csv.h"
+#include "src/configuration/configuration.h"
 #include "src/power_market/power_market.h"
 #include "src/power_network/power_network.h"
 #include "geostat.h"
@@ -33,10 +34,10 @@ namespace spatial_field{
 	};
 
 	// Functions
-	void demand_imbalance_estimation(power_network::network_inform&, power_market::market_inform&);
-	void wind_on_cf_estimation(power_network::network_inform&);
-	void solar_radiation_estimation(power_network::network_inform&);
-	void spatial_field_store(power_network::network_inform&, fin_field, int);
+	void demand_imbalance_estimation(power_network::network_inform&, power_market::market_inform&, configuration::process_config&);
+	void wind_on_cf_estimation(power_network::network_inform&, configuration::process_config&);
+	void solar_radiation_estimation(power_network::network_inform&, configuration::process_config&);
+	void spatial_field_store(power_network::network_inform&, fin_field, configuration::process_config&, int);
 	static inline double solar_cf_calculation(double solar_radiation){
 		double value = solar_radiation * .0007;
 		value = std::min(.7, value);
