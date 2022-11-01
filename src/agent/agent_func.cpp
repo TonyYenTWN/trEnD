@@ -1039,6 +1039,7 @@ namespace{
 
 			if(Power_network_inform.plants.hydro.type(agent_iter) < 4){
 				agent::power_supplier::plant_profile profile_temp;
+				profile_temp.original_ID = agent_iter;
 				profile_temp.point_ID = point_ID;
 				profile_temp.cap = Power_network_inform.plants.hydro.cap(agent_iter);
 
@@ -1062,6 +1063,7 @@ namespace{
 			}
 			else if(Power_network_inform.plants.hydro.type(agent_iter) == 5){
 				agent::power_supplier::storage_profile profile_temp;
+				profile_temp.original_ID = agent_iter;
 				profile_temp.point_ID = point_ID;
 				profile_temp.cap = Power_network_inform.plants.hydro.cap(agent_iter);
 
@@ -1103,6 +1105,7 @@ namespace{
 
 			agent::power_supplier::plant_profile profile_temp;
 			profile_temp.point_ID = point_ID;
+			profile_temp.original_ID = agent_iter;
 			profile_temp.cap = Power_network_inform.plants.wind.cap(agent_iter);
 
 			// Set bids information
@@ -2033,7 +2036,7 @@ namespace{
 			int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
 
 			for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
-				double balancing_price;
+				double balancing_price = 0.;
 				double balancing_quan = 0.;
 
 				balancing_quan += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_supply_up.imbalance;
@@ -2052,7 +2055,7 @@ namespace{
 			int point_ID = Power_market_inform.agent_profiles.industrial.HV[agent_iter].point_ID;
 			int bz_ID = Power_network_inform.points.bidding_zone(point_ID);
 
-			double balancing_price;
+			double balancing_price = 0.;
 			double balancing_quan = 0.;
 
 			balancing_quan += Power_market_inform.agent_profiles.industrial.HV[agent_iter].settlement.volume_supply_up.imbalance;

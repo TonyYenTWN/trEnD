@@ -12,6 +12,7 @@ namespace agent{
 		}
 
 		struct plant_profile{
+			int original_ID;
 			int point_ID;
 			double cap;
 			bids bids;
@@ -20,6 +21,7 @@ namespace agent{
 		};
 
 		struct storage_profile{
+			int original_ID;
 			int point_ID;
 			double energy;
 			double cap;

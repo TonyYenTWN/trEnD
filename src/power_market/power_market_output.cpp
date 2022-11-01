@@ -45,6 +45,12 @@ namespace{
 		fout_name = "csv/output/power_market/" + name + "_redispatch_supply.csv";
 		basic::write_file(Market.redispatch.supply_up - Market.redispatch.supply_down, fout_name, Market.zone_names);
 
+		// Imbalance
+		fout_name = "csv/output/power_market/" + name + "_imbalance_demand.csv";
+		basic::write_file(Market.imbalance.demand_up - Market.redispatch.demand_down, fout_name, Market.zone_names);
+		fout_name = "csv/output/power_market/" + name + "_imbalance_supply.csv";
+		basic::write_file(Market.imbalance.supply_up - Market.redispatch.supply_down, fout_name, Market.zone_names);
+
 		// Actual results
 		fout_name = "csv/output/power_market/" + name + "_actual_price.csv";
 		basic::write_file(Market.actual.price, fout_name, Market.zone_names);
