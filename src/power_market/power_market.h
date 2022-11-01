@@ -170,6 +170,8 @@ namespace power_market{
 		settlement EOM;
 		/**Settlement for redispatch.*/
 		settlement redispatch;
+		/**Settlement for imbalance.*/
+		settlement imbalance;
 		/**Settlement for balancing.*/
 		settlement balancing;
 		/*@{*/

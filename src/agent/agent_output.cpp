@@ -23,6 +23,8 @@ namespace{
 		var_names.push_back("balancing_demand_down");
 		var_names.push_back("balancing_cost");
 		var_names.push_back("balancing_utility");
+		var_names.push_back("balancing_price");
+		var_names.push_back("balancing_reimbursement");
 
 		return var_names;
 	}

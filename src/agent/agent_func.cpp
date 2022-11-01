@@ -1365,6 +1365,8 @@ namespace{
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.imbalance_demand += imbalance;
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_demand_up.imbalance += (imbalance > 0.) * imbalance;
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_demand_down.imbalance += (imbalance < 0.) * imbalance;
+				Power_market_inform.TSO_Market.imbalance.demand_up(tick, node_ID) += (imbalance > 0.) * imbalance;
+				Power_market_inform.TSO_Market.imbalance.demand_down(tick, node_ID) += (imbalance < 0.) * imbalance;
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.imbalance_demand = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.balancing_demand;
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.imbalance_demand *= Power_network_inform.points.imbalance_field(point_iter, tick);
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.balancing_demand += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.imbalance_demand;
@@ -1405,6 +1407,8 @@ namespace{
 			Power_market_inform.agent_profiles.industrial.HV[agent_iter].results.imbalance_demand += imbalance;
 			Power_market_inform.agent_profiles.industrial.HV[agent_iter].settlement.volume_demand_up.imbalance += (imbalance > 0.) * imbalance;
 			Power_market_inform.agent_profiles.industrial.HV[agent_iter].settlement.volume_demand_down.imbalance += (imbalance < 0.) * imbalance;
+			Power_market_inform.TSO_Market.imbalance.demand_up(tick, node_ID) += (imbalance > 0.) * imbalance;
+			Power_market_inform.TSO_Market.imbalance.demand_down(tick, node_ID) += (imbalance < 0.) * imbalance;
 			Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids.imbalance_demand = Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids.balancing_demand;
 			Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids.imbalance_demand *= Power_network_inform.points.imbalance_field(point_ID, tick);
 			Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids.balancing_demand += Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids.imbalance_demand;
