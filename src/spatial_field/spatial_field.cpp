@@ -115,7 +115,7 @@ void spatial_field::demand_imbalance_estimation(power_network::network_inform &P
 
 	// estimation step
 	BME_copula(nominal_demand, Power_network_inform, Constraint_demand, 1E-12);
-	std::cout << nominal_demand.mu.transpose() * Constraint_demand << "\n\n";
+	std::cout << tick << ":\t" << nominal_demand.mu.transpose() * Constraint_demand << "\n\n";
 
 	// Output the annual average of normalized mean demand field
 	std::string fout_name;
@@ -326,7 +326,7 @@ void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_n
 
 		// estimation step
 		BME_copula(wind_on_cf, Power_network_inform, Constraint_wind_on, 1E-3);
-		std::cout << wind_on_cf.mu.transpose() * Constraint_wind_on << "\n\n";
+		std::cout << tick << ":\t" << wind_on_cf.mu.transpose() * Constraint_wind_on << "\n\n";
 
 		// Output onshore wind capacity factor
 		int count_zeros = 0;
@@ -424,7 +424,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 
 	// Estimation step
 	BME_copula(solar_radiation, Power_network_inform, Constraint_solar, 1E-12);
-	std::cout << solar_radiation.mu.transpose() * Constraint_solar << "\n\n";
+	std::cout << tick << ":\t" << solar_radiation.mu.transpose() * Constraint_solar << "\n\n";
 
 	// Output the annual average of normalized mean demand field
 	std::string fout_name;
