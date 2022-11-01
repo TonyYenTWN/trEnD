@@ -67,7 +67,7 @@ namespace{
 void spatial_field::demand_imbalance_estimation(power_network::network_inform &Power_network_inform, power_market::market_inform &International_Market, configuration::process_config &process_par){
 	int bz_num = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
 	int point_num = Power_network_inform.points.bidding_zone.size();
-	int Time = power_market::parameters::Time();
+	int Time = configuration::parameters::Time();
 	double pi = boost::math::constants::pi<double>();
 
 	// Read electricity demand data
@@ -232,7 +232,7 @@ void spatial_field::demand_imbalance_estimation(power_network::network_inform &P
 void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_network_inform, configuration::process_config &process_par){
 	int bz_num = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
 	int point_num = Power_network_inform.points.bidding_zone.size();
-	int Time = power_market::parameters::Time();
+	int Time = configuration::parameters::Time();
 	double pi = boost::math::constants::pi<double>();
 
 	// Read onshore wind power data
@@ -310,7 +310,7 @@ void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_n
 	// Estimate onshore wind capacity factor field
 	// ------------------------------------------------------------------------------------------------------------------------------------------
 	// Initialization of parameters
-	wind_on_cf.alpha_iteration = .5;
+	wind_on_cf.alpha_iteration = .1;
 	wind_on_cf.mu_scale = wind_on_cf.mu * 2. / pow(pi, .5);
 	wind_on_cf.x_scale = Eigen::VectorXd(point_num);
 	for(int item = 0; item < point_num; ++ item){
@@ -349,7 +349,7 @@ void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_n
 // Function that calculates solar radiation field
 void spatial_field::solar_radiation_estimation(power_network::network_inform &Power_network_inform, configuration::process_config &process_par){
 	int point_num = Power_network_inform.points.bidding_zone.size();
-	int Time = power_market::parameters::Time();
+	int Time = configuration::parameters::Time();
 	double pi = boost::math::constants::pi<double>();
 
 	// Read solar radiation data

@@ -8,7 +8,7 @@
 #include "power_supplier.h"
 
 namespace agent{
-	void agents_set(power_market::market_whole_inform&, power_network::network_inform&);
+	void agents_set(int, power_market::market_whole_inform&, power_network::network_inform&);
 	void agents_redispatch_update(int, power_market::market_whole_inform&, power_network::network_inform&);
 	void agents_filter_demand_update(int, power_market::market_whole_inform&, power_network::network_inform&);
 	void agents_filter_supply_update(int, power_market::market_whole_inform&, power_network::network_inform&);

@@ -22,11 +22,6 @@ namespace power_market{
 			std::map <double, int> price_ID;
 		};
 
-		static inline int Time(){
-			int value = 8760;
-			return value;
-		}
-
 		static inline int price_interval(){
 			int value = 600;
 			return value;

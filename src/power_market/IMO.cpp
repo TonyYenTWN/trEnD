@@ -62,7 +62,6 @@ void power_market::International_Market_Set(market_inform &International_Market,
 	International_Market.cross_border_zone_start = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
 	International_Market.time_intervals = Time;
 	International_Market.zone_names = Power_network_inform.cbt.bz_names;
-	//International_Market.set_bidded_price();
 	parameters::bidded_price(International_Market.bidded_price_map);
 	International_Market.network.num_vertice = International_Market.num_zone;
 	International_Market.network.line_capacity_matrix = Power_network_inform.cbt.flow_constraint;
@@ -74,7 +73,6 @@ void power_market::International_Market_Set(market_inform &International_Market,
 			bool add_flag = 1 - (International_Market.network.line_capacity_matrix(row_iter, col_iter) < 0.) * (International_Market.network.line_capacity_matrix(col_iter, row_iter) < 0.);
 			if(add_flag){
 				International_Market.network.incidence.push_back(Eigen::Vector2i(row_iter, col_iter));
-				//std::cout << row_iter << "\t" << col_iter << "\n";
 			}
 		}
 	}
@@ -385,11 +383,6 @@ void power_market::International_Market_Optimization(int tick, market_inform &Ma
 	// Store cross-border transmission flow
 	Market.network.confirmed_power.row(tick) = sol_vec.head(Market.network.num_edges);
 }
-
-//void power_market::International_Market_Output(market_inform &International_Market){
-//	std::string fout_name = "output/IMO_confirmed_price.csv";
-//	basic::write_file(International_Market.confirmed.price, fout_name, International_Market.zone_names);
-//}
 
 void power_market::International_Market_Price_Estimation(int tick, market_inform &International_Market, alglib::minlpstate &IMO_Problem, power_network::network_inform &Power_network_inform){
 	int foresight_time = agent::aggregator::parameters::foresight_time();
