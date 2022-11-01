@@ -50,6 +50,7 @@ namespace{
 		output_row(15) = settlement.volume_demand_up.balancing;
 		output_row(16) = settlement.volume_demand_down.balancing;
 		output_row(17) = settlement.cost_supply.balancing;
+		output_row(18) = settlement.utility_demand.balancing;
 
 		return output_row;
 	}
