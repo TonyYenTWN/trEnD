@@ -9,8 +9,10 @@ namespace{
 		var_names.push_back("EOM_cost");
 		var_names.push_back("EOM_utility");
 		var_names.push_back("EOM_price");
-		var_names.push_back("redispatch_supply");
-		var_names.push_back("redispatch_demand");
+		var_names.push_back("redispatch_supply_up");
+		var_names.push_back("redispatch_supply_down");
+		var_names.push_back("redispatch_demand_up");
+		var_names.push_back("redispatch_demand_down");
 		var_names.push_back("redispatch_cost");
 		var_names.push_back("redispatch_utility");
 		var_names.push_back("redispatch_price");
@@ -31,16 +33,17 @@ namespace{
 		output_row(2) = settlement.cost_supply.EOM;
 		output_row(3) = settlement.utility_demand.EOM;
 		output_row(4) = settlement.price.EOM - settlement.utility_supply.EOM;
-		output_row(5) = settlement.volume_supply.redispatch;
-		output_row(6) = settlement.volume_demand.redispatch;
-		output_row(7) = settlement.cost_supply.redispatch;
-		output_row(8) = settlement.utility_demand.redispatch;
-		output_row(9) = settlement.price.redispatch;
-		output_row(10) =  settlement.cost_supply.redispatch - settlement.utility_supply.redispatch;
-		output_row(10) += settlement.cost_demand.redispatch - settlement.utility_demand.redispatch;
-		output_row(11) = settlement.volume_supply.balancing;
-		output_row(12) = settlement.volume_demand.balancing;
-		output_row(13) = settlement.cost_supply.balancing;
+		output_row(5) = settlement.volume_supply_up.redispatch;
+		output_row(6) = settlement.volume_supply_down.redispatch;
+		output_row(7) = settlement.volume_demand_up.redispatch;
+		output_row(8) = settlement.volume_demand_down.redispatch;
+		output_row(9) = settlement.cost_supply.redispatch;
+		output_row(10) = settlement.utility_demand.redispatch;
+		output_row(11) = settlement.price.redispatch;
+		output_row(12) = settlement.reimburse.redispatch;
+		output_row(13) = settlement.volume_supply.balancing;
+		output_row(14) = settlement.volume_demand.balancing;
+		output_row(15) = settlement.cost_supply.balancing;
 
 		return output_row;
 	}

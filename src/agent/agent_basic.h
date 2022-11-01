@@ -33,6 +33,7 @@ namespace agent{
 
 		// Equivalent bids when control reserve is activated
 		Eigen::VectorXd imbalance_demand;
+		Eigen::VectorXd imbalance_supply;
 		Eigen::VectorXd balancing_supply;
 		Eigen::VectorXd balancing_demand;
 	};
@@ -46,6 +47,10 @@ namespace agent{
 		double confirmed_supply;
 		double confirmed_demand;
 
+		// Imbalance in real time
+		double imbalance_supply;
+		double imbalance_demand;
+
 		// Actual supply / demand profile after control reserve is activated
 		double actual_supply;
 		double actual_demand;
@@ -54,17 +59,24 @@ namespace agent{
 	struct settlement_process{
 		double EOM;
 		double redispatch;
+		double imbalance;
 		double balancing;
 	};
 
 	struct settlement{
 		settlement_process volume_supply;
 		settlement_process volume_demand;
+		settlement_process volume_supply_up;
+		settlement_process volume_supply_down;
+		settlement_process volume_demand_up;
+		settlement_process volume_demand_down;
 		// Cost of supplying service
 		settlement_process cost_supply;
 		settlement_process cost_demand;
 		// Price of using service
 		settlement_process price;
+		// Reimburse of using service
+		settlement_process reimburse;
 		// Utility of using service
 		settlement_process utility_supply;
 		settlement_process utility_demand;
