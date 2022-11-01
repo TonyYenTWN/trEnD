@@ -115,7 +115,7 @@ Eigen::MatrixXd basic::read_file(int num_row, int num_col, std::string filename,
 	return data;
 }
 
-void basic::write_file(Eigen::MatrixXd data, std::string filename, std::vector<std::string> col_name){
+void basic::write_file(Eigen::MatrixXd data, std::string filename, std::vector<std::string> col_name, int precision){
 
 	int num_row = data.rows();
 	int num_col = data.cols();
@@ -124,7 +124,7 @@ void basic::write_file(Eigen::MatrixXd data, std::string filename, std::vector<s
 
 	// opening an existing csv file or creating a new csv file
     fout.open(filename, std::ios::out);
-    fout << std::fixed << std::setprecision(20);
+    fout << std::fixed << std::setprecision(precision);
 
     // Write the column names of the csv file
     for(int col_ID = 0; col_ID < num_col; ++ col_ID){
