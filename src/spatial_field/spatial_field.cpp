@@ -115,7 +115,7 @@ void spatial_field::demand_imbalance_estimation(power_network::network_inform &P
 
 	// estimation step
 	BME_copula(nominal_demand, Power_network_inform, Constraint_demand, 1E-12);
-	std::cout << tick << ":\t" << nominal_demand.mu.transpose() * Constraint_demand << "\n\n";
+	std::cout << nominal_demand.mu.transpose() * Constraint_demand << "\n\n";
 
 	// Output the annual average of normalized mean demand field
 	std::string fout_name;
@@ -180,7 +180,7 @@ void spatial_field::demand_imbalance_estimation(power_network::network_inform &P
 
 		// Estimation step
 		BME_copula(nominal_demand, Power_network_inform, Constraint_demand, 1E-3);
-		std::cout << nominal_demand.mu.transpose() * Constraint_demand << "\n\n";
+		std::cout << tick << ":\t" << nominal_demand.mu.transpose() * Constraint_demand << "\n\n";
 
 		// Output normalized mean demand field
 		int count_zeros = 0;
@@ -424,7 +424,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 
 	// Estimation step
 	BME_copula(solar_radiation, Power_network_inform, Constraint_solar, 1E-12);
-	std::cout << tick << ":\t" << solar_radiation.mu.transpose() * Constraint_solar << "\n\n";
+	std::cout << solar_radiation.mu.transpose() * Constraint_solar << "\n\n";
 
 	// Output the annual average of normalized mean demand field
 	std::string fout_name;
@@ -480,11 +480,12 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 		Constraint_solar_Trip_temp.reserve(station_num);
 		solar_radiation.mu_mean = Eigen::VectorXd(station_num);
 		int constraint_count_temp = 0;
+		double origian_shift = 2.;
 		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
 			if(average_field_temp(point_iter) < 0.){
 				continue;
 			}
-			average_field_temp(point_iter) += 1.;
+			average_field_temp(point_iter) += origian_shift;
 			Constraint_solar_Trip_temp.push_back(Eigen::TripletXd(point_iter, constraint_count_temp, 1.));
 			solar_radiation.mu_mean(constraint_count_temp) = average_field_temp(point_iter);
 			constraint_count_temp += 1;
@@ -496,8 +497,8 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 
 		// Estimation step
 		BME_copula(solar_radiation, Power_network_inform, Constraint_solar_temp, 1E-3);
-		solar_radiation.mu = solar_radiation.mu.array() - 1.;
-		std::cout << solar_radiation.mu.transpose() * Constraint_solar_temp << "\n\n";
+		solar_radiation.mu = solar_radiation.mu.array() - origian_shift;
+		std::cout << tick << ":\t" << solar_radiation.mu.transpose() * Constraint_solar_temp << "\n\n";
 
 		// Output onshore wind capacity factor
 		int count_zeros = 0;
