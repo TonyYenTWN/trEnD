@@ -520,7 +520,7 @@ namespace{
 
 		// Settlement of balancing
 		// Supply side
-		double imbalance_supply_ratio = results.imbalance_supply / results.confirmed_supply;
+		double imbalance_supply_ratio = results.imbalance_supply / (results.confirmed_supply + 1E-16);
 		double confirmed_supply_gap = results.confirmed_supply * (1. + imbalance_supply_ratio);
 		double actual_supply_gap = results.actual_supply;
 		double min_supply_gap = std::min(confirmed_supply_gap, actual_supply_gap);
@@ -668,7 +668,7 @@ namespace{
 		}
 
 		// Demand side
-		double imbalance_demand_ratio = results.imbalance_demand / results.confirmed_demand;
+		double imbalance_demand_ratio = results.imbalance_demand / (results.confirmed_demand + 1E-16);
 		double confirmed_demand_gap = results.confirmed_demand * (1. + imbalance_demand_ratio);
 		double actual_demand_gap = results.actual_demand;
 		double min_demand_gap = std::min(confirmed_demand_gap, actual_demand_gap);
