@@ -566,6 +566,8 @@ namespace{
 					settlement.volume_supply_down.balancing +=  reduced_flag_supply * margin_quan_supply;
 					settlement.volume_supply_up.balancing +=  (1 - reduced_flag_supply) * margin_quan_supply;
 					settlement.cost_supply.balancing += (1 - 2 * reduced_flag_supply) * current_price * margin_quan_supply;
+					settlement.reimburse.balancing += (1 - reduced_flag_supply) * balancing_price_up * margin_quan_supply;
+					settlement.reimburse.balancing += -reduced_flag_supply * balancing_price_down * margin_quan_supply;
 				}
 				else{
 					Power_market_inform.TSO_Market.balancing.supply_down(tick, node_ID) += reduced_flag_supply * max_supply_gap;
@@ -576,6 +578,8 @@ namespace{
 					settlement.volume_supply_down.balancing +=  reduced_flag_supply * max_supply_gap;
 					settlement.volume_supply_up.balancing +=  (1 - reduced_flag_supply) * max_supply_gap;
 					settlement.cost_supply.balancing += (1 - 2 * reduced_flag_supply) * current_price * max_supply_gap;
+					settlement.reimburse.balancing += (1 - reduced_flag_supply) * balancing_price_up * max_supply_gap;
+					settlement.reimburse.balancing += -reduced_flag_supply * balancing_price_down * max_supply_gap;
 					max_supply_gap = 0.;
 					break;
 				}
@@ -616,6 +620,8 @@ namespace{
 					settlement.volume_supply_down.balancing +=  reduced_flag_supply * margin_quan_supply;
 					settlement.volume_supply_up.balancing +=  (1 - reduced_flag_supply) * margin_quan_supply;
 					settlement.cost_supply.balancing += (1 - 2 * reduced_flag_supply) * current_price * margin_quan_supply;
+					settlement.reimburse.balancing += (1 - reduced_flag_supply) * balancing_price_up * margin_quan_supply;
+					settlement.reimburse.balancing += -reduced_flag_supply * balancing_price_down * margin_quan_supply;
 				}
 				else{
 					Power_market_inform.TSO_Market.balancing.supply_down(tick, node_ID) += reduced_flag_supply * max_supply_gap;
@@ -626,6 +632,8 @@ namespace{
 					settlement.volume_supply_down.balancing +=  reduced_flag_supply * max_supply_gap;
 					settlement.volume_supply_up.balancing +=  (1 - reduced_flag_supply) * max_supply_gap;
 					settlement.cost_supply.balancing += (1 - 2 * reduced_flag_supply) * current_price * max_supply_gap;
+					settlement.reimburse.balancing += (1 - reduced_flag_supply) * balancing_price_up * max_supply_gap;
+					settlement.reimburse.balancing += -reduced_flag_supply * balancing_price_down * max_supply_gap;
 					max_supply_gap = 0.;
 					break;
 				}
@@ -650,6 +658,8 @@ namespace{
 						settlement.volume_supply_down.balancing +=  reduced_flag_supply * margin_quan_supply;
 						settlement.volume_supply_up.balancing +=  (1 - reduced_flag_supply) * margin_quan_supply;
 						settlement.cost_supply.balancing += (1 - 2 * reduced_flag_supply) * current_price * margin_quan_supply;
+						settlement.reimburse.balancing += (1 - reduced_flag_supply) * balancing_price_up * margin_quan_supply;
+						settlement.reimburse.balancing += -reduced_flag_supply * balancing_price_down * margin_quan_supply;
 					}
 					else{
 						Power_market_inform.TSO_Market.balancing.supply_down(tick, node_ID) += reduced_flag_supply * max_supply_gap;
@@ -660,6 +670,8 @@ namespace{
 						settlement.volume_supply_down.balancing +=  reduced_flag_supply * max_supply_gap;
 						settlement.volume_supply_up.balancing +=  (1 - reduced_flag_supply) * max_supply_gap;
 						settlement.cost_supply.balancing += (1 - 2 * reduced_flag_supply) * current_price * max_supply_gap;
+						settlement.reimburse.balancing += (1 - reduced_flag_supply) * balancing_price_up * max_supply_gap;
+						settlement.reimburse.balancing += -reduced_flag_supply * balancing_price_down * max_supply_gap;
 						max_supply_gap = 0.;
 						break;
 					}
@@ -716,6 +728,8 @@ namespace{
 					settlement.volume_demand_down.balancing +=  reduced_flag_demand * margin_quan_demand;
 					settlement.volume_demand_up.balancing +=  (1 - reduced_flag_demand) * margin_quan_demand;
 					settlement.utility_demand.balancing += (1 - 2 * reduced_flag_demand) * current_price * margin_quan_demand;
+					settlement.reimburse.balancing += reduced_flag_demand * balancing_price_up * margin_quan_demand;
+					settlement.reimburse.balancing += -(1 - reduced_flag_demand) * balancing_price_down * margin_quan_demand;
 				}
 				else{
 					Power_market_inform.TSO_Market.balancing.demand_down(tick, node_ID) += reduced_flag_demand * max_demand_gap;
@@ -726,6 +740,8 @@ namespace{
 					settlement.volume_demand_down.balancing +=  reduced_flag_demand * max_demand_gap;
 					settlement.volume_demand_up.balancing +=  (1 - reduced_flag_demand) * max_demand_gap;
 					settlement.utility_demand.balancing += (1 - 2 * reduced_flag_demand) * current_price * max_demand_gap;
+					settlement.reimburse.balancing += reduced_flag_demand * balancing_price_up * max_demand_gap;
+					settlement.reimburse.balancing += -(1 - reduced_flag_demand) * balancing_price_down * max_demand_gap;
 					max_demand_gap = 0.;
 					break;
 				}
@@ -767,6 +783,8 @@ namespace{
 					settlement.volume_demand_down.balancing +=  reduced_flag_demand * margin_quan_demand;
 					settlement.volume_demand_up.balancing +=  (1 - reduced_flag_demand) * margin_quan_demand;
 					settlement.utility_demand.balancing += (1 - 2 * reduced_flag_demand) * current_price * margin_quan_demand;
+					settlement.reimburse.balancing += reduced_flag_demand * balancing_price_up * margin_quan_demand;
+					settlement.reimburse.balancing += -(1 - reduced_flag_demand) * balancing_price_down * margin_quan_demand;
 				}
 				else{
 					Power_market_inform.TSO_Market.balancing.demand_down(tick, node_ID) += reduced_flag_demand * max_demand_gap;
@@ -777,6 +795,8 @@ namespace{
 					settlement.volume_demand_down.balancing +=  reduced_flag_demand * max_demand_gap;
 					settlement.volume_demand_up.balancing +=  (1 - reduced_flag_demand) * max_demand_gap;
 					settlement.utility_demand.balancing += (1 - 2 * reduced_flag_demand) * current_price * max_demand_gap;
+					settlement.reimburse.balancing += reduced_flag_demand * balancing_price_up * max_demand_gap;
+					settlement.reimburse.balancing += -(1 - reduced_flag_demand) * balancing_price_down * max_demand_gap;
 					max_demand_gap = 0.;
 					break;
 				}
@@ -802,6 +822,8 @@ namespace{
 						settlement.volume_demand_down.balancing +=  reduced_flag_demand * margin_quan_demand;
 						settlement.volume_demand_up.balancing +=  (1 - reduced_flag_demand) * margin_quan_demand;
 						settlement.utility_demand.balancing += (1 - 2 * reduced_flag_demand) * current_price * margin_quan_demand;
+						settlement.reimburse.balancing += reduced_flag_demand * balancing_price_up * margin_quan_demand;
+						settlement.reimburse.balancing += -(1 - reduced_flag_demand) * balancing_price_down * margin_quan_demand;
 					}
 					else{
 						Power_market_inform.TSO_Market.balancing.demand_down(tick, node_ID) += reduced_flag_demand * max_demand_gap;
@@ -812,6 +834,8 @@ namespace{
 						settlement.volume_demand_down.balancing +=  reduced_flag_demand * max_demand_gap;
 						settlement.volume_demand_up.balancing +=  (1 - reduced_flag_demand) * max_demand_gap;
 						settlement.utility_demand.balancing += (1 - 2 * reduced_flag_demand) * current_price * max_demand_gap;
+						settlement.reimburse.balancing += reduced_flag_demand * balancing_price_up * max_demand_gap;
+						settlement.reimburse.balancing += -(1 - reduced_flag_demand) * balancing_price_down * max_demand_gap;
 						max_demand_gap = 0.;
 						break;
 					}
