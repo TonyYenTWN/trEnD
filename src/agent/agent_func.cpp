@@ -945,6 +945,7 @@ namespace{
 				end_user_profiles[point_iter][sample_iter].operation.default_demand_profile *= 1. - end_user_profiles[point_iter][sample_iter].investment.decision.smart_appliance * end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale;
 				end_user_profiles[point_iter][sample_iter].operation.default_PV_profile = Power_network_inform.points.solar_cf.row(point_iter).segment(start_time, foresight_time);
 				end_user_profiles[point_iter][sample_iter].operation.default_PV_profile *= end_user_profiles[point_iter][sample_iter].operation.PV_scale;
+				end_user_profiles[point_iter][sample_iter].operation.PV_output = end_user_profiles[point_iter][sample_iter].operation.default_PV_profile(0);
 				end_user_profiles[point_iter][sample_iter].operation.price_demand_profile = Power_market_inform.agent_profiles.aggregators[point_iter].price_demand_profile;
 				end_user_profiles[point_iter][sample_iter].operation.price_supply_profile = Power_market_inform.agent_profiles.aggregators[point_iter].price_supply_profile;
 
@@ -1841,7 +1842,14 @@ namespace{
 					EV_flex = std::min(EV_flex_ub, EV_flex - gap * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency);
 					gap -= (Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity - EV_flex) / Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency;
 					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity = EV_flex;
+					if(gap == 0.){
+						break;
+					}
 
+					// Decrease PV output
+					double PV_flex = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.PV_output;
+					PV_flex = std::min(PV_flex, -gap);
+					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.PV_output -= PV_flex;
 					break;
 				}
 
@@ -2141,6 +2149,7 @@ namespace{
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile *= 1. - Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.smart_appliance * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scale;
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_PV_profile = Power_network_inform.points.solar_cf.row(point_iter).segment(tick, foresight_time);
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_PV_profile *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.PV_scale;
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.PV_output = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_PV_profile(0);
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.price_demand_profile = Power_market_inform.agent_profiles.aggregators[point_iter].price_demand_profile;
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.price_supply_profile = Power_market_inform.agent_profiles.aggregators[point_iter].price_supply_profile;
 

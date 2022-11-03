@@ -118,6 +118,13 @@ namespace power_market{
 		Eigen::MatrixXd utility;
 	};
 
+	struct supply_tech{
+		Eigen::MatrixXd hydro;
+		Eigen::MatrixXd wind;
+		Eigen::MatrixXd solar;
+		Eigen::MatrixXd BESS;
+	};
+
 	/**Information of a power market.*/
 	struct market_inform{
 		/**

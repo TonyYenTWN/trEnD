@@ -146,6 +146,8 @@ namespace agent{
 			double weight;
 			/** Scale of the PV system (kW / person)*/
 			double PV_scale;
+			/** Actual PV profile */
+			double PV_output;
 			/** Default demand profile; normalized to nominal value (kWh per hour per person)*/
 			Eigen::VectorXd default_demand_profile;
 			/** Default PV profile; normalized to nominal value (kWh per hour per person).*/
