@@ -357,6 +357,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 	auto fin_solar_dim = basic::get_file_dim(fin_solar);
 	auto Solar_ts = basic::read_file(fin_solar_dim[0], fin_solar_dim[1], fin_solar);
 	bool fin_solar_row_name = 1;
+	//Solar_ts.rightCols(fin_solar_dim[1] - fin_solar_row_name) /= 1000.;
 	int station_num = fin_solar_dim[1] - fin_solar_row_name;
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------
@@ -437,7 +438,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 	// Estimate solar radiation field
 	// ------------------------------------------------------------------------------------------------------------------------------------------
 	// Initialization of parameters
-	solar_radiation.alpha_iteration = .5;
+	solar_radiation.alpha_iteration = .1;
 	solar_radiation.mu_scale = solar_radiation.mu * 2. / pow(pi, .5);
 	solar_radiation.x_scale = Eigen::VectorXd(point_num);
 	for(int item = 0; item < point_num; ++ item){
@@ -480,12 +481,14 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 		Constraint_solar_Trip_temp.reserve(station_num);
 		solar_radiation.mu_mean = Eigen::VectorXd(station_num);
 		int constraint_count_temp = 0;
-		double origian_shift = 2.;
+		double origin_shift = 2.;
+		double origin_scale = 2.;
 		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
 			if(average_field_temp(point_iter) < 0.){
 				continue;
 			}
-			average_field_temp(point_iter) += origian_shift;
+			average_field_temp(point_iter) += origin_shift;
+			average_field_temp(point_iter) /= origin_scale;
 			Constraint_solar_Trip_temp.push_back(Eigen::TripletXd(point_iter, constraint_count_temp, 1.));
 			solar_radiation.mu_mean(constraint_count_temp) = average_field_temp(point_iter);
 			constraint_count_temp += 1;
@@ -497,10 +500,11 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 
 		// Estimation step
 		BME_copula(solar_radiation, Power_network_inform, Constraint_solar_temp, 1E-3);
-		solar_radiation.mu = solar_radiation.mu.array() - origian_shift;
+		solar_radiation.mu *= origin_scale;
+		solar_radiation.mu = solar_radiation.mu.array() - origin_shift;
 		std::cout << tick << ":\t" << solar_radiation.mu.transpose() * Constraint_solar_temp << "\n\n";
 
-		// Output onshore wind capacity factor
+		// Output solar radiation
 		int count_zeros = 0;
 		int tick_temp = tick;
 		std::string digit_zeros;
@@ -552,7 +556,7 @@ void spatial_field::spatial_field_store(power_network::network_inform &Power_net
 		Eigen::VectorXd solar_radiation = basic::read_file(row_num, 1, fin_solar_temp);
 
 		for(int point_iter = 0; point_iter < row_num; ++ point_iter){
-			Power_network_inform.points.solar_cf(point_iter, tick) = solar_cf_calculation(solar_radiation(point_iter));
+			Power_network_inform.points.solar_cf(point_iter, tick) = solar_cf_calculation(solar_radiation(point_iter), 1000.);
 		}
 	}
 }

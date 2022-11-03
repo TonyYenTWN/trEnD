@@ -38,8 +38,8 @@ namespace spatial_field{
 	void wind_on_cf_estimation(power_network::network_inform&, configuration::process_config&);
 	void solar_radiation_estimation(power_network::network_inform&, configuration::process_config&);
 	void spatial_field_store(power_network::network_inform&, fin_field, configuration::process_config&, int);
-	static inline double solar_cf_calculation(double solar_radiation){
-		double value = solar_radiation * .0007;
+	static inline double solar_cf_calculation(double solar_radiation, double scale){
+		double value = solar_radiation * .7 / scale;
 		value = std::min(.7, value);
 		value = std::max(0., value);
 		return value;
