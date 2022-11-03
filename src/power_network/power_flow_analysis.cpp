@@ -21,5 +21,15 @@
 // {V}(s) * {\hat V}(s) = {U_0^2} + s * ({U^2} - {U_0^2})
 //
 // Conservation law for currents
-// {1}^T [Y] {V}(s) = 0.
+// {1}^T [Y] {V}(s)  = 0.
+// {1}^T [Conj(Y)] {\hat V}(s) = 0.
+
+power_network::power_flow power_network::HELM_TSO_Set(int system_type, Eigen::VectorXi node_type, network_inform &Power_network_inform){
+	int node_num = Power_network_inform.nodes.bidding_zone.size();
+	int edge_num = Power_network_inform.edges.distance.size();
+
+	power_flow power_flow;
+
+	return power_flow;
+}
 

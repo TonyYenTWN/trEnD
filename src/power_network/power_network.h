@@ -256,11 +256,11 @@ namespace power_network{
 		*/
 		/*@{*/
 		/** Series impedance (ohm per meter) of transmission line.*/
-		std::complex<double> z_trans_series = std::complex<double> (0., 3. * pow(10., -4.));
+		std::complex<double> z_trans_series = std::complex<double> (3. * pow(10., -5.), 3. * pow(10., -4.));
 		/** Shunt impedance (ohm per meter) of transmission line.*/
 		std::complex<double> z_trans_shunt = std::complex<double> (0., 0.);
 		/** Series impedance (ohm per meter) of distribution line.*/
-		std::complex<double> z_distr_series = std::complex<double> (0., 5. * pow(10., -4.));
+		std::complex<double> z_distr_series = std::complex<double> (5. * pow(10., -5.), 5. * pow(10., -4.));
 		/** Shunt impedance (ohm per meter) of distribution line.*/
 		std::complex<double> z_distr_shunt = std::complex<double> (0., 0.);
 		/**Phase angle limits on a transmission node.*/
@@ -301,7 +301,7 @@ namespace power_network{
 					level_count += 1;
 					this->voltage_base_levels.insert(std::make_pair(voltage_max, level_count));
 					this->impedenace_base_levels.insert(std::make_pair(voltage_max, (double) voltage_max * voltage_max / this->s_base * 3));
-					this->power_limit.insert(std::make_pair(voltage_max, (double) 2.5 * voltage_max));
+					this->power_limit.insert(std::make_pair(voltage_max, (double) voltage_max));
 					//std::cout << voltage_base_levels[voltage_max] << "\t" <<  voltage_max << "\t" << impedenace_base_levels[voltage_max] << "\n";
 				}
 			}
@@ -324,11 +324,20 @@ namespace power_network{
 		}
 	};
 
+	struct power_flow{
+		Eigen::SparseMatrix <std::complex <double>> nodal_admittance;
+		Eigen::MatrixXcd voltage;
+		Eigen::MatrixXcd power_flow;
+	};
+
 	// Function for constructing distance and covariance matrix of points
 	void point_distance_cov(points&, double);
 
 	// Function for reading the files
 	void power_network_input_process(network_inform&, std::string parent_dir);
+
+	// Function for power flow analysis
+	power_flow HELM_TSO_Set(int, Eigen::VectorXi, network_inform&);
 }
 
 #endif
