@@ -12,66 +12,18 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 	// Initialize markets at each clustered DSO
 	for(int DSO_iter = 0; DSO_iter < DSO_Markets.size(); ++ DSO_iter){
 		// Input parameters of DSO market
-		DSO_Markets[DSO_iter].num_zone = Power_network_inform.DSO_cluster[DSO_iter].points_ID.size() + Power_network_inform.DSO_cluster[DSO_iter].nodes_ID.size();
+		int DSO_point_num = Power_network_inform.DSO_cluster[DSO_iter].points_ID.size();
+		int DSO_node_num = Power_network_inform.DSO_cluster[DSO_iter].nodes_ID.size();
+		if(DSO_point_num == 0){
+			DSO_Markets[DSO_iter].num_zone = DSO_node_num;
+			DSO_Markets[DSO_iter].network.num_edges = 0;
+			//std::cout << DSO_iter << ":\t" << DSO_Markets[DSO_iter].num_zone << "\t" << DSO_Markets[DSO_iter].network.num_edges << "\n";
+			continue;
+		}
+
+		DSO_Markets[DSO_iter].num_zone = DSO_point_num + DSO_node_num;
 		DSO_Markets[DSO_iter].time_intervals = Time;
 		parameters::bidded_price(DSO_Markets[DSO_iter].bidded_price_map);
-		int point_num = Power_network_inform.DSO_cluster[DSO_iter].points_ID.size();
-
-		// Set node admittance matrix
-		// Use fractional Laplacian here :
-		// y(x_1, x_2) = N / 4 / pi / z / |x_1 - x_2|^(2 + d), where
-		// y(x_1, x_2): admittance between x_1 and x_2
-		// N: mean line density at the neighborhood of x_1 containing also x_2
-		// z: per length impedence of power lines
-		// d: fractional dimension of the power line distribution
-		double z_base_low = pow(Power_network_inform.tech_parameters.voltage_cutoff_distr, 2.) / Power_network_inform.tech_parameters.s_base * 3.;
-		double z_base_high = pow(Power_network_inform.tech_parameters.voltage_cutoff_connection, 2.) / Power_network_inform.tech_parameters.s_base * 3.;
-		double partition_func = 0.;
-		DSO_Markets[DSO_iter].network.num_vertice = DSO_Markets[DSO_iter].num_zone;
-		Eigen::MatrixXd admittance = Eigen::MatrixXd::Ones(DSO_Markets[DSO_iter].network.num_vertice, DSO_Markets[DSO_iter].network.num_vertice);
-		Eigen::MatrixXd num_line = Eigen::MatrixXd::Ones(DSO_Markets[DSO_iter].network.num_vertice, DSO_Markets[DSO_iter].network.num_vertice);
-		Eigen::MatrixXd distance = Eigen::MatrixXd::Zero(DSO_Markets[DSO_iter].network.num_vertice, DSO_Markets[DSO_iter].network.num_vertice);
-
-//		std::cout << "-------------------------------------------------------------------------------------------------------------------------------------------------\n";
-//		std::cout << DSO_iter << "\n";
-//		std::cout << "-------------------------------------------------------------------------------------------------------------------------------------------------\n";
-		for(int row_iter = 0; row_iter < DSO_Markets[DSO_iter].network.num_vertice - 1; ++ row_iter){
-			for(int col_iter = row_iter + 1; col_iter < DSO_Markets[DSO_iter].network.num_vertice; ++ col_iter){
-				if(row_iter < point_num && col_iter < point_num){
-					int point_ID_1 = Power_network_inform.DSO_cluster[DSO_iter].points_ID[row_iter];
-					int point_ID_2 = Power_network_inform.DSO_cluster[DSO_iter].points_ID[col_iter];
-					distance(row_iter, col_iter) = Power_network_inform.points.distance(point_ID_1, point_ID_2);
-					admittance(row_iter, col_iter) = 1. / pow(distance(row_iter, col_iter) * 1E-3, 1. + Power_network_inform.tech_parameters.fraction_dim_distr);
-					partition_func += admittance(row_iter, col_iter);
-				}
-				else{
-					if(row_iter < point_num){
-						int point_ID = Power_network_inform.DSO_cluster[DSO_iter].points_ID[row_iter];
-						int node_ID = Power_network_inform.DSO_cluster[DSO_iter].nodes_ID[col_iter - Power_network_inform.DSO_cluster[DSO_iter].points_ID.size()];
-						Eigen::Vector2d point_coor = Eigen::Vector2d(Power_network_inform.points.lon(point_ID), Power_network_inform.points.lat(point_ID));
-						Eigen::Vector2d node_coor = Eigen::Vector2d(Power_network_inform.nodes.lon(node_ID), Power_network_inform.nodes.lat(node_ID));
-						point_coor *= pi / 180.;
-						node_coor *= pi / 180.;
-						distance(row_iter, col_iter) = spatial_field::geodist(point_coor, node_coor);
-					}
-					else{
-						int node_ID_1 = Power_network_inform.DSO_cluster[DSO_iter].nodes_ID[row_iter - Power_network_inform.DSO_cluster[DSO_iter].points_ID.size()];
-						int node_ID_2 = Power_network_inform.DSO_cluster[DSO_iter].nodes_ID[col_iter - Power_network_inform.DSO_cluster[DSO_iter].points_ID.size()];
-						Eigen::Vector2d node_coor_1 = Eigen::Vector2d(Power_network_inform.nodes.lon(node_ID_1), Power_network_inform.nodes.lat(node_ID_1));
-						Eigen::Vector2d node_coor_2 = Eigen::Vector2d(Power_network_inform.nodes.lon(node_ID_2), Power_network_inform.nodes.lat(node_ID_2));
-						node_coor_1 *= pi / 180.;
-						node_coor_2 *= pi / 180.;
-						distance(row_iter, col_iter) = spatial_field::geodist(node_coor_1, node_coor_2);
-					}
-				}
-			}
-		}
-		admittance.topLeftCorner(point_num, point_num) *= Power_network_inform.tech_parameters.line_density_distr * point_num;
-		num_line.topLeftCorner(point_num, point_num) = admittance.topLeftCorner(point_num, point_num) / partition_func;
-		admittance.topLeftCorner(point_num, point_num) /= partition_func * Power_network_inform.tech_parameters.z_distr_series.imag() / z_base_low;
-		admittance.rightCols(Power_network_inform.DSO_cluster[DSO_iter].nodes_ID.size()) *= z_base_high / Power_network_inform.tech_parameters.z_distr_series.imag();
-		num_line.rightCols(Power_network_inform.DSO_cluster[DSO_iter].nodes_ID.size()) *= Power_network_inform.tech_parameters.line_density_connection * point_num;
-		admittance = admittance.array() / distance.array();
 
 		// Set compact incidence matrix and edge admittance matrix
 		double tol = 1.;
@@ -82,23 +34,155 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 		std::vector <double> power_limit;
 		power_limit.reserve(DSO_Markets[DSO_iter].network.num_vertice * DSO_Markets[DSO_iter].network.num_vertice);
 
-		for(int row_iter = 0; row_iter < DSO_Markets[DSO_iter].network.num_vertice - 1; ++ row_iter){
-			for(int col_iter = row_iter + 1; col_iter < DSO_Markets[DSO_iter].network.num_vertice; ++ col_iter){
-				if(row_iter < point_num && col_iter < point_num){
-					if(admittance(row_iter, col_iter) > tol){
-						DSO_Markets[DSO_iter].network.incidence.push_back(Eigen::Vector2i(row_iter, col_iter));
-						DSO_Markets[DSO_iter].network.admittance.push_back(admittance(row_iter , col_iter));
-						power_limit.push_back(power_limit_distr * Power_network_inform.tech_parameters.voltage_cutoff_distr * num_line(row_iter, col_iter));
-					}
-				}
-				else{
-					DSO_Markets[DSO_iter].network.incidence.push_back(Eigen::Vector2i(row_iter, col_iter));
-					DSO_Markets[DSO_iter].network.admittance.push_back(admittance(row_iter, col_iter));
-					power_limit.push_back(power_limit_connection * Power_network_inform.tech_parameters.voltage_cutoff_connection * num_line(row_iter, col_iter));
-				}
+		// Calculate edge admittance
+		// Use fractional Laplacian here :
+		// y(x_1, x_2) = N / 4 / pi / z / |x_1 - x_2|^(2 + d), where
+		// y(x_1, x_2): admittance between x_1 and x_2
+		// N: mean line density at the neighborhood of x_1 containing also x_2
+		// z: per length impedence of power lines
+		// d: fractional dimension of the power line distribution
+		double z_base_low = pow(Power_network_inform.tech_parameters.voltage_cutoff_distr, 2.) / Power_network_inform.tech_parameters.s_base * 3.;
+		double z_base_high = pow(Power_network_inform.tech_parameters.voltage_cutoff_connection, 2.) / Power_network_inform.tech_parameters.s_base * 3.;
+		double partition_func = 0.;
+		DSO_Markets[DSO_iter].network.num_vertice = DSO_Markets[DSO_iter].num_zone;
+		Eigen::MatrixXd num_line = Eigen::MatrixXd::Ones(DSO_point_num, DSO_point_num);
+		Eigen::MatrixXd distance = Eigen::MatrixXd::Zero(DSO_point_num, DSO_point_num);
+
+		// Connection between points
+		for(int row_iter = 0; row_iter < DSO_point_num - 1; ++ row_iter){
+			for(int col_iter = row_iter + 1; col_iter < DSO_point_num ; ++ col_iter){
+				int point_ID_1 = Power_network_inform.DSO_cluster[DSO_iter].points_ID[row_iter];
+				int point_ID_2 = Power_network_inform.DSO_cluster[DSO_iter].points_ID[col_iter];
+
+				distance(row_iter, col_iter) = Power_network_inform.points.distance(point_ID_1, point_ID_2);
+				num_line(row_iter, col_iter) = 1. / pow(distance(row_iter, col_iter) * 1E-3, 1. + Power_network_inform.tech_parameters.fraction_dim_distr);
+				partition_func += num_line(row_iter, col_iter);
 			}
 		}
+		num_line /= partition_func;
+		num_line *= Power_network_inform.tech_parameters.line_density_distr * DSO_point_num;
+
+		for(int row_iter = 0; row_iter < DSO_point_num - 1; ++ row_iter){
+			for(int col_iter = row_iter + 1; col_iter < DSO_point_num ; ++ col_iter){
+				// Series admittance
+				double y_series = 1.;
+				y_series /= distance(row_iter, col_iter);
+				y_series /= Power_network_inform.tech_parameters.z_distr_series.imag();
+				y_series *= z_base_low;
+				y_series *= num_line(row_iter, col_iter);
+
+				DSO_Markets[DSO_iter].network.incidence.push_back(Eigen::Vector2i(row_iter, col_iter));
+				DSO_Markets[DSO_iter].network.admittance.push_back(y_series);
+				power_limit.push_back(power_limit_distr * Power_network_inform.tech_parameters.voltage_cutoff_distr * num_line(row_iter, col_iter));
+			}
+		}
+
+		// Connection between nodes and points
+		for(int row_iter = 0; row_iter < DSO_node_num; ++ row_iter){
+			int node_ID = Power_network_inform.DSO_cluster[DSO_iter].nodes_ID[row_iter];
+			int min_point_ID;
+			double distance_min = std::numeric_limits<double>::infinity();
+			double line_density_connection = Power_network_inform.tech_parameters.line_density_connection * DSO_point_num / DSO_node_num;
+
+			for(int col_iter = 0; col_iter < DSO_point_num ; ++ col_iter){
+				int point_ID = Power_network_inform.DSO_cluster[DSO_iter].points_ID[col_iter];
+				Eigen::Vector2d point_coor = Eigen::Vector2d(Power_network_inform.points.lon(point_ID), Power_network_inform.points.lat(point_ID));
+				Eigen::Vector2d node_coor = Eigen::Vector2d(Power_network_inform.nodes.lon(node_ID), Power_network_inform.nodes.lat(node_ID));
+				point_coor *= pi / 180.;
+				node_coor *= pi / 180.;
+				double distance_temp = spatial_field::geodist(point_coor, node_coor);
+
+				if(distance_temp < distance_min){
+					distance_min = distance_temp;
+					min_point_ID = col_iter;
+				}
+			}
+
+			// Series admittance
+			double y_series = 1.;
+			y_series /= distance_min;
+			y_series /= Power_network_inform.tech_parameters.z_distr_series.imag();
+			y_series *= z_base_high;
+			y_series *= line_density_connection;
+
+			DSO_Markets[DSO_iter].network.incidence.push_back(Eigen::Vector2i(min_point_ID, DSO_point_num + row_iter));
+			DSO_Markets[DSO_iter].network.admittance.push_back(y_series);
+			power_limit.push_back(power_limit_connection * line_density_connection);
+		}
 		DSO_Markets[DSO_iter].network.num_edges = DSO_Markets[DSO_iter].network.incidence.size();
+		//std::cout << DSO_iter << ":\t" << DSO_Markets[DSO_iter].num_zone << "\t" << DSO_Markets[DSO_iter].network.num_edges << "\n";
+
+//		Eigen::MatrixXd admittance = Eigen::MatrixXd::Ones(DSO_Markets[DSO_iter].network.num_vertice, DSO_Markets[DSO_iter].network.num_vertice);
+//		Eigen::MatrixXd num_line = Eigen::MatrixXd::Ones(DSO_Markets[DSO_iter].network.num_vertice, DSO_Markets[DSO_iter].network.num_vertice);
+//		Eigen::MatrixXd distance = Eigen::MatrixXd::Zero(DSO_Markets[DSO_iter].network.num_vertice, DSO_Markets[DSO_iter].network.num_vertice);
+//
+////		std::cout << "-------------------------------------------------------------------------------------------------------------------------------------------------\n";
+////		std::cout << DSO_iter << "\n";
+////		std::cout << "-------------------------------------------------------------------------------------------------------------------------------------------------\n";
+//		for(int row_iter = 0; row_iter < DSO_Markets[DSO_iter].network.num_vertice - 1; ++ row_iter){
+//			for(int col_iter = row_iter + 1; col_iter < DSO_Markets[DSO_iter].network.num_vertice; ++ col_iter){
+//				if(row_iter < point_num && col_iter < point_num){
+//					int point_ID_1 = Power_network_inform.DSO_cluster[DSO_iter].points_ID[row_iter];
+//					int point_ID_2 = Power_network_inform.DSO_cluster[DSO_iter].points_ID[col_iter];
+//					distance(row_iter, col_iter) = Power_network_inform.points.distance(point_ID_1, point_ID_2);
+//					admittance(row_iter, col_iter) = 1. / pow(distance(row_iter, col_iter) * 1E-3, 1. + Power_network_inform.tech_parameters.fraction_dim_distr);
+//					partition_func += admittance(row_iter, col_iter);
+//				}
+//				else{
+//					if(row_iter < point_num){
+//						int point_ID = Power_network_inform.DSO_cluster[DSO_iter].points_ID[row_iter];
+//						int node_ID = Power_network_inform.DSO_cluster[DSO_iter].nodes_ID[col_iter - Power_network_inform.DSO_cluster[DSO_iter].points_ID.size()];
+//						Eigen::Vector2d point_coor = Eigen::Vector2d(Power_network_inform.points.lon(point_ID), Power_network_inform.points.lat(point_ID));
+//						Eigen::Vector2d node_coor = Eigen::Vector2d(Power_network_inform.nodes.lon(node_ID), Power_network_inform.nodes.lat(node_ID));
+//						point_coor *= pi / 180.;
+//						node_coor *= pi / 180.;
+//						distance(row_iter, col_iter) = spatial_field::geodist(point_coor, node_coor);
+//					}
+//					else{
+//						int node_ID_1 = Power_network_inform.DSO_cluster[DSO_iter].nodes_ID[row_iter - Power_network_inform.DSO_cluster[DSO_iter].points_ID.size()];
+//						int node_ID_2 = Power_network_inform.DSO_cluster[DSO_iter].nodes_ID[col_iter - Power_network_inform.DSO_cluster[DSO_iter].points_ID.size()];
+//						Eigen::Vector2d node_coor_1 = Eigen::Vector2d(Power_network_inform.nodes.lon(node_ID_1), Power_network_inform.nodes.lat(node_ID_1));
+//						Eigen::Vector2d node_coor_2 = Eigen::Vector2d(Power_network_inform.nodes.lon(node_ID_2), Power_network_inform.nodes.lat(node_ID_2));
+//						node_coor_1 *= pi / 180.;
+//						node_coor_2 *= pi / 180.;
+//						distance(row_iter, col_iter) = spatial_field::geodist(node_coor_1, node_coor_2);
+//					}
+//				}
+//			}
+//		}
+//		admittance.topLeftCorner(point_num, point_num) *= Power_network_inform.tech_parameters.line_density_distr * point_num;
+//		num_line.topLeftCorner(point_num, point_num) = admittance.topLeftCorner(point_num, point_num) / partition_func;
+//		admittance.topLeftCorner(point_num, point_num) /= partition_func * Power_network_inform.tech_parameters.z_distr_series.imag() / z_base_low;
+//		admittance.rightCols(Power_network_inform.DSO_cluster[DSO_iter].nodes_ID.size()) *= z_base_high / Power_network_inform.tech_parameters.z_distr_series.imag();
+//		num_line.rightCols(Power_network_inform.DSO_cluster[DSO_iter].nodes_ID.size()) *= Power_network_inform.tech_parameters.line_density_connection * point_num;
+//		admittance = admittance.array() / distance.array();
+
+//		// Set compact incidence matrix and edge admittance matrix
+//		double tol = 1.;
+//		double power_limit_connection = 1.;
+//		double power_limit_distr = .5;
+//		DSO_Markets[DSO_iter].network.incidence.reserve(DSO_Markets[DSO_iter].network.num_vertice * DSO_Markets[DSO_iter].network.num_vertice);
+//		DSO_Markets[DSO_iter].network.admittance.reserve(DSO_Markets[DSO_iter].network.num_vertice * DSO_Markets[DSO_iter].network.num_vertice);
+//		std::vector <double> power_limit;
+//		power_limit.reserve(DSO_Markets[DSO_iter].network.num_vertice * DSO_Markets[DSO_iter].network.num_vertice);
+//
+//		for(int row_iter = 0; row_iter < DSO_Markets[DSO_iter].network.num_vertice - 1; ++ row_iter){
+//			for(int col_iter = row_iter + 1; col_iter < DSO_Markets[DSO_iter].network.num_vertice; ++ col_iter){
+//				if(row_iter < point_num && col_iter < point_num){
+//					if(admittance(row_iter, col_iter) > tol){
+//						DSO_Markets[DSO_iter].network.incidence.push_back(Eigen::Vector2i(row_iter, col_iter));
+//						DSO_Markets[DSO_iter].network.admittance.push_back(admittance(row_iter , col_iter));
+//						power_limit.push_back(power_limit_distr * Power_network_inform.tech_parameters.voltage_cutoff_distr * num_line(row_iter, col_iter));
+//					}
+//				}
+//				else{
+//					DSO_Markets[DSO_iter].network.incidence.push_back(Eigen::Vector2i(row_iter, col_iter));
+//					DSO_Markets[DSO_iter].network.admittance.push_back(admittance(row_iter, col_iter));
+//					power_limit.push_back(power_limit_connection * Power_network_inform.tech_parameters.voltage_cutoff_connection * num_line(row_iter, col_iter));
+//				}
+//			}
+//		}
+//		DSO_Markets[DSO_iter].network.num_edges = DSO_Markets[DSO_iter].network.incidence.size();
 
 		// Set voltage and power constraints at each edge
 		DSO_Markets[DSO_iter].network.voltage_constraint = Eigen::MatrixXd::Ones(DSO_Markets[DSO_iter].network.num_vertice, 2);
@@ -139,6 +223,10 @@ namespace{
 
 void power_market::Filtered_bid_demand_calculation(int tick, market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
 	for(int DSO_iter = 0; DSO_iter < Power_market_inform.DSO_Markets.size(); ++ DSO_iter){
+		if(Power_network_inform.DSO_cluster[DSO_iter].points_ID.size() == 0){
+			continue;
+		}
+
 		// Initialize submit bids of DSO markets
 		Market_Initialization(Power_market_inform.DSO_Markets[DSO_iter]);
 
@@ -171,6 +259,10 @@ void power_market::Filtered_bid_demand_calculation(int tick, market_whole_inform
 	}
 
 	for(int DSO_iter = 0; DSO_iter < Power_market_inform.DSO_Markets.size(); ++ DSO_iter){
+		if(Power_network_inform.DSO_cluster[DSO_iter].points_ID.size() == 0){
+			continue;
+		}
+
 		Flow_Based_Market_Optimization(Power_market_inform.DSO_Markets[DSO_iter], Power_market_inform.DSO_Problems[DSO_iter]);
 		DSO_Market_Results_Get(tick, Power_market_inform.DSO_Markets[DSO_iter], Power_market_inform.DSO_Problems[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter], 0);
 	}
@@ -178,6 +270,10 @@ void power_market::Filtered_bid_demand_calculation(int tick, market_whole_inform
 
 void power_market::Filtered_bid_supply_calculation(int tick, market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
 	for(int DSO_iter = 0; DSO_iter < Power_market_inform.DSO_Markets.size(); ++ DSO_iter){
+		if(Power_network_inform.DSO_cluster[DSO_iter].points_ID.size() == 0){
+			continue;
+		}
+
 		// Initialize submit bids of DSO markets
 		Market_Initialization(Power_market_inform.DSO_Markets[DSO_iter]);
 
@@ -230,6 +326,10 @@ void power_market::Filtered_bid_supply_calculation(int tick, market_whole_inform
 	}
 
 	for(int DSO_iter = 0; DSO_iter < Power_market_inform.DSO_Markets.size(); ++ DSO_iter){
+		if(Power_network_inform.DSO_cluster[DSO_iter].points_ID.size() == 0){
+			continue;
+		}
+
 		Flow_Based_Market_Optimization(Power_market_inform.DSO_Markets[DSO_iter], Power_market_inform.DSO_Problems[DSO_iter]);
 		DSO_Market_Results_Get(tick, Power_market_inform.DSO_Markets[DSO_iter], Power_market_inform.DSO_Problems[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter], 1);
 	}
