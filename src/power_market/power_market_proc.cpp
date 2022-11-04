@@ -40,6 +40,9 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	DSO_Markets_Set(Power_market_inform.DSO_Markets, Power_network_inform, Time);
 	Power_market_inform.DSO_Problems = Problems (Power_market_inform.DSO_Markets.size());
 	for(int DSO_iter = 0; DSO_iter < Power_market_inform.DSO_Markets.size(); ++ DSO_iter){
+		if(Power_network_inform.DSO_cluster[DSO_iter].points_ID.size() == 0){
+			continue;
+		}
 		Flow_Based_Market_LP_Set(Power_market_inform.DSO_Markets[DSO_iter], Power_market_inform.DSO_Problems[DSO_iter]);
 	}
 
