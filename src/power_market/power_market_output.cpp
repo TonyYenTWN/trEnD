@@ -1,10 +1,32 @@
 // Source file for printing results from simulation and settlement of the power market
+#include <filesystem>
 #include <iostream>
 #include "src/basic/rw_csv.h"
 #include "power_market.h"
 
-namespace{
-	void Market_results_print(power_market::market_inform Market, std::string name, bool nodal = 1){
+namespace local{
+	void Simplified_network_print(power_market::market_inform &Market, std::string name){
+		int edge_num = Market.network.num_edges;
+		std::string fout_name;
+
+		// Set edge names
+		std::vector <std::string> col_names(3);
+		col_names[0] = "from";
+		col_names[1] = "to";
+		col_names[2] = "power_capacity";
+
+		Eigen::MatrixXd output(edge_num, 3);
+		for(int edge_iter = 0; edge_iter < edge_num; ++ edge_iter){
+			output(edge_iter, 0) = Market.network.incidence[edge_iter](0);
+			output(edge_iter, 1) = Market.network.incidence[edge_iter](1);
+			output(edge_iter, 2) = Market.network.power_constraint(edge_iter, 1);
+		}
+
+		fout_name = "csv/processed/power_market/" + name + "_simplified_network.csv";
+		basic::write_file(output, fout_name, col_names);
+	}
+
+	void Market_results_print(power_market::market_inform &Market, std::string name, bool nodal = 1){
 		std::string fout_name;
 
 		// Set edge names
@@ -74,7 +96,16 @@ namespace{
 }
 
 void power_market::Markets_results_print(market_whole_inform &Power_market_inform){
-	Market_results_print(Power_market_inform.International_Market, "IMO", 0);
-	Market_results_print(Power_market_inform.TSO_Market, "TSO");
+	// Create a folder to store the file
+	std::filesystem::create_directories("csv/output/power_market");
+
+	local::Market_results_print(Power_market_inform.International_Market, "IMO", 0);
+	local::Market_results_print(Power_market_inform.TSO_Market, "TSO");
 }
 
+void power_market::Simplified_network_print(market_whole_inform &Power_market_inform){
+	// Create a folder to store the file
+	std::filesystem::create_directories("csv/processed/power_market");
+
+	local::Simplified_network_print(Power_market_inform.TSO_Market, "TSO");
+}

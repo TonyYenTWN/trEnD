@@ -1,4 +1,5 @@
 // Source file for the main procedure of the power market clearing
+#include <filesystem>
 #include "src/agent/agent_func.h"
 //#include "src/configuration/configuration.h"
 #include "src/power_network/power_network.h"
@@ -27,8 +28,11 @@ int main(){
 
 	// Spatial fields estimation
 	if(process_par.estimation_flag){
-		//spatial_field::demand_imbalance_estimation(Power_network_inform, Power_market_inform.International_Market, process_par);
-		//spatial_field::wind_on_cf_estimation(Power_network_inform, process_par);
+		// Create a folder to store the file
+		std::filesystem::create_directories("csv/processed/spatial_field");
+
+		spatial_field::demand_imbalance_estimation(Power_network_inform, Power_market_inform.International_Market, process_par);
+		spatial_field::wind_on_cf_estimation(Power_network_inform, process_par);
 		spatial_field::solar_radiation_estimation(Power_network_inform, process_par);
 	}
 
