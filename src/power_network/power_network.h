@@ -315,6 +315,21 @@ namespace power_network{
 		}
     };
 
+     /** @brief Input parameters and results for power flow analysis.
+    *
+    * Including:
+    * - nodal admittance matrix
+    * - matrix for time series of voltage at each node
+    * - matrix for time series of power source / sink at each node
+    * - matrix for time series of power flow at each edge
+    */
+ 	struct power_flow{
+		Eigen::SparseMatrix <std::complex <double>> nodal_admittance;
+		Eigen::MatrixXcd voltage;
+		Eigen::MatrixXcd power_node;
+		Eigen::MatrixXcd power_edge;
+	};
+
 	struct network_inform{
 		points points;
 		nodes nodes;
@@ -324,17 +339,12 @@ namespace power_network{
 		plants_all plants;
 		std::vector <DSO_cluster> DSO_cluster;
 		technical_parameters tech_parameters;
+		power_flow power_flow;
 
 		// Set line density of distribution networks
 		void set_line_density(){
 			this->tech_parameters.line_density_distr = (double) this->tech_parameters.line_num_distr / (double) this->points.bidding_zone.size();
 		}
-	};
-
-	struct power_flow{
-		Eigen::SparseMatrix <std::complex <double>> nodal_admittance;
-		Eigen::MatrixXcd voltage;
-		Eigen::MatrixXcd power_flow;
 	};
 
 	// Function for constructing distance and covariance matrix of points
@@ -344,7 +354,8 @@ namespace power_network{
 	void power_network_input_process(network_inform&, std::string parent_dir);
 
 	// Function for power flow analysis
-	power_flow HELM_Set(int, Eigen::VectorXi, network_inform&);
+	void HELM_Set(network_inform&);
+	void HELM_Solve(int, Eigen::VectorXi, network_inform&);
 }
 
 #endif
