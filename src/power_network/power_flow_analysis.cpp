@@ -1,4 +1,5 @@
 // Source file for power flow analysis
+#include "src/configuration/configuration.h"
 #include "src/spatial_field/geostat.h"
 #include "power_network.h"
 //#include "src/power_market/power_market.h"
@@ -25,27 +26,22 @@
 // {1}^T [Y] {V}(s)  = 0.
 // {1}^T [Conj(Y)] {\hat V}(s) = 0.
 
-power_network::power_flow power_network::HELM_Set(int system_type, Eigen::VectorXi node_type, network_inform &Power_network_inform){
+void power_network::HELM_Set(network_inform &Power_network_inform){
 	int node_num = Power_network_inform.nodes.bidding_zone.size();
 	int point_num = Power_network_inform.points.bidding_zone.size();
 	int edge_trans_num = Power_network_inform.edges.distance.size();
 	int edge_distr_num = 0;
-	int edge_conn_num = 0;
 	int DSO_num = Power_network_inform.DSO_cluster.size();
 	for(int DSO_iter = 0; DSO_iter < DSO_num; ++ DSO_iter){
 		edge_distr_num += Power_network_inform.DSO_cluster[DSO_iter].points_ID.size() * (Power_network_inform.DSO_cluster[DSO_iter].points_ID.size() - 1) / 2;
-		edge_conn_num += Power_network_inform.DSO_cluster[DSO_iter].points_ID.size() * Power_network_inform.DSO_cluster[DSO_iter].nodes_ID.size();
 	}
 	double pi = boost::math::constants::pi<double>();
-
-	power_flow power_flow;
 
 	// -------------------------------------------------------------------------------
 	// Set the nodal admittance matrix
 	// -------------------------------------------------------------------------------
-	power_flow.nodal_admittance = Eigen::SparseMatrix <std::complex <double>> (node_num + point_num, node_num + point_num);
 	std::vector<Eigen::TripletXcd> Y_n_trip;
-	Y_n_trip.reserve(node_num + point_num + 2 * (edge_trans_num + edge_conn_num + edge_distr_num));
+	Y_n_trip.reserve(node_num + point_num + 2 * (edge_trans_num + edge_distr_num + node_num));
 	Eigen::VectorXcd Y_n_Diag = Eigen::VectorXcd::Zero(node_num + point_num);
 
 	// Transmission level
@@ -88,7 +84,7 @@ power_network::power_flow power_network::HELM_Set(int system_type, Eigen::Vector
 
 		// Connection between points
 		for(int row_iter = 0; row_iter < DSO_point_num - 1; ++ row_iter){
-			for(int col_iter = 0; col_iter < DSO_point_num ; ++ col_iter){
+			for(int col_iter = row_iter + 1; col_iter < DSO_point_num ; ++ col_iter){
 				int point_ID_1 = Power_network_inform.DSO_cluster[DSO_iter].points_ID[row_iter];
 				int point_ID_2 = Power_network_inform.DSO_cluster[DSO_iter].points_ID[col_iter];
 
@@ -101,7 +97,7 @@ power_network::power_flow power_network::HELM_Set(int system_type, Eigen::Vector
 		num_line *= Power_network_inform.tech_parameters.line_density_distr * DSO_point_num;
 
 		for(int row_iter = 0; row_iter < DSO_point_num - 1; ++ row_iter){
-			for(int col_iter = 0; col_iter < DSO_point_num ; ++ col_iter){
+			for(int col_iter = row_iter + 1; col_iter < DSO_point_num ; ++ col_iter){
 				int point_ID_1 = Power_network_inform.DSO_cluster[DSO_iter].points_ID[row_iter];
 				int point_ID_2 = Power_network_inform.DSO_cluster[DSO_iter].points_ID[col_iter];
 
@@ -131,12 +127,12 @@ power_network::power_flow power_network::HELM_Set(int system_type, Eigen::Vector
 
 		// Connection between nodes and points
 		for(int row_iter = 0; row_iter < DSO_node_num; ++ row_iter){
+			int node_ID = Power_network_inform.DSO_cluster[DSO_iter].nodes_ID[row_iter];
 			int min_point_ID;
 			double distance_min = std::numeric_limits<double>::infinity();
 
 			for(int col_iter = 0; col_iter < DSO_point_num ; ++ col_iter){
 				int point_ID = Power_network_inform.DSO_cluster[DSO_iter].points_ID[col_iter];
-				int node_ID = Power_network_inform.DSO_cluster[DSO_iter].nodes_ID[row_iter];
 				Eigen::Vector2d point_coor = Eigen::Vector2d(Power_network_inform.points.lon(point_ID), Power_network_inform.points.lat(point_ID));
 				Eigen::Vector2d node_coor = Eigen::Vector2d(Power_network_inform.nodes.lon(node_ID), Power_network_inform.nodes.lat(node_ID));
 				point_coor *= pi / 180.;
@@ -164,11 +160,11 @@ power_network::power_flow power_network::HELM_Set(int system_type, Eigen::Vector
 			y_shunt *= Power_network_inform.tech_parameters.line_density_connection * DSO_point_num / DSO_node_num;
 
 			// Triplet for series impedence
-			Y_n_trip.push_back(Eigen::TripletXcd(node_ID, node_num + point_ID, -y_series));
-			Y_n_trip.push_back(Eigen::TripletXcd(node_num + point_ID, node_ID, -y_series));
+			Y_n_trip.push_back(Eigen::TripletXcd(node_ID, node_num + min_point_ID, -y_series));
+			Y_n_trip.push_back(Eigen::TripletXcd(node_num + min_point_ID, node_ID, -y_series));
 
 			// Update diagonal terms
-			Y_n_Diag(node_num + point_ID) += y_series + .5 * y_shunt;
+			Y_n_Diag(node_num + min_point_ID) += y_series + .5 * y_shunt;
 			Y_n_Diag(node_ID) += y_series + .5 * y_shunt;
 		}
 	}
@@ -178,6 +174,18 @@ power_network::power_flow power_network::HELM_Set(int system_type, Eigen::Vector
 		Y_n_trip.push_back(Eigen::TripletXcd(node_iter, node_iter, Y_n_Diag(node_iter)));
 	}
 
-	return power_flow;
+	// -------------------------------------------------------------------------------
+	// Store the nodal admittance matrix and intialize
+	// -------------------------------------------------------------------------------
+	int Time = configuration::parameters::Time();
+
+	Power_network_inform.power_flow.nodal_admittance = Eigen::SparseMatrix <std::complex <double>> (node_num + point_num, node_num + point_num);
+	Power_network_inform.power_flow.nodal_admittance.setFromTriplets(Y_n_trip.begin(), Y_n_trip.end());
+	Power_network_inform.power_flow.power_edge = Eigen::MatrixXd::Zero(Time, edge_trans_num);
+	Power_network_inform.power_flow.power_edge = Eigen::MatrixXd::Zero(Time, node_num + point_num);
+	Power_network_inform.power_flow.voltage = Eigen::MatrixXd::Zero(Time, node_num + point_num);
 }
 
+void power_network::HELM_Solve(int system_type, Eigen::VectorXi node_type, network_inform &Power_network_inform){
+
+}
