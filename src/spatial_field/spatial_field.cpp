@@ -1,7 +1,7 @@
 // Main source file for estimation of spatial fields
 #include "src/spatial_field/spatial_field.h"
 
-namespace{
+namespace local{
 	void BME_copula(spatial_field::estimation_inform &inform, power_network::network_inform &Power_network_inform, Eigen::SparseMatrix <double> &Constraint, double tol){
 		int bz_num = Constraint.cols();
 		int point_num = Constraint.rows();
@@ -114,7 +114,7 @@ void spatial_field::demand_imbalance_estimation(power_network::network_inform &P
 	}
 
 	// estimation step
-	BME_copula(nominal_demand, Power_network_inform, Constraint_demand, 1E-12);
+	local::BME_copula(nominal_demand, Power_network_inform, Constraint_demand, 1E-12);
 	std::cout << nominal_demand.mu.transpose() * Constraint_demand << "\n\n";
 
 	// Output the annual average of normalized mean demand field
@@ -150,7 +150,7 @@ void spatial_field::demand_imbalance_estimation(power_network::network_inform &P
 	imbalance.Conversion_Mat_2 = Power_network_inform.points.covariance * Constraint_imbalance;
 
 	// estimation step
-	BME_linear(imbalance, Constraint_imbalance);
+	local::BME_linear(imbalance, Constraint_imbalance);
 	//std::cout << imbalance.mu_mean.transpose() << "\n";
 	std::cout << imbalance.mu.transpose() * Constraint_imbalance << "\n\n";
 
@@ -179,7 +179,7 @@ void spatial_field::demand_imbalance_estimation(power_network::network_inform &P
 		nominal_demand.mu_mean = Demand_ts.row(tick);
 
 		// Estimation step
-		BME_copula(nominal_demand, Power_network_inform, Constraint_demand, 1E-3);
+		local::BME_copula(nominal_demand, Power_network_inform, Constraint_demand, 1E-3);
 		std::cout << tick << ":\t" << nominal_demand.mu.transpose() * Constraint_demand << "\n\n";
 
 		// Output normalized mean demand field
@@ -215,7 +215,7 @@ void spatial_field::demand_imbalance_estimation(power_network::network_inform &P
 		imbalance.mu_mean = Imbalance_ts.row(tick);
 
 		// Estimation step
-		BME_linear(imbalance, Constraint_imbalance);
+		local::BME_linear(imbalance, Constraint_imbalance);
 		//std::cout << imbalance.mu_mean.transpose() << "\n";
 		std::cout << imbalance.mu.transpose() * Constraint_imbalance << "\n\n";
 
@@ -297,7 +297,7 @@ void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_n
 	}
 
 	// Estimation step
-	BME_copula(wind_on_cf, Power_network_inform, Constraint_wind_on, 1E-12);
+	local::BME_copula(wind_on_cf, Power_network_inform, Constraint_wind_on, 1E-12);
 	std::cout << wind_on_cf.mu.transpose() * Constraint_wind_on << "\n\n";
 
 	// Output the annual average of onshore wind capacity factor field
@@ -325,7 +325,7 @@ void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_n
 		wind_on_cf.mu_mean = Redundant_col * wind_on_cf.mu_mean;
 
 		// estimation step
-		BME_copula(wind_on_cf, Power_network_inform, Constraint_wind_on, 1E-3);
+		local::BME_copula(wind_on_cf, Power_network_inform, Constraint_wind_on, 1E-3);
 		std::cout << tick << ":\t" << wind_on_cf.mu.transpose() * Constraint_wind_on << "\n\n";
 
 		// Output onshore wind capacity factor
@@ -424,7 +424,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 	}
 
 	// Estimation step
-	BME_copula(solar_radiation, Power_network_inform, Constraint_solar, 1E-12);
+	local::BME_copula(solar_radiation, Power_network_inform, Constraint_solar, 1E-12);
 	std::cout << solar_radiation.mu.transpose() * Constraint_solar << "\n\n";
 
 	// Output the annual average of normalized mean demand field
@@ -499,7 +499,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 		Constraint_solar_temp.setFromTriplets(Constraint_solar_Trip_temp.begin(), Constraint_solar_Trip_temp.end());
 
 		// Estimation step
-		BME_copula(solar_radiation, Power_network_inform, Constraint_solar_temp, 1E-3);
+		local::BME_copula(solar_radiation, Power_network_inform, Constraint_solar_temp, 1E-3);
 		solar_radiation.mu *= origin_scale;
 		solar_radiation.mu = solar_radiation.mu.array() - origin_shift;
 		std::cout << tick << ":\t" << solar_radiation.mu.transpose() * Constraint_solar_temp << "\n\n";
