@@ -24,8 +24,8 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 		// N: mean line density at the neighborhood of x_1 containing also x_2
 		// z: per length impedence of power lines
 		// d: fractional dimension of the power line distribution
-		double z_base_low = pow(Power_network_inform.tech_parameters.voltage_cutoff_distr, 2.) / Power_network_inform.tech_parameters.s_base / 3.;
-		double z_base_high = pow(Power_network_inform.tech_parameters.voltage_cutoff_connection, 2.) / Power_network_inform.tech_parameters.s_base / 3.;
+		double z_base_low = pow(Power_network_inform.tech_parameters.voltage_cutoff_distr, 2.) / Power_network_inform.tech_parameters.s_base * 3.;
+		double z_base_high = pow(Power_network_inform.tech_parameters.voltage_cutoff_connection, 2.) / Power_network_inform.tech_parameters.s_base * 3.;
 		double partition_func = 0.;
 		DSO_Markets[DSO_iter].network.num_vertice = DSO_Markets[DSO_iter].num_zone;
 		Eigen::MatrixXd admittance = Eigen::MatrixXd::Ones(DSO_Markets[DSO_iter].network.num_vertice, DSO_Markets[DSO_iter].network.num_vertice);
@@ -75,6 +75,8 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 
 		// Set compact incidence matrix and edge admittance matrix
 		double tol = 1.;
+		double power_limit_connection = 1.;
+		double power_limit_distr = .5;
 		DSO_Markets[DSO_iter].network.incidence.reserve(DSO_Markets[DSO_iter].network.num_vertice * DSO_Markets[DSO_iter].network.num_vertice);
 		DSO_Markets[DSO_iter].network.admittance.reserve(DSO_Markets[DSO_iter].network.num_vertice * DSO_Markets[DSO_iter].network.num_vertice);
 		std::vector <double> power_limit;
@@ -86,13 +88,13 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 					if(admittance(row_iter, col_iter) > tol){
 						DSO_Markets[DSO_iter].network.incidence.push_back(Eigen::Vector2i(row_iter, col_iter));
 						DSO_Markets[DSO_iter].network.admittance.push_back(admittance(row_iter , col_iter));
-						power_limit.push_back(Power_network_inform.tech_parameters.voltage_cutoff_distr * num_line(row_iter, col_iter));
+						power_limit.push_back(power_limit_distr * Power_network_inform.tech_parameters.voltage_cutoff_distr * num_line(row_iter, col_iter));
 					}
 				}
 				else{
 					DSO_Markets[DSO_iter].network.incidence.push_back(Eigen::Vector2i(row_iter, col_iter));
 					DSO_Markets[DSO_iter].network.admittance.push_back(admittance(row_iter, col_iter));
-					power_limit.push_back(Power_network_inform.tech_parameters.voltage_cutoff_connection * num_line(row_iter, col_iter));
+					power_limit.push_back(power_limit_connection * Power_network_inform.tech_parameters.voltage_cutoff_connection * num_line(row_iter, col_iter));
 				}
 			}
 		}

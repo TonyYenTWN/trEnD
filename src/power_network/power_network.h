@@ -10,6 +10,13 @@
 #include <iostream>
 
 namespace power_network{
+	namespace parameters{
+		static inline double loss_factor(){
+			double value = .03;
+			return value;
+		}
+	}
+
     /** @brief Information of spatial points in the model.*/
 	struct points{
 		/**
@@ -256,13 +263,13 @@ namespace power_network{
 		*/
 		/*@{*/
 		/** Series impedance (ohm per meter) of transmission line.*/
-		std::complex<double> z_trans_series = std::complex<double> (3. * pow(10., -5.), 3. * pow(10., -4.));
-		/** Shunt impedance (ohm per meter) of transmission line.*/
-		std::complex<double> z_trans_shunt = std::complex<double> (0., 0.);
+		std::complex<double> z_trans_series = std::complex<double> (3. * pow(10., -5.), 3.6 * pow(10., -4.));
+		/** Shunt admittance (ohm^(-1) per meter) of transmission line.*/
+		std::complex<double> y_trans_shunt = std::complex<double> (0., 2 * pow(10., -9.));
 		/** Series impedance (ohm per meter) of distribution line.*/
-		std::complex<double> z_distr_series = std::complex<double> (5. * pow(10., -5.), 5. * pow(10., -4.));
-		/** Shunt impedance (ohm per meter) of distribution line.*/
-		std::complex<double> z_distr_shunt = std::complex<double> (0., 0.);
+		std::complex<double> z_distr_series = std::complex<double> (6. * pow(10., -4.), 6. * pow(10., -4.));
+		/** Shunt admittance (ohm^(-1) per meter) of distribution line.*/
+		std::complex<double> y_distr_shunt = std::complex<double> (0., 3 * pow(10., -9.));
 		/**Phase angle limits on a transmission node.*/
 		double theta_trans_limit = boost::math::constants::pi<double>() / 9.;
 		/**Phase angle limits on a distribution node.*/
@@ -290,7 +297,7 @@ namespace power_network{
 			int level_count = 0;
 			this->voltage_base_levels.insert(std::make_pair(voltage_max, level_count));
 			this->impedenace_base_levels.insert(std::make_pair(voltage_max, (double) voltage_max * voltage_max / this->s_base * 3));
-			this->power_limit.insert(std::make_pair(voltage_max, (double) voltage_max));
+			this->power_limit.insert(std::make_pair(voltage_max, (double) 1.5 * voltage_max));
 			//std::cout << voltage_base_levels[voltage_max] << "\t" <<  voltage_max << "\t" << impedenace_base_levels[voltage_max] << "\n";
 
 			std::vector <int> voltage_base_sorted(edges.voltage_base.data(), edges.voltage_base.data() + edges.voltage_base.size());
@@ -301,7 +308,7 @@ namespace power_network{
 					level_count += 1;
 					this->voltage_base_levels.insert(std::make_pair(voltage_max, level_count));
 					this->impedenace_base_levels.insert(std::make_pair(voltage_max, (double) voltage_max * voltage_max / this->s_base * 3));
-					this->power_limit.insert(std::make_pair(voltage_max, (double) voltage_max));
+					this->power_limit.insert(std::make_pair(voltage_max, (double) 1.5 * voltage_max));
 					//std::cout << voltage_base_levels[voltage_max] << "\t" <<  voltage_max << "\t" << impedenace_base_levels[voltage_max] << "\n";
 				}
 			}
@@ -337,7 +344,7 @@ namespace power_network{
 	void power_network_input_process(network_inform&, std::string parent_dir);
 
 	// Function for power flow analysis
-	power_flow HELM_TSO_Set(int, Eigen::VectorXi, network_inform&);
+	power_flow HELM_Set(int, Eigen::VectorXi, network_inform&);
 }
 
 #endif
