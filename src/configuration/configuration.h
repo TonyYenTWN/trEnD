@@ -1,6 +1,7 @@
 // Header file for setting the configuration of simulation
 #pragma once
 #include <iostream>
+#include "src/basic/basic_definitions.h"
 
 namespace configuration{
 	namespace parameters{
