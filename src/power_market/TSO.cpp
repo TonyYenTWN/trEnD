@@ -66,7 +66,7 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 	TSO_Market.confirmed.supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.confirmed.demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.confirmed.price = Eigen::MatrixXd(Time, TSO_Market.num_zone);
-	TSO_Market.network.confirmed_power = Eigen::MatrixXd(Time, TSO_Market.num_zone);
+	TSO_Market.network.confirmed_power = Eigen::MatrixXd(Time, TSO_Market.network.num_edges);
 	TSO_Market.EOM.cost = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.EOM.utility = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.redispatch.cost = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
@@ -92,7 +92,7 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 	TSO_Market.actual.supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.actual.demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.actual.price = Eigen::MatrixXd(Time, TSO_Market.num_zone);
-	TSO_Market.network.actual_power = Eigen::MatrixXd(Time, TSO_Market.num_zone);
+	TSO_Market.network.actual_power = Eigen::MatrixXd(Time, TSO_Market.network.num_edges);
 }
 
 void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){

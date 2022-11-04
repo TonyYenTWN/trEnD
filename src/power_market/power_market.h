@@ -289,6 +289,7 @@ namespace power_market{
 
 namespace power_market{
 	void Markets_results_print(market_whole_inform&);
+	void Simplified_network_print(market_whole_inform&);
 }
 
 #endif

@@ -33,6 +33,7 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 
 	// Initialization of the TSO
 	TSO_Market_Set(Power_market_inform.TSO_Market, Power_network_inform, Time);
+	Simplified_network_print(Power_market_inform);
 	Flow_Based_Market_LP_Set(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
 
 	// Initialization of the DSO
