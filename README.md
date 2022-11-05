@@ -25,6 +25,7 @@ Welcome to trEnD, a c++ based model of the energy transition, focusing on the en
   - [Settlement Stage](#settlement-stage)
 
 - [Documentation of Source Codes](#documentation-of-source-codes)
+- [Full Project Documentation](https://tonyyentwn.github.io/trEnD/)
 
 # User Guide
 ## Preparing the Input .csv Files
