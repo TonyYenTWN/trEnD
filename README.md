@@ -101,7 +101,7 @@ You will be asked to type in the values for some boolean variables at the beginn
 ## Settlement Stage
 
 # Documentation of Source Codes
-Below is a summary of what the source codes do, categorized by the subfolders in [src](https://github.com/TonyYenTWN/trEnD/tree/main/src) folder. The full documentation can be found at [the github-pages of this repository](https://tonyyentwn.github.io/trEnD).
+Below is a summary of what the source codes do, categorized by the subfolders in [src](https://github.com/TonyYenTWN/trEnD/tree/main/src) folder. The full documentation can be found at [the github-pages of this repository](https://tonyyentwn.github.io/trEnD/code_docu/index.html).
 
 - [agent](https://github.com/TonyYenTWN/trEnD/tree/main/src/agent): source codes for the operation and investment strategies of relevant agents in the model.
 - [alglib](https://github.com/TonyYenTWN/trEnD/tree/main/src/alglib): source codes from the external library [ALGLIB](https://www.alglib.net/).
