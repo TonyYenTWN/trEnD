@@ -294,11 +294,14 @@ void power_network::HELM_Node_Update(int tick, network_inform &Power_network_inf
 	}
 }
 
-void power_network::HELM_Solve(int tick, Eigen::VectorXi node_type, network_inform &Power_network_inform){
+void power_network::HELM_Solve(int tick, network_inform &Power_network_inform){
 	int node_num = Power_network_inform.nodes.bidding_zone.size();
 	int point_num = Power_network_inform.points.bidding_zone.size();
 	auto Y_n = Power_network_inform.power_flow.nodal_admittance;
 
+	// ---------------------------------------------------------------------------------------------
+	// Set the matrix for the system of iterative linear equations
+	// ---------------------------------------------------------------------------------------------
 	// Assume all PQ Nodes
 	// Order of variables:
 	// {V}, {1 / V}, {\hat V}, {1 / \hat V}
@@ -332,5 +335,34 @@ void power_network::HELM_Solve(int tick, Eigen::VectorXi node_type, network_info
 		row_ID += 2 * (node_num + point_num);
 		col_ID += 2 * (node_num + point_num);
 		Mat_trip_const.push_back(Eigen::TripletXcd(row_ID, col_ID, std::conj(s_bus)));
+	}
+
+	// -------------------------------------------------------------------------------
+	// Initialization of power series coefficients
+	// -------------------------------------------------------------------------------
+	int power_terms = 20;
+	Eigen::MatrixXcd V_up_reg = Eigen::MatrixXcd::Zero(node_num + point_num, power_terms);
+	Eigen::MatrixXcd V_up_hat = Eigen::MatrixXcd::Zero(node_num + point_num, power_terms);
+	Eigen::MatrixXcd V_down_reg = Eigen::MatrixXcd::Zero(node_num + point_num, power_terms);
+	Eigen::MatrixXcd V_down_hat = Eigen::MatrixXcd::Zero(node_num + point_num, power_terms);
+
+	// -------------------------------------------------------------------------------
+	// Trivial solution (V = 1 everywhere)
+	// -------------------------------------------------------------------------------
+	V_up_reg.col(0) = Eigen::VectorXcd::Ones(node_num + point_num);
+	V_up_hat.col(0) = Eigen::VectorXcd::Ones(node_num + point_num);
+	V_down_reg.col(0) = Eigen::VectorXcd::Ones(node_num + point_num);
+	V_down_hat.col(0) = Eigen::VectorXcd::Ones(node_num + point_num);
+
+	int term_iter = 1;
+	std::vector<Eigen::TripletXcd> Mat_trip_temp;
+	Mat_trip_temp = Mat_trip_const;
+	Mat_trip_temp.reserve(2 * Power_network_inform.power_flow.nodal_admittance.nonZeros() + 6 * (node_num + point_num));
+	// Reciprocal relation
+	for(int bus_iter = 0; bus_iter < node_num + point_num; ++ bus_iter){
+		int row_ID;
+		int col_ID;
+
+		//row_ID = node_num + point_num + bus_iter;
 	}
 }
