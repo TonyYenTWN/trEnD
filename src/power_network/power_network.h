@@ -325,6 +325,7 @@ namespace power_network{
     */
  	struct power_flow{
 		Eigen::SparseMatrix <std::complex <double>> nodal_admittance;
+		Eigen::VectorXi node_type;
 		Eigen::MatrixXcd voltage;
 		Eigen::MatrixXcd power_node;
 		Eigen::MatrixXcd power_edge;
@@ -352,10 +353,6 @@ namespace power_network{
 
 	// Function for reading the files
 	void power_network_input_process(network_inform&, std::string parent_dir);
-
-	// Function for power flow analysis
-	void HELM_Set(network_inform&);
-	void HELM_Solve(int, Eigen::VectorXi, network_inform&);
 }
 
 #endif

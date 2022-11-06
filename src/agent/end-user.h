@@ -19,6 +19,11 @@ namespace agent{
 				int value = 1;
 				return value;
 			}
+
+			static inline double power_factor(){
+				double value = .95;
+				return value;
+			}
 		}
 
 		/** @brief Decision variables representing possible investment combinations of an end-user.*/

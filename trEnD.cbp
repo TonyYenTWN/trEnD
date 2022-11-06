@@ -77,6 +77,7 @@
 		<Unit filename="src/power_market/power_market_output.cpp" />
 		<Unit filename="src/power_market/power_market_proc.cpp" />
 		<Unit filename="src/power_network/power_flow_analysis.cpp" />
+		<Unit filename="src/power_network/power_flow_analysis.h" />
 		<Unit filename="src/power_network/power_network.h" />
 		<Unit filename="src/power_network/power_network_input.cpp" />
 		<Unit filename="src/spatial_field/geostat.cpp" />

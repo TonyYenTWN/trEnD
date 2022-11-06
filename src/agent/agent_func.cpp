@@ -992,8 +992,8 @@ namespace{
 			bid_inflex_industrial *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
 			bid_inflex_industrial *= 1. - agent::parameters::residential_ratio();
 			double bid_flex_industrial = bid_inflex_industrial;
-			bid_inflex_industrial *= 1. - agent::industrial::flexible_ratio();
-			bid_flex_industrial *= agent::industrial::flexible_ratio();
+			bid_inflex_industrial *= 1. - agent::industrial::parameters::flexible_ratio();
+			bid_flex_industrial *= agent::industrial::parameters::flexible_ratio();
 			bid_flex_industrial /= price_interval;
 
 			// Set bids information
@@ -2187,8 +2187,8 @@ namespace{
 			bid_inflex_industrial *= Power_network_inform.points.population_density(point_ID) * Power_network_inform.points.point_area / 1000.;
 			bid_inflex_industrial *= 1. - agent::parameters::residential_ratio();
 			double bid_flex_industrial = bid_inflex_industrial;
-			bid_inflex_industrial *= 1. - agent::industrial::flexible_ratio();
-			bid_flex_industrial *= agent::industrial::flexible_ratio();
+			bid_inflex_industrial *= 1. - agent::industrial::parameters::flexible_ratio();
+			bid_flex_industrial *= agent::industrial::parameters::flexible_ratio();
 			bid_flex_industrial /= price_interval;
 
 			// Set bids information

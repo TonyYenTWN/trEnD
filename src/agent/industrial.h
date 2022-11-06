@@ -4,9 +4,16 @@
 
 namespace agent{
 	namespace industrial{
-		static inline double flexible_ratio(){
-			double value = .1;
-			return value;
+		namespace parameters{
+			static inline double flexible_ratio(){
+				double value = .1;
+				return value;
+			}
+
+			static inline double power_factor(){
+				double value = .95;
+				return value;
+			}
 		}
 
 		struct profile{

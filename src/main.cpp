@@ -2,8 +2,9 @@
 #include <filesystem>
 #include "src/agent/agent_func.h"
 //#include "src/configuration/configuration.h"
-#include "src/power_network/power_network.h"
 #include "src/power_market/power_market.h"
+#include "src/power_network/power_flow_analysis.h"
+#include "src/power_network/power_network.h"
 #include "src/spatial_field/spatial_field.h"
 
 int main(){

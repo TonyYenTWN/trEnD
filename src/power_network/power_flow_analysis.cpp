@@ -1,8 +1,5 @@
 // Source file for power flow analysis
-#include "src/configuration/configuration.h"
-#include "src/spatial_field/geostat.h"
-#include "power_network.h"
-//#include "src/power_market/power_market.h"
+#include "power_flow_analysis.h"
 
 // HELM method
 // P-Q buses
@@ -181,11 +178,143 @@ void power_network::HELM_Set(network_inform &Power_network_inform){
 
 	Power_network_inform.power_flow.nodal_admittance = Eigen::SparseMatrix <std::complex <double>> (node_num + point_num, node_num + point_num);
 	Power_network_inform.power_flow.nodal_admittance.setFromTriplets(Y_n_trip.begin(), Y_n_trip.end());
-	Power_network_inform.power_flow.power_edge = Eigen::MatrixXd::Zero(Time, edge_trans_num);
-	Power_network_inform.power_flow.power_edge = Eigen::MatrixXd::Zero(Time, node_num + point_num);
-	Power_network_inform.power_flow.voltage = Eigen::MatrixXd::Zero(Time, node_num + point_num);
+	Power_network_inform.power_flow.power_edge = Eigen::MatrixXcd::Zero(Time, edge_trans_num);
+	Power_network_inform.power_flow.power_node = Eigen::MatrixXcd::Zero(Time, node_num + point_num);
+	Power_network_inform.power_flow.voltage = Eigen::MatrixXcd::Zero(Time, node_num + point_num);
+}
+
+void power_network::HELM_Node_Update(int tick, network_inform &Power_network_inform, power_market::market_whole_inform &Power_market_inform){
+	int node_num = Power_network_inform.nodes.bidding_zone.size();
+	int point_num = Power_network_inform.points.bidding_zone.size();
+
+	// Update from cross-border flows
+	int edge_num = Power_market_inform.agent_profiles.cross_border.size();
+	for(int edge_iter = 0; edge_iter < edge_num; ++ edge_iter){
+		int node_num = Power_market_inform.agent_profiles.cross_border[edge_iter].node_num;
+		int entry_bz_ID = Power_market_inform.agent_profiles.cross_border[edge_iter].entry_bz_ID;
+
+		if(node_num == 0){
+			continue;
+		}
+		for(int node_iter = 0; node_iter < node_num; ++ node_iter){
+			int node_ID = Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].node_ID;
+			double real_power;
+			real_power = Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].results.actual_supply;
+			real_power -= Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].results.actual_demand;
+			Power_network_inform.power_flow.power_node(tick, node_ID) += real_power;
+		}
+	}
+
+	// Update from end-users
+	{
+		int sample_num = agent::end_user::parameters::sample_num();
+		std::complex <double> apparent_power_base(1., pow(1. - pow(agent::end_user::parameters::power_factor(), 2.), .5));
+		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
+			for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
+				double real_power;
+				real_power = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_supply;
+				Power_network_inform.power_flow.power_node(tick, node_num + point_iter) += real_power;
+				real_power = -Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_demand;
+				Power_network_inform.power_flow.power_node(tick, node_num + point_iter) += real_power * apparent_power_base;
+			}
+		}
+	}
+
+	// Update from industrial demand
+	{
+		int industrial_HV_num = Power_market_inform.agent_profiles.industrial.HV.size();
+		std::complex <double> apparent_power_base(1., pow(1. - pow(agent::industrial::parameters::power_factor(), 2.), .5));
+		for(int agent_iter = 0; agent_iter < industrial_HV_num; ++ agent_iter){
+			int point_ID = Power_market_inform.agent_profiles.industrial.HV[agent_iter].point_ID;
+			int node_ID = Power_network_inform.points.node(point_ID);
+
+			double real_power = -Power_market_inform.agent_profiles.industrial.HV[agent_iter].results.actual_demand;
+			Power_network_inform.power_flow.power_node(tick, node_ID) += real_power * apparent_power_base;
+		}
+	}
+
+	// Update from power suppliers
+	int hydro_HV_plant_num = Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant.size();
+	for(int agent_iter = 0; agent_iter < hydro_HV_plant_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].point_ID;
+		int node_ID = Power_network_inform.points.node(point_ID);
+
+		double real_power = Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].results.actual_supply;
+		real_power /= 1. - power_network::parameters::loss_factor();
+		Power_network_inform.power_flow.power_node(tick, node_ID) += real_power;
+	}
+
+	int hydro_LV_plant_num = Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant.size();
+	for(int agent_iter = 0; agent_iter < hydro_LV_plant_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].point_ID;
+
+		double real_power = Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].results.actual_supply;
+		real_power /= 1. - power_network::parameters::loss_factor();
+		Power_network_inform.power_flow.power_node(tick, node_num + point_ID) += real_power;
+	}
+
+	int wind_HV_plant_num = Power_market_inform.agent_profiles.power_supplier.wind.HV_plant.size();
+	for(int agent_iter = 0; agent_iter < wind_HV_plant_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].point_ID;
+		int node_ID = Power_network_inform.points.node(point_ID);
+
+		double real_power = Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].results.actual_supply;
+		real_power /= 1. - power_network::parameters::loss_factor();
+		Power_network_inform.power_flow.power_node(tick, node_ID) += real_power;
+	}
+
+	int wind_LV_plant_num = Power_market_inform.agent_profiles.power_supplier.wind.LV_plant.size();
+	for(int agent_iter = 0; agent_iter < wind_LV_plant_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].point_ID;
+
+		double real_power = Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].results.actual_supply;
+		real_power /= 1. - power_network::parameters::loss_factor();
+		Power_network_inform.power_flow.power_node(tick, node_num + point_ID) += real_power;
+	}
+
+	int pump_HV_plant_num = Power_market_inform.agent_profiles.power_supplier.pump_storage.HV.size();
+	for(int agent_iter = 0; agent_iter < pump_HV_plant_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].point_ID;
+		int node_ID = Power_network_inform.points.node(point_ID);
+
+		double real_power = Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].results.actual_supply;
+		real_power /= 1. - power_network::parameters::loss_factor();
+		real_power -= Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].results.actual_demand;
+		Power_network_inform.power_flow.power_node(tick, node_ID) += real_power;
+	}
+
+	int pump_LV_plant_num = Power_market_inform.agent_profiles.power_supplier.pump_storage.LV.size();
+	for(int agent_iter = 0; agent_iter < pump_LV_plant_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].point_ID;
+
+		double real_power = Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].results.actual_supply;
+		real_power /= 1. - power_network::parameters::loss_factor();
+		real_power -= Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].results.actual_demand;
+		Power_network_inform.power_flow.power_node(tick, node_num + point_ID) += real_power;
+	}
 }
 
 void power_network::HELM_Solve(int system_type, Eigen::VectorXi node_type, network_inform &Power_network_inform){
+	int node_num = Power_network_inform.nodes.bidding_zone.size();
+	int point_num = Power_network_inform.points.bidding_zone.size();
+	auto Y_n = Power_network_inform.power_flow.nodal_admittance;
 
+	// Assume all PQ Nodes
+	// Order of variables:
+	// {V}, {1 / V}, {\hat V}, {1 / \hat V}
+	std::vector<Eigen::TripletXcd> Mat_trip;
+	Mat_trip.reserve(2 * Power_network_inform.power_flow.nodal_admittance.nonZeros() + 6 * (node_num + point_num));
+
+	for(int col_iter = 0; col_iter < Y_n.outerSize(); ++ col_iter){
+		for(Eigen::SparseMatrix<std::complex <double>>::InnerIterator inner_iter(Y_n, col_iter); inner_iter; ++ inner_iter){
+			if(inner_iter.row() == 0){
+				continue;
+			}
+
+			std::complex <double> y_conj = inner_iter.value();
+			y_conj = std::conj(y_conj);
+			Mat_trip.push_back(Eigen::TripletXcd(inner_iter.row() - 1, inner_iter.col(), inner_iter.value()));
+			Mat_trip.push_back(Eigen::TripletXcd(2 * (node_num + point_num) + inner_iter.row() - 1, 2 * (node_num + point_num) + inner_iter.col(), y_conj));
+		}
+	}
 }
