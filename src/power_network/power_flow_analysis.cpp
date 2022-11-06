@@ -302,8 +302,8 @@ void power_network::HELM_Solve(int tick, Eigen::VectorXi node_type, network_info
 	// Assume all PQ Nodes
 	// Order of variables:
 	// {V}, {1 / V}, {\hat V}, {1 / \hat V}
-	std::vector<Eigen::TripletXcd> Mat_trip;
-	Mat_trip.reserve(2 * Power_network_inform.power_flow.nodal_admittance.nonZeros() + 6 * (node_num + point_num));
+	std::vector<Eigen::TripletXcd> Mat_trip_const;
+	Mat_trip_const.reserve(2 * Power_network_inform.power_flow.nodal_admittance.nonZeros() + 6 * (node_num + point_num));
 
 	// Entries from original nodal admittance matrix
 	for(int col_iter = 0; col_iter < Y_n.outerSize(); ++ col_iter){
@@ -314,8 +314,8 @@ void power_network::HELM_Solve(int tick, Eigen::VectorXi node_type, network_info
 
 			std::complex <double> y_conj = inner_iter.value();
 			y_conj = std::conj(y_conj);
-			Mat_trip.push_back(Eigen::TripletXcd(inner_iter.row() - 1, inner_iter.col(), inner_iter.value()));
-			Mat_trip.push_back(Eigen::TripletXcd(2 * (node_num + point_num) + inner_iter.row() - 1, 2 * (node_num + point_num) + inner_iter.col(), y_conj));
+			Mat_trip_const.push_back(Eigen::TripletXcd(inner_iter.row() - 1, inner_iter.col(), inner_iter.value()));
+			Mat_trip_const.push_back(Eigen::TripletXcd(2 * (node_num + point_num) + inner_iter.row() - 1, 2 * (node_num + point_num) + inner_iter.col(), y_conj));
 		}
 	}
 
@@ -327,10 +327,10 @@ void power_network::HELM_Solve(int tick, Eigen::VectorXi node_type, network_info
 
 		row_ID = node_num + point_num;
 		col_ID = node_num + point_num + bus_iter;
-		Mat_trip.push_back(Eigen::TripletXcd(row_ID, col_ID, s_bus));
+		Mat_trip_const.push_back(Eigen::TripletXcd(row_ID, col_ID, s_bus));
 
 		row_ID += 2 * (node_num + point_num);
 		col_ID += 2 * (node_num + point_num);
-		Mat_trip.push_back(Eigen::TripletXcd(row_ID, col_ID, std::conj(s_bus)));
+		Mat_trip_const.push_back(Eigen::TripletXcd(row_ID, col_ID, std::conj(s_bus)));
 	}
 }
