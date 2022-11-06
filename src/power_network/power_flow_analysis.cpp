@@ -305,6 +305,7 @@ void power_network::HELM_Solve(int system_type, Eigen::VectorXi node_type, netwo
 	std::vector<Eigen::TripletXcd> Mat_trip;
 	Mat_trip.reserve(2 * Power_network_inform.power_flow.nodal_admittance.nonZeros() + 6 * (node_num + point_num));
 
+	// Entries from original nodal admittance matrix
 	for(int col_iter = 0; col_iter < Y_n.outerSize(); ++ col_iter){
 		for(Eigen::SparseMatrix<std::complex <double>>::InnerIterator inner_iter(Y_n, col_iter); inner_iter; ++ inner_iter){
 			if(inner_iter.row() == 0){
@@ -317,4 +318,6 @@ void power_network::HELM_Solve(int system_type, Eigen::VectorXi node_type, netwo
 			Mat_trip.push_back(Eigen::TripletXcd(2 * (node_num + point_num) + inner_iter.row() - 1, 2 * (node_num + point_num) + inner_iter.col(), y_conj));
 		}
 	}
+
+	// Flow conservation law
 }
