@@ -20,8 +20,8 @@
 // {V}(s) * {\hat V}(s) = {U_0^2} + s * ({U^2} - {U_0^2})
 //
 // Conservation law for currents
-// {1}^T [Y] {V}(s)  = 0.
-// {1}^T [Conj(Y)] {\hat V}(s) = 0.
+// {S} . {1. / V}(s)  = 0.
+// {Conj(S)} . {1. / \hat V}(s) = 0.
 
 void power_network::HELM_Set(network_inform &Power_network_inform){
 	int node_num = Power_network_inform.nodes.bidding_zone.size();
@@ -294,7 +294,7 @@ void power_network::HELM_Node_Update(int tick, network_inform &Power_network_inf
 	}
 }
 
-void power_network::HELM_Solve(int system_type, Eigen::VectorXi node_type, network_inform &Power_network_inform){
+void power_network::HELM_Solve(int tick, Eigen::VectorXi node_type, network_inform &Power_network_inform){
 	int node_num = Power_network_inform.nodes.bidding_zone.size();
 	int point_num = Power_network_inform.points.bidding_zone.size();
 	auto Y_n = Power_network_inform.power_flow.nodal_admittance;
@@ -320,4 +320,17 @@ void power_network::HELM_Solve(int system_type, Eigen::VectorXi node_type, netwo
 	}
 
 	// Flow conservation law
+	for(int bus_iter = 0; bus_iter < node_num + point_num; ++ bus_iter){
+		int row_ID;
+		int col_ID;
+		std::complex <double> s_bus = Power_network_inform.power_flow.power_node(tick, bus_iter);
+
+		row_ID = node_num + point_num;
+		col_ID = node_num + point_num + bus_iter;
+		Mat_trip.push_back(Eigen::TripletXcd(row_ID, col_ID, s_bus));
+
+		row_ID += 2 * (node_num + point_num);
+		col_ID += 2 * (node_num + point_num);
+		Mat_trip.push_back(Eigen::TripletXcd(row_ID, col_ID, std::conj(s_bus)));
+	}
 }
