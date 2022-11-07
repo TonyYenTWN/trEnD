@@ -357,32 +357,58 @@ void power_network::HELM_Solve(int tick, network_inform &Power_network_inform){
 	// -------------------------------------------------------------------------------
 	// Solve linear system for each iteration
 	// -------------------------------------------------------------------------------
-	int term_iter = 1;
 	std::vector<Eigen::TripletXcd> Mat_trip_temp;
-	Mat_trip_temp = Mat_trip_const;
-	Mat_trip_temp.reserve(2 * Power_network_inform.power_flow.nodal_admittance.nonZeros() + 6 * (node_num + point_num));
-	// Update reciprocal relation
-	for(int bus_iter = 0; bus_iter < node_num + point_num; ++ bus_iter){
-		int row_ID;
-		int col_ID;
 
-		row_ID = node_num + point_num + bus_iter;
-		col_ID = bus_iter;
-		Mat_trip_temp.push_back(Eigen::TripletXcd(row_ID, col_ID, V_down_reg(bus_iter, term_iter - 1)));
-		col_ID += node_num + point_num;
-		Mat_trip_temp.push_back(Eigen::TripletXcd(row_ID, col_ID, V_up_reg(bus_iter, term_iter - 1)));
+	for(int term_iter = 1; term_iter < power_terms; ++ term_iter){
+		Mat_trip_temp = Mat_trip_const;
+		Mat_trip_temp.reserve(2 * Power_network_inform.power_flow.nodal_admittance.nonZeros() + 6 * (node_num + point_num));
+		// Update reciprocal relation
+		for(int bus_iter = 0; bus_iter < node_num + point_num; ++ bus_iter){
+			int row_ID;
+			int col_ID;
 
-		row_ID += 2 * (node_num + point_num);
-		col_ID += node_num + point_num;
-		Mat_trip_temp.push_back(Eigen::TripletXcd(row_ID, col_ID, V_down_hat(bus_iter, term_iter - 1)));
-		col_ID += node_num + point_num;
-		Mat_trip_temp.push_back(Eigen::TripletXcd(row_ID, col_ID, V_up_hat(bus_iter, term_iter - 1)));
+			row_ID = node_num + point_num + bus_iter;
+			col_ID = bus_iter;
+			Mat_trip_temp.push_back(Eigen::TripletXcd(row_ID, col_ID, V_down_reg(bus_iter, term_iter - 1)));
+			col_ID += node_num + point_num;
+			Mat_trip_temp.push_back(Eigen::TripletXcd(row_ID, col_ID, V_up_reg(bus_iter, term_iter - 1)));
+
+			row_ID += 2 * (node_num + point_num);
+			col_ID += node_num + point_num;
+			Mat_trip_temp.push_back(Eigen::TripletXcd(row_ID, col_ID, V_down_hat(bus_iter, term_iter - 1)));
+			col_ID += node_num + point_num;
+			Mat_trip_temp.push_back(Eigen::TripletXcd(row_ID, col_ID, V_up_hat(bus_iter, term_iter - 1)));
+		}
+
+		// Update rhs of the equation
+		Eigen::VectorXcd rhs = Eigen::VectorXcd::Zero(4* (node_num + point_num));
+		rhs.head(node_num + point_num - 1) = Power_network_inform.power_flow.power_node.row(tick).tail(node_num + point_num - 1).conjugate().transpose();
+		rhs.head(node_num + point_num - 1) = rhs.head(node_num + point_num - 1).array() / V_down_hat.col(term_iter - 1).tail(node_num + point_num - 1).array();
+		rhs.segment(2 * (node_num + point_num), node_num + point_num - 1) = Power_network_inform.power_flow.power_node.row(tick).tail(node_num + point_num - 1).transpose();
+		rhs.segment(2 * (node_num + point_num), node_num + point_num - 1) = rhs.segment(2 * (node_num + point_num), node_num + point_num - 1).array() / V_down_reg.col(term_iter - 1).tail(node_num + point_num - 1).array();
+
+		// Reciporal relation for V_reg
+		{
+			Eigen::VectorXcd remnant = Eigen::VectorXcd::Zero(node_num + point_num);
+			if(term_iter == 1){
+				continue;
+			}
+
+			for(int term_iter_2 = 1; term_iter_2 < term_iter; ++ term_iter_2){
+				remnant = remnant.array() - V_up_reg.col(term_iter_2).array() * V_down_reg.col(term_iter - term_iter_2).array();
+			}
+		}
+
+		// Reciporal relation for V_hat
+		{
+			Eigen::VectorXcd remnant = Eigen::VectorXcd::Zero(node_num + point_num);
+			if(term_iter == 1){
+				continue;
+			}
+
+			for(int terms_iter_2 = 1; terms_iter_2 < term_iter; ++ terms_iter_2){
+				remnant = remnant.array() - V_up_hat.col(terms_iter_2).array() * V_down_hat.col(term_iter - terms_iter_2).array();
+			}
+		}
 	}
-
-	// Update rhs of the equation
-	Eigen::VectorXcd rhs = Eigen::VectorXcd::Zero(4* (node_num + point_num));
-	rhs.head(node_num + point_num - 1) = Power_network_inform.power_flow.power_node.row(tick).tail(node_num + point_num - 1).conjugate().transpose();
-	rhs.head(node_num + point_num - 1) = rhs.head(node_num + point_num - 1).array() / V_down_hat.col(term_iter - 1).tail(node_num + point_num - 1).array();
-	rhs.segment(2 * (node_num + point_num), node_num + point_num - 1) = Power_network_inform.power_flow.power_node.row(tick).tail(node_num + point_num - 1).transpose();
-	rhs.segment(2 * (node_num + point_num), node_num + point_num - 1) = rhs.segment(2 * (node_num + point_num), node_num + point_num - 1).array() / V_down_reg.col(term_iter - 1).tail(node_num + point_num - 1).array();
 }
