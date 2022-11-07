@@ -53,17 +53,19 @@ namespace configuration{
 				std::cout << "\n";
 			}
 
-			std::cout << "Start tick?                              | ";
-			int start_tick;
-			std::cin >> start_tick;
-			this->time_boundary.push_back(start_tick);
-			std::cout << "\n";
+			if(this->estimation_flag || this->simulation_flag){
+				std::cout << "Start tick?                              | ";
+				int start_tick;
+				std::cin >> start_tick;
+				this->time_boundary.push_back(start_tick);
+				std::cout << "\n";
 
-			std::cout << "Run time length?                         | ";
-			int time_length;
-			std::cin >> time_length;
-			this->time_boundary.push_back(time_length);
-			std::cout << "\n";
+				std::cout << "Run time length?                         | ";
+				int time_length;
+				std::cin >> time_length;
+				this->time_boundary.push_back(time_length);
+				std::cout << "\n";
+			}
 		}
 	};
 }

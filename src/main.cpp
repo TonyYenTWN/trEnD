@@ -18,6 +18,11 @@ int main(){
 		process_par.process_bool_set();
 	}
 
+	if(!process_par.estimation_flag && !process_par.simulation_flag){
+		std::cout << "No process selected. Exit program...";
+		return 0;
+	}
+
 	// Initialization of power network information
 	power_network::network_inform Power_network_inform;
 	power_network::power_network_input_process(Power_network_inform, "csv/input/power_network/");

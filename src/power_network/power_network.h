@@ -12,7 +12,7 @@
 namespace power_network{
 	namespace parameters{
 		static inline double loss_factor(){
-			double value = .03;
+			double value = 0.;
 			return value;
 		}
 	}
@@ -297,7 +297,7 @@ namespace power_network{
 			int level_count = 0;
 			this->voltage_base_levels.insert(std::make_pair(voltage_max, level_count));
 			this->impedenace_base_levels.insert(std::make_pair(voltage_max, (double) voltage_max * voltage_max / this->s_base * 3));
-			this->power_limit.insert(std::make_pair(voltage_max, (double) 1.5 * voltage_max));
+			this->power_limit.insert(std::make_pair(voltage_max, (double) voltage_max));
 			//std::cout << voltage_base_levels[voltage_max] << "\t" <<  voltage_max << "\t" << impedenace_base_levels[voltage_max] << "\n";
 
 			std::vector <int> voltage_base_sorted(edges.voltage_base.data(), edges.voltage_base.data() + edges.voltage_base.size());
@@ -308,7 +308,7 @@ namespace power_network{
 					level_count += 1;
 					this->voltage_base_levels.insert(std::make_pair(voltage_max, level_count));
 					this->impedenace_base_levels.insert(std::make_pair(voltage_max, (double) voltage_max * voltage_max / this->s_base * 3));
-					this->power_limit.insert(std::make_pair(voltage_max, (double) 1.5 * voltage_max));
+					this->power_limit.insert(std::make_pair(voltage_max, (double) voltage_max));
 					//std::cout << voltage_base_levels[voltage_max] << "\t" <<  voltage_max << "\t" << impedenace_base_levels[voltage_max] << "\n";
 				}
 			}
@@ -325,6 +325,8 @@ namespace power_network{
     */
  	struct power_flow{
 		Eigen::SparseMatrix <std::complex <double>> nodal_admittance;
+		Eigen::SparseQR <Eigen::SparseMatrix <std::complex <double>>, Eigen::COLAMDOrdering <int>> solver_reg;
+		Eigen::SparseQR <Eigen::SparseMatrix <std::complex <double>>, Eigen::COLAMDOrdering <int>> solver_hat;
 		Eigen::VectorXi node_type;
 		Eigen::MatrixXcd voltage;
 		Eigen::MatrixXcd power_node;

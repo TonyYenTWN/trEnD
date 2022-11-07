@@ -171,13 +171,25 @@ void power_network::HELM_Set(network_inform &Power_network_inform){
 		Y_n_trip.push_back(Eigen::TripletXcd(node_iter, node_iter, Y_n_Diag(node_iter)));
 	}
 
+	// Store the nodal admittance matrix and
+	Power_network_inform.power_flow.nodal_admittance = Eigen::SparseMatrix <std::complex <double>> (node_num + point_num, node_num + point_num);
+	Power_network_inform.power_flow.nodal_admittance.setFromTriplets(Y_n_trip.begin(), Y_n_trip.end());
+
 	// -------------------------------------------------------------------------------
-	// Store the nodal admittance matrix and intialize
+	// Set the solver for iterative process
+	// -------------------------------------------------------------------------------
+	// Find reduced nodal admittance matrix
+	// Assume all PQ Nodes
+	Eigen::SparseMatrix <std::complex <double>> Y_n_small = Power_network_inform.power_flow.nodal_admittance.bottomRows(node_num + point_num - 1);
+	Y_n_small = Y_n_small.rightCols(node_num + point_num - 1);
+	Power_network_inform.power_flow.solver_reg.compute(Y_n_small);
+	Power_network_inform.power_flow.solver_hat.compute(Y_n_small.conjugate());
+
+	// -------------------------------------------------------------------------------
+	// Initialize
 	// -------------------------------------------------------------------------------
 	int Time = configuration::parameters::Time();
 
-	Power_network_inform.power_flow.nodal_admittance = Eigen::SparseMatrix <std::complex <double>> (node_num + point_num, node_num + point_num);
-	Power_network_inform.power_flow.nodal_admittance.setFromTriplets(Y_n_trip.begin(), Y_n_trip.end());
 	Power_network_inform.power_flow.power_edge = Eigen::MatrixXcd::Zero(Time, edge_trans_num);
 	Power_network_inform.power_flow.power_node = Eigen::MatrixXcd::Zero(Time, node_num + point_num);
 	Power_network_inform.power_flow.voltage = Eigen::MatrixXcd::Zero(Time, node_num + point_num);
@@ -297,45 +309,6 @@ void power_network::HELM_Node_Update(int tick, network_inform &Power_network_inf
 void power_network::HELM_Solve(int tick, network_inform &Power_network_inform){
 	int node_num = Power_network_inform.nodes.bidding_zone.size();
 	int point_num = Power_network_inform.points.bidding_zone.size();
-	auto Y_n = Power_network_inform.power_flow.nodal_admittance;
-
-	// ---------------------------------------------------------------------------------------------
-	// Set the matrix for the system of iterative linear equations
-	// ---------------------------------------------------------------------------------------------
-	// Assume all PQ Nodes
-	// Order of variables:
-	// {V}, {1 / V}, {\hat V}, {1 / \hat V}
-	std::vector<Eigen::TripletXcd> Mat_trip_const;
-	Mat_trip_const.reserve(2 * Power_network_inform.power_flow.nodal_admittance.nonZeros() + 6 * (node_num + point_num));
-
-	// Entries from original nodal admittance matrix
-	for(int col_iter = 0; col_iter < Y_n.outerSize(); ++ col_iter){
-		for(Eigen::SparseMatrix<std::complex <double>>::InnerIterator inner_iter(Y_n, col_iter); inner_iter; ++ inner_iter){
-			if(inner_iter.row() == 0){
-				continue;
-			}
-
-			std::complex <double> y_conj = inner_iter.value();
-			y_conj = std::conj(y_conj);
-			Mat_trip_const.push_back(Eigen::TripletXcd(inner_iter.row() - 1, inner_iter.col(), inner_iter.value()));
-			Mat_trip_const.push_back(Eigen::TripletXcd(2 * (node_num + point_num) + inner_iter.row() - 1, 2 * (node_num + point_num) + inner_iter.col(), y_conj));
-		}
-	}
-
-	// Flow conservation law
-	for(int bus_iter = 0; bus_iter < node_num + point_num; ++ bus_iter){
-		int row_ID;
-		int col_ID;
-		std::complex <double> s_bus = Power_network_inform.power_flow.power_node(tick, bus_iter);
-
-		row_ID = node_num + point_num - 1;
-		col_ID = node_num + point_num + bus_iter;
-		Mat_trip_const.push_back(Eigen::TripletXcd(row_ID, col_ID, s_bus));
-
-		row_ID += 2 * (node_num + point_num);
-		col_ID += 2 * (node_num + point_num);
-		Mat_trip_const.push_back(Eigen::TripletXcd(row_ID, col_ID, std::conj(s_bus)));
-	}
 
 	// -------------------------------------------------------------------------------
 	// Initialization of power series coefficients
@@ -355,60 +328,52 @@ void power_network::HELM_Solve(int tick, network_inform &Power_network_inform){
 	V_down_hat.col(0) = Eigen::VectorXcd::Ones(node_num + point_num);
 
 	// -------------------------------------------------------------------------------
-	// Solve linear system for each iteration
+	// Iteratively solve the linear equations
 	// -------------------------------------------------------------------------------
-	std::vector<Eigen::TripletXcd> Mat_trip_temp;
-
 	for(int term_iter = 1; term_iter < power_terms; ++ term_iter){
-		Mat_trip_temp = Mat_trip_const;
-		Mat_trip_temp.reserve(2 * Power_network_inform.power_flow.nodal_admittance.nonZeros() + 6 * (node_num + point_num));
-		// Update reciprocal relation
-		for(int bus_iter = 0; bus_iter < node_num + point_num; ++ bus_iter){
-			int row_ID;
-			int col_ID;
-
-			row_ID = node_num + point_num + bus_iter;
-			col_ID = bus_iter;
-			Mat_trip_temp.push_back(Eigen::TripletXcd(row_ID, col_ID, V_down_reg(bus_iter, term_iter - 1)));
-			col_ID += node_num + point_num;
-			Mat_trip_temp.push_back(Eigen::TripletXcd(row_ID, col_ID, V_up_reg(bus_iter, term_iter - 1)));
-
-			row_ID += 2 * (node_num + point_num);
-			col_ID += node_num + point_num;
-			Mat_trip_temp.push_back(Eigen::TripletXcd(row_ID, col_ID, V_down_hat(bus_iter, term_iter - 1)));
-			col_ID += node_num + point_num;
-			Mat_trip_temp.push_back(Eigen::TripletXcd(row_ID, col_ID, V_up_hat(bus_iter, term_iter - 1)));
+		// Solve power flow relations for V_reg and 1 / V_hat
+		{
+			Eigen::VectorXcd rhs = Power_network_inform.power_flow.power_node.row(tick).tail(node_num + point_num - 1).conjugate().transpose();
+			rhs = rhs.array() * V_down_hat.col(term_iter - 1).tail(node_num + point_num - 1).array();
+			V_up_reg.col(term_iter).tail(node_num + point_num - 1) = Power_network_inform.power_flow.solver_reg.solve(rhs);
 		}
 
-		// Update rhs of the equation
-		Eigen::VectorXcd rhs = Eigen::VectorXcd::Zero(4* (node_num + point_num));
-		rhs.head(node_num + point_num - 1) = Power_network_inform.power_flow.power_node.row(tick).tail(node_num + point_num - 1).conjugate().transpose();
-		rhs.head(node_num + point_num - 1) = rhs.head(node_num + point_num - 1).array() / V_down_hat.col(term_iter - 1).tail(node_num + point_num - 1).array();
-		rhs.segment(2 * (node_num + point_num), node_num + point_num - 1) = Power_network_inform.power_flow.power_node.row(tick).tail(node_num + point_num - 1).transpose();
-		rhs.segment(2 * (node_num + point_num), node_num + point_num - 1) = rhs.segment(2 * (node_num + point_num), node_num + point_num - 1).array() / V_down_reg.col(term_iter - 1).tail(node_num + point_num - 1).array();
-
-		// Reciporal relation for V_reg
+		// Solve power flow relations for V_hat and 1 / V_reg
 		{
-			Eigen::VectorXcd remnant = Eigen::VectorXcd::Zero(node_num + point_num);
-			if(term_iter == 1){
-				continue;
-			}
+			Eigen::VectorXcd rhs = Power_network_inform.power_flow.power_node.row(tick).tail(node_num + point_num - 1).transpose();
+			rhs = rhs.array() * V_down_reg.col(term_iter - 1).tail(node_num + point_num - 1).array();
+			V_up_hat.col(term_iter).tail(node_num + point_num - 1) = Power_network_inform.power_flow.solver_reg.solve(rhs);
+		}
 
+		// Update reciprocal relation for V_reg and 1 / V_reg
+		{
+			Eigen::VectorXcd remnant = V_up_reg.col(term_iter).array() * V_down_reg.col(0).array();
 			for(int term_iter_2 = 1; term_iter_2 < term_iter; ++ term_iter_2){
-				remnant = remnant.array() - V_up_reg.col(term_iter_2).array() * V_down_reg.col(term_iter - term_iter_2).array();
+				remnant = remnant.array() + V_up_reg.col(term_iter - term_iter_2).array() * V_down_reg.col(term_iter_2).array();
 			}
+			V_down_reg.col(term_iter) = -remnant.array() / V_up_reg.col(0).array();
 		}
 
-		// Reciporal relation for V_hat
+		// Update reciprocal relation for V_hat and 1 / V_hat
 		{
-			Eigen::VectorXcd remnant = Eigen::VectorXcd::Zero(node_num + point_num);
-			if(term_iter == 1){
-				continue;
+			Eigen::VectorXcd remnant = V_up_hat.col(term_iter).array() * V_down_hat.col(0).array();
+			for(int term_iter_2 = 1; term_iter_2 < term_iter; ++ term_iter_2){
+				remnant = remnant.array() + V_up_hat.col(term_iter - term_iter_2).array() * V_down_hat.col(term_iter_2).array();
 			}
-
-			for(int terms_iter_2 = 1; terms_iter_2 < term_iter; ++ terms_iter_2){
-				remnant = remnant.array() - V_up_hat.col(terms_iter_2).array() * V_down_hat.col(term_iter - terms_iter_2).array();
-			}
+			V_down_hat.col(term_iter) = -remnant.array() / V_up_hat.col(0).array();
 		}
+	}
+
+	// Sanity check
+	Eigen::VectorXcd V_reg_dir = V_up_reg * Eigen::VectorXcd::Ones(node_num + point_num);
+	for(int node_iter = 0; node_iter < node_num; ++ node_iter){
+		std::cout << "Node " << node_iter << "|\t";
+		std::cout << "Voltage: " << abs(V_reg_dir(node_iter)) << "\t";
+		std::cout << "Phase: " << arg(V_reg_dir(node_iter)) << "\n";
+	}
+	for(int point_iter = 0; point_iter < point_num; ++ point_iter){
+		std::cout << "Point " << point_iter << "|\t";
+		std::cout << "Voltage: " << abs(V_reg_dir(node_num + point_iter)) << "\t";
+		std::cout << "Phase: " << arg(V_reg_dir(node_num + point_iter)) << "\n";
 	}
 }
