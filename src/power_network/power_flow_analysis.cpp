@@ -366,14 +366,22 @@ void power_network::HELM_Solve(int tick, network_inform &Power_network_inform){
 
 	// Sanity check
 	Eigen::VectorXcd V_reg_dir = V_up_reg * Eigen::VectorXcd::Ones(node_num + point_num);
-	for(int node_iter = 0; node_iter < node_num; ++ node_iter){
-		std::cout << "Node " << node_iter << "|\t";
-		std::cout << "Voltage: " << abs(V_reg_dir(node_iter)) << "\t";
-		std::cout << "Phase: " << arg(V_reg_dir(node_iter)) << "\n";
-	}
-	for(int point_iter = 0; point_iter < point_num; ++ point_iter){
-		std::cout << "Point " << point_iter << "|\t";
-		std::cout << "Voltage: " << abs(V_reg_dir(node_num + point_iter)) << "\t";
-		std::cout << "Phase: " << arg(V_reg_dir(node_num + point_iter)) << "\n";
-	}
+	std::cout << "AC Power Flow:\n";
+	std::cout << "Transmission Level:\n";
+	std::cout << "Voltage:\n" << V_reg_dir.head(node_num).array().abs().minCoeff() << "\t" << V_reg_dir.head(node_num).array().abs().maxCoeff() << "\n";
+	std::cout << "Phase:\n" << V_reg_dir.head(node_num).array().arg().minCoeff() << "\t" << V_reg_dir.head(node_num).array().arg().maxCoeff() << "\n\n";
+	std::cout << "Distribution Level:\n";
+	std::cout << "Voltage:\n" << V_reg_dir.tail(point_num).array().abs().minCoeff() << "\t" << V_reg_dir.tail(point_num).array().abs().maxCoeff() << "\n";
+	std::cout << "Phase:\n" << V_reg_dir.tail(point_num).array().arg().minCoeff() << "\t" << V_reg_dir.tail(point_num).array().arg().maxCoeff() << "\n\n";
+
+//	for(int node_iter = 0; node_iter < node_num; ++ node_iter){
+//		std::cout << "Node " << node_iter << "|\t";
+//		std::cout << "Voltage: " << abs(V_reg_dir(node_iter)) << "\t";
+//		std::cout << "Phase: " << arg(V_reg_dir(node_iter)) << "\n";
+//	}
+//	for(int point_iter = 0; point_iter < point_num; ++ point_iter){
+//		std::cout << "Point " << point_iter << "|\t";
+//		std::cout << "Voltage: " << abs(V_reg_dir(node_num + point_iter)) << "\t";
+//		std::cout << "Phase: " << arg(V_reg_dir(node_num + point_iter)) << "\n";
+//	}
 }

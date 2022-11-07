@@ -241,6 +241,7 @@ void power_market::TSO_Market_Scheduled_Results_Get(int tick, market_inform &Mar
 	// Store scheduled power flow
 	Market.network.confirmed_power.row(tick) = sol_vec.tail(Market.network.num_edges);
 
+	std::cout << "DC Optimal Power Flow:\n";
 	std::cout << Market.confirmed.supply.row(tick).sum() << "\t" << Market.confirmed.demand.row(tick).sum() << "\n";
 	std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).array().abs().sum() << "\n";
 	std::cout << sol_vec.head(Market.network.num_vertice).minCoeff() << " " << sol_vec.head(Market.network.num_vertice).maxCoeff()  << "\n";
@@ -389,6 +390,7 @@ void power_market::TSO_Market_Actual_Results_Get(int tick, market_inform &Market
 	// Store scheduled power flow
 	Market.network.actual_power.row(tick) = sol_vec.tail(Market.network.num_edges);
 
+	std::cout << "DC Optimal Power Flow:\n";
 	std::cout << Market.actual.supply.row(tick).sum() << "\t" << Market.actual.demand.row(tick).sum() << "\n";
 	std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).array().abs().sum() << "\n";
 	std::cout << sol_vec.head(Market.network.num_vertice).minCoeff() << " " << sol_vec.head(Market.network.num_vertice).maxCoeff()  << "\n";

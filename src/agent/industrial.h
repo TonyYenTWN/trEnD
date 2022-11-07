@@ -11,7 +11,7 @@ namespace agent{
 			}
 
 			static inline double power_factor(){
-				double value = 1.;
+				double value = .97;
 				return value;
 			}
 		}
