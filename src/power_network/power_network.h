@@ -347,7 +347,8 @@ namespace power_network{
 		Eigen::SparseMatrix <std::complex <double>> nodal_admittance;
 		Eigen::SparseQR <Eigen::SparseMatrix <std::complex <double>>, Eigen::COLAMDOrdering <int>> solver_reg;
 		Eigen::SparseQR <Eigen::SparseMatrix <std::complex <double>>, Eigen::COLAMDOrdering <int>> solver_hat;
-		Eigen::VectorXi node_type;
+		std::vector <int> PU_bus;
+		std::vector <int> PQ_bus;
 		Eigen::MatrixXcd voltage;
 		Eigen::MatrixXcd power_node;
 		Eigen::MatrixXcd power_edge;

@@ -23,7 +23,7 @@
 // {S} . {1. / V}(s)  = 0.
 // {Conj(S)} . {1. / \hat V}(s) = 0.
 
-void power_network::HELM_Set(network_inform &Power_network_inform){
+void power_network::HELM_Set(network_inform &Power_network_inform, power_market::market_whole_inform &Power_market_inform){
 	int node_num = Power_network_inform.nodes.bidding_zone.size();
 	int point_num = Power_network_inform.points.bidding_zone.size();
 	int edge_trans_num = Power_network_inform.edges.distance.size();
@@ -174,6 +174,60 @@ void power_network::HELM_Set(network_inform &Power_network_inform){
 	// Store the nodal admittance matrix and
 	Power_network_inform.power_flow.nodal_admittance = Eigen::SparseMatrix <std::complex <double>> (node_num + point_num, node_num + point_num);
 	Power_network_inform.power_flow.nodal_admittance.setFromTriplets(Y_n_trip.begin(), Y_n_trip.end());
+
+	// -------------------------------------------------------------------------------
+	// Determine type of buses
+	// -------------------------------------------------------------------------------
+	// Assume only HV power suppliers can give reactive power
+	Power_network_inform.power_flow.PQ_bus.reserve(node_num + point_num);
+	Power_network_inform.power_flow.PU_bus.reserve(node_num);
+	Eigen::VectorXi PU_bus = Eigen::VectorXi::Zero(node_num);
+	PU_bus(0) = 1;
+
+	int hydro_HV_plant_num = Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant.size();
+	for(int agent_iter = 0; agent_iter < hydro_HV_plant_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].point_ID;
+		int node_ID = Power_network_inform.points.node(point_ID);
+
+		if(PU_bus(node_ID) == 1){
+			continue;
+		}
+
+		PU_bus(node_ID) = 1;
+	}
+
+	int wind_HV_plant_num = Power_market_inform.agent_profiles.power_supplier.wind.HV_plant.size();
+	for(int agent_iter = 0; agent_iter < wind_HV_plant_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].point_ID;
+		int node_ID = Power_network_inform.points.node(point_ID);
+
+		if(PU_bus(node_ID) == 1){
+			continue;
+		}
+
+		PU_bus(node_ID) = 1;
+	}
+
+	int pump_HV_plant_num = Power_market_inform.agent_profiles.power_supplier.pump_storage.HV.size();
+	for(int agent_iter = 0; agent_iter < pump_HV_plant_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].point_ID;
+		int node_ID = Power_network_inform.points.node(point_ID);
+
+		if(PU_bus(node_ID) == 1){
+			continue;
+		}
+
+		PU_bus(node_ID) = 1;
+	}
+
+	for(int node_iter = 1; node_iter < node_num; ++ node_iter){
+		if(PU_bus(node_iter) == 1){
+			Power_network_inform.power_flow.PU_bus.push_back(node_iter);
+		}
+		else{
+			Power_network_inform.power_flow.PQ_bus.push_back(node_iter);
+		}
+	}
 
 	// -------------------------------------------------------------------------------
 	// Set the solver for iterative process
