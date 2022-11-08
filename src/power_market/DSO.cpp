@@ -6,6 +6,10 @@
 
 void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::network_inform &Power_network_inform, int Time){
 	double pi = boost::math::constants::pi<double>();
+	double power_limit_conn = Power_network_inform.tech_parameters.power_limit_conn;
+	double power_limit_distr = Power_network_inform.tech_parameters.power_limit_distr;
+	double z_base_low = Power_network_inform.tech_parameters.z_base_distr();
+	double z_base_high = Power_network_inform.tech_parameters.z_base_conn();
 	DSO_Markets.clear();
 	DSO_Markets = std::vector <market_inform> (Power_network_inform.DSO_cluster.size());
 
@@ -27,8 +31,6 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 
 		// Set compact incidence matrix and edge admittance matrix
 		double tol = 1.;
-		double power_limit_connection = 1.;
-		double power_limit_distr = .5;
 		DSO_Markets[DSO_iter].network.incidence.reserve(DSO_Markets[DSO_iter].network.num_vertice * DSO_Markets[DSO_iter].network.num_vertice);
 		DSO_Markets[DSO_iter].network.admittance.reserve(DSO_Markets[DSO_iter].network.num_vertice * DSO_Markets[DSO_iter].network.num_vertice);
 		std::vector <double> power_limit;
@@ -41,8 +43,8 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 		// N: mean line density at the neighborhood of x_1 containing also x_2
 		// z: per length impedence of power lines
 		// d: fractional dimension of the power line distribution
-		double z_base_low = pow(Power_network_inform.tech_parameters.voltage_cutoff_distr, 2.) / Power_network_inform.tech_parameters.s_base * 3.;
-		double z_base_high = pow(Power_network_inform.tech_parameters.voltage_cutoff_connection, 2.) / Power_network_inform.tech_parameters.s_base * 3.;
+		//= pow(Power_network_inform.tech_parameters.voltage_cutoff_distr, 2.) / Power_network_inform.tech_parameters.s_base;
+		//double z_base_high = pow(Power_network_inform.tech_parameters.voltage_cutoff_connection, 2.) / Power_network_inform.tech_parameters.s_base;
 		double partition_func = 0.;
 		DSO_Markets[DSO_iter].network.num_vertice = DSO_Markets[DSO_iter].num_zone;
 		Eigen::MatrixXd num_line = Eigen::MatrixXd::Ones(DSO_point_num, DSO_point_num);
@@ -82,7 +84,7 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 			int node_ID = Power_network_inform.DSO_cluster[DSO_iter].nodes_ID[row_iter];
 			int min_point_ID;
 			double distance_min = std::numeric_limits<double>::infinity();
-			double line_density_connection = Power_network_inform.tech_parameters.line_density_connection * DSO_point_num / DSO_node_num;
+			double line_density_conn = Power_network_inform.tech_parameters.line_density_conn * DSO_point_num / DSO_node_num;
 
 			for(int col_iter = 0; col_iter < DSO_point_num ; ++ col_iter){
 				int point_ID = Power_network_inform.DSO_cluster[DSO_iter].points_ID[col_iter];
@@ -101,13 +103,13 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 			// Series admittance
 			double y_series = 1.;
 			y_series /= distance_min;
-			y_series /= Power_network_inform.tech_parameters.z_distr_series.imag();
+			y_series /= Power_network_inform.tech_parameters.z_conn_series.imag();
 			y_series *= z_base_high;
-			y_series *= line_density_connection;
+			y_series *= line_density_conn;
 
 			DSO_Markets[DSO_iter].network.incidence.push_back(Eigen::Vector2i(min_point_ID, DSO_point_num + row_iter));
 			DSO_Markets[DSO_iter].network.admittance.push_back(y_series);
-			power_limit.push_back(power_limit_connection * line_density_connection);
+			power_limit.push_back(power_limit_conn * line_density_conn);
 		}
 		DSO_Markets[DSO_iter].network.num_edges = DSO_Markets[DSO_iter].network.incidence.size();
 		//std::cout << DSO_iter << ":\t" << DSO_Markets[DSO_iter].num_zone << "\t" << DSO_Markets[DSO_iter].network.num_edges << "\n";

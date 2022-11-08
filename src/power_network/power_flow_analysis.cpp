@@ -69,12 +69,12 @@ void power_network::HELM_Set(network_inform &Power_network_inform){
 	}
 
 	// Distribution level
+	double z_base_low = Power_network_inform.tech_parameters.z_base_distr();
+	double z_base_high = Power_network_inform.tech_parameters.z_base_conn();
 	for(int DSO_iter = 0; DSO_iter < DSO_num; ++ DSO_iter){
 		int DSO_point_num = Power_network_inform.DSO_cluster[DSO_iter].points_ID.size();
 		int DSO_node_num = Power_network_inform.DSO_cluster[DSO_iter].nodes_ID.size();
 
-		double z_base_low = pow(Power_network_inform.tech_parameters.voltage_cutoff_distr, 2.) / Power_network_inform.tech_parameters.s_base * 3.;
-		double z_base_high = pow(Power_network_inform.tech_parameters.voltage_cutoff_connection, 2.) / Power_network_inform.tech_parameters.s_base * 3.;
 		double partition_func = 0.;
 		Eigen::MatrixXd num_line = Eigen::MatrixXd::Ones(DSO_point_num, DSO_point_num);
 		Eigen::MatrixXd distance = Eigen::MatrixXd::Zero(DSO_point_num, DSO_point_num);
@@ -145,16 +145,16 @@ void power_network::HELM_Set(network_inform &Power_network_inform){
 			// Series admittance
 			std::complex <double> y_series(1., 0.);
 			y_series /= distance_min;
-			y_series /= Power_network_inform.tech_parameters.z_distr_series;
+			y_series /= Power_network_inform.tech_parameters.z_conn_series;
 			y_series *= z_base_high;
-			y_series *= Power_network_inform.tech_parameters.line_density_connection * DSO_point_num / DSO_node_num;
+			y_series *= Power_network_inform.tech_parameters.line_density_conn * DSO_point_num / DSO_node_num;
 
 			// Shunt admittance
 			std::complex <double> y_shunt(1., 0.);
 			y_shunt *= distance_min;
-			y_shunt *= Power_network_inform.tech_parameters.y_distr_shunt;
+			y_shunt *= Power_network_inform.tech_parameters.y_conn_shunt;
 			y_shunt *= z_base_high;
-			y_shunt *= Power_network_inform.tech_parameters.line_density_connection * DSO_point_num / DSO_node_num;
+			y_shunt *= Power_network_inform.tech_parameters.line_density_conn * DSO_point_num / DSO_node_num;
 
 			// Triplet for series impedence
 			Y_n_trip.push_back(Eigen::TripletXcd(node_ID, node_num + min_point_ID, -y_series));
@@ -313,7 +313,7 @@ void power_network::HELM_Solve(int tick, network_inform &Power_network_inform){
 	// -------------------------------------------------------------------------------
 	// Initialization of power series coefficients
 	// -------------------------------------------------------------------------------
-	int power_terms = 20;
+	int power_terms = 100;
 	Eigen::MatrixXcd V_up_reg = Eigen::MatrixXcd::Zero(node_num + point_num, power_terms);
 	Eigen::MatrixXcd V_up_hat = Eigen::MatrixXcd::Zero(node_num + point_num, power_terms);
 	Eigen::MatrixXcd V_down_reg = Eigen::MatrixXcd::Zero(node_num + point_num, power_terms);
@@ -374,14 +374,9 @@ void power_network::HELM_Solve(int tick, network_inform &Power_network_inform){
 	std::cout << "Voltage:\n" << V_reg_dir.tail(point_num).array().abs().minCoeff() << "\t" << V_reg_dir.tail(point_num).array().abs().maxCoeff() << "\n";
 	std::cout << "Phase:\n" << V_reg_dir.tail(point_num).array().arg().minCoeff() << "\t" << V_reg_dir.tail(point_num).array().arg().maxCoeff() << "\n\n";
 
-//	for(int node_iter = 0; node_iter < node_num; ++ node_iter){
-//		std::cout << "Node " << node_iter << "|\t";
-//		std::cout << "Voltage: " << abs(V_reg_dir(node_iter)) << "\t";
-//		std::cout << "Phase: " << arg(V_reg_dir(node_iter)) << "\n";
-//	}
-//	for(int point_iter = 0; point_iter < point_num; ++ point_iter){
-//		std::cout << "Point " << point_iter << "|\t";
-//		std::cout << "Voltage: " << abs(V_reg_dir(node_num + point_iter)) << "\t";
-//		std::cout << "Phase: " << arg(V_reg_dir(node_num + point_iter)) << "\n";
-//	}
+	// Store results
+	Power_network_inform.power_flow.voltage.row(tick) = V_reg_dir.array();
+	Eigen::VectorXcd power_source = V_reg_dir.array() * (Power_network_inform.power_flow.nodal_admittance * V_reg_dir).array();
+	std::cout << Power_network_inform.power_flow.power_node(tick, 0) << "\t" << power_source(0) << "\n\n";
+	std::cout << Power_network_inform.power_flow.power_node(tick, 1) << "\t" << power_source(1) << "\n\n";
 }
