@@ -269,11 +269,11 @@ namespace power_network{
 		*/
 		/*@{*/
 		/** Series impedance (ohm per meter) of transmission line.*/
-		std::complex<double> z_trans_series = std::complex<double> (3. * pow(10., -5.), 3.6 * pow(10., -4.));
+		std::complex<double> z_trans_series = std::complex<double> (3. * pow(10., -5.), 2.5 * pow(10., -4.));
 		/** Shunt admittance (ohm^(-1) per meter) of transmission line.*/
 		std::complex<double> y_trans_shunt = std::complex<double> (0., 2 * pow(10., -9.));
 		/** Series impedance (ohm per meter) of HV distribution line.*/
-		std::complex<double> z_conn_series = std::complex<double> (3. * pow(10., -4.), 5. * pow(10., -4.));
+		std::complex<double> z_conn_series = std::complex<double> (3. * pow(10., -4.), 4. * pow(10., -4.));
 		/** Shunt admittance (ohm^(-1) per meter) of HV distribution line.*/
 		std::complex<double> y_conn_shunt = std::complex<double> (0., 2.5 * pow(10., -9.));
 		/** Series impedance (ohm per meter) of MV distribution line.*/
