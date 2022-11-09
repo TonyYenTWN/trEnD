@@ -179,21 +179,31 @@ void power_network::HELM_Set(network_inform &Power_network_inform, power_market:
 	// Determine type of buses
 	// -------------------------------------------------------------------------------
 	// Assume only HV power suppliers can give reactive power
-	Power_network_inform.power_flow.PQ_bus.reserve(node_num + point_num);
+	Power_network_inform.power_flow.PQ_bus.reserve(node_num);
 	Power_network_inform.power_flow.PU_bus.reserve(node_num);
-	Eigen::VectorXi PU_bus = Eigen::VectorXi::Zero(node_num);
-	PU_bus(0) = 1;
+	Power_network_inform.power_flow.ref_bus.reserve(node_num);
+	Eigen::VectorXi node_type = Eigen::VectorXi::Zero(node_num);
+	int node_ref_num;
+	for(int edge_iter = 0; edge_iter < Power_network_inform.cbt.entry_bz.size(); ++ edge_iter){
+		if(Power_network_inform.cbt.entry_node_num(edge_iter) == 0){
+			continue;
+		}
+		node_ref_num = (int) Power_network_inform.cbt.entry_nodes(edge_iter, 0);
+		break;
+	}
+	std::cout << node_ref_num << "\n";
+	node_type(node_ref_num) = 2;
 
 	int hydro_HV_plant_num = Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant.size();
 	for(int agent_iter = 0; agent_iter < hydro_HV_plant_num; ++ agent_iter){
 		int point_ID = Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].point_ID;
 		int node_ID = Power_network_inform.points.node(point_ID);
 
-		if(PU_bus(node_ID) == 1){
+		if(node_type(node_ID) != 0){
 			continue;
 		}
 
-		PU_bus(node_ID) = 1;
+		node_type(node_ID) = 1;
 	}
 
 	int wind_HV_plant_num = Power_market_inform.agent_profiles.power_supplier.wind.HV_plant.size();
@@ -201,11 +211,11 @@ void power_network::HELM_Set(network_inform &Power_network_inform, power_market:
 		int point_ID = Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].point_ID;
 		int node_ID = Power_network_inform.points.node(point_ID);
 
-		if(PU_bus(node_ID) == 1){
+		if(node_type(node_ID) != 0){
 			continue;
 		}
 
-		PU_bus(node_ID) = 1;
+		node_type(node_ID) = 1;
 	}
 
 	int pump_HV_plant_num = Power_market_inform.agent_profiles.power_supplier.pump_storage.HV.size();
@@ -213,19 +223,21 @@ void power_network::HELM_Set(network_inform &Power_network_inform, power_market:
 		int point_ID = Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].point_ID;
 		int node_ID = Power_network_inform.points.node(point_ID);
 
-		if(PU_bus(node_ID) == 1){
+		if(node_type(node_ID) != 0){
 			continue;
 		}
 
-		PU_bus(node_ID) = 1;
+		node_type(node_ID) = 1;
 	}
 
 	for(int node_iter = 1; node_iter < node_num; ++ node_iter){
-		if(PU_bus(node_iter) == 1){
-			Power_network_inform.power_flow.PU_bus.push_back(node_iter);
-		}
-		else{
-			Power_network_inform.power_flow.PQ_bus.push_back(node_iter);
+		switch (node_type(node_iter)){
+			case 0:
+				Power_network_inform.power_flow.PQ_bus.push_back(node_iter);
+			case 1:
+				Power_network_inform.power_flow.PU_bus.push_back(node_iter);
+			case 2:
+				Power_network_inform.power_flow.ref_bus.push_back(node_iter);
 		}
 	}
 
@@ -233,7 +245,6 @@ void power_network::HELM_Set(network_inform &Power_network_inform, power_market:
 	// Set the solver for iterative process
 	// -------------------------------------------------------------------------------
 	// Find reduced nodal admittance matrix
-	// Assume all PQ Nodes
 	Eigen::SparseMatrix <std::complex <double>> Y_n_small = Power_network_inform.power_flow.nodal_admittance.bottomRows(node_num + point_num - 1);
 	Y_n_small = Y_n_small.rightCols(node_num + point_num - 1);
 	Power_network_inform.power_flow.solver_reg.compute(Y_n_small);
