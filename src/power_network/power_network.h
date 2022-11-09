@@ -241,7 +241,7 @@ namespace power_network{
 		/** Voltage level of connection between the transmission and the distribution network.*/
 		int voltage_cutoff_conn = 66;
 		/** Cutoff voltage level of the distribution network.*/
-		int voltage_cutoff_distr = 20;
+		int voltage_cutoff_distr = 22;
 		/** Power carrying capacity per voltage (MW / kV) of transmission lines.*/
 		double power_limit_trans = 1.;
 		/** Power carrying capacity per voltage (MW / kV) of HV distribution lines.*/
@@ -257,7 +257,7 @@ namespace power_network{
 		/** Density of power lines per point connecting distribution and transmission power network.*/
 		double line_density_conn = 1.;
 		/** Total number of power lines in the distribution network.*/
-		int line_num_distr = 124245;
+		int line_num_distr = 122782; // >=0: 126435; >= 40: 3653
 		/** Density of power lines per point in the distribution network.*/
 		double line_density_distr;
 		/** Fractional dimension of the distribution network.*/
@@ -347,8 +347,9 @@ namespace power_network{
 		Eigen::SparseMatrix <std::complex <double>> nodal_admittance;
 		Eigen::SparseQR <Eigen::SparseMatrix <std::complex <double>>, Eigen::COLAMDOrdering <int>> solver_reg;
 		Eigen::SparseQR <Eigen::SparseMatrix <std::complex <double>>, Eigen::COLAMDOrdering <int>> solver_hat;
-		std::vector <int> PU_bus;
 		std::vector <int> PQ_bus;
+		std::vector <int> PU_bus;
+		std::vector <int> ref_bus;
 		Eigen::MatrixXcd voltage;
 		Eigen::MatrixXcd power_node;
 		Eigen::MatrixXcd power_edge;
