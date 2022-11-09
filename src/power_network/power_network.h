@@ -350,9 +350,12 @@ namespace power_network{
 		std::vector <int> PQ_bus;
 		std::vector <int> PU_bus;
 		std::vector <int> ref_bus;
-		Eigen::MatrixXcd voltage;
-		Eigen::MatrixXcd power_node;
-		Eigen::MatrixXcd power_edge;
+		Eigen::MatrixXcd voltage_abs;
+		Eigen::MatrixXcd voltage_arg;
+		Eigen::MatrixXcd P_node;
+		Eigen::MatrixXcd Q_node;
+		Eigen::MatrixXcd P_edge;
+		Eigen::MatrixXcd Q_edge;
 	};
 
 	struct network_inform{
