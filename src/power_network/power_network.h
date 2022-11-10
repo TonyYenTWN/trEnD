@@ -345,8 +345,10 @@ namespace power_network{
     */
  	struct power_flow{
 		Eigen::SparseMatrix <std::complex <double>> nodal_admittance;
-		Eigen::SparseQR <Eigen::SparseMatrix <std::complex <double>>, Eigen::COLAMDOrdering <int>> solver_reg;
-		Eigen::SparseQR <Eigen::SparseMatrix <std::complex <double>>, Eigen::COLAMDOrdering <int>> solver_hat;
+//		Eigen::SparseQR <Eigen::SparseMatrix <std::complex <double>>, Eigen::COLAMDOrdering <int>> solver;
+		Eigen::BiCGSTAB<Eigen::SparseMatrix<std::complex <double>>> solver;
+//		Eigen::SparseQR <Eigen::SparseMatrix <std::complex <double>>, Eigen::COLAMDOrdering <int>> solver_reg;
+//		Eigen::SparseQR <Eigen::SparseMatrix <std::complex <double>>, Eigen::COLAMDOrdering <int>> solver_hat;
 		std::vector <int> PQ_bus;
 		std::vector <int> PU_bus;
 		std::vector <int> ref_bus;
