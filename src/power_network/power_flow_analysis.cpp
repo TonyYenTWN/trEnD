@@ -255,7 +255,7 @@ void power_network::HELM_Set(network_inform &Power_network_inform, power_market:
 		}
 		else if(bus_type(bus_iter) == 1){
 			Power_network_inform.power_flow.PU_bus.push_back(bus_iter);
-			std::cout << bus_iter << ": " << bus_type(bus_iter) << "\n";
+			//std::cout << bus_iter << ": " << bus_type(bus_iter) << "\n";
 		}
 		else{
 			Power_network_inform.power_flow.ref_bus.push_back(bus_iter);
@@ -329,19 +329,23 @@ void power_network::HELM_Set(network_inform &Power_network_inform, power_market:
 	}
 	Eigen::SparseMatrix <std::complex <double>> Mat(4 * Y_n_small.rows() + Power_network_inform.power_flow.PU_bus.size(), 4 * Y_n_small.rows() + Power_network_inform.power_flow.PU_bus.size());
 	Mat.setFromTriplets(Mat_trip.begin(), Mat_trip.end());
+	Eigen::MatrixXcd Mat_dense = Eigen::MatrixXcd(Mat);
+	//std::cout << Mat_dense.topLeftCorner(10, 10) << "\n\n";
 	Power_network_inform.power_flow.solver.compute(Mat);
+	//std::cout << Power_network_inform.power_flow.solver.rank() << "\n\n";
+	//std::cout << Power_network_inform.power_flow.solver.solve(Eigen::VectorXcd::Zero(Mat.rows())) << "\n\n";
 
 	// -------------------------------------------------------------------------------
 	// Initialize
 	// -------------------------------------------------------------------------------
 	int Time = configuration::parameters::Time();
 
-	Power_network_inform.power_flow.P_edge = Eigen::MatrixXcd::Zero(Time, edge_trans_num);
-	Power_network_inform.power_flow.Q_edge = Eigen::MatrixXcd::Zero(Time, edge_trans_num);
-	Power_network_inform.power_flow.P_node = Eigen::MatrixXcd::Zero(Time, bus_num);
-	Power_network_inform.power_flow.Q_node = Eigen::MatrixXcd::Zero(Time, bus_num);
-	Power_network_inform.power_flow.voltage_abs = Eigen::MatrixXcd::Zero(Time, bus_num);
-	Power_network_inform.power_flow.voltage_arg = Eigen::MatrixXcd::Zero(Time, bus_num);
+	Power_network_inform.power_flow.P_edge = Eigen::MatrixXd::Zero(Time, edge_trans_num);
+	Power_network_inform.power_flow.Q_edge = Eigen::MatrixXd::Zero(Time, edge_trans_num);
+	Power_network_inform.power_flow.P_node = Eigen::MatrixXd::Zero(Time, bus_num);
+	Power_network_inform.power_flow.Q_node = Eigen::MatrixXd::Zero(Time, bus_num);
+	Power_network_inform.power_flow.voltage_abs = Eigen::MatrixXd::Zero(Time, bus_num);
+	Power_network_inform.power_flow.voltage_arg = Eigen::MatrixXd::Zero(Time, bus_num);
 }
 
 void power_network::HELM_Node_Update(int tick, network_inform &Power_network_inform, power_market::market_whole_inform &Power_market_inform){
@@ -455,6 +459,7 @@ void power_network::HELM_Node_Update(int tick, network_inform &Power_network_inf
 		real_power -= Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].results.actual_demand;
 		Power_network_inform.power_flow.P_node(tick, node_num + point_ID) += real_power;
 	}
+	//std::cout << Power_network_inform.power_flow.P_node.row(tick) << "\n\n";
 }
 
 void power_network::HELM_Solve(int tick, network_inform &Power_network_inform){
@@ -487,61 +492,73 @@ void power_network::HELM_Solve(int tick, network_inform &Power_network_inform){
 	// -------------------------------------------------------------------------------
 	// Iteratively solve the linear equations
 	// -------------------------------------------------------------------------------
-	Eigen::VectorXcd rhs = Eigen::VectorXcd::Zero(4 * bus_small_num + PU_bus_num);
 	for(int term_iter = 1; term_iter < power_terms; ++ term_iter){
+		std::cout << term_iter << "\n\n";
+		Eigen::VectorXcd rhs = Eigen::VectorXcd::Zero(4 * bus_small_num + PU_bus_num);
+
 		// Rhs for PU Bus
 		for(int bus_iter = 0; bus_iter < PU_bus_num; ++ bus_iter){
 			int row_ID = bus_iter;
 			int bus_ID = Power_network_inform.power_flow.PU_bus[bus_iter];
 
-			std::complex <double> P_node = (Power_network_inform.power_flow.P_node(tick, bus_ID), 0.);
+			double P_node = Power_network_inform.power_flow.P_node(tick, bus_ID);
 			std::cout << "P_node:\t" << P_node << "\tV_down:\t" << V_down_hat(bus_iter , term_iter - 1) << "\n";
 			rhs(row_ID) = P_node * V_down_hat(bus_iter , term_iter - 1);
-//			for(int term_iter_2 = 1; term_iter_2 < term_iter; term_iter ++){
-//				rhs(row_ID) += -root_i * Q_node(bus_iter , term_iter_2) * V_down_hat(bus_iter , term_iter - term_iter_2);
-//			}
-//
-//			row_ID += 2 * bus_small_num;
-//			rhs(row_ID) = P_node * V_down_reg(bus_iter , term_iter - 1);
-//			for(int term_iter_2 = 1; term_iter_2 < term_iter; term_iter_2 ++){
-//				rhs(row_ID) += root_i * Q_node(bus_iter , term_iter_2) * V_down_reg(bus_iter, term_iter - term_iter_2);
-//			}
+			for(int term_iter_2 = 1; term_iter_2 < term_iter; ++ term_iter_2){
+				rhs(row_ID) += -root_i * Q_node(bus_iter , term_iter_2) * V_down_hat(bus_iter , term_iter - term_iter_2);
+				std::cout << Q_node(bus_iter , term_iter_2) << "\n";
+//				std::cout << V_down_hat(bus_iter , term_iter - term_iter_2) << "\n";
+//				std::cout << Q_node(bus_iter , term_iter_2) * V_down_hat(bus_iter , term_iter - term_iter_2) << "\n\n";
+//				std::cout << root_i * Q_node(bus_iter , term_iter_2) * V_down_hat(bus_iter , term_iter - term_iter_2) << "\n";
+			}
+			std::cout << "\n";
+
+			row_ID += 2 * bus_small_num;
+			rhs(row_ID) = P_node * V_down_reg(bus_iter , term_iter - 1);
+			for(int term_iter_2 = 1; term_iter_2 < term_iter; ++ term_iter_2){
+				rhs(row_ID) += root_i * Q_node(bus_iter , term_iter_2) * V_down_reg(bus_iter, term_iter - term_iter_2);
+			}
 		}
-//
-//		// Rhs for PQ Bus
-//		for(int bus_iter = 0; bus_iter < PQ_bus_num; ++ bus_iter){
-//			int row_ID = PU_bus_num + bus_iter;
-//			int bus_ID = Power_network_inform.power_flow.PQ_bus[bus_iter];
-//
-//			std::complex <double> S_node = (Power_network_inform.power_flow.P_node(tick, bus_ID), Power_network_inform.power_flow.Q_node(tick, bus_ID));
-//			rhs(row_ID) = S_node * V_down_hat(bus_iter, term_iter - 1);
-//
-//			row_ID += 2 * bus_small_num;
-//			rhs(row_ID) = S_node * V_down_reg(bus_iter, term_iter - 1);
+
+		// Rhs for PQ Bus
+		for(int bus_iter = 0; bus_iter < PQ_bus_num; ++ bus_iter){
+			int row_ID = PU_bus_num + bus_iter;
+			int bus_ID = Power_network_inform.power_flow.PQ_bus[bus_iter];
+
+			std::complex <double> S_node = (Power_network_inform.power_flow.P_node(tick, bus_ID), Power_network_inform.power_flow.Q_node(tick, bus_ID));
+			rhs(row_ID) = S_node * V_down_hat(bus_iter, term_iter - 1);
+
+			row_ID += 2 * bus_small_num;
+			rhs(row_ID) = S_node * V_down_reg(bus_iter, term_iter - 1);
+		}
+
+		// Rhs for reciporal relation for V and 1/V
+
+		// Rhs for Voltage magnitude constraint
+		// Assume all reference voltage level are 1.
+		// Rhs for PU Bus
+		for(int bus_iter = 0; bus_iter < PU_bus_num; ++ bus_iter){
+			int row_ID = 4 * bus_small_num + bus_iter;
+
+			for(int term_iter_2 = 1; term_iter_2 < term_iter; term_iter_2 ++){
+				rhs(row_ID) += V_up_reg(bus_iter, term_iter_2) * V_up_hat(bus_iter, term_iter - term_iter_2);
+			}
+		}
+
+//		if(term_iter == 1){
+//			std::cout << rhs << "\n\n";
 //		}
-//
-//		// Rhs for Voltage magnitude constraint
-//		// Assume all reference voltage level are 1.
-//		// Rhs for PU Bus
-//		for(int bus_iter = 0; bus_iter < PU_bus_num; ++ bus_iter){
-//			int row_ID = 4 * bus_small_num + bus_iter;
-//
-//			for(int term_iter_2 = 1; term_iter_2 < term_iter; term_iter_2 ++){
-//				rhs(row_ID) += V_up_reg(bus_iter, term_iter_2) * V_up_hat(bus_iter, term_iter - term_iter_2);
-//			}
-//		}
-//
-//		Eigen::VectorXcd result_temp = Power_network_inform.power_flow.solver.solve(rhs);
-//
-//
-//		// -------------------------------------------------------------------------------
-//		// Update power series
-//		// -------------------------------------------------------------------------------
-//		V_up_reg.col(term_iter) = result_temp.head(bus_small_num);
-//		V_up_hat.col(term_iter) = result_temp.segment(bus_small_num, bus_small_num);
-//		V_down_reg.col(term_iter) = result_temp.segment(2 * bus_small_num, bus_small_num);
-//		V_down_hat.col(term_iter) = result_temp.segment(3 * bus_small_num, bus_small_num);
-//		Q_node.col(term_iter) = result_temp.segment(4 * bus_small_num, PU_bus_num);
+
+		Eigen::VectorXcd result_temp = Power_network_inform.power_flow.solver.solve(rhs);
+
+		// -------------------------------------------------------------------------------
+		// Update power series
+		// -------------------------------------------------------------------------------
+		V_up_reg.col(term_iter) = result_temp.head(bus_small_num);
+		V_up_hat.col(term_iter) = result_temp.segment(bus_small_num, bus_small_num);
+		V_down_reg.col(term_iter) = result_temp.segment(2 * bus_small_num, bus_small_num);
+		V_down_hat.col(term_iter) = result_temp.segment(3 * bus_small_num, bus_small_num);
+		Q_node.col(term_iter) = result_temp.segment(4 * bus_small_num, PU_bus_num);
 	}
 //
 //	// Sanity check
