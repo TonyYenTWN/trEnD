@@ -82,6 +82,18 @@ namespace local{
 		basic::write_file(Market.actual.supply, fout_name, Market.zone_names);
 		fout_name = "csv/output/power_market/" + name + "_actual_DC_power.csv";
 		basic::write_file(Market.network.actual_power, fout_name, edge_names);
+		fout_name = "csv/output/power_market/" + name + "_actual_AC_voltage_magnitude.csv";
+		basic::write_file(Market.power_flow.voltage_abs, fout_name, Market.zone_names);
+		fout_name = "csv/output/power_market/" + name + "_actual_AC_voltage_angle.csv";
+		basic::write_file(Market.power_flow.voltage_arg, fout_name, Market.zone_names);
+		fout_name = "csv/output/power_market/" + name + "_actual_AC_P_node.csv";
+		basic::write_file(Market.power_flow.P_node, fout_name, Market.zone_names);
+		fout_name = "csv/output/power_market/" + name + "_actual_AC_Q_node.csv";
+		basic::write_file(Market.power_flow.Q_node, fout_name, Market.zone_names);
+		fout_name = "csv/output/power_market/" + name + "_actual_AC_current_magnitude.csv";
+		basic::write_file(Market.power_flow.current_abs, fout_name, edge_names);
+		fout_name = "csv/output/power_market/" + name + "_actual_AC_current_angle.csv";
+		basic::write_file(Market.power_flow.current_arg, fout_name, edge_names);
 
 		// Balancing settlement
 		fout_name = "csv/output/power_market/" + name + "_balancing_cost.csv";

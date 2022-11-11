@@ -354,6 +354,7 @@ namespace power_network{
 //		Eigen::BiCGSTAB<Eigen::SparseMatrix<std::complex <double>>> solver;
 //		Eigen::SparseQR <Eigen::SparseMatrix <std::complex <double>>, Eigen::COLAMDOrdering <int>> solver_reg;
 //		Eigen::SparseQR <Eigen::SparseMatrix <std::complex <double>>, Eigen::COLAMDOrdering <int>> solver_hat;
+		Eigen::VectorXcd edge_admittance;
 		std::vector <int> PQ_bus;
 		std::vector <int> PU_bus;
 		std::vector <int> ref_bus;
@@ -361,8 +362,8 @@ namespace power_network{
 		Eigen::MatrixXd voltage_arg;
 		Eigen::MatrixXd P_node;
 		Eigen::MatrixXd Q_node;
-		Eigen::MatrixXd P_edge;
-		Eigen::MatrixXd Q_edge;
+		Eigen::MatrixXd current_abs;
+		Eigen::MatrixXd current_arg;
 	};
 
 	struct network_inform{
