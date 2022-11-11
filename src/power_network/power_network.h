@@ -243,11 +243,11 @@ namespace power_network{
 		/** Cutoff voltage level of the distribution network.*/
 		int voltage_cutoff_distr = 22;
 		/** Power carrying capacity per voltage (MW / kV) of transmission lines.*/
-		double power_limit_trans = .1;
+		double power_limit_trans = .75;
 		/** Power carrying capacity per voltage (MW / kV) of HV distribution lines.*/
-		double power_limit_conn = .05;
+		double power_limit_conn = .25;
 		/** Power carrying capacity per voltage (MW / kV) of LV distribution lines.*/
-		double power_limit_distr = .01;
+		double power_limit_distr = .1;
 		/*@{*/
 
 		/**
@@ -271,21 +271,24 @@ namespace power_network{
 		*/
 		/*@{*/
 		/** Series impedance (ohm per meter) of transmission line.*/
-		std::complex<double> z_trans_series = std::complex<double> (3. * pow(10., -5.) / line_num_trans, 2.5 * pow(10., -4.) / line_num_trans);
+		//std::complex<double> z_trans_series = std::complex<double> (3. * pow(10., -5.) / line_num_trans, 2.5 * pow(10., -4.) / line_num_trans);
+		std::complex<double> z_trans_series = std::complex<double> (0., 2.5 * pow(10., -4.) / line_num_trans);
 		/** Shunt admittance (ohm^(-1) per meter) of transmission line.*/
 		std::complex<double> y_trans_shunt = std::complex<double> (0., 2 * pow(10., -9.) * line_num_trans);
 		/** Series impedance (ohm per meter) of HV distribution line.*/
-		std::complex<double> z_conn_series = std::complex<double> (3. * pow(10., -4.), 4. * pow(10., -4.));
+		//std::complex<double> z_conn_series = std::complex<double> (pow(10., -4.), 4. * pow(10., -4.));
+		std::complex<double> z_conn_series = std::complex<double> (0., 4. * pow(10., -4.));
 		/** Shunt admittance (ohm^(-1) per meter) of HV distribution line.*/
 		std::complex<double> y_conn_shunt = std::complex<double> (0., 2.5 * pow(10., -9.));
 		/** Series impedance (ohm per meter) of MV distribution line.*/
-		std::complex<double> z_distr_series = std::complex<double> (6. * pow(10., -4.), 6. * pow(10., -4.));
+		//std::complex<double> z_distr_series = std::complex<double> (6. * pow(10., -4.), 6. * pow(10., -4.));
+		std::complex<double> z_distr_series = std::complex<double> (0., 6. * pow(10., -4.));
 		/** Shunt admittance (ohm^(-1) per meter) of MV distribution line.*/
 		std::complex<double> y_distr_shunt = std::complex<double> (0., 3 * pow(10., -9.));
 		/**Phase angle limits on a transmission node.*/
-		double theta_trans_limit = boost::math::constants::pi<double>() / 18.;
+		double theta_trans_limit = boost::math::constants::pi<double>() / 36.;
 		/**Phase angle limits on a distribution node.*/
-		double theta_distr_limit = boost::math::constants::pi<double>() / 36.;
+		double theta_distr_limit = boost::math::constants::pi<double>() / 72.;
 		/**Hash table (mapping) of per phase power flow limits on an edge at different voltage base levels, in MW.*/
 		std::map <int, double> power_limit;
 		/*@{*/

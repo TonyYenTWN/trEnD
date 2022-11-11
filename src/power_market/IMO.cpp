@@ -56,7 +56,7 @@ namespace{
 	}
 }
 
-void power_market::International_Market_Set(market_inform &International_Market, alglib::minlpstate &IMO_Problem, power_network::network_inform &Power_network_inform, int Time, fin_market fin_market){
+void power_market::International_Market_Set(market_inform &International_Market, power_network::network_inform &Power_network_inform, int Time, fin_market fin_market){
 	// Input Parameters of international market
 	International_Market.num_zone = Power_network_inform.cbt.bz_names.size();
 	International_Market.cross_border_zone_start = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
@@ -230,11 +230,11 @@ void power_market::International_Market_Set(market_inform &International_Market,
 	// -------------------------------------------------------------------------------
 	// Set the LP problem object
 	// -------------------------------------------------------------------------------
-	alglib::minlpcreate(variable_num, IMO_Problem);
-	alglib::minlpsetcost(IMO_Problem, obj_coeff);
-	alglib::minlpsetlc2(IMO_Problem, constraint_general, lb_general, ub_general, constrant_num);
-	alglib::minlpsetscale(IMO_Problem, scale);
-	alglib::minlpsetalgodss(IMO_Problem, 0.);
+	alglib::minlpcreate(variable_num, International_Market.Problem);
+	alglib::minlpsetcost(International_Market.Problem, obj_coeff);
+	alglib::minlpsetlc2(International_Market.Problem, constraint_general, lb_general, ub_general, constrant_num);
+	alglib::minlpsetscale(International_Market.Problem, scale);
+	alglib::minlpsetalgodss(International_Market.Problem, 0.);
 }
 
 void power_market::Submitted_bid_calculation(market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
@@ -300,7 +300,7 @@ void power_market::Submitted_bid_calculation(market_whole_inform &Power_market_i
 	}
 }
 
-void power_market::International_Market_Optimization(int tick, market_inform &Market, alglib::minlpstate &IMO_Problem){
+void power_market::International_Market_Optimization(int tick, market_inform &Market){
 	// Update of submitted supply and demand bids at other nations
 	// Bidding zones of other nations: assume inflexible supply or demand
 	Market.submitted_supply.rightCols(Market.num_zone - Market.cross_border_zone_start) = Market.merit_order_curve.rightCols(Market.num_zone - Market.cross_border_zone_start);
@@ -333,15 +333,15 @@ void power_market::International_Market_Optimization(int tick, market_inform &Ma
 	alglib::real_1d_array ub_box;
 	lb_box.setcontent(bound_box.rows(), bound_box.col(0).data());
 	ub_box.setcontent(bound_box.rows(), bound_box.col(1).data());
-	alglib::minlpsetbc(IMO_Problem, lb_box, ub_box);
+	alglib::minlpsetbc(Market.Problem, lb_box, ub_box);
 
 	// -------------------------------------------------------------------------------
 	// Solve the problem and get results
 	// -------------------------------------------------------------------------------
-	alglib::minlpoptimize(IMO_Problem);
+	alglib::minlpoptimize(Market.Problem);
 	alglib::real_1d_array sol;
 	alglib::minlpreport rep;
-	alglib::minlpresults(IMO_Problem, sol, rep);
+	alglib::minlpresults(Market.Problem, sol, rep);
 	Eigen::VectorXd sol_vec = Eigen::Map <Eigen::VectorXd> (sol.getcontent(), sol.length());
 
 	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
@@ -384,20 +384,20 @@ void power_market::International_Market_Optimization(int tick, market_inform &Ma
 	Market.network.confirmed_power.row(tick) = sol_vec.head(Market.network.num_edges);
 }
 
-void power_market::International_Market_Price_Estimation(int tick, market_inform &International_Market, alglib::minlpstate &IMO_Problem, power_network::network_inform &Power_network_inform){
+void power_market::International_Market_Price_Estimation(int tick, market_inform &International_Market, power_network::network_inform &Power_network_inform){
 	int foresight_time = agent::aggregator::parameters::foresight_time();
 
 	// Initialization of forecast market clearing price
 	if(tick == 0){
 		for(int tock = 0; tock < foresight_time; ++ tock){
 			International_Market_Submitted_bid_calculation(tock, International_Market, Power_network_inform);
-			International_Market_Optimization(tock, International_Market, IMO_Problem);
+			International_Market_Optimization(tock, International_Market);
 		}
 	}
 	// Find the profile one time step further
 	else{
 		International_Market_Submitted_bid_calculation(tick + foresight_time - 1, International_Market, Power_network_inform);
-		International_Market_Optimization(tick + foresight_time - 1, International_Market, IMO_Problem);
+		International_Market_Optimization(tick + foresight_time - 1, International_Market);
 	}
 }
 

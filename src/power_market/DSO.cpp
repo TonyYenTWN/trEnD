@@ -104,39 +104,6 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 			power_limit.push_back(power_limit_conn * Power_network_inform.tech_parameters.voltage_cutoff_conn * line_density_conn);
 		}
 		DSO_Markets[DSO_iter].network.num_edges = DSO_Markets[DSO_iter].network.incidence.size();
-//		std::cout << "\n";
-//		for(int row_iter = 0; row_iter < DSO_node_num; ++ row_iter){
-//			int node_ID = Power_network_inform.DSO_cluster[DSO_iter].nodes_ID[row_iter];
-//			int min_point_ID;
-//			double distance_min = std::numeric_limits<double>::infinity();
-//			double line_density_conn = Power_network_inform.tech_parameters.line_density_conn * DSO_point_num / DSO_node_num;
-//
-//			for(int col_iter = 0; col_iter < DSO_point_num ; ++ col_iter){
-//				int point_ID = Power_network_inform.DSO_cluster[DSO_iter].points_ID[col_iter];
-//				Eigen::Vector2d point_coor = Eigen::Vector2d(Power_network_inform.points.lon(point_ID), Power_network_inform.points.lat(point_ID));
-//				Eigen::Vector2d node_coor = Eigen::Vector2d(Power_network_inform.nodes.lon(node_ID), Power_network_inform.nodes.lat(node_ID));
-//				point_coor *= pi / 180.;
-//				node_coor *= pi / 180.;
-//				double distance_temp = spatial_field::geodist(point_coor, node_coor);
-//
-//				if(distance_temp < distance_min){
-//					distance_min = distance_temp;
-//					min_point_ID = col_iter;
-//				}
-//			}
-//
-//			// Series admittance
-//			double y_series = 1.;
-//			y_series /= distance_min;
-//			y_series /= Power_network_inform.tech_parameters.z_conn_series.imag();
-//			y_series *= z_base_high;
-//			y_series *= line_density_conn;
-//
-//			DSO_Markets[DSO_iter].network.incidence.push_back(Eigen::Vector2i(min_point_ID, DSO_point_num + row_iter));
-//			DSO_Markets[DSO_iter].network.admittance.push_back(y_series);
-//			power_limit.push_back(power_limit_conn * line_density_conn);
-//		}
-//		DSO_Markets[DSO_iter].network.num_edges = DSO_Markets[DSO_iter].network.incidence.size();
 		//std::cout << DSO_iter << ":\t" << DSO_Markets[DSO_iter].num_zone << "\t" << DSO_Markets[DSO_iter].network.num_edges << "\n";
 
 		// Set voltage and power constraints at each edge
@@ -160,7 +127,7 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 	}
 }
 
-namespace{
+namespace local{
 	void Source_Node_Set(power_market::market_inform &DSO_Market, power_network::DSO_cluster &DSO_cluster){
 		for(int node_iter = 0; node_iter < DSO_cluster.nodes_ID.size(); ++ node_iter){
 			DSO_Market.submitted_demand.col(DSO_cluster.points_ID.size() + node_iter)	= Eigen::VectorXd::Zero(DSO_Market.price_intervals + 2);
@@ -186,7 +153,7 @@ void power_market::Filtered_bid_demand_calculation(int tick, market_whole_inform
 		Market_Initialization(Power_market_inform.DSO_Markets[DSO_iter]);
 
 		// Create source nodes
-		Source_Node_Set(Power_market_inform.DSO_Markets[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter]);
+		local::Source_Node_Set(Power_market_inform.DSO_Markets[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter]);
 	}
 
 	// Residential demand at each point
@@ -218,8 +185,8 @@ void power_market::Filtered_bid_demand_calculation(int tick, market_whole_inform
 			continue;
 		}
 
-		Flow_Based_Market_Optimization(Power_market_inform.DSO_Markets[DSO_iter], Power_market_inform.DSO_Problems[DSO_iter]);
-		DSO_Market_Results_Get(tick, Power_market_inform.DSO_Markets[DSO_iter], Power_market_inform.DSO_Problems[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter], 0);
+		Flow_Based_Market_Optimization(Power_market_inform.DSO_Markets[DSO_iter]);
+		DSO_Market_Results_Get(tick, Power_market_inform.DSO_Markets[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter], 0);
 	}
 }
 
@@ -233,7 +200,7 @@ void power_market::Filtered_bid_supply_calculation(int tick, market_whole_inform
 		Market_Initialization(Power_market_inform.DSO_Markets[DSO_iter]);
 
 		// Create source nodes
-		Sink_Node_Set(Power_market_inform.DSO_Markets[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter]);
+		local::Sink_Node_Set(Power_market_inform.DSO_Markets[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter]);
 	}
 
 	// Residential demand at each point
@@ -285,15 +252,15 @@ void power_market::Filtered_bid_supply_calculation(int tick, market_whole_inform
 			continue;
 		}
 
-		Flow_Based_Market_Optimization(Power_market_inform.DSO_Markets[DSO_iter], Power_market_inform.DSO_Problems[DSO_iter]);
-		DSO_Market_Results_Get(tick, Power_market_inform.DSO_Markets[DSO_iter], Power_market_inform.DSO_Problems[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter], 1);
+		Flow_Based_Market_Optimization(Power_market_inform.DSO_Markets[DSO_iter]);
+		DSO_Market_Results_Get(tick, Power_market_inform.DSO_Markets[DSO_iter], Power_network_inform.DSO_cluster[DSO_iter], 1);
 	}
 }
 
-void power_market::DSO_Market_Results_Get(int tick, market_inform &Market, alglib::minlpstate &Problem, power_network::DSO_cluster &DSO_cluster, bool supply){
+void power_market::DSO_Market_Results_Get(int tick, market_inform &Market, power_network::DSO_cluster &DSO_cluster, bool supply){
 	alglib::real_1d_array sol;
 	alglib::minlpreport rep;
-	alglib::minlpresults(Problem, sol, rep);
+	alglib::minlpresults(Market.Problem, sol, rep);
 	Eigen::VectorXd sol_vec = Eigen::Map <Eigen::VectorXd> (sol.getcontent(), sol.length());
 
 	if(supply){

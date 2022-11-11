@@ -40,7 +40,7 @@ void power_market::Market_Initialization(market_inform &Market){
 // ------------------------------------------------------------------------------------------------
 // Specific functions for for flow-based markets
 // ------------------------------------------------------------------------------------------------
-void power_market::Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlpstate &Problem){
+void power_market::Flow_Based_Market_LP_Set(market_inform &Market){
 	// -------------------------------------------------------------------------------
 	// LP Solver initialization for flow-based market optimization
 	// Warm-up once and reuse for the rest of time slices
@@ -174,14 +174,14 @@ void power_market::Flow_Based_Market_LP_Set(market_inform &Market, alglib::minlp
 	// -------------------------------------------------------------------------------
 	// Set the LP problem object
 	// -------------------------------------------------------------------------------
-	alglib::minlpcreate(variable_num, Problem);
-	alglib::minlpsetcost(Problem, obj_coeff);
-	alglib::minlpsetlc2(Problem, constraint_general, lb_general, ub_general, constrant_num);
-	alglib::minlpsetscale(Problem, scale);
-	alglib::minlpsetalgodss(Problem, 0.);
+	alglib::minlpcreate(variable_num, Market.Problem);
+	alglib::minlpsetcost(Market.Problem, obj_coeff);
+	alglib::minlpsetlc2(Market.Problem, constraint_general, lb_general, ub_general, constrant_num);
+	alglib::minlpsetscale(Market.Problem, scale);
+	alglib::minlpsetalgodss(Market.Problem, 0.);
 }
 
-void power_market::Flow_Based_Market_Optimization(market_inform &Market, alglib::minlpstate &Problem){
+void power_market::Flow_Based_Market_Optimization(market_inform &Market){
 	// -------------------------------------------------------------------------------
 	// Update bounds for box constraints
 	// -------------------------------------------------------------------------------
@@ -202,7 +202,7 @@ void power_market::Flow_Based_Market_Optimization(market_inform &Market, alglib:
 	alglib::real_1d_array ub_box;
 	lb_box.setcontent(bound_box.rows(), bound_box.col(0).data());
 	ub_box.setcontent(bound_box.rows(), bound_box.col(1).data());
-	alglib::minlpsetbc(Problem, lb_box, ub_box);
+	alglib::minlpsetbc(Market.Problem, lb_box, ub_box);
 
 	// -------------------------------------------------------------------------------
 	// Set objective coefficients of variables
@@ -215,10 +215,10 @@ void power_market::Flow_Based_Market_Optimization(market_inform &Market, alglib:
 	}
 	alglib::real_1d_array obj_coeff;
 	obj_coeff.setcontent(obj_vec.size(), obj_vec.data());
-	alglib::minlpsetcost(Problem, obj_coeff);
+	alglib::minlpsetcost(Market.Problem, obj_coeff);
 
 	// -------------------------------------------------------------------------------
 	// Solve the problem
 	// -------------------------------------------------------------------------------
-	alglib::minlpoptimize(Problem);
+	alglib::minlpoptimize(Market.Problem);
 }

@@ -196,10 +196,10 @@ void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Powe
 	}
 }
 
-void power_market::TSO_Market_Scheduled_Results_Get(int tick, market_inform &Market, alglib::minlpstate &Problem){
+void power_market::TSO_Market_Scheduled_Results_Get(int tick, market_inform &Market){
 	alglib::real_1d_array sol;
 	alglib::minlpreport rep;
-	alglib::minlpresults(Problem, sol, rep);
+	alglib::minlpresults(Market.Problem, sol, rep);
 	Eigen::VectorXd sol_vec = Eigen::Map <Eigen::VectorXd> (sol.getcontent(), sol.length());
 
 	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
@@ -343,10 +343,10 @@ void power_market::Balancing_bid_calculation(int tick, market_whole_inform &Powe
 	}
 }
 
-void power_market::TSO_Market_Actual_Results_Get(int tick, market_inform &Market, alglib::minlpstate &Problem){
+void power_market::TSO_Market_Actual_Results_Get(int tick, market_inform &Market){
 	alglib::real_1d_array sol;
 	alglib::minlpreport rep;
-	alglib::minlpresults(Problem, sol, rep);
+	alglib::minlpresults(Market.Problem, sol, rep);
 	Eigen::VectorXd sol_vec = Eigen::Map <Eigen::VectorXd> (sol.getcontent(), sol.length());
 
 	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){

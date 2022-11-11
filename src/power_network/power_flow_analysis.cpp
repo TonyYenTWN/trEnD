@@ -527,16 +527,10 @@ void power_network::HELM_Solve(int tick, network_inform &Power_network_inform){
 			int bus_ID = Power_network_inform.power_flow.PU_bus[bus_iter];
 
 			double P_node = Power_network_inform.power_flow.P_node(tick, bus_ID);
-//			std::cout << "P_node:\t" << P_node << "\tV_down:\t" << V_down_hat(bus_iter , term_iter - 1) << "\n";
 			rhs(row_ID) = P_node * V_down_hat(bus_iter , term_iter - 1);
 			for(int term_iter_2 = 1; term_iter_2 < term_iter; ++ term_iter_2){
 				rhs(row_ID) += -root_i * Q_node(bus_iter , term_iter_2) * V_down_hat(bus_iter , term_iter - term_iter_2);
-//				std::cout << Q_node(bus_iter , term_iter_2) << "\n";
-//				std::cout << V_down_hat(bus_iter , term_iter - term_iter_2) << "\n";
-//				std::cout << Q_node(bus_iter , term_iter_2) * V_down_hat(bus_iter , term_iter - term_iter_2) << "\n\n";
-//				std::cout << root_i * Q_node(bus_iter , term_iter_2) * V_down_hat(bus_iter , term_iter - term_iter_2) << "\n";
 			}
-//			std::cout << "\n";
 
 			row_ID += 2 * bus_small_num;
 			rhs(row_ID) = P_node * V_down_reg(bus_iter , term_iter - 1);
@@ -559,19 +553,15 @@ void power_network::HELM_Solve(int tick, network_inform &Power_network_inform){
 
 		// Rhs for reciporal relation for V and 1/V
 		for(int term_iter_2 = 1; term_iter_2 < term_iter; ++ term_iter_2){
-			rhs.segment(bus_small_num, bus_small_num) += -V_up_reg.col(term_iter_2) * V_down_reg.col(term_iter - term_iter_2);
-			rhs.segment(3 * bus_small_num, bus_small_num) += -V_up_hat.col(term_iter_2) * V_down_hat.col(term_iter - term_iter_2);
+			rhs.segment(bus_small_num, bus_small_num) += -V_up_reg.col(term_iter_2).cwiseProduct(V_down_reg.col(term_iter - term_iter_2));
+			rhs.segment(3 * bus_small_num, bus_small_num) += -V_up_hat.col(term_iter_2).cwiseProduct(V_down_hat.col(term_iter - term_iter_2));
 		}
 
 		// Rhs for Voltage magnitude constraint
 		// Assume all reference voltage level are 1.
 		// Rhs for PU Bus
-		for(int bus_iter = 0; bus_iter < PU_bus_num; ++ bus_iter){
-			int row_ID = 4 * bus_small_num + bus_iter;
-
-			for(int term_iter_2 = 1; term_iter_2 < term_iter; term_iter_2 ++){
-				rhs(row_ID) += V_up_reg(bus_iter, term_iter_2) * V_up_hat(bus_iter, term_iter - term_iter_2);
-			}
+		for(int term_iter_2 = 1; term_iter_2 < term_iter; term_iter_2 ++){
+			rhs.tail(PU_bus_num) += -V_up_reg.col(term_iter_2).head(PU_bus_num).cwiseProduct(V_up_hat.col(term_iter - term_iter_2).head(PU_bus_num));
 		}
 
 //		if(term_iter == 1){

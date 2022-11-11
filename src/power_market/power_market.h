@@ -159,6 +159,8 @@ namespace power_market{
 		Eigen::MatrixXd submitted_demand;
 		/**Reference prices for each zone.*/
 		Eigen::VectorXd reference_price;
+		/** LP object*/
+		alglib::minlpstate Problem;
 		/*@{*/
 
 		/**
@@ -207,11 +209,8 @@ namespace power_market{
 	struct market_whole_inform{
 		parameters::price_ID_bimap price_map;
 		market_inform International_Market;
-		alglib::minlpstate IMO_Problem;
 		market_inform TSO_Market;
-		alglib::minlpstate TSO_Problem;
 		markets_inform DSO_Markets;
-		Problems DSO_Problems;
 		agent_profiles agent_profiles;
 	};
 }
@@ -224,8 +223,8 @@ namespace power_market{
 
 namespace power_market{
 	void Market_Initialization(market_inform&);
-	void Flow_Based_Market_LP_Set(market_inform&, alglib::minlpstate&);
-	void Flow_Based_Market_Optimization(market_inform&, alglib::minlpstate&);
+	void Flow_Based_Market_LP_Set(market_inform&);
+	void Flow_Based_Market_Optimization(market_inform&);
 	void default_demand_set(power_network::network_inform&, market_whole_inform&);
 	void power_market_process_set(power_network::network_inform&, market_whole_inform&, configuration::process_config &);
 	void power_market_process_update(power_network::network_inform&, market_whole_inform&, configuration::process_config&);
@@ -248,10 +247,10 @@ namespace power_market{
 		std::string solar;
 	};
 
-	void International_Market_Set(market_inform&, alglib::minlpstate&, power_network::network_inform&, int, fin_market);
+	void International_Market_Set(market_inform&, power_network::network_inform&, int, fin_market);
 	void Submitted_bid_calculation(market_whole_inform&, power_network::network_inform&);
-	void International_Market_Optimization(int, market_inform&, alglib::minlpstate&);
-	void International_Market_Price_Estimation(int, market_inform&, alglib::minlpstate&, power_network::network_inform&);
+	void International_Market_Optimization(int, market_inform&);
+	void International_Market_Price_Estimation(int, market_inform&, power_network::network_inform&);
 }
 
 #endif
@@ -263,9 +262,9 @@ namespace power_market{
 namespace power_market{
 	void TSO_Market_Set(market_inform&, power_network::network_inform&, int);
 	void Confirmed_bid_calculation(int, market_whole_inform&, power_network::network_inform&);
-	void TSO_Market_Scheduled_Results_Get(int, market_inform&, alglib::minlpstate&);
+	void TSO_Market_Scheduled_Results_Get(int, market_inform&);
 	void Balancing_bid_calculation(int, market_whole_inform&, power_network::network_inform&);
-	void TSO_Market_Actual_Results_Get(int, market_inform&, alglib::minlpstate&);
+	void TSO_Market_Actual_Results_Get(int, market_inform&);
 }
 
 #endif
@@ -278,7 +277,7 @@ namespace power_market{
 	void DSO_Markets_Set(markets_inform&, power_network::network_inform&, int);
 	void Filtered_bid_demand_calculation(int, market_whole_inform&, power_network::network_inform&);
 	void Filtered_bid_supply_calculation(int, market_whole_inform&, power_network::network_inform&);
-	void DSO_Market_Results_Get(int, market_inform&, alglib::minlpstate&, power_network::DSO_cluster&, bool supply = 1);
+	void DSO_Market_Results_Get(int, market_inform&, power_network::DSO_cluster&, bool supply = 1);
 }
 
 #endif

@@ -1,6 +1,5 @@
 // Source file for the main procedure of the power market clearing
 #include "src/agent/agent_func.h"
-//#include "src/configuration/configuration.h"
 #include "src/power_market/power_market.h"
 #include "src/power_network/power_flow_analysis.h"
 #include "src/spatial_field/spatial_field.h"
@@ -17,7 +16,7 @@ void power_market::default_demand_set(power_network::network_inform &Power_netwo
 	fin_market.solar= fin_market.dir + "generation_solar_forecast_2021.csv";
 	fin_market.wind_on = fin_market.dir + "generation_wind_onshore_forecast_2021.csv";
 	fin_market.wind_off = fin_market.dir + "generation_wind_offshore_forecast_2021.csv";
-	International_Market_Set(Power_market_inform.International_Market, Power_market_inform.IMO_Problem, Power_network_inform, Time, fin_market);
+	International_Market_Set(Power_market_inform.International_Market, Power_network_inform, Time, fin_market);
 }
 
 void power_market::power_market_process_set(power_network::network_inform &Power_network_inform, market_whole_inform &Power_market_inform, configuration::process_config &process_par){
@@ -35,27 +34,26 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	// Initialization of the TSO
 	TSO_Market_Set(Power_market_inform.TSO_Market, Power_network_inform, Time);
 	Simplified_network_print(Power_market_inform);
-	Flow_Based_Market_LP_Set(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
+	Flow_Based_Market_LP_Set(Power_market_inform.TSO_Market);
 
 	// Initialization of the DSO
 	DSO_Markets_Set(Power_market_inform.DSO_Markets, Power_network_inform, Time);
-	Power_market_inform.DSO_Problems = Problems (Power_market_inform.DSO_Markets.size());
 	for(int DSO_iter = 0; DSO_iter < Power_market_inform.DSO_Markets.size(); ++ DSO_iter){
 		if(Power_network_inform.DSO_cluster[DSO_iter].points_ID.size() == 0){
 			continue;
 		}
-		Flow_Based_Market_LP_Set(Power_market_inform.DSO_Markets[DSO_iter], Power_market_inform.DSO_Problems[DSO_iter]);
+		Flow_Based_Market_LP_Set(Power_market_inform.DSO_Markets[DSO_iter]);
 	}
 
 	// Initial estimation of market clearing price in the IMO
-	International_Market_Price_Estimation(process_par.time_boundary[0], Power_market_inform.International_Market, Power_market_inform.IMO_Problem, Power_network_inform);
+	International_Market_Price_Estimation(process_par.time_boundary[0], Power_market_inform.International_Market, Power_network_inform);
 
 	// Bidding strategies of agents
 	agent::agents_set(process_par.time_boundary[0], Power_market_inform, Power_network_inform);
 
 	// Ideal market clearing in IMO
 	Submitted_bid_calculation(Power_market_inform, Power_network_inform);
-	International_Market_Optimization(process_par.time_boundary[0], Power_market_inform.International_Market, Power_market_inform.IMO_Problem);
+	International_Market_Optimization(process_par.time_boundary[0], Power_market_inform.International_Market);
 
 	// Equivalent redispatch bids of agents
 	agent::agents_redispatch_update(process_par.time_boundary[0], Power_market_inform, Power_network_inform);
@@ -70,8 +68,8 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 
 	// Redispatch in TSO
 	Confirmed_bid_calculation(process_par.time_boundary[0], Power_market_inform, Power_network_inform);
-	Flow_Based_Market_Optimization(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
-	TSO_Market_Scheduled_Results_Get(process_par.time_boundary[0], Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
+	Flow_Based_Market_Optimization(Power_market_inform.TSO_Market);
+	TSO_Market_Scheduled_Results_Get(process_par.time_boundary[0], Power_market_inform.TSO_Market);
 
 	// Equivalent balancing bids of agents
 	agent::agents_balancing_update(process_par.time_boundary[0], Power_market_inform, Power_network_inform);
@@ -79,8 +77,8 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	// Control reserve activation in TSO
 	if(process_par.control_reserve_flag){
 		Balancing_bid_calculation(process_par.time_boundary[0], Power_market_inform, Power_network_inform);
-		Flow_Based_Market_Optimization(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
-		TSO_Market_Actual_Results_Get(process_par.time_boundary[0], Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
+		Flow_Based_Market_Optimization(Power_market_inform.TSO_Market);
+		TSO_Market_Actual_Results_Get(process_par.time_boundary[0], Power_market_inform.TSO_Market);
 	}
 
 	// Update state variables of agents
@@ -98,14 +96,14 @@ void power_market::power_market_process_update(power_network::network_inform &Po
 		std::cout << "Time:\t" << tick << ":\n";
 
 		// Initial estimation of market clearing price in the IMO
-		International_Market_Price_Estimation(tick, Power_market_inform.International_Market, Power_market_inform.IMO_Problem, Power_network_inform);
+		International_Market_Price_Estimation(tick, Power_market_inform.International_Market, Power_network_inform);
 
 		// Bidding strategies of agents
 		agent::agents_submit_update(tick, Power_market_inform, Power_network_inform);
 
 		// Ideal market clearing in IMO
 		Submitted_bid_calculation(Power_market_inform, Power_network_inform);
-		International_Market_Optimization(tick, Power_market_inform.International_Market, Power_market_inform.IMO_Problem);
+		International_Market_Optimization(tick, Power_market_inform.International_Market);
 
 		// Equivalent redispatch bids of agents
 		agent::agents_redispatch_update(tick, Power_market_inform, Power_network_inform);
@@ -120,8 +118,8 @@ void power_market::power_market_process_update(power_network::network_inform &Po
 
 		// Redispatch in TSO
 		Confirmed_bid_calculation(tick, Power_market_inform, Power_network_inform);
-		Flow_Based_Market_Optimization(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
-		TSO_Market_Scheduled_Results_Get(tick, Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
+		Flow_Based_Market_Optimization(Power_market_inform.TSO_Market);
+		TSO_Market_Scheduled_Results_Get(tick, Power_market_inform.TSO_Market);
 
 		// Equivalent balancing bids of agents
 		agent::agents_balancing_update(tick, Power_market_inform, Power_network_inform);
@@ -129,8 +127,8 @@ void power_market::power_market_process_update(power_network::network_inform &Po
 		// Control reserve activation in TSO
 		if(process_par.control_reserve_flag){
 			Balancing_bid_calculation(tick, Power_market_inform, Power_network_inform);
-			Flow_Based_Market_Optimization(Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
-			TSO_Market_Actual_Results_Get(tick, Power_market_inform.TSO_Market, Power_market_inform.TSO_Problem);
+			Flow_Based_Market_Optimization(Power_market_inform.TSO_Market);
+			TSO_Market_Actual_Results_Get(tick, Power_market_inform.TSO_Market);
 		}
 
 		// Update state variables of agents
