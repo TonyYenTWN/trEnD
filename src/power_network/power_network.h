@@ -243,21 +243,23 @@ namespace power_network{
 		/** Cutoff voltage level of the distribution network.*/
 		int voltage_cutoff_distr = 22;
 		/** Power carrying capacity per voltage (MW / kV) of transmission lines.*/
-		double power_limit_trans = 1.;
+		double power_limit_trans = .1;
 		/** Power carrying capacity per voltage (MW / kV) of HV distribution lines.*/
-		double power_limit_conn = 1.;
+		double power_limit_conn = .05;
 		/** Power carrying capacity per voltage (MW / kV) of LV distribution lines.*/
-		double power_limit_distr = .5;
+		double power_limit_distr = .01;
 		/*@{*/
 
 		/**
 		* @name statistical parameters of power network
 		*/
 		/*@{*/
+		/** Average number of power lines per edge in the transmission network.*/
+		int line_num_trans = 1;
 		/** Density of power lines per point connecting distribution and transmission power network.*/
-		double line_density_conn = 1.;
+		double line_density_conn = 2.;
 		/** Total number of power lines in the distribution network.*/
-		int line_num_distr = 122782; // >=0: 126435; >= 40: 3653
+		int line_num_distr = 122782 * 5; // >=0: 126435; >= 40: 3653
 		/** Density of power lines per point in the distribution network.*/
 		double line_density_distr;
 		/** Fractional dimension of the distribution network.*/
@@ -269,9 +271,9 @@ namespace power_network{
 		*/
 		/*@{*/
 		/** Series impedance (ohm per meter) of transmission line.*/
-		std::complex<double> z_trans_series = std::complex<double> (3. * pow(10., -5.), 2.5 * pow(10., -4.));
+		std::complex<double> z_trans_series = std::complex<double> (3. * pow(10., -5.) / line_num_trans, 2.5 * pow(10., -4.) / line_num_trans);
 		/** Shunt admittance (ohm^(-1) per meter) of transmission line.*/
-		std::complex<double> y_trans_shunt = std::complex<double> (0., 2 * pow(10., -9.));
+		std::complex<double> y_trans_shunt = std::complex<double> (0., 2 * pow(10., -9.) * line_num_trans);
 		/** Series impedance (ohm per meter) of HV distribution line.*/
 		std::complex<double> z_conn_series = std::complex<double> (3. * pow(10., -4.), 4. * pow(10., -4.));
 		/** Shunt admittance (ohm^(-1) per meter) of HV distribution line.*/
@@ -281,9 +283,9 @@ namespace power_network{
 		/** Shunt admittance (ohm^(-1) per meter) of MV distribution line.*/
 		std::complex<double> y_distr_shunt = std::complex<double> (0., 3 * pow(10., -9.));
 		/**Phase angle limits on a transmission node.*/
-		double theta_trans_limit = boost::math::constants::pi<double>() / 9.;
+		double theta_trans_limit = boost::math::constants::pi<double>() / 18.;
 		/**Phase angle limits on a distribution node.*/
-		double theta_distr_limit = boost::math::constants::pi<double>() / 18.;
+		double theta_distr_limit = boost::math::constants::pi<double>() / 36.;
 		/**Hash table (mapping) of per phase power flow limits on an edge at different voltage base levels, in MW.*/
 		std::map <int, double> power_limit;
 		/*@{*/
@@ -307,7 +309,7 @@ namespace power_network{
 			int level_count = 0;
 			this->voltage_base_levels.insert(std::make_pair(voltage_max, level_count));
 			this->impedenace_base_levels.insert(std::make_pair(voltage_max, (double) voltage_max * voltage_max / this->s_base));
-			this->power_limit.insert(std::make_pair(voltage_max, (double) this->power_limit_trans * voltage_max));
+			this->power_limit.insert(std::make_pair(voltage_max, (double) this->line_num_trans * this->power_limit_trans * voltage_max));
 			//std::cout << voltage_base_levels[voltage_max] << "\t" <<  voltage_max << "\t" << impedenace_base_levels[voltage_max] << "\n";
 
 			std::vector <int> voltage_base_sorted(edges.voltage_base.data(), edges.voltage_base.data() + edges.voltage_base.size());
@@ -318,7 +320,7 @@ namespace power_network{
 					level_count += 1;
 					this->voltage_base_levels.insert(std::make_pair(voltage_max, level_count));
 					this->impedenace_base_levels.insert(std::make_pair(voltage_max, (double) voltage_max * voltage_max / this->s_base));
-					this->power_limit.insert(std::make_pair(voltage_max, (double) this->power_limit_trans * voltage_max));
+					this->power_limit.insert(std::make_pair(voltage_max, (double) this->line_num_trans * this->power_limit_trans * voltage_max));
 					//std::cout << voltage_base_levels[voltage_max] << "\t" <<  voltage_max << "\t" << impedenace_base_levels[voltage_max] << "\n";
 				}
 			}
