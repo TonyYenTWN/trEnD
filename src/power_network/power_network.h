@@ -255,7 +255,7 @@ namespace power_network{
 		*/
 		/*@{*/
 		/** Average number of power lines per edge in the transmission network.*/
-		int line_num_trans = 1;
+		int line_num_trans = 2;
 		/** Density of power lines per point connecting distribution and transmission power network.*/
 		double line_density_conn = 1.;
 		/** Total number of power lines in the distribution network.*/

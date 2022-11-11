@@ -351,7 +351,7 @@ void power_network::HELM_Transmission_Solve(int tick, network_inform& Power_netw
 	// -------------------------------------------------------------------------------
 	// Initialization of power series coefficients
 	// -------------------------------------------------------------------------------
-	int power_terms = 20;
+	int power_terms = 100;
 	Eigen::MatrixXcd V_up_reg = Eigen::MatrixXcd::Zero(node_small_num, power_terms);
 	Eigen::MatrixXcd V_up_hat = Eigen::MatrixXcd::Zero(node_small_num, power_terms);
 	Eigen::MatrixXcd V_down_reg = Eigen::MatrixXcd::Zero(node_small_num, power_terms);
@@ -399,16 +399,12 @@ void power_network::HELM_Transmission_Solve(int tick, network_inform& Power_netw
 			std::complex <double> S_node = Power_market_inform.TSO_Market.power_flow.P_node(tick, bus_ID);
 			S_node += -root_i * Power_market_inform.TSO_Market.power_flow.Q_node(tick, bus_ID);
 			rhs(row_ID) = S_node * V_down_hat(bus_iter, term_iter - 1);
-//			if(term_iter == 1){
-//				std::cout << Power_market_inform.TSO_Market.power_flow.P_node(tick, bus_ID) << "\t" << Power_market_inform.TSO_Market.power_flow.Q_node(tick, bus_ID) << "\t" << S_node << "\t" << V_down_hat(bus_iter, term_iter - 1) << "\t" << S_node * V_down_hat(bus_iter, term_iter - 1) << "\n";
-//			}
 
 			row_ID += 2 * node_small_num;
 			S_node = Power_market_inform.TSO_Market.power_flow.P_node(tick, bus_ID);
 			S_node += root_i * Power_market_inform.TSO_Market.power_flow.Q_node(tick, bus_ID);
 			rhs(row_ID) = S_node * V_down_reg(bus_iter, term_iter - 1);
 		}
-//		std::cout << "\n";
 
 		// Rhs for reciporal relation for V and 1/V
 		for(int term_iter_2 = 1; term_iter_2 < term_iter; ++ term_iter_2){
@@ -424,10 +420,6 @@ void power_network::HELM_Transmission_Solve(int tick, network_inform& Power_netw
 				rhs.tail(PU_bus_num) += -V_up_reg.col(term_iter_2).head(PU_bus_num).cwiseProduct(V_up_hat.col(term_iter - term_iter_2).head(PU_bus_num));
 			}
 		}
-
-//		if(term_iter < 5){
-//			std::cout << rhs << "\n\n";
-//		}
 
 		Eigen::VectorXcd result_temp = Power_market_inform.TSO_Market.power_flow.solver.solve(rhs);
 
