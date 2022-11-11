@@ -257,9 +257,9 @@ namespace power_network{
 		/** Average number of power lines per edge in the transmission network.*/
 		int line_num_trans = 1;
 		/** Density of power lines per point connecting distribution and transmission power network.*/
-		double line_density_conn = 2.;
+		double line_density_conn = 1.;
 		/** Total number of power lines in the distribution network.*/
-		int line_num_distr = 122782 * 5; // >=0: 126435; >= 40: 3653
+		int line_num_distr = 122782; // >=0: 126435; >= 40: 3653
 		/** Density of power lines per point in the distribution network.*/
 		double line_density_distr;
 		/** Fractional dimension of the distribution network.*/
@@ -374,7 +374,7 @@ namespace power_network{
 		plants_all plants;
 		std::vector <DSO_cluster> DSO_cluster;
 		technical_parameters tech_parameters;
-		power_flow power_flow;
+		//power_flow power_flow;
 
 		// Set line density of distribution networks
 		void set_line_density(){

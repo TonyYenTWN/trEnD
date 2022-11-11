@@ -83,14 +83,13 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 
 	// Update state variables of agents
 	agent::agents_status_update(process_par.time_boundary[0], Power_market_inform, Power_network_inform, process_par.control_reserve_flag);
-	power_network::HELM_Set(Power_network_inform, Power_market_inform);
+	power_network::HELM_Transmission_Set(Power_network_inform, Power_market_inform);
 	power_network::HELM_Node_Update(process_par.time_boundary[0], Power_network_inform, Power_market_inform);
-	power_network::HELM_Solve(process_par.time_boundary[0], Power_network_inform);
+	power_network::HELM_Transmission_Solve(process_par.time_boundary[0], Power_network_inform, Power_market_inform);
 }
 
 void power_market::power_market_process_update(power_network::network_inform &Power_network_inform, market_whole_inform &Power_market_inform, configuration::process_config &process_par){
 	int Time = configuration::parameters::Time();
-//	int tick = 1;
 
 	for(int tick = process_par.time_boundary[0] + 1; tick < process_par.time_boundary[1]; ++ tick){
 		std::cout << "Time:\t" << tick << ":\n";
@@ -134,6 +133,6 @@ void power_market::power_market_process_update(power_network::network_inform &Po
 		// Update state variables of agents
 		agent::agents_status_update(tick, Power_market_inform, Power_network_inform, process_par.control_reserve_flag);
 		power_network::HELM_Node_Update(tick, Power_network_inform, Power_market_inform);
-		power_network::HELM_Solve(process_par.time_boundary[0], Power_network_inform);
+		power_network::HELM_Transmission_Solve(tick, Power_network_inform, Power_market_inform);
 	}
 }

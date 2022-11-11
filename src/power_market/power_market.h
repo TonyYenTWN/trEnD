@@ -179,6 +179,8 @@ namespace power_market{
 		settlement imbalance;
 		/**Settlement for balancing.*/
 		settlement balancing;
+		/**Actual power flow on the corresponding network*/
+		power_network::power_flow power_flow;
 		/*@{*/
 
 		/**
