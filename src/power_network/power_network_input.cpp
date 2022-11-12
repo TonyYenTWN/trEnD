@@ -210,18 +210,18 @@ void power_network::point_distance_cov(points &point, double lambda){
 	point.covariance = covariance.sparseView(tol);
 }
 
-void power_network::power_network_input_process(network_inform &Power_network_inform, std::string parent_dir){
-	auto fin_bz = parent_dir + "DSO_Bidding_Zone.csv";
-	auto fin_cbt = parent_dir + "cbt_constraint.csv";
-	auto fin_weather = parent_dir + "solar_radiation_stations.csv";
-	auto fin_entry = parent_dir + "cbt_entry_nodes.csv";
-	auto fin_node = parent_dir + "transmission_nodes.csv";
-	auto fin_edge = parent_dir + "transmission_edges.csv";
-	auto fin_edge_simp = parent_dir + "transmission_edges_pu_simp.csv";
-	auto fin_point = parent_dir + "point_info.csv";
-	auto fin_point_matrix = parent_dir + "point_matrix.csv";
-	auto fin_hydro = parent_dir + "hydro_plants.csv";
-	auto fin_wind = parent_dir + "wind_plants.csv";
+void power_network::power_network_input_process(network_inform &Power_network_inform, std::string dir_name){
+	auto fin_bz = dir_name + "DSO_Bidding_Zone.csv";
+	auto fin_cbt = dir_name + "cbt_constraint.csv";
+	auto fin_weather = dir_name + "solar_radiation_stations.csv";
+	auto fin_entry = dir_name + "cbt_entry_nodes.csv";
+	auto fin_node = dir_name + "transmission_nodes.csv";
+	auto fin_edge = dir_name + "transmission_edges.csv";
+	auto fin_edge_simp = dir_name + "transmission_edges_pu_simp.csv";
+	auto fin_point = dir_name + "point_info.csv";
+	auto fin_point_matrix = dir_name + "point_matrix.csv";
+	auto fin_hydro = dir_name + "hydro_plants.csv";
+	auto fin_wind = dir_name + "wind_plants.csv";
 
 	auto fin_bz_dim = basic::get_file_dim(fin_bz);
 	auto bz_inform = basic::read_file(fin_bz_dim[0], fin_bz_dim[1], fin_bz);

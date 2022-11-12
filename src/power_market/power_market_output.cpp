@@ -22,7 +22,7 @@ namespace local{
 			output(edge_iter, 2) = Market.network.power_constraint(edge_iter, 1);
 		}
 
-		fout_name = "csv/processed/power_market/" + name + "_simplified_network.csv";
+		fout_name = name + "_simplified_network.csv";
 		basic::write_file(output, fout_name, col_names);
 	}
 
@@ -38,13 +38,13 @@ namespace local{
 		}
 
 		// Confirmed results
-		fout_name = "csv/output/power_market/" + name + "_confirmed_price.csv";
+		fout_name = name + "_confirmed_price.csv";
 		basic::write_file(Market.confirmed.price, fout_name, Market.zone_names);
-		fout_name = "csv/output/power_market/" + name + "_confirmed_demand.csv";
+		fout_name = name + "_confirmed_demand.csv";
 		basic::write_file(Market.confirmed.demand, fout_name, Market.zone_names);
-		fout_name = "csv/output/power_market/" + name + "_confirmed_supply.csv";
+		fout_name = name + "_confirmed_supply.csv";
 		basic::write_file(Market.confirmed.supply, fout_name, Market.zone_names);
-		fout_name = "csv/output/power_market/" + name + "_confirmed_DC_power.csv";
+		fout_name = name + "_confirmed_DC_power.csv";
 		basic::write_file(Market.network.confirmed_power, fout_name, edge_names);
 
 		if(!nodal){
@@ -52,72 +52,64 @@ namespace local{
 		}
 
 		// EOM settlement
-		fout_name = "csv/output/power_market/" + name + "_EOM_cost.csv";
+		fout_name = name + "_EOM_cost.csv";
 		basic::write_file(Market.EOM.cost, fout_name, Market.zone_names);
-		fout_name = "csv/output/power_market/" + name + "_EOM_utility.csv";
+		fout_name = name + "_EOM_utility.csv";
 		basic::write_file(Market.EOM.utility, fout_name, Market.zone_names);
 
 		// Redispatch settlement
-		fout_name = "csv/output/power_market/" + name + "_redispatch_cost.csv";
+		fout_name = name + "_redispatch_cost.csv";
 		basic::write_file(Market.redispatch.cost, fout_name, Market.zone_names);
-		fout_name = "csv/output/power_market/" + name + "_redispatch_utility.csv";
+		fout_name = name + "_redispatch_utility.csv";
 		basic::write_file(Market.redispatch.utility, fout_name, Market.zone_names);
-		fout_name = "csv/output/power_market/" + name + "_redispatch_demand.csv";
+		fout_name = name + "_redispatch_demand.csv";
 		basic::write_file(Market.redispatch.demand_up - Market.redispatch.demand_down, fout_name, Market.zone_names);
-		fout_name = "csv/output/power_market/" + name + "_redispatch_supply.csv";
+		fout_name = name + "_redispatch_supply.csv";
 		basic::write_file(Market.redispatch.supply_up - Market.redispatch.supply_down, fout_name, Market.zone_names);
 
 		// Imbalance
-		fout_name = "csv/output/power_market/" + name + "_imbalance_demand.csv";
+		fout_name = name + "_imbalance_demand.csv";
 		basic::write_file(Market.imbalance.demand_up - Market.redispatch.demand_down, fout_name, Market.zone_names);
-		fout_name = "csv/output/power_market/" + name + "_imbalance_supply.csv";
+		fout_name = name + "_imbalance_supply.csv";
 		basic::write_file(Market.imbalance.supply_up - Market.redispatch.supply_down, fout_name, Market.zone_names);
 
 		// Actual results
-		fout_name = "csv/output/power_market/" + name + "_actual_price.csv";
+		fout_name = name + "_actual_price.csv";
 		basic::write_file(Market.actual.price, fout_name, Market.zone_names);
-		fout_name = "csv/output/power_market/" + name + "_actual_demand.csv";
+		fout_name = name + "_actual_demand.csv";
 		basic::write_file(Market.actual.demand, fout_name, Market.zone_names);
-		fout_name = "csv/output/power_market/" + name + "_actual_supply.csv";
+		fout_name = name + "_actual_supply.csv";
 		basic::write_file(Market.actual.supply, fout_name, Market.zone_names);
-		fout_name = "csv/output/power_market/" + name + "_actual_DC_power.csv";
+		fout_name = name + "_actual_DC_power.csv";
 		basic::write_file(Market.network.actual_power, fout_name, edge_names);
-		fout_name = "csv/output/power_market/" + name + "_actual_AC_voltage_magnitude.csv";
-		basic::write_file(Market.power_flow.voltage_abs, fout_name, Market.zone_names);
-		fout_name = "csv/output/power_market/" + name + "_actual_AC_voltage_angle.csv";
-		basic::write_file(Market.power_flow.voltage_arg, fout_name, Market.zone_names);
-		fout_name = "csv/output/power_market/" + name + "_actual_AC_P_node.csv";
-		basic::write_file(Market.power_flow.P_node, fout_name, Market.zone_names);
-		fout_name = "csv/output/power_market/" + name + "_actual_AC_Q_node.csv";
-		basic::write_file(Market.power_flow.Q_node, fout_name, Market.zone_names);
-		fout_name = "csv/output/power_market/" + name + "_actual_AC_current_magnitude.csv";
-		basic::write_file(Market.power_flow.current_abs, fout_name, edge_names);
-		fout_name = "csv/output/power_market/" + name + "_actual_AC_current_angle.csv";
-		basic::write_file(Market.power_flow.current_arg, fout_name, edge_names);
 
 		// Balancing settlement
-		fout_name = "csv/output/power_market/" + name + "_balancing_cost.csv";
+		fout_name = name + "_balancing_cost.csv";
 		basic::write_file(Market.balancing.cost, fout_name, Market.zone_names);
-		fout_name = "csv/output/power_market/" + name + "_balancing_utility.csv";
+		fout_name = name + "_balancing_utility.csv";
 		basic::write_file(Market.balancing.utility, fout_name, Market.zone_names);
-		fout_name = "csv/output/power_market/" + name + "_balancing_demand.csv";
+		fout_name = name + "_balancing_demand.csv";
 		basic::write_file(Market.balancing.demand_up - Market.balancing.demand_down, fout_name, Market.zone_names);
-		fout_name = "csv/output/power_market/" + name + "_balancing_supply.csv";
+		fout_name = name + "_balancing_supply.csv";
 		basic::write_file(Market.balancing.supply_up - Market.balancing.supply_down, fout_name, Market.zone_names);
 	}
 }
 
 void power_market::Markets_results_print(market_whole_inform &Power_market_inform){
 	// Create a folder to store the file
-	std::filesystem::create_directories("csv/output/power_market");
+	std::string dir_name = "csv/output/power_market";
+	std::filesystem::create_directories(dir_name);
+	dir_name += "/";
 
-	local::Market_results_print(Power_market_inform.International_Market, "IMO", 0);
-	local::Market_results_print(Power_market_inform.TSO_Market, "TSO");
+	local::Market_results_print(Power_market_inform.International_Market, dir_name + "IMO", 0);
+	local::Market_results_print(Power_market_inform.TSO_Market, dir_name + "TSO");
 }
 
 void power_market::Simplified_network_print(market_whole_inform &Power_market_inform){
 	// Create a folder to store the file
-	std::filesystem::create_directories("csv/processed/power_market");
+	std::string dir_name = "csv/processed/power_market";
+	std::filesystem::create_directories(dir_name);
+	dir_name += "/";
 
-	local::Simplified_network_print(Power_market_inform.TSO_Market, "TSO");
+	local::Simplified_network_print(Power_market_inform.TSO_Market, dir_name + "TSO");
 }

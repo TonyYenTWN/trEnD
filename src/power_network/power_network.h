@@ -236,6 +236,8 @@ namespace power_network{
 		* @name voltage and power boundaries of the power network
 		*/
 		/*@{*/
+		/** Number of phases at a power lines.*/
+		int phase_num = 3;
 		/** Cutoff voltage level of the transmission network.*/
 		int voltage_cutoff_trans = 132;
 		/** Voltage level of connection between the transmission and the distribution network.*/
@@ -254,8 +256,6 @@ namespace power_network{
 		* @name statistical parameters of power network
 		*/
 		/*@{*/
-		/** Average number of power lines per edge in the transmission network.*/
-		int line_num_trans = 2;
 		/** Density of power lines per point connecting distribution and transmission power network.*/
 		double line_density_conn = 1.;
 		/** Total number of power lines in the distribution network.*/
@@ -271,24 +271,21 @@ namespace power_network{
 		*/
 		/*@{*/
 		/** Series impedance (ohm per meter) of transmission line.*/
-		//std::complex<double> z_trans_series = std::complex<double> (3. * pow(10., -5.) / line_num_trans, 2.5 * pow(10., -4.) / line_num_trans);
-		std::complex<double> z_trans_series = std::complex<double> (0., 2.5 * pow(10., -4.) / line_num_trans);
+		std::complex<double> z_trans_series = std::complex<double> (2.5 * pow(10., -5.), 2.5 * pow(10., -4.));
 		/** Shunt admittance (ohm^(-1) per meter) of transmission line.*/
-		std::complex<double> y_trans_shunt = std::complex<double> (0., 2 * pow(10., -9.) * line_num_trans);
+		std::complex<double> y_trans_shunt = std::complex<double> (0., 2 * pow(10., -9.));
 		/** Series impedance (ohm per meter) of HV distribution line.*/
-		//std::complex<double> z_conn_series = std::complex<double> (pow(10., -4.), 4. * pow(10., -4.));
-		std::complex<double> z_conn_series = std::complex<double> (0., 4. * pow(10., -4.));
+		std::complex<double> z_conn_series = std::complex<double> (1.2 * pow(10., -4.), 4. * pow(10., -4.));
 		/** Shunt admittance (ohm^(-1) per meter) of HV distribution line.*/
-		std::complex<double> y_conn_shunt = std::complex<double> (0., 2.5 * pow(10., -9.));
+		std::complex<double> y_conn_shunt = std::complex<double> (0., 4.5 * pow(10., -10.));
 		/** Series impedance (ohm per meter) of MV distribution line.*/
-		//std::complex<double> z_distr_series = std::complex<double> (6. * pow(10., -4.), 6. * pow(10., -4.));
-		std::complex<double> z_distr_series = std::complex<double> (0., 6. * pow(10., -4.));
+		std::complex<double> z_distr_series = std::complex<double> (6. * pow(10., -4.), 6. * pow(10., -4.));
 		/** Shunt admittance (ohm^(-1) per meter) of MV distribution line.*/
-		std::complex<double> y_distr_shunt = std::complex<double> (0., 3 * pow(10., -9.));
+		std::complex<double> y_distr_shunt = std::complex<double> (0., 1. * pow(10., -10.));
 		/**Phase angle limits on a transmission node.*/
-		double theta_trans_limit = boost::math::constants::pi<double>() / 36.;
+		double theta_trans_limit = boost::math::constants::pi<double>() / 180.;
 		/**Phase angle limits on a distribution node.*/
-		double theta_distr_limit = boost::math::constants::pi<double>() / 72.;
+		double theta_distr_limit = boost::math::constants::pi<double>() / 360.;
 		/**Hash table (mapping) of per phase power flow limits on an edge at different voltage base levels, in MW.*/
 		std::map <int, double> power_limit;
 		/*@{*/
@@ -311,8 +308,8 @@ namespace power_network{
 			int voltage_max = voltage_min;
 			int level_count = 0;
 			this->voltage_base_levels.insert(std::make_pair(voltage_max, level_count));
-			this->impedenace_base_levels.insert(std::make_pair(voltage_max, (double) voltage_max * voltage_max / this->s_base));
-			this->power_limit.insert(std::make_pair(voltage_max, (double) this->line_num_trans * this->power_limit_trans * voltage_max));
+			this->impedenace_base_levels.insert(std::make_pair(voltage_max, (double) this->phase_num * voltage_max * voltage_max / this->s_base));
+			this->power_limit.insert(std::make_pair(voltage_max, (double) this->power_limit_trans * voltage_max));
 			//std::cout << voltage_base_levels[voltage_max] << "\t" <<  voltage_max << "\t" << impedenace_base_levels[voltage_max] << "\n";
 
 			std::vector <int> voltage_base_sorted(edges.voltage_base.data(), edges.voltage_base.data() + edges.voltage_base.size());
@@ -322,8 +319,8 @@ namespace power_network{
 					voltage_max = voltage_base_sorted[edge_iter];
 					level_count += 1;
 					this->voltage_base_levels.insert(std::make_pair(voltage_max, level_count));
-					this->impedenace_base_levels.insert(std::make_pair(voltage_max, (double) voltage_max * voltage_max / this->s_base));
-					this->power_limit.insert(std::make_pair(voltage_max, (double) this->line_num_trans * this->power_limit_trans * voltage_max));
+					this->impedenace_base_levels.insert(std::make_pair(voltage_max, (double) this->phase_num * voltage_max * voltage_max / this->s_base));
+					this->power_limit.insert(std::make_pair(voltage_max, (double) this->power_limit_trans * voltage_max));
 					//std::cout << voltage_base_levels[voltage_max] << "\t" <<  voltage_max << "\t" << impedenace_base_levels[voltage_max] << "\n";
 				}
 			}
@@ -331,11 +328,11 @@ namespace power_network{
 
 		// Set z_base for distribution network
 		double z_base_conn(){
-			double value = this->voltage_cutoff_conn * this->voltage_cutoff_conn / this->s_base;
+			double value = this->phase_num * this->voltage_cutoff_conn * this->voltage_cutoff_conn / this->s_base;
 			return value;
 		}
 		double z_base_distr(){
-			double value = this->voltage_cutoff_distr * this->voltage_cutoff_distr / this->s_base;
+			double value = this->phase_num * this->voltage_cutoff_distr * this->voltage_cutoff_distr / this->s_base;
 			return value;
 		}
     };
