@@ -234,8 +234,13 @@ void power_network::HELM_Transmission_Set(network_inform &Power_network_inform, 
 	}
 	Eigen::SparseMatrix <std::complex <double>> Mat(4 * Y_n_small.rows() + Power_market_inform.TSO_Market.power_flow.PU_bus.size(), 4 * Y_n_small.rows() + Power_market_inform.TSO_Market.power_flow.PU_bus.size());
 	Mat.setFromTriplets(Mat_trip.begin(), Mat_trip.end());
-//	std::cout << Mat.row(0).head(Y_n_small.rows()) << "\n\n";
+//	std::cout << Mat.row(0) << "\n\n";
+//	std::cout << Mat.row(220) << "\n\n";
+//	std::cout << Mat.row(440) << "\n\n";
+//	std::cout << Mat.row(660) << "\n\n";
+//	std::cout << Mat.row(880) << "\n\n";
 	Power_market_inform.TSO_Market.power_flow.solver.compute(Mat);
+	//std::cout << Mat.rows() << "\t" << Power_market_inform.TSO_Market.power_flow.solver.rank() << "\n\n";
 
 	// -------------------------------------------------------------------------------
 	// Initialize
@@ -384,7 +389,7 @@ void power_network::HELM_Transmission_Solve(int tick, network_inform& Power_netw
 	// -------------------------------------------------------------------------------
 	// Initialization of power series coefficients
 	// -------------------------------------------------------------------------------
-	int power_terms = 200;
+	int power_terms = 2;
 	Eigen::MatrixXcd V_up_reg = Eigen::MatrixXcd::Zero(node_small_num, power_terms);
 	Eigen::MatrixXcd V_up_hat = Eigen::MatrixXcd::Zero(node_small_num, power_terms);
 	Eigen::MatrixXcd V_down_reg = Eigen::MatrixXcd::Zero(node_small_num, power_terms);
@@ -467,8 +472,8 @@ void power_network::HELM_Transmission_Solve(int tick, network_inform& Power_netw
 	// Sanity check
 	Eigen::VectorXcd V_reg_dir = V_up_reg * Eigen::VectorXcd::Ones(power_terms);
 	Eigen::VectorXcd Q_node_dir = Q_node * Eigen::VectorXcd::Ones(power_terms);
-	std::cout << V_reg_dir.array().abs().minCoeff() << "\t" << V_reg_dir.array().abs().maxCoeff() << "\n\n";
-	std::cout << Q_node_dir.array().real().minCoeff() << "\t" << Q_node_dir.array().real().maxCoeff() << "\n\n";
+//	std::cout << V_reg_dir.array().abs().minCoeff() << "\t" << V_reg_dir.array().abs().maxCoeff() << "\n\n";
+//	std::cout << Q_node_dir.array().real().minCoeff() << "\t" << Q_node_dir.array().real().maxCoeff() << "\n\n";
 
 //	// -------------------------------------------------------------------------------
 //	// Pade-approximant
@@ -516,33 +521,33 @@ void power_network::HELM_Transmission_Solve(int tick, network_inform& Power_netw
 	// -------------------------------------------------------------------------------
 	// Store the results
 	// -------------------------------------------------------------------------------
-	Eigen::VectorXcd V_test(node_small_num);
+	//Eigen::VectorXcd V_test = Eigen::VectorXcd::Zero(node_small_num);
 	// P-U Buses
 	for(int node_iter = 0; node_iter < PU_bus_num; ++ node_iter){
 		int node_ID = Power_market_inform.TSO_Market.power_flow.PU_bus[node_iter];
 		Power_market_inform.TSO_Market.power_flow.voltage_abs(tick, node_ID) = abs(V_reg_dir(node_iter));
 		Power_market_inform.TSO_Market.power_flow.voltage_arg(tick, node_ID) = arg(V_reg_dir(node_iter));
 		Power_market_inform.TSO_Market.power_flow.Q_node(tick, node_ID) = -Q_node_dir(node_iter).real();
-		V_test(node_ID) = V_reg_dir(node_iter);
+		//V_test(node_ID) = V_reg_dir(node_iter);
 	}
 
 	// P-Q Buses
 	for(int node_iter = 0; node_iter < PQ_bus_num; ++ node_iter){
 		int node_ID = Power_market_inform.TSO_Market.power_flow.PQ_bus[node_iter];
-		Power_market_inform.TSO_Market.power_flow.voltage_abs(tick, node_ID) = abs(V_reg_dir(node_iter));
-		Power_market_inform.TSO_Market.power_flow.voltage_arg(tick, node_ID) = arg(V_reg_dir(node_iter));
-		V_test(node_ID) = V_reg_dir(node_iter);
+		Power_market_inform.TSO_Market.power_flow.voltage_abs(tick, node_ID) = abs(V_reg_dir(PU_bus_num + node_iter));
+		Power_market_inform.TSO_Market.power_flow.voltage_arg(tick, node_ID) = arg(V_reg_dir(PU_bus_num + node_iter));
+		//V_test(node_ID) = V_reg_dir(PU_bus_num + node_iter);
 	}
 
 	// Reference Buses
 	for(int node_iter = 0; node_iter < ref_bus_num; ++ node_iter){
 		int node_ID = Power_market_inform.TSO_Market.power_flow.ref_bus[node_iter];
 		Power_market_inform.TSO_Market.power_flow.voltage_abs(tick, node_ID) = 1.;
-		V_test(node_ID) = V_reg_dir(node_iter);
 	}
 
-	std::cout << Power_market_inform.TSO_Market.power_flow.P_node.row(0) << "\n\n";
-	std::cout << (V_test.array() * (Power_market_inform.TSO_Market.power_flow.nodal_admittance * V_test).array()).transpose() << "\n\n";
+//	std::cout << Power_market_inform.TSO_Market.power_flow.P_node.row(0) << "\n\n";
+//	std::cout << (Power_market_inform.TSO_Market.power_flow.nodal_admittance * V_test).transpose() << "\n\n";
+//	std::cout << (V_test.array() * (Power_market_inform.TSO_Market.power_flow.nodal_admittance * V_test).array()).transpose() << "\n\n";
 
 	// Current on edges
 	int edge_num = Power_network_inform.edges.distance.size();
