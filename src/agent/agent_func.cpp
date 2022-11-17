@@ -929,12 +929,16 @@ namespace{
 				end_user_profiles[point_iter][sample_iter].operation.smart_appliance.shift_time = load_shift_time_temp;
 				end_user_profiles[point_iter][sample_iter].operation.BESS.soc = end_user_profiles[point_iter][sample_iter].operation.BESS.energy_scale / 2;
 				end_user_profiles[point_iter][sample_iter].operation.BESS.soc *= end_user_profiles[point_iter][sample_iter].investment.decision.BESS;
+				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.energy_scale = 10.;
+				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.energy_scale *= end_user_profiles[point_iter][sample_iter].investment.decision.EV_self_charging;
+				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.capacity_scale = 2.;
+				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.capacity_scale *= end_user_profiles[point_iter][sample_iter].investment.decision.EV_self_charging;
 				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.soc = end_user_profiles[point_iter][sample_iter].operation.EV.BESS.energy_scale / 2;
 				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.soc *= end_user_profiles[point_iter][sample_iter].investment.decision.EV_self_charging;
 
 				// Initialization of input profiles
-				end_user_profiles[point_iter][sample_iter].operation.EV.house_default_period = Eigen::VectorXi::Ones(foresight_time);
-				end_user_profiles[point_iter][sample_iter].operation.EV.default_demand_profile = Eigen::VectorXd::Zero(foresight_time);
+				end_user_profiles[point_iter][sample_iter].operation.EV.house_default_period = end_user_profiles[point_iter][sample_iter].operation.EV.house_schedule(0);
+				end_user_profiles[point_iter][sample_iter].operation.EV.default_demand_profile = end_user_profiles[point_iter][sample_iter].operation.EV.demand_profile(0);
 				end_user_profiles[point_iter][sample_iter].operation.EV.default_demand_profile *= end_user_profiles[point_iter][sample_iter].investment.decision.EV_self_charging;
 				end_user_profiles[point_iter][sample_iter].operation.default_demand_profile = Power_network_inform.points.nominal_mean_demand_field.row(point_iter).segment(start_time, foresight_time);
 				end_user_profiles[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand = Eigen::VectorXd::Zero(foresight_time + load_shift_time_temp);
@@ -2138,8 +2142,8 @@ namespace{
 				int load_shift_time = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.shift_time;
 
 				// Update of input profiles
-				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.house_default_period = Eigen::VectorXi::Ones(foresight_time);
-				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.default_demand_profile = Eigen::VectorXd::Zero(foresight_time);
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.house_default_period = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.house_schedule(tick);
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.default_demand_profile = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.demand_profile(tick);
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.default_demand_profile *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.EV_self_charging;
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile = Power_network_inform.points.nominal_mean_demand_field.row(point_iter).segment(tick, foresight_time);
 				//Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.default_demand_profile;

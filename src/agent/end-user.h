@@ -103,9 +103,9 @@ namespace agent{
 			*/
 			/*@{*/
 			/**kWh per person per hour of usage.*/
-			double energy_demand;
-			/** The time intervals when EV is actually used.*/
-			Eigen::VectorXi usage_default_period;
+			double energy_demand = 7.671;
+//			/** The time intervals when EV is actually used.*/
+//			Eigen::VectorXi usage_default_period;
 			/** The time intervals when EV is parked in the house.*/
 			Eigen::VectorXi house_default_period;
 			/** The time series of the default charging demand of the EV (kWh per person).*/
@@ -128,6 +128,32 @@ namespace agent{
 			/*@{*/
 			storage_inform BESS;
 			/*@{*/
+
+			Eigen::VectorXi house_schedule(int tick){
+				int foresight_time = agent::end_user::parameters::foresight_time();
+				Eigen::VectorXi vec = Eigen::VectorXi::Zero(foresight_time);
+
+				for(int tock = 0; tock < foresight_time; ++ tock){
+					if((tick + tock) % foresight_time < 7 || (tick + tock) % foresight_time > 19){
+						vec(tock) = 1;
+					}
+				}
+
+				return vec;
+			}
+
+			Eigen::VectorXd demand_profile(int tick){
+				int foresight_time = agent::end_user::parameters::foresight_time();
+				Eigen::VectorXd vec = Eigen::VectorXd::Zero(foresight_time);
+
+				for(int tock = 0; tock < foresight_time; ++ tock){
+					if((tick + tock) % foresight_time == 7 || (tick + tock) % foresight_time == 19){
+						vec(tock) = this->energy_demand;
+					}
+				}
+
+				return vec;
+			}
 		};
 
 		/** @brief Information of the investment strategies of an end-user.*/
