@@ -118,11 +118,19 @@ namespace power_market{
 		Eigen::MatrixXd utility;
 	};
 
-	struct supply_tech{
+	/**Information of the settlement of a market.*/
+	struct schedule{
+		Eigen::MatrixXd end_user;
+		Eigen::MatrixXd industrial;
 		Eigen::MatrixXd hydro;
 		Eigen::MatrixXd wind;
-		Eigen::MatrixXd solar;
-		Eigen::MatrixXd BESS;
+		Eigen::MatrixXd pump_storage;
+	};
+
+	struct schedules{
+		schedule EOM;
+		schedule redispatch;
+		schedule balancing;
 	};
 
 	/**Information of a power market.*/
@@ -179,8 +187,10 @@ namespace power_market{
 		settlement imbalance;
 		/**Settlement for balancing.*/
 		settlement balancing;
-		/**Actual power flow on the corresponding network*/
+		/**Actual power flow on the corresponding network.*/
 		power_network::power_flow power_flow;
+		/**Operational schedule.*/
+		schedules operation;
 		/*@{*/
 
 		/**
@@ -225,6 +235,7 @@ namespace power_market{
 
 namespace power_market{
 	void Market_Initialization(market_inform&);
+	void Operation_Initialization(market_inform&);
 	void Flow_Based_Market_LP_Set(market_inform&);
 	void Flow_Based_Market_Optimization(market_inform&);
 	void default_demand_set(power_network::network_inform&, market_whole_inform&);

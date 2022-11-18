@@ -37,6 +37,26 @@ void power_market::Market_Initialization(market_inform &Market){
 	Market.actual.ratio_demand = Eigen::VectorXd::Zero(Market.num_zone);
 }
 
+void power_market::Operation_Initialization(market_inform &Market){
+	int Time = configuration::parameters::Time();
+
+	Market.operation.balancing.end_user = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.balancing.industrial = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.balancing.hydro = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.balancing.wind = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.balancing.pump_storage = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.EOM.end_user = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.EOM.industrial = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.EOM.hydro = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.EOM.wind = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.EOM.pump_storage = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.redispatch.end_user = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.redispatch.industrial = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.redispatch.hydro = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.redispatch.wind = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.redispatch.pump_storage = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+}
+
 // ------------------------------------------------------------------------------------------------
 // Specific functions for for flow-based markets
 // ------------------------------------------------------------------------------------------------

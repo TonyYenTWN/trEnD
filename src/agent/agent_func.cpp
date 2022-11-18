@@ -1711,6 +1711,7 @@ namespace{
 
 		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
 			int node_ID = Power_network_inform.points.node(point_iter);
+			int bz_ID = Power_network_inform.nodes.bidding_zone(node_ID);
 			double marginal_price = Power_market_inform.TSO_Market.actual.price(tick, node_ID);
 			int marginal_price_ID = Power_market_inform.price_map.price_ID[marginal_price];
 
@@ -1869,6 +1870,10 @@ namespace{
 
 				// Balancing settlement
 				agent_balancing_settlement_calculation(tick, node_ID, Power_market_inform, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement, 1);
+				Power_market_inform.International_Market.operation.balancing.end_user(tick, bz_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_supply_up.balancing;
+				Power_market_inform.International_Market.operation.balancing.end_user(tick, bz_ID)  += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_demand_up.balancing;
+				Power_market_inform.International_Market.operation.balancing.end_user(tick, bz_ID)  -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_supply_down.balancing;
+				Power_market_inform.International_Market.operation.balancing.end_user(tick, bz_ID)  -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_demand_down.balancing;
 			}
 		}
 		//std::cout << "\n";

@@ -29,6 +29,7 @@ namespace agent{
 		/** @brief Decision variables representing possible investment combinations of an end-user.*/
 		struct decision{
 			bool dynamic_tariff;
+			bool smart_management; // ideal optimization if true
 			bool smart_appliance;
 			bool PV;
 			bool BESS;
