@@ -844,6 +844,17 @@ namespace{
 		}
 	}
 
+	void market_operation_update(int tick, int bz_ID, power_market::schedule agent, agent::results &results){
+		agent.EOM(tick, bz_ID) += results.cleared_supply - results.clear_demand;
+
+		agent.redispatch(tick, bz_ID) += results.confirmed_supply - results.cleared_supply;
+		agent.redispatch(tick, bz_ID) -= results.confirmed_demand - results.cleared_demand;
+
+		agent.balancing(tick, bz_ID) += results.actual_supply - results.confirmed_supply;
+		agent.balancing(tick, bz_ID) -= results.actual_demand - results.confirmed_demand;
+		agent.balancing(tick, bz_ID) += results.imbalance_demand - results.imbalance_supply;
+	}
+
 	agent::aggregator::profiles aggregator_set(int start_time, power_market::market_inform &International_Market, power_network::network_inform &Power_network_inform){
 		int foresight_time = agent::aggregator::parameters::foresight_time();
 		int point_num = Power_network_inform.points.bidding_zone.size();
@@ -1870,10 +1881,9 @@ namespace{
 
 				// Balancing settlement
 				agent_balancing_settlement_calculation(tick, node_ID, Power_market_inform, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement, 1);
-				Power_market_inform.International_Market.operation.balancing.end_user(tick, bz_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_supply_up.balancing;
-				Power_market_inform.International_Market.operation.balancing.end_user(tick, bz_ID)  += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_demand_up.balancing;
-				Power_market_inform.International_Market.operation.balancing.end_user(tick, bz_ID)  -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_supply_down.balancing;
-				Power_market_inform.International_Market.operation.balancing.end_user(tick, bz_ID)  -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_demand_down.balancing;
+
+				// Market operation update
+				market_operation_update(tick, bz_ID, Power_market_inform.International_Market.operation.end_user, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results);
 			}
 		}
 		//std::cout << "\n";

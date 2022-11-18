@@ -40,21 +40,24 @@ void power_market::Market_Initialization(market_inform &Market){
 void power_market::Operation_Initialization(market_inform &Market){
 	int Time = configuration::parameters::Time();
 
-	Market.operation.balancing.end_user = Eigen::MatrixXd::Zero(Time, Market.num_zone);
-	Market.operation.balancing.industrial = Eigen::MatrixXd::Zero(Time, Market.num_zone);
-	Market.operation.balancing.hydro = Eigen::MatrixXd::Zero(Time, Market.num_zone);
-	Market.operation.balancing.wind = Eigen::MatrixXd::Zero(Time, Market.num_zone);
-	Market.operation.balancing.pump_storage = Eigen::MatrixXd::Zero(Time, Market.num_zone);
-	Market.operation.EOM.end_user = Eigen::MatrixXd::Zero(Time, Market.num_zone);
-	Market.operation.EOM.industrial = Eigen::MatrixXd::Zero(Time, Market.num_zone);
-	Market.operation.EOM.hydro = Eigen::MatrixXd::Zero(Time, Market.num_zone);
-	Market.operation.EOM.wind = Eigen::MatrixXd::Zero(Time, Market.num_zone);
-	Market.operation.EOM.pump_storage = Eigen::MatrixXd::Zero(Time, Market.num_zone);
-	Market.operation.redispatch.end_user = Eigen::MatrixXd::Zero(Time, Market.num_zone);
-	Market.operation.redispatch.industrial = Eigen::MatrixXd::Zero(Time, Market.num_zone);
-	Market.operation.redispatch.hydro = Eigen::MatrixXd::Zero(Time, Market.num_zone);
-	Market.operation.redispatch.wind = Eigen::MatrixXd::Zero(Time, Market.num_zone);
-	Market.operation.redispatch.pump_storage = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.cross_border.balancing = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.end_user.balancing = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.industrial.balancing = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.hydro.balancing = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.wind.balancing = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.pump_storage.balancing = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.cross_border.EOM = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.end_user.EOM = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.industrial.EOM = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.hydro.EOM = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.wind.EOM = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.pump_storage.EOM = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.cross_border.redispatch = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.end_user.redispatch = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.industrial.redispatch = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.hydro.redispatch = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.wind.redispatch = Eigen::MatrixXd::Zero(Time, Market.num_zone);
+	Market.operation.pump_storage.redispatch = Eigen::MatrixXd::Zero(Time, Market.num_zone);
 }
 
 // ------------------------------------------------------------------------------------------------

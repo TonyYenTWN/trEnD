@@ -118,19 +118,20 @@ namespace power_market{
 		Eigen::MatrixXd utility;
 	};
 
-	/**Information of the settlement of a market.*/
 	struct schedule{
-		Eigen::MatrixXd end_user;
-		Eigen::MatrixXd industrial;
-		Eigen::MatrixXd hydro;
-		Eigen::MatrixXd wind;
-		Eigen::MatrixXd pump_storage;
+		Eigen::MatrixXd EOM;
+		Eigen::MatrixXd redispatch;
+		Eigen::MatrixXd balancing;
 	};
 
+	/**Information of the settlement of a market.*/
 	struct schedules{
-		schedule EOM;
-		schedule redispatch;
-		schedule balancing;
+		schedule cross_border;
+		schedule end_user;
+		schedule industrial;
+		schedule hydro;
+		schedule wind;
+		schedule pump_storage;
 	};
 
 	/**Information of a power market.*/
