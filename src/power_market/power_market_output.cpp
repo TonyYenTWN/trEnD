@@ -48,6 +48,44 @@ namespace local{
 		basic::write_file(Market.network.confirmed_power, fout_name, edge_names);
 
 		if(!nodal){
+			// Operation schedule
+			fout_name = name + "_operation_EOM_cross_border.csv";
+			basic::write_file(Market.operation.cross_border.EOM, fout_name, Market.zone_names);
+			fout_name = name + "_operation_EOM_end_user.csv";
+			basic::write_file(Market.operation.end_user.EOM, fout_name, Market.zone_names);
+			fout_name = name + "_operation_EOM_hydro.csv";
+			basic::write_file(Market.operation.hydro.EOM, fout_name, Market.zone_names);
+			fout_name = name + "_operation_EOM_industrial.csv";
+			basic::write_file(Market.operation.industrial.EOM, fout_name, Market.zone_names);
+			fout_name = name + "_operation_EOM_pump_storage.csv";
+			basic::write_file(Market.operation.pump_storage.EOM, fout_name, Market.zone_names);
+			fout_name = name + "_operation_EOM_wind.csv";
+			basic::write_file(Market.operation.wind.redispatch, fout_name, Market.zone_names);
+			fout_name = name + "_operation_redispatch_cross_border.csv";
+			basic::write_file(Market.operation.cross_border.redispatch, fout_name, Market.zone_names);
+			fout_name = name + "_operation_redispatch_end_user.csv";
+			basic::write_file(Market.operation.end_user.redispatch, fout_name, Market.zone_names);
+			fout_name = name + "_operation_redispatch_hydro.csv";
+			basic::write_file(Market.operation.hydro.redispatch, fout_name, Market.zone_names);
+			fout_name = name + "_operation_redispatch_industrial.csv";
+			basic::write_file(Market.operation.industrial.redispatch, fout_name, Market.zone_names);
+			fout_name = name + "_operation_redispatch_pump_storage.csv";
+			basic::write_file(Market.operation.pump_storage.redispatch, fout_name, Market.zone_names);
+			fout_name = name + "_operation_redispatch_wind.csv";
+			basic::write_file(Market.operation.wind.redispatch, fout_name, Market.zone_names);
+			fout_name = name + "_operation_balancing_cross_border.csv";
+			basic::write_file(Market.operation.cross_border.balancing, fout_name, Market.zone_names);
+			fout_name = name + "_operation_balancing_end_user.csv";
+			basic::write_file(Market.operation.end_user.balancing, fout_name, Market.zone_names);
+			fout_name = name + "_operation_balancing_hydro.csv";
+			basic::write_file(Market.operation.hydro.balancing, fout_name, Market.zone_names);
+			fout_name = name + "_operation_balancing_industrial.csv";
+			basic::write_file(Market.operation.industrial.balancing, fout_name, Market.zone_names);
+			fout_name = name + "_operation_balancing_pump_storage.csv";
+			basic::write_file(Market.operation.pump_storage.balancing, fout_name, Market.zone_names);
+			fout_name = name + "_operation_balancing_wind.csv";
+			basic::write_file(Market.operation.wind.balancing, fout_name, Market.zone_names);
+
 			return;
 		}
 

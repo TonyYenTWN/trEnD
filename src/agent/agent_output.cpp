@@ -2,7 +2,7 @@
 #include <filesystem>
 #include "agent_func.h"
 
-namespace{
+namespace local{
 	inline std::vector <std::string> var_names_set(){
 		std::vector <std::string> var_names;
 		var_names.push_back("ID");
@@ -209,9 +209,9 @@ void agent::agents_results_print(power_market::market_whole_inform &Power_market
 	// Create a folder to store the file
 	std::filesystem::create_directories("csv/output/agent");
 
-	aggregators_settlement_print(Power_market_inform);
-	cross_border_settlement_print(Power_market_inform);
-	end_users_settlement_print(Power_market_inform, Power_network_inform);
-	industrial_settlement_print(Power_market_inform);
-	power_supplier_settlement_print(Power_market_inform);
+	local::aggregators_settlement_print(Power_market_inform);
+	local::cross_border_settlement_print(Power_market_inform);
+	local::end_users_settlement_print(Power_market_inform, Power_network_inform);
+	local::industrial_settlement_print(Power_market_inform);
+	local::power_supplier_settlement_print(Power_market_inform);
 }

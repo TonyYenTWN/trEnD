@@ -844,7 +844,7 @@ namespace{
 		}
 	}
 
-	void market_operation_update(int tick, int bz_ID, power_market::schedule agent, agent::results &results){
+	void market_operation_update(int tick, int bz_ID, power_market::schedule &agent, agent::results &results){
 		agent.EOM(tick, bz_ID) += results.cleared_supply - results.cleared_demand;
 
 		agent.redispatch(tick, bz_ID) += results.confirmed_supply - results.cleared_supply;
