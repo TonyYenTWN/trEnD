@@ -60,7 +60,7 @@ namespace local{
 			fout_name = name + "_operation_EOM_pump_storage.csv";
 			basic::write_file(Market.operation.pump_storage.EOM, fout_name, Market.zone_names);
 			fout_name = name + "_operation_EOM_wind.csv";
-			basic::write_file(Market.operation.wind.redispatch, fout_name, Market.zone_names);
+			basic::write_file(Market.operation.wind.EOM, fout_name, Market.zone_names);
 			fout_name = name + "_operation_redispatch_cross_border.csv";
 			basic::write_file(Market.operation.cross_border.redispatch, fout_name, Market.zone_names);
 			fout_name = name + "_operation_redispatch_end_user.csv";
