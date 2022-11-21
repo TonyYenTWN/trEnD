@@ -416,7 +416,7 @@ void power_network::HELM_Transmission_Solve(int tick, network_inform& Power_netw
 			int row_ID = bus_iter;
 			int bus_ID = Power_market_inform.TSO_Market.power_flow.PU_bus[bus_iter];
 
-			double P_node = -Power_market_inform.TSO_Market.power_flow.P_node(tick, bus_ID);
+			double P_node = Power_market_inform.TSO_Market.power_flow.P_node(tick, bus_ID);
 			rhs(row_ID) = P_node * V_down_hat(bus_iter , term_iter - 1);
 			for(int term_iter_2 = 1; term_iter_2 < term_iter; ++ term_iter_2){
 				rhs(row_ID) += -root_i * Q_node(bus_iter , term_iter_2) * V_down_hat(bus_iter , term_iter - term_iter_2);
@@ -434,13 +434,13 @@ void power_network::HELM_Transmission_Solve(int tick, network_inform& Power_netw
 			int row_ID = PU_bus_num + bus_iter;
 			int bus_ID = Power_market_inform.TSO_Market.power_flow.PQ_bus[bus_iter];
 
-			std::complex <double> S_node = -Power_market_inform.TSO_Market.power_flow.P_node(tick, bus_ID);
-			S_node += root_i * Power_market_inform.TSO_Market.power_flow.Q_node(tick, bus_ID);
+			std::complex <double> S_node = Power_market_inform.TSO_Market.power_flow.P_node(tick, bus_ID);
+			S_node += -root_i * Power_market_inform.TSO_Market.power_flow.Q_node(tick, bus_ID);
 			rhs(row_ID) = S_node * V_down_hat(bus_iter, term_iter - 1);
 
 			row_ID += 2 * node_small_num;
-			S_node = -Power_market_inform.TSO_Market.power_flow.P_node(tick, bus_ID);
-			S_node += -root_i * Power_market_inform.TSO_Market.power_flow.Q_node(tick, bus_ID);
+			S_node = Power_market_inform.TSO_Market.power_flow.P_node(tick, bus_ID);
+			S_node += root_i * Power_market_inform.TSO_Market.power_flow.Q_node(tick, bus_ID);
 			rhs(row_ID) = S_node * V_down_reg(bus_iter, term_iter - 1);
 		}
 
@@ -526,7 +526,7 @@ void power_network::HELM_Transmission_Solve(int tick, network_inform& Power_netw
 		int node_ID = Power_market_inform.TSO_Market.power_flow.PU_bus[node_iter];
 		Power_market_inform.TSO_Market.power_flow.voltage_abs(tick, node_ID) = abs(V_reg_dir(node_iter));
 		Power_market_inform.TSO_Market.power_flow.voltage_arg(tick, node_ID) = arg(V_reg_dir(node_iter));
-		Power_market_inform.TSO_Market.power_flow.Q_node(tick, node_ID) = -Q_node_dir(node_iter).real();
+		Power_market_inform.TSO_Market.power_flow.Q_node(tick, node_ID) = Q_node_dir(node_iter).real();
 	}
 
 	// P-Q Buses
