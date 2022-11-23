@@ -105,8 +105,6 @@ namespace agent{
 			/*@{*/
 			/**kWh per person per hour of usage.*/
 			double energy_demand = 7.671;
-//			/** The time intervals when EV is actually used.*/
-//			Eigen::VectorXi usage_default_period;
 			/** The time intervals when EV is parked in the house.*/
 			Eigen::VectorXi house_default_period;
 			/** The time series of the default charging demand of the EV (kWh per person).*/

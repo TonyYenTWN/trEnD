@@ -48,6 +48,9 @@ namespace local{
 		basic::write_file(Market.network.confirmed_power, fout_name, edge_names);
 
 		if(!nodal){
+			fout_name = name + "_redispatch_price.csv";
+			basic::write_file(Market.redispatch.price_demand, fout_name, Market.zone_names);
+
 			// Operation schedule
 			fout_name = name + "_operation_EOM_cross_border.csv";
 			basic::write_file(Market.operation.cross_border.EOM, fout_name, Market.zone_names);
@@ -104,6 +107,8 @@ namespace local{
 		basic::write_file(Market.redispatch.demand_up - Market.redispatch.demand_down, fout_name, Market.zone_names);
 		fout_name = name + "_redispatch_supply.csv";
 		basic::write_file(Market.redispatch.supply_up - Market.redispatch.supply_down, fout_name, Market.zone_names);
+		fout_name = name + "_redispatch_reimbursement.csv";
+		basic::write_file(Market.redispatch.price_supply + Market.redispatch.price_demand, fout_name, Market.zone_names);
 
 		// Imbalance
 		fout_name = name + "_imbalance_demand.csv";
