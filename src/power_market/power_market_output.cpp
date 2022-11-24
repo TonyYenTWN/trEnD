@@ -135,6 +135,8 @@ namespace local{
 		basic::write_file(Market.balancing.demand_up - Market.balancing.demand_down, fout_name, Market.zone_names);
 		fout_name = name + "_balancing_supply.csv";
 		basic::write_file(Market.balancing.supply_up - Market.balancing.supply_down, fout_name, Market.zone_names);
+		fout_name = name + "_balancing_reimbursement.csv";
+		basic::write_file(Market.balancing.price_up + Market.balancing.price_down, fout_name, Market.zone_names);
 	}
 }
 
