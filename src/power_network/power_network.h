@@ -259,7 +259,7 @@ namespace power_network{
 		/** Number of lines a transmission edge possesses.*/
 		int line_trans = 2;
 		/** Density of power lines per point connecting distribution and transmission power network.*/
-		double line_density_conn = 1.;
+		double line_density_conn = 2.;
 		/** Total number of power lines in the distribution network.*/
 		int line_num_distr = 122782; // >=0: 126435; >= 40: 3653
 		/** Density of power lines per point in the distribution network.*/

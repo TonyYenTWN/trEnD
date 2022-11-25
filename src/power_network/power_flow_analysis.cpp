@@ -580,8 +580,9 @@ void power_network::HELM_Set(network_inform &Power_network_inform, power_market:
 	// Set the nodal admittance matrix
 	// -------------------------------------------------------------------------------
 	std::vector<Eigen::TripletXcd> Y_n_trip;
-	Y_n_trip.reserve(bus_num + 2 * (edge_trans_num + edge_distr_num + node_num));
+	Y_n_trip.reserve(bus_num + 2 * (edge_trans_num + edge_distr_num + point_num));
 	Eigen::VectorXcd Y_n_Diag = Eigen::VectorXcd::Zero(bus_num);
+	Power_network_inform.power_flow.edge_admittance = Eigen::VectorXcd(edge_trans_num);
 
 	// Transmission level
 	for(int edge_iter = 0; edge_iter < edge_trans_num; ++ edge_iter){
@@ -594,6 +595,7 @@ void power_network::HELM_Set(network_inform &Power_network_inform, power_market:
 		y_series /= Power_network_inform.edges.distance(edge_iter);
 		y_series /= Power_network_inform.tech_parameters.z_trans_series;
 		y_series *= Power_network_inform.tech_parameters.impedenace_base_levels[voltage];
+		Power_network_inform.power_flow.edge_admittance(edge_iter) = y_series;
 
 		// Shunt admittance
 		std::complex <double> y_shunt(1., 0.);
@@ -1111,48 +1113,48 @@ void power_network::HELM_Solve(int tick, network_inform &Power_network_inform){
 //	// Sanity check
 //	std::cout << Roots_Pade_buss.array().abs().minCoeff() << "\t" << Roots_Pade_buss.array().abs().maxCoeff() << "\n\n";
 
-//	// -------------------------------------------------------------------------------
-//	// Store the results
-//	// -------------------------------------------------------------------------------
-//	// P-U Buses
-//	for(int node_iter = 0; node_iter < PU_bus_num; ++ node_iter){
-//		int node_ID = Power_network_inform.power_flow.PU_bus[node_iter];
-//		Power_network_inform.power_flow.voltage_abs(tick, node_ID) = abs(V_reg_dir(node_iter));
-//		Power_network_inform.power_flow.voltage_arg(tick, node_ID) = arg(V_reg_dir(node_iter));
-//		Power_network_inform.power_flow.Q_node(tick, node_ID) = Q_node_dir(node_iter).real();
-//	}
-//
-//	// P-Q Buses
-//	for(int node_iter = 0; node_iter < PQ_bus_num; ++ node_iter){
-//		int node_ID = Power_network_inform.power_flow.PQ_bus[node_iter];
-//		Power_network_inform.power_flow.voltage_abs(tick, node_ID) = abs(V_reg_dir(PU_bus_num + node_iter));
-//		Power_network_inform.power_flow.voltage_arg(tick, node_ID) = arg(V_reg_dir(PU_bus_num + node_iter));
-//	}
-//
-//	// Reference Buses
-//	for(int node_iter = 0; node_iter < ref_bus_num; ++ node_iter){
-//		int node_ID = Power_network_inform.power_flow.ref_bus[node_iter];
-//		Power_network_inform.power_flow.voltage_abs(tick, node_ID) = 1.;
-//	}
-//
-//	// Current on edges
-//	int edge_num = Power_network_inform.edges.distance.size();
-//	for(int edge_iter = 0; edge_iter < edge_num; ++ edge_iter){
-//		int from_ID = Power_network_inform.edges.from(edge_iter);
-//		int to_ID = Power_network_inform.edges.to(edge_iter);
-//
-//		double V_abs_from = Power_network_inform.power_flow.voltage_abs(tick, from_ID);
-//		double V_arg_from = Power_network_inform.power_flow.voltage_arg(tick, from_ID);
-//		std::complex <double> V_from = V_abs_from;
-//		V_from *= std::complex <double> (cos(V_arg_from), sin(V_arg_from));
-//
-//		double V_abs_to = Power_network_inform.power_flow.voltage_abs(tick, to_ID);
-//		double V_arg_to = Power_network_inform.power_flow.voltage_arg(tick, to_ID);
-//		std::complex <double> V_to = V_abs_to;
-//		V_to *= std::complex <double> (cos(V_arg_to), sin(V_arg_to));
-//
-//		std::complex <double> current = (V_from - V_to) * Power_network_inform.power_flow.edge_admittance(edge_iter);
-//		Power_network_inform.power_flow.current_abs(tick, edge_iter) = abs(current);
-//		Power_network_inform.power_flow.current_arg(tick, edge_iter) = arg(current);
-//	}
+	// -------------------------------------------------------------------------------
+	// Store the results
+	// -------------------------------------------------------------------------------
+	// P-U Buses
+	for(int node_iter = 0; node_iter < PU_bus_num; ++ node_iter){
+		int node_ID = Power_network_inform.power_flow.PU_bus[node_iter];
+		Power_network_inform.power_flow.voltage_abs(tick, node_ID) = abs(V_reg_dir(node_iter));
+		Power_network_inform.power_flow.voltage_arg(tick, node_ID) = arg(V_reg_dir(node_iter));
+		Power_network_inform.power_flow.Q_node(tick, node_ID) = Q_node_dir(node_iter).real();
+	}
+
+	// P-Q Buses
+	for(int node_iter = 0; node_iter < PQ_bus_num; ++ node_iter){
+		int node_ID = Power_network_inform.power_flow.PQ_bus[node_iter];
+		Power_network_inform.power_flow.voltage_abs(tick, node_ID) = abs(V_reg_dir(PU_bus_num + node_iter));
+		Power_network_inform.power_flow.voltage_arg(tick, node_ID) = arg(V_reg_dir(PU_bus_num + node_iter));
+	}
+
+	// Reference Buses
+	for(int node_iter = 0; node_iter < ref_bus_num; ++ node_iter){
+		int node_ID = Power_network_inform.power_flow.ref_bus[node_iter];
+		Power_network_inform.power_flow.voltage_abs(tick, node_ID) = 1.;
+	}
+
+	// Current on edges
+	int edge_trans_num = Power_network_inform.edges.distance.size();
+	for(int edge_iter = 0; edge_iter < edge_trans_num; ++ edge_iter){
+		int from_ID = Power_network_inform.edges.from(edge_iter);
+		int to_ID = Power_network_inform.edges.to(edge_iter);
+
+		double V_abs_from = Power_network_inform.power_flow.voltage_abs(tick, from_ID);
+		double V_arg_from = Power_network_inform.power_flow.voltage_arg(tick, from_ID);
+		std::complex <double> V_from = V_abs_from;
+		V_from *= std::complex <double> (cos(V_arg_from), sin(V_arg_from));
+
+		double V_abs_to = Power_network_inform.power_flow.voltage_abs(tick, to_ID);
+		double V_arg_to = Power_network_inform.power_flow.voltage_arg(tick, to_ID);
+		std::complex <double> V_to = V_abs_to;
+		V_to *= std::complex <double> (cos(V_arg_to), sin(V_arg_to));
+
+		std::complex <double> current = (V_from - V_to) * Power_network_inform.power_flow.edge_admittance(edge_iter);
+		Power_network_inform.power_flow.current_abs(tick, edge_iter) = abs(current);
+		Power_network_inform.power_flow.current_arg(tick, edge_iter) = arg(current);
+	}
 }
