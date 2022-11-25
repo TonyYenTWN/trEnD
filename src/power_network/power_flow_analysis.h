@@ -11,6 +11,6 @@ namespace power_network{
 	void HELM_Transmission_Solve(int, network_inform&, power_market::market_whole_inform&);
 	void HELM_Set(network_inform&, power_market::market_whole_inform&);
 	void HELM_Node_Update(int, network_inform&, power_market::market_whole_inform&);
-	void HELM_Solve(int, network_inform&);
+	void HELM_Solve(int, network_inform&, power_market::market_whole_inform&);
 	void power_flow_results_print(power_market::market_whole_inform&);
 }

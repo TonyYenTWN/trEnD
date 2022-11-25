@@ -856,6 +856,13 @@ void power_network::HELM_Set(network_inform &Power_network_inform, power_market:
 	Power_network_inform.power_flow.voltage_arg = Eigen::MatrixXd::Zero(Time, bus_num);
 	Power_network_inform.power_flow.current_abs = Eigen::MatrixXd::Zero(Time, edge_trans_num);
 	Power_network_inform.power_flow.current_arg = Eigen::MatrixXd::Zero(Time, edge_trans_num);
+
+	Power_market_inform.TSO_Market.power_flow.P_node = Eigen::MatrixXd::Zero(Time, node_num);
+	Power_market_inform.TSO_Market.power_flow.Q_node = Eigen::MatrixXd::Zero(Time, node_num);
+	Power_network_inform.power_flow.voltage_abs = Eigen::MatrixXd::Zero(Time, node_num);
+	Power_network_inform.power_flow.voltage_arg = Eigen::MatrixXd::Zero(Time, node_num);
+	Power_network_inform.power_flow.current_abs = Eigen::MatrixXd::Zero(Time, edge_trans_num);
+	Power_network_inform.power_flow.current_arg = Eigen::MatrixXd::Zero(Time, edge_trans_num);
 }
 
 void power_network::HELM_Node_Update(int tick, network_inform &Power_network_inform, power_market::market_whole_inform &Power_market_inform){
@@ -971,7 +978,7 @@ void power_network::HELM_Node_Update(int tick, network_inform &Power_network_inf
 	}
 }
 
-void power_network::HELM_Solve(int tick, network_inform &Power_network_inform){
+void power_network::HELM_Solve(int tick, network_inform &Power_network_inform, power_market::market_whole_inform& Power_market_inform){
 	int node_num = Power_network_inform.nodes.bidding_zone.size();
 	int point_num = Power_network_inform.points.bidding_zone.size();
 	int PU_bus_num = Power_network_inform.power_flow.PU_bus.size();
@@ -1114,14 +1121,28 @@ void power_network::HELM_Solve(int tick, network_inform &Power_network_inform){
 //	std::cout << Roots_Pade_buss.array().abs().minCoeff() << "\t" << Roots_Pade_buss.array().abs().maxCoeff() << "\n\n";
 
 	// -------------------------------------------------------------------------------
-	// Store the results
+	// Store the results, whole
 	// -------------------------------------------------------------------------------
 	// P-U Buses
 	for(int node_iter = 0; node_iter < PU_bus_num; ++ node_iter){
 		int node_ID = Power_network_inform.power_flow.PU_bus[node_iter];
+
 		Power_network_inform.power_flow.voltage_abs(tick, node_ID) = abs(V_reg_dir(node_iter));
 		Power_network_inform.power_flow.voltage_arg(tick, node_ID) = arg(V_reg_dir(node_iter));
 		Power_network_inform.power_flow.Q_node(tick, node_ID) = Q_node_dir(node_iter).real();
+
+		if(node_ID < node_num){
+			Power_market_inform.TSO_Market.power_flow.voltage_abs(tick, node_ID) = Power_network_inform.power_flow.voltage_abs(tick, node_ID);
+			Power_market_inform.TSO_Market.power_flow.voltage_arg(tick, node_ID) = Power_network_inform.power_flow.voltage_arg(tick, node_ID);
+			Power_market_inform.TSO_Market.power_flow.P_node(tick, node_ID) += Power_network_inform.power_flow.P_node(tick, node_ID);
+			Power_market_inform.TSO_Market.power_flow.Q_node(tick, node_ID) += Power_network_inform.power_flow.Q_node(tick, node_ID);
+		}
+		else{
+			int point_ID = node_ID - node_num;
+			int trans_node_ID = Power_network_inform.points.node(trans_node_ID);
+			Power_market_inform.TSO_Market.power_flow.P_node(tick, trans_node_ID) += Power_network_inform.power_flow.P_node(tick, node_ID);
+			Power_market_inform.TSO_Market.power_flow.Q_node(tick, trans_node_ID) += Power_network_inform.power_flow.Q_node(tick, node_ID);
+		}
 	}
 
 	// P-Q Buses
@@ -1129,12 +1150,29 @@ void power_network::HELM_Solve(int tick, network_inform &Power_network_inform){
 		int node_ID = Power_network_inform.power_flow.PQ_bus[node_iter];
 		Power_network_inform.power_flow.voltage_abs(tick, node_ID) = abs(V_reg_dir(PU_bus_num + node_iter));
 		Power_network_inform.power_flow.voltage_arg(tick, node_ID) = arg(V_reg_dir(PU_bus_num + node_iter));
+
+		if(node_ID < node_num){
+			Power_market_inform.TSO_Market.power_flow.voltage_abs(tick, node_ID) = Power_network_inform.power_flow.voltage_abs(tick, node_ID);
+			Power_market_inform.TSO_Market.power_flow.voltage_arg(tick, node_ID) = Power_network_inform.power_flow.voltage_arg(tick, node_ID);
+			Power_market_inform.TSO_Market.power_flow.P_node(tick, node_ID) += Power_network_inform.power_flow.P_node(tick, node_ID);
+			Power_market_inform.TSO_Market.power_flow.Q_node(tick, node_ID) += Power_network_inform.power_flow.Q_node(tick, node_ID);
+		}
+		else{
+			int point_ID = node_ID - node_num;
+			int trans_node_ID = Power_network_inform.points.node(trans_node_ID);
+			Power_market_inform.TSO_Market.power_flow.P_node(tick, trans_node_ID) += Power_network_inform.power_flow.P_node(tick, node_ID);
+			Power_market_inform.TSO_Market.power_flow.Q_node(tick, trans_node_ID) += Power_network_inform.power_flow.Q_node(tick, node_ID);
+		}
 	}
 
 	// Reference Buses
 	for(int node_iter = 0; node_iter < ref_bus_num; ++ node_iter){
 		int node_ID = Power_network_inform.power_flow.ref_bus[node_iter];
 		Power_network_inform.power_flow.voltage_abs(tick, node_ID) = 1.;
+
+		if(node_ID < node_num){
+			Power_market_inform.TSO_Market.power_flow.voltage_abs(tick, node_ID) = 1.;
+		}
 	}
 
 	// Current on edges
@@ -1156,5 +1194,7 @@ void power_network::HELM_Solve(int tick, network_inform &Power_network_inform){
 		std::complex <double> current = (V_from - V_to) * Power_network_inform.power_flow.edge_admittance(edge_iter);
 		Power_network_inform.power_flow.current_abs(tick, edge_iter) = abs(current);
 		Power_network_inform.power_flow.current_arg(tick, edge_iter) = arg(current);
+		Power_market_inform.TSO_Market.power_flow.current_abs(tick, edge_iter) = abs(current);
+		Power_market_inform.TSO_Market.power_flow.current_arg(tick, edge_iter) = arg(current);
 	}
 }
