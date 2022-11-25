@@ -32,7 +32,7 @@ namespace local{
 		basic::write_file(Market.power_flow.current_arg, fout_name, edge_names);
 	}
 
-	void power_flow_whole_results_print(power_network::network_inform &Power_network_inform){
+	void power_flow_whole_results_print(power_network::network_inform &Power_network_inform, std::string name){
 		std::string fout_name;
 
 		// Set bus names
@@ -46,9 +46,9 @@ namespace local{
 			bus_names.push_back(bus_name);
 		}
 
-		fout_name = "whole_actual_AC_voltage_magnitude.csv";
+		fout_name = name + "actual_AC_voltage_magnitude.csv";
 		basic::write_file(Power_network_inform.power_flow.voltage_abs, fout_name, bus_names);
-		fout_name = "whole_actual_AC_voltage_angle.csv";
+		fout_name = name + "actual_AC_voltage_angle.csv";
 		basic::write_file(Power_network_inform.power_flow.voltage_arg, fout_name, bus_names);
 	}
 }
@@ -60,5 +60,5 @@ void power_network::power_flow_results_print(power_market::market_whole_inform &
 	dir_name += "/";
 
 	local::power_flow_transmission_results_print(Power_market_inform.TSO_Market, dir_name + "TSO");
-	local::power_flow_whole_results_print(Power_network_inform);
+	local::power_flow_whole_results_print(Power_network_inform, dir_name + "whole");
 }
