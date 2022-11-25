@@ -371,7 +371,7 @@ namespace power_network{
 		plants_all plants;
 		std::vector <DSO_cluster> DSO_cluster;
 		technical_parameters tech_parameters;
-		//power_flow power_flow;
+		power_flow power_flow;
 
 		// Set line density of distribution networks
 		void set_line_density(){
