@@ -46,9 +46,9 @@ namespace local{
 			bus_names.push_back(bus_name);
 		}
 
-		fout_name = name + "actual_AC_voltage_magnitude.csv";
+		fout_name = name + "_actual_AC_voltage_magnitude.csv";
 		basic::write_file(Power_network_inform.power_flow.voltage_abs, fout_name, bus_names);
-		fout_name = name + "actual_AC_voltage_angle.csv";
+		fout_name = name + "_actual_AC_voltage_angle.csv";
 		basic::write_file(Power_network_inform.power_flow.voltage_arg, fout_name, bus_names);
 	}
 }
