@@ -859,10 +859,10 @@ void power_network::HELM_Set(network_inform &Power_network_inform, power_market:
 
 	Power_market_inform.TSO_Market.power_flow.P_node = Eigen::MatrixXd::Zero(Time, node_num);
 	Power_market_inform.TSO_Market.power_flow.Q_node = Eigen::MatrixXd::Zero(Time, node_num);
-	Power_network_inform.power_flow.voltage_abs = Eigen::MatrixXd::Zero(Time, node_num);
-	Power_network_inform.power_flow.voltage_arg = Eigen::MatrixXd::Zero(Time, node_num);
-	Power_network_inform.power_flow.current_abs = Eigen::MatrixXd::Zero(Time, edge_trans_num);
-	Power_network_inform.power_flow.current_arg = Eigen::MatrixXd::Zero(Time, edge_trans_num);
+	Power_market_inform.TSO_Market.power_flow.voltage_abs = Eigen::MatrixXd::Zero(Time, node_num);
+	Power_market_inform.TSO_Market.power_flow.voltage_arg = Eigen::MatrixXd::Zero(Time, node_num);
+	Power_market_inform.TSO_Market.power_flow.current_abs = Eigen::MatrixXd::Zero(Time, edge_trans_num);
+	Power_market_inform.TSO_Market.power_flow.current_arg = Eigen::MatrixXd::Zero(Time, edge_trans_num);
 }
 
 void power_network::HELM_Node_Update(int tick, network_inform &Power_network_inform, power_market::market_whole_inform &Power_market_inform){
