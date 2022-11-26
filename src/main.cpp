@@ -49,7 +49,7 @@ int main(){
 
 		// Output results
 		power_market::Markets_results_print(Power_market_inform);
-		power_network::power_flow_results_print(Power_market_inform, Power_network_inform);
+		power_network::power_flow_results_print(Power_market_inform, Power_network_inform, process_par);
 		agent::agents_results_print(Power_market_inform, Power_network_inform);
 	}
 }
