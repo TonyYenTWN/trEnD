@@ -71,7 +71,7 @@ namespace local{
 			fout_name = name + "_operation_redispatch_hydro.csv";
 			basic::write_file(Market.operation.hydro.redispatch.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
 			fout_name = name + "_operation_redispatch_industrial.csv";
-			basic::write_file(Market.operation.industrial.redispatch, fout_name, Market.zone_names);
+			basic::write_file(Market.operation.industrial.redispatch.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
 			fout_name = name + "_operation_redispatch_pump_storage.csv";
 			basic::write_file(Market.operation.pump_storage.redispatch.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
 			fout_name = name + "_operation_redispatch_wind.csv";
