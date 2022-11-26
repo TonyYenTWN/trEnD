@@ -301,7 +301,7 @@ namespace power_market{
 #define MARKET_OUTPUT
 
 namespace power_market{
-	void Markets_results_print(market_whole_inform&);
+	void Markets_results_print(market_whole_inform&, configuration::process_config&);
 	void Simplified_network_print(market_whole_inform&);
 }
 
