@@ -15,10 +15,10 @@ namespace agent{
 				return value;
 			}
 
-			static inline int sample_num(){
-				int value = 1;
-				return value;
-			}
+//			static inline int sample_num(){
+//				int value = 1;
+//				return value;
+//			}
 
 			static inline double power_factor(){
 				double value = 1.;

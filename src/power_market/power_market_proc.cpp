@@ -49,7 +49,8 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	International_Market_Price_Estimation(process_par.time_boundary[0], Power_market_inform.International_Market, Power_network_inform);
 
 	// Bidding strategies of agents
-	agent::agents_set(process_par.time_boundary[0], Power_market_inform, Power_network_inform);
+	std::string end_user_type_file = "csv/input/agent/end_user_types.csv";
+	agent::agents_set(process_par.time_boundary[0], Power_market_inform, Power_network_inform, end_user_type_file);
 
 	// Ideal market clearing in IMO
 	Submitted_bid_calculation(Power_market_inform, Power_network_inform);
