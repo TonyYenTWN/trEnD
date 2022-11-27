@@ -938,7 +938,7 @@ namespace{
 				//end_user_profiles[point_iter][sample_iter].operation.weight = weight(sample_iter);
 				end_user_profiles[point_iter][sample_iter].operation.weight = Power_market_inform.agent_profiles.end_user_type(0, sample_iter);
 				end_user_profiles[point_iter][sample_iter].operation.PV_scale = Power_market_inform.agent_profiles.end_user_type(5, sample_iter);
-				end_user_profiles[point_iter][sample_iter].operation.PV_scale *= end_user_profiles[point_iter][sample_iter].investment.decision.PV;
+				//end_user_profiles[point_iter][sample_iter].operation.PV_scale *= end_user_profiles[point_iter][sample_iter].investment.decision.PV;
 				int load_shift_time_temp = std::min(load_shift_time, foresight_time / 2);
 				end_user_profiles[point_iter][sample_iter].operation.smart_appliance.shift_time = load_shift_time_temp;
 				end_user_profiles[point_iter][sample_iter].operation.BESS.energy_scale = Power_market_inform.agent_profiles.end_user_type(5, sample_iter);
