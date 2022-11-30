@@ -311,6 +311,16 @@ void power_market::International_Market_Optimization(int tick, market_inform &Ma
 			Market.submitted_supply(0, zone_ID) += -Market.demand_default(tick, zone_ID);
 		}
 	}
+//	std::cout << Market.submitted_supply.col(0).sum() << "\t";
+//	std::cout << Market.submitted_supply.col(1).sum() << "\t";
+//	std::cout << Market.submitted_supply.col(2).sum() << "\t";
+//	std::cout << Market.submitted_supply.col(3).sum() << "\t";
+//	std::cout << Market.submitted_supply.col(4).sum() << "\n";
+//	std::cout << Market.submitted_demand.col(0).sum() << "\t";
+//	std::cout << Market.submitted_demand.col(1).sum() << "\t";
+//	std::cout << Market.submitted_demand.col(2).sum() << "\t";
+//	std::cout << Market.submitted_demand.col(3).sum() << "\t";
+//	std::cout << Market.submitted_demand.col(4).sum() << "\n\n";
 
 	// -------------------------------------------------------------------------------
 	// Update bounds for box constraints
@@ -378,19 +388,21 @@ void power_market::International_Market_Optimization(int tick, market_inform &Ma
 			}
 		}
 	}
+//	std::cout << Market.confirmed.supply.row(tick) << "\n";
+//	std::cout << Market.confirmed.demand.row(tick) << "\n\n";
 
 	// Store cross-border transmission flow
 	Market.network.confirmed_power.row(tick) = sol_vec.head(Market.network.num_edges);
 }
 
-void power_market::International_Market_Price_Estimation(int tick, market_inform &International_Market, power_network::network_inform &Power_network_inform){
+void power_market::International_Market_Price_Estimation(int tick, market_inform &International_Market, power_network::network_inform &Power_network_inform, configuration::process_config &process_par){
 	int foresight_time = agent::aggregator::parameters::foresight_time();
 
 	// Initialization of forecast market clearing price
-	if(tick == 0){
+	if(tick == process_par.time_boundary[0]){
 		for(int tock = 0; tock < foresight_time; ++ tock){
-			International_Market_Submitted_bid_calculation(tock, International_Market, Power_network_inform);
-			International_Market_Optimization(tock, International_Market);
+			International_Market_Submitted_bid_calculation(tick + tock, International_Market, Power_network_inform);
+			International_Market_Optimization(tick + tock, International_Market);
 		}
 	}
 	// Find the profile one time step further

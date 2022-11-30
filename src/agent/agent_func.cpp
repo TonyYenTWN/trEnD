@@ -913,7 +913,6 @@ namespace{
 		agent::end_user::profiles end_user_profiles(point_num);
 		//int sample_num = agent::end_user::parameters::sample_num();
 		int sample_num = Power_market_inform.agent_profiles.end_user_type.cols();
-		std::cout << sample_num << "\n\n";
 		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
 			end_user_profiles[point_iter] = std::vector <agent::end_user::profile> (sample_num);
 		}

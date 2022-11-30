@@ -39,7 +39,7 @@ int main(){
 
 		spatial_field::demand_imbalance_estimation(Power_network_inform, Power_market_inform.International_Market, process_par);
 		spatial_field::wind_on_cf_estimation(Power_network_inform, process_par);
-		spatial_field::solar_radiation_estimation(Power_network_inform, process_par);
+		//spatial_field::solar_radiation_estimation(Power_network_inform, process_par);
 	}
 
 	// Power market processes

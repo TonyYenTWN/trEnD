@@ -46,7 +46,7 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	}
 
 	// Initial estimation of market clearing price in the IMO
-	International_Market_Price_Estimation(process_par.time_boundary[0], Power_market_inform.International_Market, Power_network_inform);
+	International_Market_Price_Estimation(process_par.time_boundary[0], Power_market_inform.International_Market, Power_network_inform, process_par);
 
 	// Bidding strategies of agents
 	std::string end_user_type_file = "csv/input/agent/end_user_types.csv";
@@ -99,7 +99,7 @@ void power_market::power_market_process_update(power_network::network_inform &Po
 		std::cout << "Time:\t" << tick << ":\n";
 
 		// Initial estimation of market clearing price in the IMO
-		International_Market_Price_Estimation(tick, Power_market_inform.International_Market, Power_network_inform);
+		International_Market_Price_Estimation(tick, Power_market_inform.International_Market, Power_network_inform, process_par);
 
 		// Bidding strategies of agents
 		agent::agents_submit_update(tick, Power_market_inform, Power_network_inform);

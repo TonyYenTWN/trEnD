@@ -265,7 +265,7 @@ namespace power_market{
 	void International_Market_Set(market_inform&, power_network::network_inform&, int, fin_market);
 	void Submitted_bid_calculation(market_whole_inform&, power_network::network_inform&);
 	void International_Market_Optimization(int, market_inform&);
-	void International_Market_Price_Estimation(int, market_inform&, power_network::network_inform&);
+	void International_Market_Price_Estimation(int, market_inform&, power_network::network_inform&, configuration::process_config&);
 }
 
 #endif
