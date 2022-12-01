@@ -996,7 +996,7 @@ namespace{
 		return end_user_profiles;
 	}
 
-	agent::industrial::profiles industrial_set(power_network::network_inform &Power_network_inform){
+	agent::industrial::profiles industrial_set(int tick, power_network::network_inform &Power_network_inform){
 		int point_num = Power_network_inform.points.bidding_zone.size();
 		int price_interval = power_market::parameters::price_interval();
 
@@ -1007,7 +1007,7 @@ namespace{
 			agent::industrial::profile profile_temp;
 			profile_temp.point_ID = point_ID;
 
-			double bid_inflex_industrial = Power_network_inform.points.nominal_mean_demand_field(point_iter, 0);
+			double bid_inflex_industrial = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick);
 			bid_inflex_industrial *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
 			bid_inflex_industrial *= 1. - agent::parameters::residential_ratio();
 			double bid_flex_industrial = bid_inflex_industrial;
@@ -2378,7 +2378,7 @@ void agent::agents_set(int start_time, power_market::market_whole_inform &Power_
 	Power_market_inform.agent_profiles.aggregators = aggregator_set(start_time, Power_market_inform.International_Market, Power_network_inform);
 	Power_market_inform.agent_profiles.cross_border = cross_border_set(Power_market_inform, Power_network_inform);
 	Power_market_inform.agent_profiles.end_users = end_user_set(start_time, Power_market_inform, Power_network_inform);
-	Power_market_inform.agent_profiles.industrial = industrial_set(Power_network_inform);
+	Power_market_inform.agent_profiles.industrial = industrial_set(start_time, Power_network_inform);
 	Power_market_inform.agent_profiles.power_supplier = power_supplier_set(start_time, Power_market_inform, Power_network_inform);
 }
 
