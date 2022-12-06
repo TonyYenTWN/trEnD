@@ -921,9 +921,11 @@ namespace{
 //		Eigen::VectorXd weight(sample_num);
 //		weight = Eigen::VectorXd::Constant(sample_num, 1. / sample_num);
 		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
+			std::cout << point_iter << "\t";
 			for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
 				// Initialization of investment parameters
 				end_user_profiles[point_iter][sample_iter].investment.decision.dynamic_tariff = Power_market_inform.agent_profiles.end_user_type(1, sample_iter);
+				std::cout << end_user_profiles[point_iter][sample_iter].investment.decision.dynamic_tariff << "\t";
 				end_user_profiles[point_iter][sample_iter].investment.decision.smart_appliance = Power_market_inform.agent_profiles.end_user_type(3, sample_iter);
 				end_user_profiles[point_iter][sample_iter].investment.decision.PV = (Power_market_inform.agent_profiles.end_user_type(4, sample_iter) != 0.);
 				end_user_profiles[point_iter][sample_iter].investment.decision.BESS = (Power_market_inform.agent_profiles.end_user_type(5, sample_iter) != 0.);
@@ -991,6 +993,7 @@ namespace{
 				scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
 				agent_submitted_bids_scale(scale, end_user_profiles[point_iter][sample_iter].operation.bids);
 			}
+			std::cout << "\n";
 		}
 
 		return end_user_profiles;
@@ -1763,7 +1766,7 @@ namespace{
 					// Market operation update
 					market_operation_update(tick, bz_ID, Power_market_inform.International_Market.operation.end_user, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results);
 
-					break;
+					continue;
 				}
 
 				double gap = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_demand;
@@ -1772,6 +1775,9 @@ namespace{
 				gap -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_flex.sum();
 				gap += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_inflex.sum();
 				gap += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_flex.sum();
+				std::cout << point_iter << "\t" << sample_iter << ":\t";
+//				std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_demand << "\t";
+//				std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_supply << "\n";
 
 				// Actual demand greater than initially planned
 				while(gap > 0.){
