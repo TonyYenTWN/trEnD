@@ -270,7 +270,6 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 	for(int tock = 0; tock < foresight_time + load_shift_time; ++ tock){
 		int d_sa_total_ID = variable_per_time * foresight_time + tock;
 		bound_box.row(d_sa_total_ID) = Eigen::RowVector2d::Constant(profile.operation.smart_appliance.unfulfilled_demand(tock));
-
 	}
 
 	// Bounds of box constraints
@@ -303,12 +302,19 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 	alglib::real_1d_array sol;
 	alglib::minlpreport rep;
 	alglib::minlpresults(profile.operation.Problem, sol, rep);
-	profile.operation.BESS.scheduled_capacity = sol[2];
-	profile.operation.EV.BESS.scheduled_capacity = sol[3];
+	profile.operation.BESS.scheduled_capacity = sol[6] - sol[7];
+	profile.operation.EV.BESS.scheduled_capacity = sol[10] - sol[11];
 	profile.operation.smart_appliance.scheduled_demand = Eigen::VectorXd::Zero(2 * load_shift_time + 1);
 	for(int tock = 0; tock < 2 * load_shift_time + 1; ++ tock){
 		profile.operation.smart_appliance.scheduled_demand(tock) = sol[14 + tock];
 	}
+	std::cout << sol[2] << "\t";
+	std::cout << sol[7] << "\t";
+	std::cout << sol[8] << "\t";
+	std::cout << sol[9] << "\t";
+	std::cout << sol[7 + 39] << "\t";
+	std::cout << sol[8 + 39] << "\t";
+	std::cout << sol[9 + 39] << "\n";
 
 	int price_demand_inflex_ID = price_interval + 1;
 	int price_demand_flex_ID = profile.operation.price_demand_profile(0);
