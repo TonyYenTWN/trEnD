@@ -531,7 +531,9 @@ void spatial_field::spatial_field_store(power_network::network_inform &Power_net
 	Power_network_inform.points.solar_cf = Eigen::MatrixXd(row_num, Time);
 
 	//for(int tick = 0; tick < Time; ++ tick){
-	for(int tick = process_par.time_boundary[0]; tick < process_par.time_boundary[0] + process_par.time_boundary[1]; ++ tick){
+	int store_time = agent::end_user::parameters::foresight_time();
+	store_time = std::max(process_par.time_boundary[1], store_time);
+	for(int tick = process_par.time_boundary[0]; tick < process_par.time_boundary[0] + store_time; ++ tick){
 		// Find zeros before the number
 		int count_zeros = 0;
 		int tick_temp = tick;

@@ -127,7 +127,7 @@ namespace{
 		double margin_quan_supply;
 		// Determine the markup cost if no supply quantity is served
 		for(int price_iter = 0; price_iter < price_interval; ++ price_iter){
-			double current_price = Power_market_inform.price_map.bidded_price(price_iter);
+			double current_price = (1 - inflex_price) * Power_market_inform.price_map.bidded_price(price_iter);
 			if(current_price >= 0.){
 				break;
 			}
@@ -152,8 +152,8 @@ namespace{
 			else{
 				settlement.volume_supply.EOM += cleared_supply_gap;
 				settlement.utility_supply.EOM += original_price_supply * cleared_supply_gap;
-				settlement.cost_supply.EOM += current_price * cleared_supply_gap;
-				Power_market_inform.TSO_Market.EOM.cost(tick, node_ID) += current_price * margin_quan_supply;
+				settlement.cost_supply.EOM += inflex_price * current_price * cleared_supply_gap;
+				Power_market_inform.TSO_Market.EOM.cost(tick, node_ID) += inflex_price * current_price * margin_quan_supply;
 				break;
 			}
 		}

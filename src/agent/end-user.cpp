@@ -264,8 +264,10 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 				//std::cout << bound_box.row(d_sa_ID) << "\n";
 			}
 		}
+		//std::cout << bound_box.row(s_b_ID) << "\n";
 		//std::cout << "\n";
 	}
+	//std::cout << "\n";
 
 	for(int tock = 0; tock < foresight_time + load_shift_time; ++ tock){
 		int d_sa_total_ID = variable_per_time * foresight_time + tock;
@@ -308,13 +310,27 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 	for(int tock = 0; tock < 2 * load_shift_time + 1; ++ tock){
 		profile.operation.smart_appliance.scheduled_demand(tock) = sol[14 + tock];
 	}
+	std::cout << sol[0] << "\t";
+	std::cout << sol[1] << "\t";
 	std::cout << sol[2] << "\t";
+	std::cout << sol[3] << "\t";
+	std::cout << sol[4] << "\t";
+	std::cout << sol[5] << "\t";
+	std::cout << sol[6] << "\t";
 	std::cout << sol[7] << "\t";
 	std::cout << sol[8] << "\t";
-	std::cout << sol[9] << "\t";
-	std::cout << sol[7 + 39] << "\t";
-	std::cout << sol[8 + 39] << "\t";
-	std::cout << sol[9 + 39] << "\n";
+	std::cout << sol[9] << "\n";
+//	std::cout << sol[10] << "\t";
+//	std::cout << sol[5 + variable_per_time] << "\t";
+//	std::cout << sol[6 + variable_per_time] << "\t";
+//	std::cout << sol[7 + variable_per_time] << "\t";
+//	std::cout << sol[8 + variable_per_time] << "\t";
+//	std::cout << sol[9 + variable_per_time] << "\t";
+//	std::cout << sol[10 + variable_per_time] << "\n";
+//	std::cout << sol[6 + 2 * variable_per_time] << "\t";
+//	std::cout << sol[7 + 2 * variable_per_time] << "\t";
+//	std::cout << sol[8 + 2 * variable_per_time] << "\t";
+//	std::cout << sol[9 + 2 * variable_per_time] << "\n";
 
 	int price_demand_inflex_ID = price_interval + 1;
 	int price_demand_flex_ID = profile.operation.price_demand_profile(0);
