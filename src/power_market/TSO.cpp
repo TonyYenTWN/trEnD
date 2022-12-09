@@ -106,7 +106,6 @@ void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Powe
 //	}
 
 	// Initialize boundary conditions with other bidding zones
-	//TSO_boundary_update(tick, Power_market_inform.TSO_Market, Power_market_inform.International_Market, Power_network_inform);
 	int edge_num = Power_market_inform.agent_profiles.cross_border.size();
 	for(int edge_iter = 0; edge_iter < edge_num; ++ edge_iter){
 		int node_num = Power_market_inform.agent_profiles.cross_border[edge_iter].node_num;
@@ -132,6 +131,7 @@ void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Powe
 			Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply;
 		}
 	}
+	Power_market_inform.TSO_Market.submitted_demand = Power_market_inform.TSO_Market.submitted_demand.array().max(0);
 
 	// Industrial demand
 	int industrial_HV_num = Power_market_inform.agent_profiles.industrial.HV.size();
@@ -194,6 +194,12 @@ void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Powe
 		Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.redispatch_supply;
 		Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.redispatch_demand;
 	}
+
+//	for(int node_iter = 0; node_iter < Power_market_inform.TSO_Market.submitted_supply.cols(); ++ node_iter){
+//		std::cout << node_iter << ":\t";
+//		std::cout << Power_market_inform.TSO_Market.submitted_supply.col(node_iter).sum() << "\t";
+//		std::cout << Power_market_inform.TSO_Market.submitted_demand.col(node_iter).sum() << "\n";
+//	}
 }
 
 void power_market::TSO_Market_Scheduled_Results_Get(int tick, market_inform &Market){
@@ -242,6 +248,17 @@ void power_market::TSO_Market_Scheduled_Results_Get(int tick, market_inform &Mar
 	Market.network.confirmed_power.row(tick) = sol_vec.tail(Market.network.num_edges);
 
 	std::cout << "DC Optimal Power Flow:\n";
+	switch(rep.terminationtype){
+		case -4:
+			std::cout << "LP problem is primal unbounded.\n";
+			break;
+		case -3:
+			std::cout << "LP problem is primal infeasible.\n";
+			break;
+		case 1:
+			std::cout << "LP problem is primal feasible.\n";
+			break;
+	}
 	std::cout << Market.confirmed.supply.row(tick).sum() << "\t" << Market.confirmed.demand.row(tick).sum() << "\n";
 	std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).array().abs().sum() << "\n";
 	std::cout << sol_vec.head(Market.network.num_vertice).minCoeff() << " " << sol_vec.head(Market.network.num_vertice).maxCoeff()  << "\n";

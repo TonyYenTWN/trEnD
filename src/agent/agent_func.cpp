@@ -1775,11 +1775,11 @@ namespace{
 				gap /= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
 				gap /= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.weight;
 
-				std::cout << point_iter << "\t" << sample_iter << ":\t";
-				std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.cleared_supply << "\t";
-				std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.cleared_demand << "\t";
-				std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity << "\t";
-				std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile(0) << "\n";
+//				std::cout << point_iter << "\t" << sample_iter << ":\t";
+//				std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.cleared_supply << "\t";
+//				std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.cleared_demand << "\t";
+//				std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity << "\t";
+//				std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile(0) << "\n";
 
 				// Actual demand greater than initially planned
 				while(gap > 0.){
