@@ -296,6 +296,7 @@ void power_market::Balancing_bid_calculation(int tick, market_whole_inform &Powe
 			Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.balancing_supply;
 		}
 	}
+	Power_market_inform.TSO_Market.submitted_demand = Power_market_inform.TSO_Market.submitted_demand.array().max(0);
 
 	// Industrial demand
 	int industrial_HV_num = Power_market_inform.agent_profiles.industrial.HV.size();
@@ -408,6 +409,17 @@ void power_market::TSO_Market_Actual_Results_Get(int tick, market_inform &Market
 	Market.network.actual_power.row(tick) = sol_vec.tail(Market.network.num_edges);
 
 	std::cout << "DC Optimal Power Flow:\n";
+	switch(rep.terminationtype){
+		case -4:
+			std::cout << "LP problem is primal unbounded.\n";
+			break;
+		case -3:
+			std::cout << "LP problem is primal infeasible.\n";
+			break;
+		case 1:
+			std::cout << "LP problem is primal feasible.\n";
+			break;
+	}
 	std::cout << Market.actual.supply.row(tick).sum() << "\t" << Market.actual.demand.row(tick).sum() << "\n";
 	std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).array().abs().sum() << "\n";
 	std::cout << sol_vec.head(Market.network.num_vertice).minCoeff() << " " << sol_vec.head(Market.network.num_vertice).maxCoeff()  << "\n";
