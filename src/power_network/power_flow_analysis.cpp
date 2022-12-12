@@ -1161,7 +1161,7 @@ void power_network::HELM_Solve(int tick, network_inform &Power_network_inform, p
 		}
 		else{
 			int point_ID = node_ID - node_num;
-			int trans_node_ID = Power_network_inform.points.node(trans_node_ID);
+			int trans_node_ID = Power_network_inform.points.node(point_ID);
 			Power_market_inform.TSO_Market.power_flow.P_node(tick, trans_node_ID) += Power_network_inform.power_flow.P_node(tick, node_ID);
 			Power_market_inform.TSO_Market.power_flow.Q_node(tick, trans_node_ID) += Power_network_inform.power_flow.Q_node(tick, node_ID);
 		}
