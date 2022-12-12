@@ -1909,20 +1909,6 @@ namespace{
 
 				// Market operation update
 				market_operation_update(tick, bz_ID, Power_market_inform.International_Market.operation.end_user, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results);
-
-//				if(point_iter == 0){
-//					std::cout << point_iter << "\t" << sample_iter << ":\t";
-//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_supply << "\t";
-//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_demand << "\t";
-//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.PV_output << "\t";
-//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity << "\t";
-//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.soc << "\t";
-//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.energy_scale << "\t";
-//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity << "\t";
-//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc << "\t";
-//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile(0) << "\t";
-//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scheduled_demand(0) << "\n";
-//				}
 			}
 		}
 		//std::cout << "\n";
