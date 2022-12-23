@@ -348,8 +348,8 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 	int price_supply_inflex_ID = 0;
 	int price_supply_flex_ID = bidded_price_map.price_ID[profile.operation.price_supply_profile(0)];
 	profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::max(sol[5], 0.);
-	profile.operation.bids.submitted_supply_inflex(0) += -std::min(sol[5], 0.);
-	profile.operation.bids.submitted_demand_inflex(price_supply_inflex_ID) += sol[14];
+	profile.operation.bids.submitted_supply_inflex(price_supply_inflex_ID) += -std::min(sol[5], 0.);
+	profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += sol[14];
 	if(profile.investment.decision.redispatch){
 		profile.operation.bids.submitted_demand_flex(price_demand_flex_ID) += sol[4] - sol[14];
 		profile.operation.bids.submitted_demand_flex(price_demand_flex_ID) += std::max(sol[2], 0.);
