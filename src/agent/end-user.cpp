@@ -216,6 +216,8 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 	int price_interval = power_market::parameters::price_interval();
 	int variable_per_time = 14 + foresight_time + load_shift_time;
 	int variable_num = variable_per_time * foresight_time + foresight_time + load_shift_time;
+	power_market::parameters::price_ID_bimap bidded_price_map;
+	power_market::parameters::bidded_price(bidded_price_map);
 
 	// -------------------------------------------------------------------------------
 	// Set bounds for box constraints
@@ -339,11 +341,12 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 //	std::cout << sol[variable_per_time + 8] << "\t";
 //	std::cout << sol[variable_per_time + 9] << "\n\n";
 //	std::cout << -sol[6] + sol[7] + sol[8] + sol[9] << "\n";
+//	std::cout << bidded_price_map.price_ID[profile.operation.price_demand_profile(0)] << "\n\n";
 
 	int price_demand_inflex_ID = price_interval + 1;
-	int price_demand_flex_ID = profile.operation.price_demand_profile(0);
+	int price_demand_flex_ID = bidded_price_map.price_ID[profile.operation.price_demand_profile(0)];
 	int price_supply_inflex_ID = 0;
-	int price_supply_flex_ID = profile.operation.price_supply_profile(0);
+	int price_supply_flex_ID = bidded_price_map.price_ID[profile.operation.price_supply_profile(0)];
 	profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::max(sol[5], 0.);
 	profile.operation.bids.submitted_supply_inflex(0) += -std::min(sol[5], 0.);
 	profile.operation.bids.submitted_demand_inflex(price_supply_inflex_ID) += sol[14];
