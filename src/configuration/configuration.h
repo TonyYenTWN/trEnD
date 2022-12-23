@@ -29,7 +29,7 @@ namespace configuration{
 			this->estimation_flag = 0;
 			this->simulation_flag = 1;
 			this->DSO_filter_flag = 0;
-			this->control_reserve_flag = 1;
+			this->control_reserve_flag = 0;
 			this->time_boundary.push_back(0);
 			this->time_boundary.push_back(168);
 		}
