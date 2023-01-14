@@ -194,6 +194,7 @@ namespace agent{
 			/*@{*/
 			alglib::minlpstate Problem;
 			bids bids;
+			double direct_demand;
 			/*@{*/
 
 			/**
