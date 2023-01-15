@@ -1364,6 +1364,7 @@ namespace{
 				// Totally inflexible end-user, demand profile as default
 				if(!end_user_profiles[point_iter][sample_iter].investment.decision.dynamic_tariff){
 					end_user_profiles[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) = Power_network_inform.points.nominal_mean_demand_field(point_iter, start_time);
+					end_user_profiles[point_iter][sample_iter].operation.direct_demand = Power_network_inform.points.nominal_mean_demand_field(point_iter, start_time);
 				}
 				else{
 					// Optimization and update process variables
@@ -2628,6 +2629,7 @@ namespace{
 				// Totally inflexible end-user, demand profile as default
 				if(!Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.dynamic_tariff){
 					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick);
+					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.direct_demand = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick);
 				}
 				// Flexible end-user
 				else{
