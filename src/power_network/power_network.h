@@ -285,9 +285,9 @@ namespace power_network{
 		/** Shunt admittance (ohm^(-1) per meter) of MV distribution line.*/
 		std::complex<double> y_distr_shunt = std::complex<double> (0., 1. * pow(10., -10.));
 		/**Phase angle limits on a transmission node.*/
-		double theta_trans_limit = boost::math::constants::pi<double>() / 360.;
+		double theta_trans_limit = boost::math::constants::pi<double>() / 1440.;
 		/**Phase angle limits on a distribution node.*/
-		double theta_distr_limit = boost::math::constants::pi<double>() / 720.;
+		double theta_distr_limit = boost::math::constants::pi<double>() / 2880.;
 		/**Hash table (mapping) of per phase power flow limits on an edge at different voltage base levels, in MW.*/
 		std::map <int, double> power_limit;
 		/*@{*/
@@ -311,7 +311,7 @@ namespace power_network{
 			int level_count = 0;
 			this->voltage_base_levels.insert(std::make_pair(voltage_max, level_count));
 			this->impedenace_base_levels.insert(std::make_pair(voltage_max, (double) this->phase_num * voltage_max * voltage_max / this->s_base));
-			this->power_limit.insert(std::make_pair(voltage_max, (double) this->line_trans * this->power_limit_trans * voltage_max));
+			this->power_limit.insert(std::make_pair(voltage_max, (double) .8 * this->line_trans * this->power_limit_trans * voltage_max));
 			//std::cout << voltage_base_levels[voltage_max] << "\t" <<  voltage_max << "\t" << impedenace_base_levels[voltage_max] << "\n";
 
 			std::vector <int> voltage_base_sorted(edges.voltage_base.data(), edges.voltage_base.data() + edges.voltage_base.size());
@@ -322,7 +322,7 @@ namespace power_network{
 					level_count += 1;
 					this->voltage_base_levels.insert(std::make_pair(voltage_max, level_count));
 					this->impedenace_base_levels.insert(std::make_pair(voltage_max, (double) this->phase_num * voltage_max * voltage_max / this->s_base));
-					this->power_limit.insert(std::make_pair(voltage_max, (double) this->line_trans * this->power_limit_trans * voltage_max));
+					this->power_limit.insert(std::make_pair(voltage_max, (double) .8 * this->line_trans * this->power_limit_trans * voltage_max));
 					//std::cout << voltage_base_levels[voltage_max] << "\t" <<  voltage_max << "\t" << impedenace_base_levels[voltage_max] << "\n";
 				}
 			}
