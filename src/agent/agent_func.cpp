@@ -1376,6 +1376,7 @@ namespace{
 				scale *= agent::parameters::residential_ratio();
 				scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
 				agent_submitted_bids_scale(scale, end_user_profiles[point_iter][sample_iter].operation.bids);
+				end_user_profiles[point_iter][sample_iter].operation.direct_demand *= scale;
 			}
 		}
 
@@ -2642,6 +2643,7 @@ namespace{
 				scale *= agent::parameters::residential_ratio();
 				scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
 				agent_submitted_bids_scale(scale, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids);
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.direct_demand *= scale;
 			}
 		}
 	}
