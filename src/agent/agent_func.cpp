@@ -1340,7 +1340,7 @@ namespace{
 				end_user_profiles[point_iter][sample_iter].operation.EV.house_default_period = end_user_profiles[point_iter][sample_iter].operation.EV.house_schedule(0);
 				end_user_profiles[point_iter][sample_iter].operation.EV.default_demand_profile = end_user_profiles[point_iter][sample_iter].operation.EV.demand_profile(0);
 				end_user_profiles[point_iter][sample_iter].operation.EV.default_demand_profile *= end_user_profiles[point_iter][sample_iter].investment.decision.EV_self_charging;
-				end_user_profiles[point_iter][sample_iter].operation.default_demand_profile = Power_network_inform.points.nominal_mean_demand_field.row(point_iter).segment(start_time, foresight_time) * agent::parameters::residential_ratio();
+				end_user_profiles[point_iter][sample_iter].operation.default_demand_profile = Power_network_inform.points.nominal_mean_demand_field.row(point_iter).segment(start_time, foresight_time);
 				end_user_profiles[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand = Eigen::VectorXd::Zero(foresight_time + load_shift_time_temp);
 				for(int tick = load_shift_time_temp; tick < foresight_time + load_shift_time_temp; ++ tick){
 					end_user_profiles[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(tick) = Power_network_inform.points.nominal_mean_demand_field(point_iter, start_time + tick - load_shift_time_temp) * agent::parameters::residential_ratio();
@@ -1363,8 +1363,8 @@ namespace{
 
 				// Totally inflexible end-user, demand profile as default
 				if(!end_user_profiles[point_iter][sample_iter].investment.decision.dynamic_tariff){
-					end_user_profiles[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) = Power_network_inform.points.nominal_mean_demand_field(point_iter, start_time) * agent::parameters::residential_ratio();
-					end_user_profiles[point_iter][sample_iter].operation.direct_demand = Power_network_inform.points.nominal_mean_demand_field(point_iter, start_time) * agent::parameters::residential_ratio();
+					end_user_profiles[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) = Power_network_inform.points.nominal_mean_demand_field(point_iter, start_time);
+					end_user_profiles[point_iter][sample_iter].operation.direct_demand = Power_network_inform.points.nominal_mean_demand_field(point_iter, start_time);
 				}
 				else{
 					// Optimization and update process variables
@@ -1373,7 +1373,7 @@ namespace{
 
 				// Scale the bids correctly
 				double scale = end_user_profiles[point_iter][sample_iter].operation.weight;
-				//scale *= agent::parameters::residential_ratio();
+				scale *= agent::parameters::residential_ratio();
 				scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
 				agent_submitted_bids_scale(scale, end_user_profiles[point_iter][sample_iter].operation.bids);
 				end_user_profiles[point_iter][sample_iter].operation.direct_demand *= scale;
@@ -1824,6 +1824,7 @@ namespace{
 				Power_market_inform.TSO_Market.EOM.utility(tick, node_ID) -= over_est_utility_EOM;
 				// Utility from EV
 				double scale = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.weight;
+				scale *= agent::parameters::residential_ratio();
 				scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
 				double under_est_utility_EOM = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.default_demand_profile(0);
 				under_est_utility_EOM *= Power_market_inform.price_map.bidded_price(price_interval + 1) * scale;
@@ -2618,10 +2619,10 @@ namespace{
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.house_default_period = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.house_schedule(tick);
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.default_demand_profile = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.demand_profile(tick);
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.default_demand_profile *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.EV_self_charging;
-				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile = Power_network_inform.points.nominal_mean_demand_field.row(point_iter).segment(tick, foresight_time) * agent::parameters::residential_ratio();
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile = Power_network_inform.points.nominal_mean_demand_field.row(point_iter).segment(tick, foresight_time);
 				//Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.default_demand_profile;
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand.head(foresight_time + load_shift_time - 1) = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand.tail(foresight_time + load_shift_time - 1);
-				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(foresight_time + load_shift_time - 1) = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick + foresight_time - 1) * agent::parameters::residential_ratio();
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(foresight_time + load_shift_time - 1) = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick + foresight_time - 1);
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(foresight_time + load_shift_time - 1) *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.smart_appliance * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scale;
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile *= 1. - Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.smart_appliance * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scale;
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_PV_profile = Power_network_inform.points.solar_cf.row(point_iter).segment(tick, foresight_time);
@@ -2647,7 +2648,7 @@ namespace{
 
 				// Scale the bids correctly
 				double scale = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.weight;
-				//scale *= agent::parameters::residential_ratio();
+				scale *= agent::parameters::residential_ratio();
 				scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
 				agent_submitted_bids_scale(scale, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids);
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.direct_demand *= scale;
