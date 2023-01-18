@@ -11,12 +11,12 @@ namespace agent{
 			}
 
 			static inline double arbitrage_demand(){
-				double value = 10.;
+				double value = 0.;
 				return value;
 			}
 
 			static inline double arbitrage_supply(){
-				double value = 10.;
+				double value = 0.;
 				return value;
 			}
 		}

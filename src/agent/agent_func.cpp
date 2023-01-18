@@ -1817,19 +1817,19 @@ namespace{
 				Power_market_inform.agent_profiles.aggregators[point_iter].settlement.price.EOM += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.cleared_supply * Power_market_inform.agent_profiles.aggregators[point_iter].price_supply_profile(0);
 				// End-users
 				agent_EOM_settlement_calculation(tick, node_ID, Power_market_inform.agent_profiles.aggregators[point_iter].price_supply_profile(0), Power_market_inform.agent_profiles.aggregators[point_iter].price_demand_profile(0), Power_market_inform, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement, 1);
-				double over_est_utility_EOM = (Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.cleared_demand > Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.direct_demand);
-				over_est_utility_EOM *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.cleared_demand - Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.direct_demand;
-				over_est_utility_EOM *= Power_market_inform.price_map.bidded_price(price_interval + 1);
-				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.utility_demand.EOM -= over_est_utility_EOM;
-				Power_market_inform.TSO_Market.EOM.utility(tick, node_ID) -= over_est_utility_EOM;
+//				double over_est_utility_EOM = (Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.cleared_demand > Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.direct_demand);
+//				over_est_utility_EOM *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.cleared_demand - Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.direct_demand;
+//				over_est_utility_EOM *= Power_market_inform.price_map.bidded_price(price_interval + 1);
+//				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.utility_demand.EOM -= over_est_utility_EOM;
+//				Power_market_inform.TSO_Market.EOM.utility(tick, node_ID) -= over_est_utility_EOM;
 				// Utility from EV
-				double scale = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.weight;
-				scale *= agent::parameters::residential_ratio();
-				scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
-				double under_est_utility_EOM = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.default_demand_profile(0);
-				under_est_utility_EOM *= Power_market_inform.price_map.bidded_price(price_interval + 1) * scale;
-				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.utility_demand.EOM += under_est_utility_EOM;
-				Power_market_inform.TSO_Market.EOM.utility(tick, node_ID) += under_est_utility_EOM;
+//				double scale = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.weight;
+//				scale *= agent::parameters::residential_ratio();
+//				scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
+//				double under_est_utility_EOM = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.default_demand_profile(0);
+//				under_est_utility_EOM *= Power_market_inform.price_map.bidded_price(price_interval + 1) * scale;
+//				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.utility_demand.EOM += under_est_utility_EOM;
+//				Power_market_inform.TSO_Market.EOM.utility(tick, node_ID) += under_est_utility_EOM;
 
 				// Settlement of redispatch
 				//agent_redispatch_settlement_calculation(tick, node_ID, original_price, Power_market_inform, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement, 1);
