@@ -51,7 +51,7 @@ namespace agent{
 			/** Indicates how much ratio of the total demand in the time interval can be shifted around flexibly;
 			* assuming the default is constant profile before shifting.
 			*/
-			double scale = 1.;
+			double scale = .1;
 			/**  Maximum load shifting time length of a flexible demand;
 			* indicates how flexible the smart appliances are.
 			*/
@@ -150,6 +150,7 @@ namespace agent{
 
 				for(int tock = 0; tock < foresight_time; ++ tock){
 					//if((tick + tock) % foresight_time == 7 || (tick + tock) % foresight_time == 19){
+					// Assume the EV charges at another place at noon
 					if((tick + tock) % foresight_time == 7){
 						vec(tock) = this->energy_demand;
 					}
