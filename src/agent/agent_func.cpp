@@ -2187,11 +2187,11 @@ namespace{
 //				std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.cleared_demand << "\t";
 //				std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity << "\t";
 //				std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile(0) << "\n";
-				if(point_iter == 0 && sample_iter == 2){
-					std::cout << gap << "\n";
-					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][0].operation.default_demand_profile.head(3).transpose() << "\n";
-					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scheduled_demand.transpose() << "\n";
-				}
+//				if(point_iter == 0 && sample_iter == 2){
+//					std::cout << gap << "\n";
+//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][0].operation.default_demand_profile.head(3).transpose() << "\n";
+//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scheduled_demand.transpose() << "\n";
+//				}
 
 				// Actual demand smaller than initially planned
 				while(gap > 0.){
@@ -2305,9 +2305,9 @@ namespace{
 					break;
 				}
 
-				if(point_iter == 0 && sample_iter == 2){
-					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scheduled_demand.transpose() << "\n\n";
-				}
+//				if(point_iter == 0 && sample_iter == 2){
+//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scheduled_demand.transpose() << "\n\n";
+//				}
 
 				// Update state variables of end-users
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.soc += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity;
