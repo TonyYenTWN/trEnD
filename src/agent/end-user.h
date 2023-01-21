@@ -51,7 +51,7 @@ namespace agent{
 			/** Indicates how much ratio of the total demand in the time interval can be shifted around flexibly;
 			* assuming the default is constant profile before shifting.
 			*/
-			double scale = .1;
+			double scale = 1.;
 			/**  Maximum load shifting time length of a flexible demand;
 			* indicates how flexible the smart appliances are.
 			*/
@@ -105,6 +105,9 @@ namespace agent{
 			/*@{*/
 			/**kWh per person per hour of usage.*/
 			double energy_demand = 7.671;
+			// 44.8 * .25 *.25 = 2.8 (TWh / yr)
+			// = 3.836 (GWh / time)
+			// = 7.671 (kWh / car / time)
 			/** The time intervals when EV is parked in the house.*/
 			Eigen::VectorXi house_default_period;
 			/** The time series of the default charging demand of the EV (kWh per person).*/
@@ -146,7 +149,8 @@ namespace agent{
 				Eigen::VectorXd vec = Eigen::VectorXd::Zero(foresight_time);
 
 				for(int tock = 0; tock < foresight_time; ++ tock){
-					if((tick + tock) % foresight_time == 7 || (tick + tock) % foresight_time == 19){
+					//if((tick + tock) % foresight_time == 7 || (tick + tock) % foresight_time == 19){
+					if((tick + tock) % foresight_time == 7){
 						vec(tock) = this->energy_demand;
 					}
 				}
