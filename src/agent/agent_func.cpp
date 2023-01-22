@@ -1820,7 +1820,8 @@ namespace{
 				Power_market_inform.agent_profiles.aggregators[point_iter].settlement.price.EOM += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.cleared_demand * original_price;
 				Power_market_inform.agent_profiles.aggregators[point_iter].settlement.price.EOM += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.cleared_supply * Power_market_inform.agent_profiles.aggregators[point_iter].price_supply_profile(0);
 				// End-users
-				agent_EOM_settlement_calculation(tick, node_ID, Power_market_inform.agent_profiles.aggregators[point_iter].price_supply_profile(0), Power_market_inform.agent_profiles.aggregators[point_iter].price_demand_profile(0), Power_market_inform, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement, 1);
+//				agent_EOM_settlement_calculation(tick, node_ID, Power_market_inform.agent_profiles.aggregators[point_iter].price_supply_profile(0), Power_market_inform.agent_profiles.aggregators[point_iter].price_demand_profile(0), Power_market_inform, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement, 1);
+				agent_EOM_settlement_calculation(tick, node_ID, original_price, original_price, Power_market_inform, Power_market_inform.agent_profiles.industrial.HV[agent_iter].bids, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement, 1);
 //				double over_est_utility_EOM = (Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.cleared_demand > Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.direct_demand);
 //				over_est_utility_EOM *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.cleared_demand - Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.direct_demand;
 //				over_est_utility_EOM *= Power_market_inform.price_map.bidded_price(price_interval + 1);
@@ -1836,9 +1837,8 @@ namespace{
 //				Power_market_inform.TSO_Market.EOM.utility(tick, node_ID) += under_est_utility_EOM;
 
 				// Settlement of redispatch
-				//agent_redispatch_settlement_calculation(tick, node_ID, original_price, Power_market_inform, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement, 1);
-				end_user_redispatch_settlement_calculation(tick, node_ID, original_price, Power_market_inform, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation, Power_market_inform.agent_profiles.aggregators[point_iter], 1);
-				//end_user_redispatch_settlement_calculation(int tick, int node_ID, double original_price, power_market::market_whole_inform &Power_market_inform, agent::end_user::operation &end_user, agent::aggregator::profile &aggregator, bool inflex_price = 0)
+				agent_redispatch_settlement_calculation(tick, node_ID, original_price, Power_market_inform, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement, 1);
+				//end_user_redispatch_settlement_calculation(tick, node_ID, original_price, Power_market_inform, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation, Power_market_inform.agent_profiles.aggregators[point_iter], 1);
 			}
 		}
 		//std::cout << "\n";
