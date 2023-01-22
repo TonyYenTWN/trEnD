@@ -31,6 +31,8 @@ namespace local{
 		var_names.push_back("balancing_utility");
 		var_names.push_back("balancing_price");
 		var_names.push_back("balancing_reimbursement");
+		var_names.push_back("BESS_supply");
+		var_names.push_back("BESS_demand");
 
 		return var_names;
 	}
@@ -63,6 +65,8 @@ namespace local{
 		output_row(23) = settlement.utility_demand.balancing;
 		output_row(24) = settlement.price.balancing;
 		output_row(25) = settlement.reimburse.balancing;
+		output_row(26) = settlement.volume_supply.BESS;
+		output_row(27) = settlement.volume_demand.BESS;
 
 		return output_row;
 	}

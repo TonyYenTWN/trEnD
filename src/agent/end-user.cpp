@@ -359,11 +359,11 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 		profile.operation.bids.submitted_supply_flex(price_supply_flex_ID) += -std::min(sol[3], 0.);
 	}
 	else{
-		profile.operation.bids.submitted_demand_inflex(price_demand_flex_ID) += sol[4] - sol[14];
-		profile.operation.bids.submitted_demand_inflex(price_demand_flex_ID) += std::max(sol[2], 0.);
-		profile.operation.bids.submitted_supply_inflex(price_supply_flex_ID) += -std::min(sol[2], 0.);
-		profile.operation.bids.submitted_demand_inflex(price_demand_flex_ID) += std::max(sol[3], 0.);
-		profile.operation.bids.submitted_supply_inflex(price_supply_flex_ID) += -std::min(sol[3], 0.);
+		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += sol[4] - sol[14];
+		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::max(sol[2], 0.);
+		profile.operation.bids.submitted_supply_inflex(price_supply_inflex_ID) += -std::min(sol[2], 0.);
+		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::max(sol[3], 0.);
+		profile.operation.bids.submitted_supply_inflex(price_supply_inflex_ID) += -std::min(sol[3], 0.);
 	}
 
 //	std::cout << profile.operation.BESS.scheduled_capacity << "\t" << profile.operation.smart_appliance.scheduled_demand << "\n";

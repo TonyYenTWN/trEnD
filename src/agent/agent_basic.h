@@ -61,6 +61,7 @@ namespace agent{
 		double redispatch;
 		double imbalance;
 		double balancing;
+		double BESS;
 	};
 
 	struct settlement{

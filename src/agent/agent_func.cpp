@@ -20,10 +20,12 @@ namespace{
 		settlement.utility_supply.balancing = 0.;
 		settlement.utility_supply.EOM = 0.;
 		settlement.utility_supply.redispatch = 0.;
-		settlement.volume_demand.balancing = 0.;
+//		settlement.volume_demand.balancing = 0.;
 		settlement.volume_demand.EOM = 0.;
-		settlement.volume_supply.balancing = 0.;
+		settlement.volume_demand.BESS = 0.;
+//		settlement.volume_supply.balancing = 0.;
 		settlement.volume_supply.EOM = 0.;
+		settlement.volume_supply.BESS = 0.;
 		settlement.volume_demand_down.balancing = 0.;
 		settlement.volume_demand_down.redispatch = 0.;
 		settlement.volume_demand_down.imbalance = 0.;
@@ -404,7 +406,7 @@ namespace{
 			for(int price_iter = margin_ID_demand; price_iter >= 0; -- price_iter){
 				double current_price = Power_market_inform.price_map.bidded_price(price_iter);
 				double real_price = (1 - inflex_price) * current_price;
-				real_price += Power_market_inform.price_map.bidded_price(price_interval + 1);
+				real_price += inflex_price * Power_market_inform.price_map.bidded_price(price_interval + 1);
 				double redispatch_price = abs(original_price - current_price);
 				if(reduced_flag_demand){
 					redispatch_price = std::min(redispatch_price, redispatch_price_max);
@@ -467,7 +469,7 @@ namespace{
 			for(int price_iter = margin_ID_demand; price_iter >= 0; -- price_iter){
 				double current_price = Power_market_inform.price_map.bidded_price(price_iter);
 				double real_price = (1 - inflex_price) * current_price;
-				real_price += Power_market_inform.price_map.bidded_price(price_interval + 1);
+				real_price += inflex_price * Power_market_inform.price_map.bidded_price(price_interval + 1);
 				double redispatch_price = abs(original_price - current_price);
 				if(reduced_flag_demand){
 					redispatch_price = std::min(redispatch_price, redispatch_price_max);
@@ -516,7 +518,7 @@ namespace{
 				for(int price_iter = price_interval + 1; price_iter >= 0; -- price_iter){
 					double current_price = Power_market_inform.price_map.bidded_price(price_iter);
 					double real_price = (1 - inflex_price) * current_price;
-					real_price += Power_market_inform.price_map.bidded_price(price_interval + 1);
+					real_price += inflex_price * Power_market_inform.price_map.bidded_price(price_interval + 1);
 					double redispatch_price = abs(original_price - current_price);
 					if(reduced_flag_demand){
 						redispatch_price = std::min(redispatch_price, redispatch_price_max);
@@ -562,14 +564,14 @@ namespace{
 		}
 
 		// Correct overestimated utility
-		double min_demand = std::min(end_user.results.cleared_demand, end_user.results.confirmed_demand);
-		double max_demand = std::max(end_user.results.cleared_demand, end_user.results.confirmed_demand);
-		min_demand = std::max(min_demand, end_user.direct_demand);
-		double over_est_utility_redispatch = (max_demand > min_demand) * (max_demand - min_demand);
-		over_est_utility_redispatch *= 1 - 2 * reduced_flag_demand;
-		over_est_utility_redispatch *= Power_market_inform.price_map.bidded_price(price_interval + 1);
-		end_user.settlement.utility_demand.redispatch -= over_est_utility_redispatch;
-		Power_market_inform.TSO_Market.redispatch.utility(tick, node_ID) -= over_est_utility_redispatch;
+//		double min_demand = std::min(end_user.results.cleared_demand, end_user.results.confirmed_demand);
+//		double max_demand = std::max(end_user.results.cleared_demand, end_user.results.confirmed_demand);
+//		min_demand = std::max(min_demand, end_user.direct_demand);
+//		double over_est_utility_redispatch = (max_demand > min_demand) * (max_demand - min_demand);
+//		over_est_utility_redispatch *= 1 - 2 * reduced_flag_demand;
+//		over_est_utility_redispatch *= Power_market_inform.price_map.bidded_price(price_interval + 1);
+//		end_user.settlement.utility_demand.redispatch -= over_est_utility_redispatch;
+//		Power_market_inform.TSO_Market.redispatch.utility(tick, node_ID) -= over_est_utility_redispatch;
 	}
 
 	void agent_redispatch_settlement_calculation(int tick, int node_ID, double original_price, power_market::market_whole_inform &Power_market_inform, agent::bids &bids, agent::results &results, agent::settlement &settlement, bool inflex_price = 0){
@@ -765,7 +767,7 @@ namespace{
 			for(int price_iter = margin_ID_demand; price_iter >= 0; -- price_iter){
 				double current_price = Power_market_inform.price_map.bidded_price(price_iter);
 				double real_price = (1 - inflex_price) * current_price;
-				real_price += Power_market_inform.price_map.bidded_price(price_interval + 1);
+				real_price += inflex_price * Power_market_inform.price_map.bidded_price(price_interval + 1);
 				double redispatch_price = abs(original_price - current_price);
 				if(reduced_flag_demand){
 					redispatch_price = std::min(redispatch_price, redispatch_price_max);
@@ -820,7 +822,7 @@ namespace{
 			for(int price_iter = margin_ID_demand; price_iter >= 0; -- price_iter){
 				double current_price = Power_market_inform.price_map.bidded_price(price_iter);
 				double real_price = (1 - inflex_price) * current_price;
-				real_price += Power_market_inform.price_map.bidded_price(price_interval + 1);
+				real_price += inflex_price * Power_market_inform.price_map.bidded_price(price_interval + 1);
 				double redispatch_price = abs(original_price - current_price);
 				if(reduced_flag_demand){
 					redispatch_price = std::min(redispatch_price, redispatch_price_max);
@@ -2162,26 +2164,26 @@ namespace{
 				}
 
 				// Should comment this section after validate
-				double gap = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_demand;
-				gap -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_supply;
-				gap -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex.sum();
-				gap -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_flex.sum();
-				gap += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_inflex.sum();
-				gap += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_flex.sum();
-				gap /= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
-				gap /= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.weight;
-				gap *= -1.;
-				if(point_iter == 0){
-					if(sample_iter == 0 || sample_iter == 2){
-						std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_demand << "\t";
-						std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_supply << "\t";
-						std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex.sum() << "\t";
-						std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_flex.sum() << "\t";
-						std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_inflex.sum() << "\t";
-						std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_flex.sum() << "\t";
-						std::cout << gap << "\n";
-					}
-				}
+//				double gap = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_demand;
+//				gap -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_supply;
+//				gap -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex.sum();
+//				gap -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_flex.sum();
+//				gap += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_inflex.sum();
+//				gap += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_flex.sum();
+//				gap /= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
+//				gap /= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.weight;
+//				gap *= -1.;
+//				if(point_iter == 1111){
+//					if(sample_iter == 0 || sample_iter == 2){
+//						std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_demand << "\t";
+//						std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_supply << "\t";
+//						std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex.sum() << "\t";
+//						std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_flex.sum() << "\t";
+//						std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_inflex.sum() << "\t";
+//						std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_flex.sum() << "\t";
+//						std::cout << gap << "\n";
+//					}
+//				}
 				// Should comment this section after validate
 
 
@@ -2196,26 +2198,29 @@ namespace{
 					continue;
 				}
 
-//				double gap = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_demand;
-//				gap -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_supply;
-//				gap -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex.sum();
-//				gap -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_flex.sum();
-//				gap += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_inflex.sum();
-//				gap += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_flex.sum();
-//				gap /= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
-//				gap /= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.weight;
-//				gap *= -1.;
+				// Should uncomment this section after validate
+				double gap = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_demand;
+				gap -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_supply;
+				gap -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex.sum();
+				gap -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_flex.sum();
+				gap += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_inflex.sum();
+				gap += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_flex.sum();
+				gap /= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
+				gap /= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.weight;
+				gap *= -1.;
+				// Should uncomment this section after validate
 
 //				std::cout << point_iter << "\t" << sample_iter << ":\t";
 //				std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.cleared_supply << "\t";
 //				std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.cleared_demand << "\t";
 //				std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity << "\t";
 //				std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile(0) << "\n";
-				if(point_iter == 0){
-					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.price_demand_profile.head(3).transpose() << "\n";
-					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][0].operation.default_demand_profile.head(3).transpose() << "\n";
-					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scheduled_demand.transpose() << "\n";
-				}
+//				if(point_iter == 1111){
+//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.price_demand_profile.head(3).transpose() << "\n";
+//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][0].operation.default_demand_profile.head(3).transpose() << "\n";
+//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scheduled_demand.transpose() << "\n";
+//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity << "\n";
+//				}
 
 				// Actual demand smaller than initially planned
 				while(gap > 0.){
@@ -2329,9 +2334,10 @@ namespace{
 					break;
 				}
 
-				if(point_iter == 0 && sample_iter == 2){
-					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scheduled_demand.transpose() << "\n\n";
-				}
+//				if(point_iter == 1111 && sample_iter == 2){
+//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scheduled_demand.transpose() << "\n";
+//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity << "\n\n";
+//				}
 
 				// Update state variables of end-users
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.soc += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity;
@@ -2342,6 +2348,20 @@ namespace{
 				for(int tock = 0; tock < 2 * load_shift_time + 1; ++ tock){
 					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(tock) -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scheduled_demand(tock);
 				}
+
+				// Update storage settlement
+				double vol_ch = (Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity > 0.) * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity;
+				vol_ch += (Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity > 0.) * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity;
+				double vol_dc = -(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity < 0.) * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity;
+				vol_dc += -(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity < 0.) * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity;
+				vol_ch /= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.efficiency;
+				vol_dc *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.efficiency;
+				double scale = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.weight;
+				scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
+				vol_ch *= scale;
+				vol_dc *= scale;
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_demand.BESS += vol_ch;
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_supply.BESS += vol_dc;
 
 				// Balancing settlement
 				agent_balancing_settlement_calculation(tick, node_ID, Power_market_inform, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement, 1);
@@ -2688,7 +2708,7 @@ namespace{
 //				scale *= agent::parameters::residential_ratio();
 				scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
 				agent_submitted_bids_scale(scale, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids);
-				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.direct_demand *= scale;
+//				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.direct_demand *= scale;
 			}
 		}
 	}
