@@ -627,6 +627,7 @@ namespace{
 					settlement.volume_supply_up.redispatch +=  (1 - reduced_flag_supply) * margin_quan_supply;
 					settlement.utility_supply.redispatch += (1 - 2 * reduced_flag_supply) * original_price * margin_quan_supply;
 					settlement.cost_supply.redispatch += (1 - 2 * reduced_flag_supply) * real_price * margin_quan_supply;
+					//settlement.reimburse.redispatch += (1 - 2 * reduced_flag_supply) * current_price * margin_quan_supply;
 					settlement.reimburse.redispatch += redispatch_price * margin_quan_supply;
 				}
 				else{
@@ -638,6 +639,7 @@ namespace{
 					settlement.volume_supply_up.redispatch +=  (1 - reduced_flag_supply) * max_supply_gap;
 					settlement.utility_supply.redispatch += (1 - 2 * reduced_flag_supply) * original_price * max_supply_gap;
 					settlement.cost_supply.redispatch += (1 - 2 * reduced_flag_supply) * real_price * max_supply_gap;
+					//settlement.reimburse.redispatch += (1 - 2 * reduced_flag_supply) * current_price * max_supply_gap;
 					settlement.reimburse.redispatch += redispatch_price * max_supply_gap;
 					max_supply_gap = 0.;
 					break;
@@ -681,6 +683,7 @@ namespace{
 					settlement.volume_supply_up.redispatch +=  (1 - reduced_flag_supply) * margin_quan_supply;
 					settlement.utility_supply.redispatch += (1 - 2 * reduced_flag_supply) * original_price * margin_quan_supply;
 					settlement.cost_supply.redispatch += (1 - 2 * reduced_flag_supply) * real_price * margin_quan_supply;
+					//settlement.reimburse.redispatch += (1 - 2 * reduced_flag_supply) * current_price * margin_quan_supply;
 					settlement.reimburse.redispatch += redispatch_price * margin_quan_supply;
 				}
 				else{
@@ -692,6 +695,8 @@ namespace{
 					settlement.volume_supply_up.redispatch +=  (1 - reduced_flag_supply) * max_supply_gap;
 					settlement.utility_supply.redispatch += (1 - 2 * reduced_flag_supply) * original_price * max_supply_gap;
 					settlement.cost_supply.redispatch += (1 - 2 * reduced_flag_supply) * real_price * max_supply_gap;
+					settlement.price.redispatch += (1 - 2 * reduced_flag_supply) * current_price * max_supply_gap;
+					//settlement.reimburse.redispatch += (1 - 2 * reduced_flag_supply) * current_price * max_supply_gap;
 					settlement.reimburse.redispatch += redispatch_price * max_supply_gap;
 					max_supply_gap = 0.;
 					break;
@@ -719,6 +724,7 @@ namespace{
 						settlement.volume_supply_up.redispatch +=  (1 - reduced_flag_supply) * margin_quan_supply;
 						settlement.utility_supply.redispatch += (1 - 2 * reduced_flag_supply) * original_price * margin_quan_supply;
 						settlement.cost_supply.redispatch += (1 - 2 * reduced_flag_supply) * real_price * margin_quan_supply;
+						//settlement.reimburse.redispatch += (1 - 2 * reduced_flag_supply) * current_price * margin_quan_supply;
 						settlement.reimburse.redispatch += redispatch_price * margin_quan_supply;
 					}
 					else{
@@ -730,6 +736,7 @@ namespace{
 						settlement.volume_supply_up.redispatch +=  (1 - reduced_flag_supply) * max_supply_gap;
 						settlement.utility_supply.redispatch += (1 - 2 * reduced_flag_supply) * original_price * max_supply_gap;
 						settlement.cost_supply.redispatch += (1 - 2 * reduced_flag_supply) * real_price * max_supply_gap;
+						//settlement.reimburse.redispatch += (1 - 2 * reduced_flag_supply) * current_price * margin_quan_supply;
 						settlement.reimburse.redispatch += redispatch_price * max_supply_gap;
 						max_supply_gap = 0.;
 						break;

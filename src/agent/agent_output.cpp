@@ -52,7 +52,7 @@ namespace local{
 		output_row(10) = settlement.cost_supply.redispatch;
 		output_row(11) = settlement.utility_demand.redispatch;
 		output_row(12) = settlement.price.redispatch;
-		output_row(13) = settlement.reimburse.redispatch;
+		output_row(13) = settlement.reimburse.redispatch + settlement.utility_supply.redispatch - settlement.cost_demand.redispatch;
 		output_row(14) = settlement.volume_supply_up.imbalance;
 		output_row(15) = settlement.volume_supply_down.imbalance;
 		output_row(16) = settlement.volume_demand_up.imbalance;
