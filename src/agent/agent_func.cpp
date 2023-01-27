@@ -154,8 +154,8 @@ namespace{
 			else{
 				settlement.volume_supply.EOM += cleared_supply_gap;
 				settlement.utility_supply.EOM += original_price_supply * cleared_supply_gap;
-				settlement.cost_supply.EOM += inflex_price * current_price * cleared_supply_gap;
-				Power_market_inform.TSO_Market.EOM.cost(tick, node_ID) += inflex_price * current_price * margin_quan_supply;
+				settlement.cost_supply.EOM += current_price * cleared_supply_gap;
+				Power_market_inform.TSO_Market.EOM.cost(tick, node_ID) += current_price * cleared_supply_gap;
 				break;
 			}
 		}
@@ -183,7 +183,7 @@ namespace{
 				settlement.volume_demand.EOM += cleared_demand_gap;
 				settlement.utility_demand.EOM += current_price * cleared_demand_gap;
 				settlement.price.EOM += original_price_demand * cleared_demand_gap;
-				Power_market_inform.TSO_Market.EOM.utility(tick, node_ID) += current_price * margin_quan_demand;
+				Power_market_inform.TSO_Market.EOM.utility(tick, node_ID) += current_price * cleared_demand_gap;
 				break;
 			}
 		}
