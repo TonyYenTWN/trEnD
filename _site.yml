@@ -1,0 +1,18 @@
+name: "trEnD"
+navbar:
+  title: "trEnD: Project Documentation"
+  left:
+    - text: "About"
+      href: about.html
+    - text: "User Guide"
+      href: user_guide.html
+    - text: "Examples"
+      menu:
+        - text: "Framework"
+          href: examples/framework.html 
+        - text: "Results"
+          href: examples/operation.html                    
+    - text: "Code Documentation"
+      href: code_docu/index.html
+    - text: "Download"
+      href: https://github.com/TonyYenTWN/trEnD

@@ -1,0 +1,5 @@
+filename,dir,base_dir,update,template,title,toc_0,toc_1
+agents,examples/,../,0,examples/template,Results: Agents,Agents,Results
+markets,examples/,../,0,examples/template,Results: Power Market,Power Market,Results
+operation,examples/,../,0,examples/template,Results: System Operation,System Operation,Results
+framework,examples/,../,0,examples/template,Framework,Framework,-9999

@@ -1,0 +1,183 @@
+---
+title: "trEnD: Project Documentation"
+# author: "Tony Yen"
+# date: "2022-11-03"
+output:
+  html_document:
+    theme: cosmo
+    highlight: breezedark
+---
+
+<!-- css styles -->
+<style type="text/css">
+.main-container {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Style for slide bar */
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 10px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #808080;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #808080;
+  cursor: pointer;
+}
+
+/* Style for slide div */
+.slide-div-side {
+  <!-- display: none; -->
+  width: 100%;
+}
+
+.slide-div-content {
+  width: 100%;
+}
+
+.fade {
+  animation-name: fade;
+  animation-duration: 3s;
+}
+
+@keyframes fade {
+  0% {opacity: .4} 
+  50% {opacity: 1}
+  100% {opacity: 1}
+}
+</style>
+
+
+```{r setup, include = FALSE}
+library("rstudioapi")
+library(plotly)
+setwd(dirname(getActiveDocumentContext()$path))  
+```
+
+:::::{}
+
+<img id="main-logo" src="pics/main_logo.png">
+
+---
+
+# trEnD: Model for Transition of End-users and the Distribution Power Network
+
+---
+
+<input type="range" min="0" max="98" value="0" class="slider" id="slide-bar">
+
+:::::
+
+::::: {style="display: grid; grid-template-columns: 1fr 1fr; grid-column-gap: 10px;"}
+
+:::: {id="side-col"}
+
+::: {class="slide-div-side fade"}
+
+Test text 0
+
+:::
+
+::: {class="slide-div-side fade"}
+
+Test text 1
+
+:::
+
+::: {class="slide-div-side fade"}
+
+Test text 2
+
+:::
+
+::::
+
+:::: {id="content-col"}
+
+::: {class="slide-div-content"}
+
+Test text 0
+
+:::
+
+::: {class="slide-div-content"}
+
+Test text 1
+
+:::
+
+::: {class="slide-div-content"}
+
+Test text 2
+
+:::
+
+::::
+
+<script>
+  // Control value of slide bar
+  let slideBar = document.getElementById("slide-bar");
+  let slid_max = slideBar.max;
+  let slid_min = slideBar.min;
+  showSlides(0);
+
+  setInterval(increase_slide, 3000);
+
+  function increase_slide(){
+    if (slideBar.value == slid_max) {
+      slideBar.value = slid_min;
+    }
+    else{
+      slideBar.value++;
+    }
+
+    showSlides(slideBar.value);
+  }
+
+  slideBar.oninput = function() {
+    showSlides(slideBar.value);
+  }
+
+  // Show different div
+  function showSlides(n){
+    let i;
+    let slides = document.getElementsByClassName("slide-div-side");
+    slideIndex = n % slides.length;
+    for (i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none";
+    }
+    slides[slideIndex].style.display = "inline";
+    
+    slides = document.getElementsByClassName("slide-div-content");
+    slideIndex = n % slides.length;
+    for (i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none";
+    }
+    slides[slideIndex].style.display = "block";    
+  }
+</script>
+
+:::::
