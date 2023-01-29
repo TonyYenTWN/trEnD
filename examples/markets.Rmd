@@ -1,0 +1,1213 @@
+```{r setup, include = FALSE}
+library("rstudioapi")
+library(plotly)
+library(rgdal)
+library(rgeos)
+
+##################################################################################
+Time <- 168
+
+# Set time name
+year <- 2021
+days_of_month <- c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+hours <- c()
+count <- 0
+for(month_iter in 1:12){
+  if(month_iter < 10){
+    month_name <- paste(0, month_iter, sep = "")
+  }else{
+    month_name <- month_iter
+  }
+  
+  
+  for(day_iter in 1:days_of_month[month_iter]){
+    if(day_iter < 10){
+      day_name <- paste(0, day_iter, sep = "")
+    }else{
+      day_name <- day_iter
+    }
+    
+    for(hour_iter in 0:23){
+      count <- count + 1
+      
+      if(hour_iter < 10){
+        hour_name <- paste(0, hour_iter, sep = "")
+      }else{
+        hour_name <- hour_iter
+      }
+      
+      hours[count] <- paste(year, "-", month_name, "-", day_name, " ", hour_name, ":00", sep = "")
+    }
+  }
+}
+
+timestamp_01 <- hours[1:Time]
+timestamp_02 <- hours[4344 + 1:Time]
+##################################################################################
+
+parent_dir = dirname(getwd())
+setwd(parent_dir)
+
+### Plot canvas for price time series
+price_plot <- plot_ly(type = 'scatter', mode = 'lines') %>%
+  layout(showlegend = T, 
+  legend = list(orientation = 'h', x = 0.25, y = -0.05),
+  xaxis = list(rangeslider = list(visible = F), showgrid = F),
+  yaxis = list(showgrid = F, showline = T, title = "Price (EUR / MWh)"),
+  font = list(family = "times new roman")    
+  )
+price_plot <- price_plot %>%
+  config(
+    toImageButtonOptions = list(
+      format = "svg",
+      filename = "price_plot"
+    )
+  )
+
+### Plot canvas for maps
+dir_name <- paste(getwd(), "/data/input/", sep = "")
+file_name <- "NO_10k/NO_10k.shp"
+map_data <- readOGR(paste(dir_name, file_name, sep = ""))
+norway_map_union <- gUnaryUnion(map_data)
+
+file_name <- "transmission_nodes.csv"
+node_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = ",")
+
+fractal_power <- 2
+margin <- 18000
+x_min <- min(norway_map_union@polygons[[1]]@Polygons[[1]]@coords[, 1], node_data$x) - margin
+y_min <- min(norway_map_union@polygons[[1]]@Polygons[[1]]@coords[, 2], node_data$y) - margin
+x_max <- max(norway_map_union@polygons[[1]]@Polygons[[1]]@coords[, 1], node_data$x) + margin
+y_max <- max(norway_map_union@polygons[[1]]@Polygons[[1]]@coords[, 2], node_data$y) + margin
+x_range <- c(x_min, x_max)
+y_range <- c(y_min, y_max)
+w_plot_map <- 700
+h_plot_map <- w_plot_map * diff(y_range) / diff(x_range)
+NO_power_system_plot <- plot_ly(width = w_plot_map, height = h_plot_map, showlegend = FALSE) %>%
+  add_trace(x = norway_map_union@polygons[[1]]@Polygons[[1]]@coords[, 1], 
+  y = norway_map_union@polygons[[1]]@Polygons[[1]]@coords[, 2], 
+  type = 'scatter', mode = 'lines', name = "Border", line = list(color = "black"), hoverinfo = 'none') %>%
+  layout(xaxis = list(showgrid = F, automargin = FALSE, range = x_range, showline = FALSE, showticklabels = FALSE), 
+  yaxis = list(showgrid = F, automargin = FALSE, range = y_range, showline = FALSE, showticklabels = FALSE),
+  margin = list(b = 0, t = 0, l = 0, r = 0),
+  font = list(family = "times new roman")
+  )
+NO_power_system_plot <- NO_power_system_plot %>%
+  config(
+    toImageButtonOptions = list(
+      format = "svg",
+      filename = "map_plot",
+      width = w_plot_map,
+      height = h_plot_map
+    )
+  )
+```
+
+<!-- title for toc -->
+# System perspective
+
+<!-- title for toc -->
+## - System-wide Supply {.tabset .tabset-fade .tabset-pills}
+
+### Reference Case 1
+
+#### January
+```{r system supply jan, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "ref_01"
+time_name <- "0101-0107"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "TSO_confirmed_supply.csv"
+TSO_confirmed_supply <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_redispatch_supply.csv"
+TSO_redispatch_supply <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_balancing_supply.csv"
+TSO_balancing_supply <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+name <- c("EOM", "Redispatch", "Balancing", "Total")
+value <- c(sum(TSO_confirmed_supply - TSO_redispatch_supply), sum(TSO_redispatch_supply), sum(TSO_balancing_supply))
+value[4] <- sum(value)
+value <- value / 10^3
+measure <- c("relative", "relative", "relative", "total")
+text <- paste(round(value, 3), "GWh")
+
+data <- data.frame(name = factor(name, levels = name), measure, text, value)
+
+
+fig <- plot_ly(data, name = "", type = "waterfall", measure = ~measure, x = ~name, textposition = "outside", y= ~value, text =~text, connector = list(line = list(color= "rgb(63, 63, 63)")))
+
+fig <- fig %>%
+  layout(title = "",
+        xaxis = list(title = "", showgrid = FALSE),
+        yaxis = list(title = "Electricity Supply (GWh)", showgrid = FALSE),
+        autosize = TRUE,
+        showlegend = FALSE,
+        font = list(family = "times new roman")
+        )%>%
+  config(
+    toImageButtonOptions = list(
+      format = "svg",
+      filename = "system_supply"
+    )
+  )
+
+fig
+```
+
+#### July
+```{r system supply jul, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "ref_01"
+time_name <- "0701-0707"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "TSO_confirmed_supply.csv"
+TSO_confirmed_supply <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_redispatch_supply.csv"
+TSO_redispatch_supply <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_balancing_supply.csv"
+TSO_balancing_supply <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+name <- c("EOM", "Redispatch", "Balancing", "Total")
+value <- c(sum(TSO_confirmed_supply - TSO_redispatch_supply), sum(TSO_redispatch_supply), sum(TSO_balancing_supply))
+value[4] <- sum(value)
+value <- value / 10^3
+measure <- c("relative", "relative", "relative", "total")
+text <- paste(round(value, 3), "GWh")
+
+data <- data.frame(name = factor(name, levels = name), measure, text, value)
+
+
+fig <- plot_ly(data, name = "", type = "waterfall", measure = ~measure, x = ~name, textposition = "outside", y= ~value, text =~text, connector = list(line = list(color= "rgb(63, 63, 63)")))
+
+fig <- fig %>%
+  layout(title = "",
+        xaxis = list(title = "", showgrid = FALSE),
+        yaxis = list(title = "Electricity Supply (GWh)", showgrid = FALSE),
+        autosize = TRUE,
+        showlegend = FALSE,
+        font = list(family = "times new roman")
+        )%>%
+  config(
+    toImageButtonOptions = list(
+      format = "svg",
+      filename = "system_supply"
+    )
+  )
+
+fig
+```
+
+### Reference Case 2
+
+
+#### January
+```{r system supply jan ref 2, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "ref_02"
+time_name <- "0101-0107"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "TSO_confirmed_supply.csv"
+TSO_confirmed_supply <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_redispatch_supply.csv"
+TSO_redispatch_supply <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_balancing_supply.csv"
+TSO_balancing_supply <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+name <- c("EOM", "Redispatch", "Balancing", "Total")
+value <- c(sum(TSO_confirmed_supply - TSO_redispatch_supply), sum(TSO_redispatch_supply), sum(TSO_balancing_supply))
+value[4] <- sum(value)
+value <- value / 10^3
+measure <- c("relative", "relative", "relative", "total")
+text <- paste(round(value, 3), "GWh")
+
+data <- data.frame(name = factor(name, levels = name), measure, text, value)
+
+
+fig <- plot_ly(data, name = "", type = "waterfall", measure = ~measure, x = ~name, textposition = "outside", y= ~value, text =~text, connector = list(line = list(color= "rgb(63, 63, 63)")))
+
+fig <- fig %>%
+  layout(title = "",
+        xaxis = list(title = "", showgrid = FALSE),
+        yaxis = list(title = "Electricity Supply (GWh)", showgrid = FALSE),
+        autosize = TRUE,
+        showlegend = FALSE,
+        font = list(family = "times new roman")
+        )%>%
+  config(
+    toImageButtonOptions = list(
+      format = "svg",
+      filename = "system_supply"
+    )
+  )
+
+fig
+```
+
+### Active End-users
+
+<!-- title for toc -->
+## - System-wide Demand {.tabset .tabset-fade .tabset-pills}
+
+### Reference Case 1
+
+#### January
+```{r system demand jan, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "ref_01"
+time_name <- "0101-0107"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "TSO_confirmed_demand.csv"
+TSO_confirmed_demand <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_redispatch_demand.csv"
+TSO_redispatch_demand <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_balancing_demand.csv"
+TSO_balancing_demand <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+name <- c("EOM", "Redispatch", "Balancing", "Total")
+value <- c(sum(TSO_confirmed_demand - TSO_redispatch_demand), sum(TSO_redispatch_demand), sum(TSO_balancing_demand))
+value[4] <- sum(value)
+value <- value / 10^3
+measure <- c("relative", "relative", "relative", "total")
+text <- paste(round(value, 3), "GWh")
+
+data <- data.frame(name = factor(name, levels = name), measure, text, value)
+
+
+fig <- plot_ly(data, name = "", type = "waterfall", measure = ~measure, x = ~name, textposition = "outside", y= ~value, text =~text, connector = list(line = list(color= "rgb(63, 63, 63)")))
+
+fig <- fig %>%
+  layout(title = "",
+        xaxis = list(title = "", showgrid = FALSE),
+        yaxis = list(title = "Electricity Demand (GWh)", showgrid = FALSE),
+        autosize = TRUE,
+        showlegend = FALSE,
+        font = list(family = "times new roman")
+        )%>%
+  config(
+    toImageButtonOptions = list(
+      format = "svg",
+      filename = "system_demand"
+    )
+  )
+
+fig
+```
+
+#### July
+```{r system demand jul, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "ref_01"
+time_name <- "0701-0707"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "TSO_confirmed_demand.csv"
+TSO_confirmed_demand <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_redispatch_demand.csv"
+TSO_redispatch_demand <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_balancing_demand.csv"
+TSO_balancing_demand <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+name <- c("EOM", "Redispatch", "Balancing", "Total")
+value <- c(sum(TSO_confirmed_demand - TSO_redispatch_demand), sum(TSO_redispatch_demand), sum(TSO_balancing_demand))
+value[4] <- sum(value)
+value <- value / 10^3
+measure <- c("relative", "relative", "relative", "total")
+text <- paste(round(value, 3), "GWh")
+
+data <- data.frame(name = factor(name, levels = name), measure, text, value)
+
+
+fig <- plot_ly(data, name = "", type = "waterfall", measure = ~measure, x = ~name, textposition = "outside", y= ~value, text =~text, connector = list(line = list(color= "rgb(63, 63, 63)")))
+
+fig <- fig %>%
+  layout(title = "",
+        xaxis = list(title = "", showgrid = FALSE),
+        yaxis = list(title = "Electricity Demand (GWh)", showgrid = FALSE),
+        autosize = TRUE,
+        showlegend = FALSE,
+        font = list(family = "times new roman")
+        )%>%
+  config(
+    toImageButtonOptions = list(
+      format = "svg",
+      filename = "system_demand"
+    )
+  )
+
+fig
+```
+
+### Reference Case 2
+
+#### January
+```{r system demand jan ref 2, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "ref_02"
+time_name <- "0101-0107"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "TSO_confirmed_demand.csv"
+TSO_confirmed_demand <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_redispatch_demand.csv"
+TSO_redispatch_demand <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_balancing_demand.csv"
+TSO_balancing_demand <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+name <- c("EOM", "Redispatch", "Balancing", "Total")
+value <- c(sum(TSO_confirmed_demand - TSO_redispatch_demand), sum(TSO_redispatch_demand), sum(TSO_balancing_demand))
+value[4] <- sum(value)
+value <- value / 10^3
+measure <- c("relative", "relative", "relative", "total")
+text <- paste(round(value, 3), "GWh")
+
+data <- data.frame(name = factor(name, levels = name), measure, text, value)
+
+
+fig <- plot_ly(data, name = "", type = "waterfall", measure = ~measure, x = ~name, textposition = "outside", y= ~value, text =~text, connector = list(line = list(color= "rgb(63, 63, 63)")))
+
+fig <- fig %>%
+  layout(title = "",
+        xaxis = list(title = "", showgrid = FALSE),
+        yaxis = list(title = "Electricity Demand (GWh)", showgrid = FALSE),
+        autosize = TRUE,
+        showlegend = FALSE,
+        font = list(family = "times new roman")
+        )%>%
+  config(
+    toImageButtonOptions = list(
+      format = "svg",
+      filename = "system_demand"
+    )
+  )
+
+fig
+```
+
+### Active End-users
+
+#### January
+```{r system demand jan active, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "active_end_user"
+time_name <- "0101-0107"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "TSO_confirmed_demand.csv"
+TSO_confirmed_demand <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_redispatch_demand.csv"
+TSO_redispatch_demand <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_balancing_demand.csv"
+TSO_balancing_demand <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+name <- c("EOM", "Redispatch", "Balancing", "Total")
+value <- c(sum(TSO_confirmed_demand - TSO_redispatch_demand), sum(TSO_redispatch_demand), sum(TSO_balancing_demand))
+value[4] <- sum(value)
+value <- value / 10^3
+measure <- c("relative", "relative", "relative", "total")
+text <- paste(round(value, 3), "GWh")
+
+data <- data.frame(name = factor(name, levels = name), measure, text, value)
+
+
+fig <- plot_ly(data, name = "", type = "waterfall", measure = ~measure, x = ~name, textposition = "outside", y= ~value, text =~text, connector = list(line = list(color= "rgb(63, 63, 63)")))
+
+fig <- fig %>%
+  layout(title = "",
+        xaxis = list(title = "", showgrid = FALSE),
+        yaxis = list(title = "Electricity Demand (GWh)", showgrid = FALSE),
+        autosize = TRUE,
+        showlegend = FALSE,
+        font = list(family = "times new roman")
+        )%>%
+  config(
+    toImageButtonOptions = list(
+      format = "svg",
+      filename = "system_demand"
+    )
+  )
+
+fig
+```
+
+#### July
+```{r system demand jul active, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "active_end_user"
+time_name <- "0701-0707"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "TSO_confirmed_demand.csv"
+TSO_confirmed_demand <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_redispatch_demand.csv"
+TSO_redispatch_demand <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_balancing_demand.csv"
+TSO_balancing_demand <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+name <- c("EOM", "Redispatch", "Balancing", "Total")
+value <- c(sum(TSO_confirmed_demand - TSO_redispatch_demand), sum(TSO_redispatch_demand), sum(TSO_balancing_demand))
+value[4] <- sum(value)
+value <- value / 10^3
+measure <- c("relative", "relative", "relative", "total")
+text <- paste(round(value, 3), "GWh")
+
+data <- data.frame(name = factor(name, levels = name), measure, text, value)
+
+
+fig <- plot_ly(data, name = "", type = "waterfall", measure = ~measure, x = ~name, textposition = "outside", y= ~value, text =~text, connector = list(line = list(color= "rgb(63, 63, 63)")))
+
+fig <- fig %>%
+  layout(title = "",
+        xaxis = list(title = "", showgrid = FALSE),
+        yaxis = list(title = "Electricity Demand (GWh)", showgrid = FALSE),
+        autosize = TRUE,
+        showlegend = FALSE,
+        font = list(family = "times new roman")
+        )%>%
+  config(
+    toImageButtonOptions = list(
+      format = "svg",
+      filename = "system_demand"
+    )
+  )
+
+fig
+```
+
+<!-- title for toc -->
+## - System cost decomposition {.tabset .tabset-fade .tabset-pills}
+
+### Reference Case 1
+
+#### January
+```{r system cost jan, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "ref_01"
+time_name <- "0101-0107"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "TSO_EOM_cost.csv"
+TSO_EOM_cost <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_redispatch_cost.csv"
+TSO_redispatch_cost <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_balancing_cost.csv"
+TSO_balancing_cost <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+name <- c("EOM", "Redispatch", "Balancing", "Total")
+value <- c(sum(TSO_EOM_cost), sum(TSO_redispatch_cost), sum(TSO_balancing_cost))
+value[4] <- sum(value)
+value <- value / 10^6
+measure <- c("relative", "relative", "relative", "total")
+text <- paste(round(value, 3), "Mio EUR")
+
+data <- data.frame(name = factor(name, levels = name), measure, text, value)
+
+
+fig <- plot_ly(data, name = "", type = "waterfall", measure = ~measure, x = ~name, textposition = "outside", y= ~value, text =~text, connector = list(line = list(color= "rgb(63, 63, 63)")))
+
+fig <- fig %>%
+  layout(title = "",
+        xaxis = list(title = "", showgrid = FALSE),
+        yaxis = list(title = "System Cost (Mio EUR)", showgrid = FALSE),
+        autosize = TRUE,
+        showlegend = FALSE,
+        font = list(family = "times new roman")
+        ) %>%
+  config(
+    toImageButtonOptions = list(
+      format = "svg",
+      filename = "system_cost_decomposition"
+    )
+  )
+
+fig
+```
+
+#### July
+```{r system cost jul, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "ref_01"
+time_name <- "0701-0707"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "TSO_EOM_cost.csv"
+TSO_EOM_cost <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_redispatch_cost.csv"
+TSO_redispatch_cost <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_balancing_cost.csv"
+TSO_balancing_cost <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+name <- c("EOM", "Redispatch", "Balancing", "Total")
+value <- c(sum(TSO_EOM_cost), sum(TSO_redispatch_cost), sum(TSO_balancing_cost))
+value[4] <- sum(value)
+value <- value / 10^6
+measure <- c("relative", "relative", "relative", "total")
+text <- paste(round(value, 3), "Mio EUR")
+
+data <- data.frame(name = factor(name, levels = name), measure, text, value)
+
+
+fig <- plot_ly(data, name = "", type = "waterfall", measure = ~measure, x = ~name, textposition = "outside", y= ~value, text =~text, connector = list(line = list(color= "rgb(63, 63, 63)")))
+
+fig <- fig %>%
+  layout(title = "",
+        xaxis = list(title = "", showgrid = FALSE),
+        yaxis = list(title = "System Cost (Mio EUR)", showgrid = FALSE),
+        autosize = TRUE,
+        showlegend = FALSE,
+        font = list(family = "times new roman")
+        ) %>%
+  config(
+    toImageButtonOptions = list(
+      format = "svg",
+      filename = "system_cost_decomposition"
+    )
+  )
+
+fig
+```
+
+### Reference Case 2
+
+#### January
+```{r system cost jan ref 2, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "ref_02"
+time_name <- "0101-0107"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "TSO_EOM_cost.csv"
+TSO_EOM_cost <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_redispatch_cost.csv"
+TSO_redispatch_cost <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_balancing_cost.csv"
+TSO_balancing_cost <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+name <- c("EOM", "Redispatch", "Balancing", "Total")
+value <- c(sum(TSO_EOM_cost), sum(TSO_redispatch_cost), sum(TSO_balancing_cost))
+value[4] <- sum(value)
+value <- value / 10^6
+measure <- c("relative", "relative", "relative", "total")
+text <- paste(round(value, 3), "Mio EUR")
+
+data <- data.frame(name = factor(name, levels = name), measure, text, value)
+
+
+fig <- plot_ly(data, name = "", type = "waterfall", measure = ~measure, x = ~name, textposition = "outside", y= ~value, text =~text, connector = list(line = list(color= "rgb(63, 63, 63)")))
+
+fig <- fig %>%
+  layout(title = "",
+        xaxis = list(title = "", showgrid = FALSE),
+        yaxis = list(title = "System Cost (Mio EUR)", showgrid = FALSE),
+        autosize = TRUE,
+        showlegend = FALSE,
+        font = list(family = "times new roman")
+        ) %>%
+  config(
+    toImageButtonOptions = list(
+      format = "svg",
+      filename = "system_cost_decomposition"
+    )
+  )
+
+fig
+```
+
+### Active End-users
+
+#### January
+```{r system cost jan active, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "active_end_user"
+time_name <- "0101-0107"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "TSO_EOM_cost.csv"
+TSO_EOM_cost <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_redispatch_cost.csv"
+TSO_redispatch_cost <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_balancing_cost.csv"
+TSO_balancing_cost <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+name <- c("EOM", "Redispatch", "Balancing", "Total")
+value <- c(sum(TSO_EOM_cost), sum(TSO_redispatch_cost), sum(TSO_balancing_cost))
+value[4] <- sum(value)
+value <- value / 10^6
+measure <- c("relative", "relative", "relative", "total")
+text <- paste(round(value, 3), "Mio EUR")
+
+data <- data.frame(name = factor(name, levels = name), measure, text, value)
+
+
+fig <- plot_ly(data, name = "", type = "waterfall", measure = ~measure, x = ~name, textposition = "outside", y= ~value, text =~text, connector = list(line = list(color= "rgb(63, 63, 63)")))
+
+fig <- fig %>%
+  layout(title = "",
+        xaxis = list(title = "", showgrid = FALSE),
+        yaxis = list(title = "System Cost (Mio EUR)", showgrid = FALSE),
+        autosize = TRUE,
+        showlegend = FALSE,
+        font = list(family = "times new roman")
+        ) %>%
+  config(
+    toImageButtonOptions = list(
+      format = "svg",
+      filename = "system_cost_decomposition"
+    )
+  )
+
+fig
+```
+
+#### July
+```{r system cost jul active, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "active_end_user"
+time_name <- "0701-0707"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "TSO_EOM_cost.csv"
+TSO_EOM_cost <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_redispatch_cost.csv"
+TSO_redispatch_cost <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_balancing_cost.csv"
+TSO_balancing_cost <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+name <- c("EOM", "Redispatch", "Balancing", "Total")
+value <- c(sum(TSO_EOM_cost), sum(TSO_redispatch_cost), sum(TSO_balancing_cost))
+value[4] <- sum(value)
+value <- value / 10^6
+measure <- c("relative", "relative", "relative", "total")
+text <- paste(round(value, 3), "Mio EUR")
+
+data <- data.frame(name = factor(name, levels = name), measure, text, value)
+
+
+fig <- plot_ly(data, name = "", type = "waterfall", measure = ~measure, x = ~name, textposition = "outside", y= ~value, text =~text, connector = list(line = list(color= "rgb(63, 63, 63)")))
+
+fig <- fig %>%
+  layout(title = "",
+        xaxis = list(title = "", showgrid = FALSE),
+        yaxis = list(title = "System Cost (Mio EUR)", showgrid = FALSE),
+        autosize = TRUE,
+        showlegend = FALSE,
+        font = list(family = "times new roman")
+        ) %>%
+  config(
+    toImageButtonOptions = list(
+      format = "svg",
+      filename = "system_cost_decomposition"
+    )
+  )
+
+fig
+```
+
+<!-- title for toc -->
+# Micro-economics perspective
+
+<!-- title for toc -->
+## EOM Clearing Prices {.tabset .tabset-fade .tabset-pills}
+
+### January
+```{r EOM price jan, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "ref_01"
+time_name <- "0101-0107"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "IMO_confirmed_price.csv"
+IMO_confirmed_price <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+price_plot_temp <- price_plot
+
+price_plot_temp <- price_plot_temp %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO1[1:Time], name = "NO1") %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO2[1:Time], name = "NO2") %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO3[1:Time], name = "NO3") %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO4[1:Time], name = "NO4") %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO5[1:Time], name = "NO5") 
+
+price_plot_temp
+```
+
+### July
+```{r EOM price jul, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "ref_01"
+time_name <- "0701-0707"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "IMO_confirmed_price.csv"
+IMO_confirmed_price <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+price_plot_temp <- price_plot
+
+price_plot_temp <- price_plot_temp %>%
+  add_trace(x = timestamp_02, y = IMO_confirmed_price$NO1[1:Time], name = "NO1") %>%
+  add_trace(x = timestamp_02, y = IMO_confirmed_price$NO2[1:Time], name = "NO2") %>%
+  add_trace(x = timestamp_02, y = IMO_confirmed_price$NO3[1:Time], name = "NO3") %>%
+  add_trace(x = timestamp_02, y = IMO_confirmed_price$NO4[1:Time], name = "NO4") %>%
+  add_trace(x = timestamp_02, y = IMO_confirmed_price$NO5[1:Time], name = "NO5") 
+
+price_plot_temp
+```
+
+<!-- title for toc -->
+## Redispatch Price {.tabset .tabset-fade .tabset-pills}
+
+### January
+```{r redispatch price jan, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "ref_01"
+time_name <- "0101-0107"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "IMO_redispatch_price.csv"
+IMO_redispatch_price <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+price_plot_temp <- price_plot
+
+price_plot_temp <- price_plot_temp %>%
+  add_trace(x = timestamp_01, y = IMO_redispatch_price$NO1[1:Time], name = "NO1") %>%
+  add_trace(x = timestamp_01, y = IMO_redispatch_price$NO2[1:Time], name = "NO2") %>%
+  add_trace(x = timestamp_01, y = IMO_redispatch_price$NO3[1:Time], name = "NO3") %>%
+  add_trace(x = timestamp_01, y = IMO_redispatch_price$NO4[1:Time], name = "NO4") %>%
+  add_trace(x = timestamp_01, y = IMO_redispatch_price$NO5[1:Time], name = "NO5") 
+
+price_plot_temp
+```
+
+### July
+```{r redispatch price jul, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "ref_01"
+time_name <- "0701-0707"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "IMO_redispatch_price.csv"
+IMO_redispatch_price <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+price_plot_temp <- price_plot
+
+price_plot_temp <- price_plot_temp %>%
+  add_trace(x = timestamp_02, y = IMO_redispatch_price$NO1[1:Time], name = "NO1") %>%
+  add_trace(x = timestamp_02, y = IMO_redispatch_price$NO2[1:Time], name = "NO2") %>%
+  add_trace(x = timestamp_02, y = IMO_redispatch_price$NO3[1:Time], name = "NO3") %>%
+  add_trace(x = timestamp_02, y = IMO_redispatch_price$NO4[1:Time], name = "NO4") %>%
+  add_trace(x = timestamp_02, y = IMO_redispatch_price$NO5[1:Time], name = "NO5") 
+
+price_plot_temp
+```
+
+<!-- title for toc -->
+## Redispatch Reimbursement {.tabset .tabset-fade .tabset-pills}
+
+### January
+```{r redispatch reimbursement jan, echo = FALSE}
+
+setwd(parent_dir)
+
+dir_name <- paste(getwd(), "/data/input/", sep = "")
+file_name <- "TSO_simplified_network.csv"
+edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+scenario_name <- "ref_01"
+time_name <- "0101-0107"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "TSO_redispatch_reimbursement.csv"
+TSO_redispatch_reimbursement <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+node_average_reimbursement <- apply(TSO_redispatch_reimbursement, 2, sum)
+reference_reimbursement <- max(node_average_reimbursement)
+
+### Plot
+NO_power_system_plot_temp <- NO_power_system_plot
+for(edge_iter in 1:nrow(edge_data)){
+  x_coor <- c()
+  y_coor <- c()
+  
+  x_coor[1] <- node_data$x[edge_data$from[edge_iter] + 1]
+  x_coor[3] <- node_data$x[edge_data$to[edge_iter] + 1]
+  x_coor[2] <- .5 * (x_coor[1] + x_coor[3])
+  y_coor[1] <- node_data$y[edge_data$from[edge_iter] + 1]
+  y_coor[3] <- node_data$y[edge_data$to[edge_iter] + 1]
+  y_coor[2] <- .5 * (y_coor[1] + y_coor[3])  
+  
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_trace(x = x_coor, y = y_coor, 
+    type = 'scatter', mode = 'lines',
+    line = list(color = "black"),
+    name = paste("edge ", edge_iter, sep = ""),
+    text = paste("edge ", edge_iter, sep = ""),
+    hoverinfo = 'text'
+    )
+}
+
+for(node_iter in 1:length(node_average_reimbursement)){
+  fraction <- node_average_reimbursement[node_iter] / reference_reimbursement
+  color_type = paste("rgb(", 255, ", 0, 0)")
+  opaq <- fraction^(1 / fractal_power)
+  
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_trace(x = node_data$x[node_iter], y = node_data$y[node_iter], opacity = opaq,
+    type = 'scatter', mode = 'markers',
+    marker = list(color = color_type, size = 20),
+    name = paste("node ", node_iter, sep = ""),
+    text = paste("node ", node_iter, ": ", round(node_average_reimbursement[node_iter] / 10^6 , 3), " Mio. EUR", sep = ""),
+    hoverinfo = 'text'    
+    )
+}
+
+NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+  add_text(x = node_data$x[132] + 170000, y = node_data$y[116] + 40000, 
+  textfont = list(size = 18), text = "Reimbursement for Redispatch:", textposition = "top right", hoverinfo = 'none')
+legend_level <- round(reference_reimbursement * c(1 / 8, 1 / 4, 1 / 2, 1) / 1000) * 1000
+for(level_iter in 1:length(legend_level)){
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_trace(x = node_data$x[132] + 80000 + 120000 * level_iter, y = node_data$y[116], 
+    opacity = (legend_level[level_iter] / reference_reimbursement)^(1 / fractal_power),
+    type = 'scatter', mode = 'markers',
+    marker = list(color = paste("rgb(", 255, ", 0, 0)"), size = 30),
+    name = paste(-legend_level[level_iter], " EUR", sep = ""),
+    hoverinfo = 'none'
+    )
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_text(x = node_data$x[132] + 80000 + 120000 * level_iter, y = node_data$y[116] - 30000, 
+    text = paste (legend_level[level_iter] / 10^6, "\nMio EUR", sep = ""), 
+    textfont = list(color = "rgb(255, 0, 0)", size = 14),
+    textposition = "bottom center", hoverinfo = 'none')
+}
+
+NO_power_system_plot_temp
+```
+
+### July
+```{r redispatch reimbursement jul, echo = FALSE}
+
+setwd(parent_dir)
+
+dir_name <- paste(getwd(), "/data/input/", sep = "")
+file_name <- "TSO_simplified_network.csv"
+edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+scenario_name <- "ref_01"
+time_name <- "0701-0707"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "TSO_redispatch_reimbursement.csv"
+TSO_redispatch_reimbursement <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+node_average_reimbursement <- apply(TSO_redispatch_reimbursement, 2, sum)
+reference_reimbursement <- max(node_average_reimbursement)
+
+### Plot
+NO_power_system_plot_temp <- NO_power_system_plot
+for(edge_iter in 1:nrow(edge_data)){
+  x_coor <- c()
+  y_coor <- c()
+  
+  x_coor[1] <- node_data$x[edge_data$from[edge_iter] + 1]
+  x_coor[3] <- node_data$x[edge_data$to[edge_iter] + 1]
+  x_coor[2] <- .5 * (x_coor[1] + x_coor[3])
+  y_coor[1] <- node_data$y[edge_data$from[edge_iter] + 1]
+  y_coor[3] <- node_data$y[edge_data$to[edge_iter] + 1]
+  y_coor[2] <- .5 * (y_coor[1] + y_coor[3])  
+  
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_trace(x = x_coor, y = y_coor, 
+    type = 'scatter', mode = 'lines',
+    line = list(color = "black"),
+    name = paste("edge ", edge_iter, sep = ""),
+    text = paste("edge ", edge_iter, sep = ""),
+    hoverinfo = 'text'
+    )
+}
+
+for(node_iter in 1:length(node_average_reimbursement)){
+  fraction <- node_average_reimbursement[node_iter] / reference_reimbursement
+  color_type = paste("rgb(", 255, ", 0, 0)")
+  opaq <- fraction^(1 / fractal_power)
+  
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_trace(x = node_data$x[node_iter], y = node_data$y[node_iter], opacity = opaq,
+    type = 'scatter', mode = 'markers',
+    marker = list(color = color_type, size = 20),
+    name = paste("node ", node_iter, sep = ""),
+    text = paste("node ", node_iter, ": ", round(node_average_reimbursement[node_iter] / 10^6 , 3), " Mio. EUR", sep = ""),
+    hoverinfo = 'text'    
+    )
+}
+
+NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+  add_text(x = node_data$x[132] + 170000, y = node_data$y[116] + 40000, 
+  textfont = list(size = 18), text = "Reimbursement for Redispatch:", textposition = "top right", hoverinfo = 'none')
+legend_level <- round(reference_reimbursement * c(1 / 8, 1 / 4, 1 / 2, 1) / 1000) * 1000
+for(level_iter in 1:length(legend_level)){
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_trace(x = node_data$x[132] + 80000 + 120000 * level_iter, y = node_data$y[116], 
+    opacity = (legend_level[level_iter] / reference_reimbursement)^(1 / fractal_power),
+    type = 'scatter', mode = 'markers',
+    marker = list(color = paste("rgb(", 255, ", 0, 0)"), size = 30),
+    name = paste(-legend_level[level_iter], " EUR", sep = ""),
+    hoverinfo = 'none'
+    )
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_text(x = node_data$x[132] + 80000 + 120000 * level_iter, y = node_data$y[116] - 30000, 
+    text = paste (legend_level[level_iter] / 10^6, "\nMio EUR", sep = ""), 
+    textfont = list(color = "rgb(255, 0, 0)", size = 14),
+    textposition = "bottom center", hoverinfo = 'none')
+}
+
+NO_power_system_plot_temp
+```
+
+<!-- title for toc -->
+## Balancing Reimbursement {.tabset .tabset-fade .tabset-pills}
+
+### January
+```{r balancing reimbursement jan, echo = FALSE}
+
+setwd(parent_dir)
+
+dir_name <- paste(getwd(), "/data/input/", sep = "")
+file_name <- "TSO_simplified_network.csv"
+edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+scenario_name <- "ref_01"
+time_name <- "0101-0107"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "TSO_balancing_reimbursement.csv"
+TSO_balancing_reimbursement <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+node_average_reimbursement <- apply(TSO_balancing_reimbursement, 2, sum)
+reference_reimbursement <- max(node_average_reimbursement)
+
+### Plot
+NO_power_system_plot_temp <- NO_power_system_plot
+for(edge_iter in 1:nrow(edge_data)){
+  x_coor <- c()
+  y_coor <- c()
+  
+  x_coor[1] <- node_data$x[edge_data$from[edge_iter] + 1]
+  x_coor[3] <- node_data$x[edge_data$to[edge_iter] + 1]
+  x_coor[2] <- .5 * (x_coor[1] + x_coor[3])
+  y_coor[1] <- node_data$y[edge_data$from[edge_iter] + 1]
+  y_coor[3] <- node_data$y[edge_data$to[edge_iter] + 1]
+  y_coor[2] <- .5 * (y_coor[1] + y_coor[3])  
+  
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_trace(x = x_coor, y = y_coor, 
+    type = 'scatter', mode = 'lines',
+    line = list(color = "black"),
+    name = paste("edge ", edge_iter, sep = ""),
+    text = paste("edge ", edge_iter, sep = ""),
+    hoverinfo = 'text'
+    )
+}
+
+for(node_iter in 1:length(node_average_reimbursement)){
+  if(node_average_reimbursement[node_iter] > 0){
+    fraction <- node_average_reimbursement[node_iter] / reference_reimbursement
+    color_type = paste("rgb(", 255, ", 0, 0)")
+  }else{
+    fraction <- -node_average_reimbursement[node_iter] / reference_reimbursement
+    color_type = paste("rgb(0,", 200, ", 0)", sep = "")
+  }
+  opaq <- fraction^(1 / fractal_power)
+  
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_trace(x = node_data$x[node_iter], y = node_data$y[node_iter], opacity = opaq,
+    type = 'scatter', mode = 'markers',
+    marker = list(color = color_type, size = 20),
+    name = paste("node ", node_iter, sep = ""),
+    text = paste("node ", node_iter, ": ", round(node_average_reimbursement[node_iter] / 1000, 3), " kEUR", sep = ""),
+    hoverinfo = 'text'    
+    )
+}
+
+NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+  add_text(x = node_data$x[132] + 170000, y = node_data$y[116] + 40000, 
+  textfont = list(size = 18), text = "Reimbursement for Balancing:", textposition = "top right", hoverinfo = 'none')
+legend_level <- round(reference_reimbursement * c(1 / 8, 1 / 4, 1 / 2, 1) / 50) * 50
+for(level_iter in 1:length(legend_level)){
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_trace(x = node_data$x[132] + 80000 + 120000 * level_iter, y = node_data$y[116], 
+    opacity = (legend_level[level_iter] / reference_reimbursement)^(1 / fractal_power),
+    type = 'scatter', mode = 'markers',
+    marker = list(color = paste("rgb(", 255, ", 0, 0)"), size = 30),
+    name = paste(legend_level[level_iter] / 1000, " kEUR", sep = ""),
+    hoverinfo = 'none'
+    )
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_text(x = node_data$x[132] + 80000 + 120000 * level_iter, y = node_data$y[116] - 30000, 
+    text = paste (legend_level[level_iter] / 1000, " kEUR", sep = ""), 
+    textfont = list(color = "rgb(255, 0, 0)", size = 14),
+    textposition = "bottom center", hoverinfo = 'none')
+}
+for(level_iter in 1:length(legend_level)){
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_trace(x = node_data$x[132] + 80000 + 120000 * level_iter, y = node_data$y[116] - 100000, 
+    opacity = (legend_level[level_iter] / reference_reimbursement)^(1 / fractal_power),
+    type = 'scatter', mode = 'markers',
+    marker = list(color = paste("rgb(0, ", 200, ", 0)"), size = 30),
+    name = paste (-legend_level[level_iter] / 1000, " kEUR", sep = ""),
+    hoverinfo = 'none'
+    )
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_text(x = node_data$x[132] + 80000 + 120000 * level_iter, y = node_data$y[116] - 30000 - 100000, 
+    text = paste (-legend_level[level_iter] / 1000, " kEUR", sep = ""), 
+    textfont = list(color = "rgb(0, 200, 0)", size = 14),
+    textposition = "bottom center", hoverinfo = 'none')
+}
+
+NO_power_system_plot_temp
+```
+
+### July
+```{r balancing reimbursement jul, echo = FALSE}
+
+setwd(parent_dir)
+
+dir_name <- paste(getwd(), "/data/input/", sep = "")
+file_name <- "TSO_simplified_network.csv"
+edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+scenario_name <- "ref_01"
+time_name <- "0701-0707"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "TSO_balancing_reimbursement.csv"
+TSO_balancing_reimbursement <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+node_average_reimbursement <- apply(TSO_balancing_reimbursement, 2, sum)
+reference_reimbursement <- max(node_average_reimbursement)
+
+### Plot
+NO_power_system_plot_temp <- NO_power_system_plot
+for(edge_iter in 1:nrow(edge_data)){
+  x_coor <- c()
+  y_coor <- c()
+  
+  x_coor[1] <- node_data$x[edge_data$from[edge_iter] + 1]
+  x_coor[3] <- node_data$x[edge_data$to[edge_iter] + 1]
+  x_coor[2] <- .5 * (x_coor[1] + x_coor[3])
+  y_coor[1] <- node_data$y[edge_data$from[edge_iter] + 1]
+  y_coor[3] <- node_data$y[edge_data$to[edge_iter] + 1]
+  y_coor[2] <- .5 * (y_coor[1] + y_coor[3])  
+  
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_trace(x = x_coor, y = y_coor, 
+    type = 'scatter', mode = 'lines',
+    line = list(color = "black"),
+    name = paste("edge ", edge_iter, sep = ""),
+    text = paste("edge ", edge_iter, sep = ""),
+    hoverinfo = 'text'
+    )
+}
+
+for(node_iter in 1:length(node_average_reimbursement)){
+  if(node_average_reimbursement[node_iter] > 0){
+    fraction <- node_average_reimbursement[node_iter] / reference_reimbursement
+    color_type = paste("rgb(", 255, ", 0, 0)")
+  }else{
+    fraction <- -node_average_reimbursement[node_iter] / reference_reimbursement
+    color_type = paste("rgb(0,", 200, ", 0)", sep = "")
+  }
+  opaq <- fraction^(1 / fractal_power)
+  
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_trace(x = node_data$x[node_iter], y = node_data$y[node_iter], opacity = opaq,
+    type = 'scatter', mode = 'markers',
+    marker = list(color = color_type, size = 20),
+    name = paste("node ", node_iter, sep = ""),
+    text = paste("node ", node_iter, ": ", round(node_average_reimbursement[node_iter] / 1000, 3), " kEUR", sep = ""),
+    hoverinfo = 'text'    
+    )
+}
+
+NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+  add_text(x = node_data$x[132] + 170000, y = node_data$y[116] + 40000, 
+  textfont = list(size = 18), text = "Reimbursement for Balancing:", textposition = "top right", hoverinfo = 'none')
+legend_level <- round(reference_reimbursement * c(1 / 8, 1 / 4, 1 / 2, 1) / 50) * 50
+for(level_iter in 1:length(legend_level)){
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_trace(x = node_data$x[132] + 80000 + 120000 * level_iter, y = node_data$y[116], 
+    opacity = (legend_level[level_iter] / reference_reimbursement)^(1 / fractal_power),
+    type = 'scatter', mode = 'markers',
+    marker = list(color = paste("rgb(", 255, ", 0, 0)"), size = 30),
+    name = paste(legend_level[level_iter] / 1000, " kEUR", sep = ""),
+    hoverinfo = 'none'
+    )
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_text(x = node_data$x[132] + 80000 + 120000 * level_iter, y = node_data$y[116] - 30000, 
+    text = paste (legend_level[level_iter] / 1000, " kEUR", sep = ""), 
+    textfont = list(color = "rgb(255, 0, 0)", size = 14),
+    textposition = "bottom center", hoverinfo = 'none')
+}
+for(level_iter in 1:length(legend_level)){
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_trace(x = node_data$x[132] + 80000 + 120000 * level_iter, y = node_data$y[116] - 100000, 
+    opacity = (legend_level[level_iter] / reference_reimbursement)^(1 / fractal_power),
+    type = 'scatter', mode = 'markers',
+    marker = list(color = paste("rgb(0, ", 200, ", 0)"), size = 30),
+    name = paste (-legend_level[level_iter] / 1000, " kEUR", sep = ""),
+    hoverinfo = 'none'
+    )
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_text(x = node_data$x[132] + 80000 + 120000 * level_iter, y = node_data$y[116] - 30000 - 100000, 
+    text = paste (-legend_level[level_iter] / 1000, " kEUR", sep = ""), 
+    textfont = list(color = "rgb(0, 200, 0)", size = 14),
+    textposition = "bottom center", hoverinfo = 'none')
+}
+
+NO_power_system_plot_temp
+```
