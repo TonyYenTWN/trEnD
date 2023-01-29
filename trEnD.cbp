@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="trEnD" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Option extended_obj_names="1" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/trEnD" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-pg" />
+					<Add option="-g" />
+				</Compiler>
+				<Linker>
+					<Add option="-pg -lgmon" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/trEnD" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fopenmp -mavx2 -mfma -DNDEBUG -O3 -std=c++2a" />
+		</Compiler>
+		<Linker>
+			<Add option="-static-libgcc -fopenmp -s" />
+		</Linker>
+		<Unit filename="src/agent/agent_basic.h" />
+		<Unit filename="src/agent/agent_func.cpp" />
+		<Unit filename="src/agent/agent_func.h" />
+		<Unit filename="src/agent/agent_output.cpp" />
+		<Unit filename="src/agent/aggregator.h" />
+		<Unit filename="src/agent/cross_border.h" />
+		<Unit filename="src/agent/end-user.cpp" />
+		<Unit filename="src/agent/end-user.h" />
+		<Unit filename="src/agent/industrial.h" />
+		<Unit filename="src/agent/power_supplier.h" />
+		<Unit filename="src/alglib/alglibinternal.cpp" />
+		<Unit filename="src/alglib/alglibinternal.h" />
+		<Unit filename="src/alglib/alglibmisc.cpp" />
+		<Unit filename="src/alglib/alglibmisc.h" />
+		<Unit filename="src/alglib/ap.cpp" />
+		<Unit filename="src/alglib/ap.h" />
+		<Unit filename="src/alglib/kernels_avx2.cpp" />
+		<Unit filename="src/alglib/kernels_avx2.h" />
+		<Unit filename="src/alglib/kernels_fma.cpp" />
+		<Unit filename="src/alglib/kernels_fma.h" />
+		<Unit filename="src/alglib/kernels_sse2.cpp" />
+		<Unit filename="src/alglib/kernels_sse2.h" />
+		<Unit filename="src/alglib/linalg.cpp" />
+		<Unit filename="src/alglib/linalg.h" />
+		<Unit filename="src/alglib/optimization.cpp" />
+		<Unit filename="src/alglib/optimization.h" />
+		<Unit filename="src/alglib/solvers.cpp" />
+		<Unit filename="src/alglib/solvers.h" />
+		<Unit filename="src/alglib/stdafx.h" />
+		<Unit filename="src/basic/basic_definitions.h" />
+		<Unit filename="src/basic/eigen_sparse.h" />
+		<Unit filename="src/basic/rw_csv.cpp" />
+		<Unit filename="src/basic/rw_csv.h" />
+		<Unit filename="src/configuration/configuration.h" />
+		<Unit filename="src/main.cpp" />
+		<Unit filename="src/power_market/DSO.cpp" />
+		<Unit filename="src/power_market/IMO.cpp" />
+		<Unit filename="src/power_market/TSO.cpp" />
+		<Unit filename="src/power_market/power_market.h" />
+		<Unit filename="src/power_market/power_market_func.cpp" />
+		<Unit filename="src/power_market/power_market_output.cpp" />
+		<Unit filename="src/power_market/power_market_proc.cpp" />
+		<Unit filename="src/power_network/power_flow_analysis.cpp" />
+		<Unit filename="src/power_network/power_flow_analysis.h" />
+		<Unit filename="src/power_network/power_flow_output.cpp" />
+		<Unit filename="src/power_network/power_network.h" />
+		<Unit filename="src/power_network/power_network_input.cpp" />
+		<Unit filename="src/spatial_field/geostat.cpp" />
+		<Unit filename="src/spatial_field/geostat.h" />
+		<Unit filename="src/spatial_field/spatial_field.cpp" />
+		<Unit filename="src/spatial_field/spatial_field.h" />
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>
