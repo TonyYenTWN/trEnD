@@ -3,6 +3,17 @@
 
 namespace local{
 	void BME_copula(spatial_field::estimation_inform &inform, power_network::network_inform &Power_network_inform, Eigen::SparseMatrix <double> &Constraint, double tol){
+		// ---------------------------------------------------------------------
+		// x ~ N(x)
+		// u ~ Weibull
+		// F(x) = \Phi(x)
+		// F(u) = 1 - exp(-(u / u_0)^k)
+		// (u / u_0)^k = -ln(1 - F(u))
+		// u = u_0 * (-ln(1 - \Phi(x)))^(1 / k)  // E[u] is determined by u_0 and k
+		// reversely x = \Phi^(-1)(1 - exp(-(u / u_0)^k))
+		// Likelihood maximization problem at the Bayesian update stage is L: .5 * x^T * COV^(-1) * x - \lambda * D * u
+		// ---------------------------------------------------------------------
+
 		int bz_num = Constraint.cols();
 		int point_num = Constraint.rows();
 
