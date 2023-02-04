@@ -11,12 +11,12 @@ namespace agent{
 			}
 
 			static inline double arbitrage_demand(){
-				double value = 0.;
+				double value = 0.; // Temporary change to non-zero value for sensitivity test
 				return value;
 			}
 
 			static inline double arbitrage_supply(){
-				double value = 0.;
+				double value = 0.; // Temporary change to non-zero value for sensitivity test
 				return value;
 			}
 		}
