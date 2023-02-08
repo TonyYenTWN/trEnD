@@ -2824,17 +2824,27 @@ for(level_iter in 1:length(legend_level)){
 }
 
 NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
-  add_text(x = node_data$x[132] + 120000, y = node_data$y[116] - 25000 + 100000 + 50000 + 100000, 
+  add_text(x = node_data$x[132] + 120000, y = node_data$y[116] - 25000 + 100000 + 50000 + 130000, 
   textfont = list(size = 18), text = "Change in Average Line Utilization Rate:", textposition = "top right", hoverinfo = 'none')
-edge_level <- .25 * c(.5, 1, 2, 4)
+edge_level <- round(.25 * c(.5, 1, 2, 4) * reference_flow, 2)
 for(level_iter in 1:length(edge_level)){
   NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
-    add_trace(x = node_data$x[132] + 120000 * level_iter + 60000 * c(0: 1), y = rep(node_data$y[116] + 100000 + 100000, 2), 
-    opacity = edge_level[level_iter]^(1 / fractal_power), type = 'scatter', mode = 'lines', line = list(color = "black"), 
+    add_trace(x = node_data$x[132] + 120000 * level_iter + 60000 * c(0: 1), y = rep(node_data$y[116] + 100000 + 130000, 2), 
+    opacity = edge_level[level_iter]^(1 / fractal_power) / reference_flow, type = 'scatter', mode = 'lines', line = list(color = "rgb(255, 255, 0)"), 
     hoverinfo = 'none'
     )
   NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
-    add_text(x = node_data$x[132] + 30000 + 120000 * level_iter, y = node_data$y[116] - 25000 + 100000 + 100000, 
+    add_text(x = node_data$x[132] + 30000 + 120000 * level_iter, y = node_data$y[116] - 25000 + 100000 + 130000, 
+    textfont = list(size = 14), text = paste(-edge_level[level_iter] * 100, "%"), textposition = "bottom center", hoverinfo = 'none')
+}
+for(level_iter in 1:length(edge_level)){
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_trace(x = node_data$x[132] + 120000 * level_iter + 60000 * c(0: 1), y = rep(node_data$y[116] + 100000 + 60000, 2), 
+    opacity = edge_level[level_iter]^(1 / fractal_power) / reference_flow, type = 'scatter', mode = 'lines', line = list(color = "rgb(0, 0, 255)"), 
+    hoverinfo = 'none'
+    )
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_text(x = node_data$x[132] + 30000 + 120000 * level_iter, y = node_data$y[116] - 25000 + 100000 + 60000, 
     textfont = list(size = 14), text = paste(edge_level[level_iter] * 100, "%"), textposition = "bottom center", hoverinfo = 'none')
 }
 
