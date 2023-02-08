@@ -2689,6 +2689,160 @@ for(level_iter in 1:length(edge_level)){
 NO_power_system_plot_temp
 ```
 
+### Difference Ref 2 - Ref 1
+
+#### January
+```{r dc power flow jan ref 2 - ref 1, echo = FALSE, message = FALSE, warning = FALSE}
+setwd(parent_dir)
+
+dir_name <- paste(getwd(), "/data/input/", sep = "")
+file_name <- "TSO_simplified_network.csv"
+edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+scenario_name <- "ref_01"
+time_name <- "0101-0107"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "TSO_actual_supply.csv"
+TSO_actual_supply <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_actual_demand.csv"
+TSO_actual_demand <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_actual_DC_power.csv"
+TSO_actual_DC_power <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+node_average_balance_01 <- apply(TSO_actual_supply - TSO_actual_demand, 2, mean)
+edge_average_flow_01 <- apply(abs(TSO_actual_DC_power), 2, mean)
+edge_average_flow_01 <- edge_average_flow_01 / edge_data[, 3]
+
+scenario_name <- "ref_02"
+time_name <- "0101-0107"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "TSO_actual_supply.csv"
+TSO_actual_supply <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_actual_demand.csv"
+TSO_actual_demand <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_actual_DC_power.csv"
+TSO_actual_DC_power <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+node_average_balance_02 <- apply(TSO_actual_supply - TSO_actual_demand, 2, mean)
+edge_average_flow_02 <- apply(abs(TSO_actual_DC_power), 2, mean)
+edge_average_flow_02 <- edge_average_flow_02 / edge_data[, 3]
+
+node_average_balance <- node_average_balance_02 - node_average_balance_01
+edge_average_flow <- edge_average_flow_02 - edge_average_flow_01
+reference_power <- max(abs(range(node_average_balance)))
+reference_flow <- max(abs(range(edge_average_flow)))
+
+### Plot
+NO_power_system_plot_temp <- NO_power_system_plot
+for(edge_iter in 1:length(edge_average_flow)){
+  x_coor <- c()
+  y_coor <- c()
+  
+  x_coor[1] <- node_data$x[edge_data$from[edge_iter] + 1]
+  x_coor[3] <- node_data$x[edge_data$to[edge_iter] + 1]
+  x_coor[2] <- .5 * (x_coor[1] + x_coor[3])
+  y_coor[1] <- node_data$y[edge_data$from[edge_iter] + 1]
+  y_coor[3] <- node_data$y[edge_data$to[edge_iter] + 1]
+  y_coor[2] <- .5 * (y_coor[1] + y_coor[3])  
+
+  if(edge_average_flow[edge_iter] < 0){
+    color_type = c("rgb(255, 255, 0)")
+  }else{
+    color_type = c("rgb(0, 0, 255)")
+  }
+  opaq <- abs(edge_average_flow[edge_iter] / reference_flow)^(1 / fractal_power)    
+  
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_trace(x = x_coor, y = y_coor,
+    type = 'scatter', mode = 'lines',
+    line = list(color = color_type), opacity = opaq,
+    name = paste("edge ", edge_iter, sep = ""),
+    text = paste("edge ", edge_iter, ": ", round(edge_average_flow[edge_iter], 3), sep = ""),
+    hoverinfo = 'text'
+    )
+}
+
+for(node_iter in 1:length(node_average_balance)){
+  if(node_average_balance[node_iter] < 0){
+    fraction <- -node_average_balance[node_iter] / reference_power
+    color_type = paste("rgb(", 255, ", 0, 0)")
+  }else{
+    fraction <- node_average_balance[node_iter] / reference_power
+    color_type = paste("rgb(0,", 200, ", 0)", sep = "")
+  }
+  opaq <- fraction^(1 / fractal_power)
+  
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_trace(x = node_data$x[node_iter], y = node_data$y[node_iter], opacity = opaq,
+    type = 'scatter', mode = 'markers',
+    marker = list(color = color_type, size = 20),
+    name = paste("node ", node_iter, sep = ""),
+    text = paste("node ", node_iter, ": ", round(node_average_balance[node_iter], 3), " MW", sep = ""),
+    hoverinfo = 'text'    
+    )
+}
+
+NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+  add_text(x = node_data$x[132] + 120000, y = node_data$y[116] + 40000, 
+  textfont = list(size = 18), text = "Change in Average DC Power Source / Sink:", textposition = "top right", hoverinfo = 'none')
+legend_level <- round(reference_power * c(1 / 8, 1 / 4, 1 / 2, 1) / 50) * 50
+for(level_iter in 1:length(legend_level)){
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_trace(x = node_data$x[132] + 30000 + 120000 * level_iter, y = node_data$y[116], 
+    opacity = (legend_level[level_iter] / reference_power)^(1 / fractal_power),
+    type = 'scatter', mode = 'markers',
+    marker = list(color = paste("rgb(", 255, ", 0, 0)"), size = 30),
+    name = paste(-legend_level[level_iter], " MW", sep = ""),
+    hoverinfo = 'none'
+    )
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_text(x = node_data$x[132] + 30000 + 120000 * level_iter, y = node_data$y[116] - 30000, 
+    text = paste (-legend_level[level_iter], " MW", sep = ""), 
+    textfont = list(color = "rgb(255, 0, 0)", size = 14),
+    textposition = "bottom center", hoverinfo = 'none')
+}
+for(level_iter in 1:length(legend_level)){
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_trace(x = node_data$x[132] + 30000 + 120000 * level_iter, y = node_data$y[116] - 100000, 
+    opacity = (legend_level[level_iter] / reference_power)^(1 / fractal_power),
+    type = 'scatter', mode = 'markers',
+    marker = list(color = paste("rgb(0, ", 200, ", 0)"), size = 30),
+    name = paste (legend_level[level_iter], " MW", sep = ""),
+    hoverinfo = 'none'
+    )
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_text(x = node_data$x[132] + 30000 + 120000 * level_iter, y = node_data$y[116] - 30000 - 100000, 
+    text = paste (legend_level[level_iter], " MW", sep = ""), 
+    textfont = list(color = "rgb(0, 200, 0)", size = 14),
+    textposition = "bottom center", hoverinfo = 'none')
+}
+
+NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+  add_text(x = node_data$x[132] + 120000, y = node_data$y[116] - 25000 + 100000 + 50000 + 100000, 
+  textfont = list(size = 18), text = "Change in Average Line Utilization Rate:", textposition = "top right", hoverinfo = 'none')
+edge_level <- .25 * c(.5, 1, 2, 4)
+for(level_iter in 1:length(edge_level)){
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_trace(x = node_data$x[132] + 120000 * level_iter + 60000 * c(0: 1), y = rep(node_data$y[116] + 100000 + 100000, 2), 
+    opacity = edge_level[level_iter]^(1 / fractal_power), type = 'scatter', mode = 'lines', line = list(color = "black"), 
+    hoverinfo = 'none'
+    )
+  NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
+    add_text(x = node_data$x[132] + 30000 + 120000 * level_iter, y = node_data$y[116] - 25000 + 100000 + 100000, 
+    textfont = list(size = 14), text = paste(edge_level[level_iter] * 100, "%"), textposition = "bottom center", hoverinfo = 'none')
+}
+
+NO_power_system_plot_temp
+```
+
+### Difference Active - Ref 2
+
 <!-- title for toc -->
 ## - AC Power Flow {.tabset .tabset-fade .tabset-pills}
 

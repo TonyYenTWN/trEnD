@@ -49,11 +49,12 @@ parent_dir = dirname(getwd())
 setwd(parent_dir)
 
 ### Plot canvas for price time series
+price_range <- c(15, 75)
 price_plot <- plot_ly(type = 'scatter', mode = 'lines') %>%
   layout(showlegend = T, 
   legend = list(orientation = 'h', x = 0.25, y = -0.05),
   xaxis = list(rangeslider = list(visible = F), showgrid = F),
-  yaxis = list(showgrid = F, showline = T, title = "Price (EUR / MWh)"),
+  yaxis = list(showgrid = F, showline = T, title = "Price (EUR / MWh)", range = price_range),
   font = list(family = "times new roman")    
   )
 price_plot <- price_plot %>%
@@ -101,6 +102,7 @@ NO_power_system_plot <- NO_power_system_plot %>%
       height = h_plot_map
     )
   )
+
 ```
 
 <!-- title for toc -->
