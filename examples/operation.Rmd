@@ -125,9 +125,9 @@ fractal_power <- 1
 reference_power_dc <- 2200
 reference_power_ac <- 0
 reference_power_dc_diff_1 <- 500
-reference_power_dc_diff_2 <- 13
+reference_power_dc_diff_2 <- 20
 reference_edge_dc_diff_1 <- .2
-reference_edge_dc_diff_2 <- .009
+reference_edge_dc_diff_2 <- .01
 reference_voltage <- c(1, 1)
 ```
 
@@ -2694,7 +2694,7 @@ NO_power_system_plot_temp
 ```
 
 <!-- title for toc -->
-## DC Power System Operation Difference {.tabset .tabset-fade .tabset-pills}
+## - DC Power System Operation Difference {.tabset .tabset-fade .tabset-pills}
 
 ### Difference Ref 2 - Ref 1 {.tabset .tabset-fade .tabset-pills}
 
@@ -2759,7 +2759,7 @@ for(edge_iter in 1:length(edge_average_flow)){
   y_coor[2] <- .5 * (y_coor[1] + y_coor[3])  
 
   if(edge_average_flow[edge_iter] < 0){
-    color_type = c("rgb(255, 255, 0)")
+    color_type = c("rgb(255, 200, 0)")
   }else{
     color_type = c("rgb(0, 0, 255)")
   }
@@ -2837,7 +2837,7 @@ edge_level <- round(.25 * c(.5, 1, 2, 4) * reference_flow, 2)
 for(level_iter in 1:length(edge_level)){
   NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
     add_trace(x = node_data$x[132] + 120000 * level_iter + 60000 * c(0: 1), y = rep(node_data$y[116] + 100000 + 130000, 2), 
-    opacity = edge_level[level_iter]^(1 / fractal_power) / reference_flow, type = 'scatter', mode = 'lines', line = list(color = "rgb(255, 255, 0)"), 
+    opacity = edge_level[level_iter]^(1 / fractal_power) / reference_flow, type = 'scatter', mode = 'lines', line = list(color = "rgb(255, 200, 0)"), 
     hoverinfo = 'none'
     )
   NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
@@ -2902,8 +2902,8 @@ edge_average_flow_02 <- edge_average_flow_02 / edge_data[, 3]
 
 node_average_balance <- node_average_balance_02 - node_average_balance_01
 edge_average_flow <- edge_average_flow_02 - edge_average_flow_01
-reference_power <- max(abs(range(node_average_balance)), reference_power_dc_diff_2)
-reference_flow <- max(abs(range(edge_average_flow)), reference_edge_dc_diff_2)
+reference_power <- max(abs(range(node_average_balance)), reference_power_dc_diff_1)
+reference_flow <- max(abs(range(edge_average_flow)), reference_edge_dc_diff_1)
 
 ### Plot
 NO_power_system_plot_temp <- NO_power_system_plot
@@ -2919,7 +2919,7 @@ for(edge_iter in 1:length(edge_average_flow)){
   y_coor[2] <- .5 * (y_coor[1] + y_coor[3])  
 
   if(edge_average_flow[edge_iter] < 0){
-    color_type = c("rgb(255, 255, 0)")
+    color_type = c("rgb(255, 200, 0)")
   }else{
     color_type = c("rgb(0, 0, 255)")
   }
@@ -2997,7 +2997,7 @@ edge_level <- round(.25 * c(.5, 1, 2, 4) * reference_flow, 2)
 for(level_iter in 1:length(edge_level)){
   NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
     add_trace(x = node_data$x[132] + 120000 * level_iter + 60000 * c(0: 1), y = rep(node_data$y[116] + 100000 + 130000, 2), 
-    opacity = edge_level[level_iter]^(1 / fractal_power) / reference_flow, type = 'scatter', mode = 'lines', line = list(color = "rgb(255, 255, 0)"), 
+    opacity = edge_level[level_iter]^(1 / fractal_power) / reference_flow, type = 'scatter', mode = 'lines', line = list(color = "rgb(255, 200, 0)"), 
     hoverinfo = 'none'
     )
   NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
@@ -3064,8 +3064,8 @@ edge_average_flow_02 <- edge_average_flow_02 / edge_data[, 3]
 
 node_average_balance <- node_average_balance_02 - node_average_balance_01
 edge_average_flow <- edge_average_flow_02 - edge_average_flow_01
-reference_power <- max(abs(range(node_average_balance)), reference_power_dc_diff_1)
-reference_flow <- max(abs(range(edge_average_flow)), reference_edge_dc_diff_1)
+reference_power <- max(abs(range(node_average_balance)), reference_power_dc_diff_2)
+reference_flow <- max(abs(range(edge_average_flow)), reference_edge_dc_diff_2)
 
 ### Plot
 NO_power_system_plot_temp <- NO_power_system_plot
@@ -3081,7 +3081,7 @@ for(edge_iter in 1:length(edge_average_flow)){
   y_coor[2] <- .5 * (y_coor[1] + y_coor[3])  
 
   if(edge_average_flow[edge_iter] < 0){
-    color_type = c("rgb(255, 255, 0)")
+    color_type = c("rgb(255, 200, 0)")
   }else{
     color_type = c("rgb(0, 0, 255)")
   }
@@ -3159,7 +3159,7 @@ edge_level <- round(.25 * c(.5, 1, 2, 4) * reference_flow, 3)
 for(level_iter in 1:length(edge_level)){
   NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
     add_trace(x = node_data$x[132] + 120000 * level_iter + 60000 * c(0: 1), y = rep(node_data$y[116] + 100000 + 130000, 2), 
-    opacity = edge_level[level_iter]^(1 / fractal_power) / reference_flow, type = 'scatter', mode = 'lines', line = list(color = "rgb(255, 255, 0)"), 
+    opacity = edge_level[level_iter]^(1 / fractal_power) / reference_flow, type = 'scatter', mode = 'lines', line = list(color = "rgb(255, 200, 0)"), 
     hoverinfo = 'none'
     )
   NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
@@ -3241,7 +3241,7 @@ for(edge_iter in 1:length(edge_average_flow)){
   y_coor[2] <- .5 * (y_coor[1] + y_coor[3])  
 
   if(edge_average_flow[edge_iter] < 0){
-    color_type = c("rgb(255, 255, 0)")
+    color_type = c("rgb(255, 200, 0)")
   }else{
     color_type = c("rgb(0, 0, 255)")
   }
@@ -3319,7 +3319,7 @@ edge_level <- round(.25 * c(.5, 1, 2, 4) * reference_flow, 3)
 for(level_iter in 1:length(edge_level)){
   NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
     add_trace(x = node_data$x[132] + 120000 * level_iter + 60000 * c(0: 1), y = rep(node_data$y[116] + 100000 + 130000, 2), 
-    opacity = edge_level[level_iter]^(1 / fractal_power) / reference_flow, type = 'scatter', mode = 'lines', line = list(color = "rgb(255, 255, 0)"), 
+    opacity = edge_level[level_iter]^(1 / fractal_power) / reference_flow, type = 'scatter', mode = 'lines', line = list(color = "rgb(255, 200, 0)"), 
     hoverinfo = 'none'
     )
   NO_power_system_plot_temp <- NO_power_system_plot_temp %>%
