@@ -6,7 +6,7 @@ library(rgeos)
 library(fields)
 
 ##################################################################################
-Time <- 168
+Time <- 336
 
 # Set time name
 year <- 2021
@@ -124,7 +124,7 @@ res_field  <- 10000
 fractal_power <- 1
 reference_power_dc <- 2200
 reference_power_ac <- 0
-reference_power_dc_diff_1 <- 500
+reference_power_dc_diff_1 <- 550
 reference_power_dc_diff_2 <- 20
 reference_edge_dc_diff_1 <- .2
 reference_edge_dc_diff_2 <- .01
@@ -144,7 +144,7 @@ reference_voltage <- c(1, 1)
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_EOM_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -195,7 +195,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_EOM_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -248,7 +248,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_EOM_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -299,7 +299,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_EOM_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -352,7 +352,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_EOM_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -403,7 +403,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_EOM_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -456,7 +456,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_EOM_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -507,7 +507,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_EOM_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -560,7 +560,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_EOM_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -611,7 +611,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_EOM_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -667,7 +667,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_redispatch_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -730,7 +730,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_redispatch_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -795,7 +795,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_redispatch_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -858,7 +858,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_redispatch_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -923,7 +923,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_redispatch_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -986,7 +986,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_redispatch_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -1051,7 +1051,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_redispatch_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -1114,7 +1114,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_redispatch_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -1179,7 +1179,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_redispatch_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -1242,7 +1242,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_redispatch_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -1310,7 +1310,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_balancing_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -1373,7 +1373,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_balancing_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -1438,7 +1438,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_balancing_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -1501,7 +1501,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_balancing_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -1566,7 +1566,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_balancing_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -1629,7 +1629,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_balancing_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -1694,7 +1694,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_balancing_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -1757,7 +1757,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_balancing_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -1822,7 +1822,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_balancing_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -1885,7 +1885,7 @@ operation_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 file_name <- "IMO_operation_balancing_cross_border.csv"
 cross_border <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
@@ -1965,7 +1965,7 @@ file_name <- "TSO_simplified_network.csv"
 edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
 scenario_name <- "ref_01"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
 file_name <- "TSO_actual_supply.csv"
@@ -2088,7 +2088,7 @@ file_name <- "TSO_simplified_network.csv"
 edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
 scenario_name <- "ref_01"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
 file_name <- "TSO_actual_supply.csv"
@@ -2212,7 +2212,7 @@ file_name <- "TSO_simplified_network.csv"
 edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
 scenario_name <- "ref_02"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
 file_name <- "TSO_actual_supply.csv"
@@ -2334,7 +2334,7 @@ file_name <- "TSO_simplified_network.csv"
 edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
 scenario_name <- "ref_02"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
 file_name <- "TSO_actual_supply.csv"
@@ -2458,7 +2458,7 @@ file_name <- "TSO_simplified_network.csv"
 edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
 scenario_name <- "active_end_user"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
 file_name <- "TSO_actual_supply.csv"
@@ -2580,7 +2580,7 @@ file_name <- "TSO_simplified_network.csv"
 edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
 scenario_name <- "active_end_user"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
 file_name <- "TSO_actual_supply.csv"
@@ -2707,7 +2707,7 @@ file_name <- "TSO_simplified_network.csv"
 edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
 scenario_name <- "ref_01"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
 file_name <- "TSO_actual_supply.csv"
@@ -2724,7 +2724,7 @@ edge_average_flow_01 <- apply(abs(TSO_actual_DC_power), 2, mean)
 edge_average_flow_01 <- edge_average_flow_01 / edge_data[, 3]
 
 scenario_name <- "ref_02"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
 file_name <- "TSO_actual_supply.csv"
@@ -2867,7 +2867,7 @@ file_name <- "TSO_simplified_network.csv"
 edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
 scenario_name <- "ref_01"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
 file_name <- "TSO_actual_supply.csv"
@@ -2884,7 +2884,7 @@ edge_average_flow_01 <- apply(abs(TSO_actual_DC_power), 2, mean)
 edge_average_flow_01 <- edge_average_flow_01 / edge_data[, 3]
 
 scenario_name <- "ref_02"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
 file_name <- "TSO_actual_supply.csv"
@@ -3029,7 +3029,7 @@ file_name <- "TSO_simplified_network.csv"
 edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
 scenario_name <- "ref_02"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
 file_name <- "TSO_actual_supply.csv"
@@ -3046,7 +3046,7 @@ edge_average_flow_01 <- apply(abs(TSO_actual_DC_power), 2, mean)
 edge_average_flow_01 <- edge_average_flow_01 / edge_data[, 3]
 
 scenario_name <- "active_end_user"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
 file_name <- "TSO_actual_supply.csv"
@@ -3189,7 +3189,7 @@ file_name <- "TSO_simplified_network.csv"
 edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
 scenario_name <- "ref_02"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
 file_name <- "TSO_actual_supply.csv"
@@ -3206,7 +3206,7 @@ edge_average_flow_01 <- apply(abs(TSO_actual_DC_power), 2, mean)
 edge_average_flow_01 <- edge_average_flow_01 / edge_data[, 3]
 
 scenario_name <- "active_end_user"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
 file_name <- "TSO_actual_supply.csv"
@@ -3356,7 +3356,7 @@ edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = ",")
 I_base <- 1 / edge_data$voltage * 1000 # in Ampere
 
 scenario_name <- "ref_01"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_network/", sep = "")
 
 file_name <- "TSO_actual_AC_Q_node.csv"
@@ -3494,7 +3494,7 @@ edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = ",")
 I_base <- 1 / edge_data$voltage * 1000 # in Ampere
 
 scenario_name <- "ref_01"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_network/", sep = "")
 
 file_name <- "TSO_actual_AC_Q_node.csv"
@@ -3634,7 +3634,7 @@ edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = ",")
 I_base <- 1 / edge_data$voltage * 1000 # in Ampere
 
 scenario_name <- "ref_02"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_network/", sep = "")
 
 file_name <- "TSO_actual_AC_Q_node.csv"
@@ -3772,7 +3772,7 @@ edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = ",")
 I_base <- 1 / edge_data$voltage * 1000 # in Ampere
 
 scenario_name <- "ref_02"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_network/", sep = "")
 
 file_name <- "TSO_actual_AC_Q_node.csv"
@@ -3912,7 +3912,7 @@ edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = ",")
 I_base <- 1 / edge_data$voltage * 1000 # in Ampere
 
 scenario_name <- "active_end_user"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_network/", sep = "")
 
 file_name <- "TSO_actual_AC_Q_node.csv"
@@ -4050,7 +4050,7 @@ edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = ",")
 I_base <- 1 / edge_data$voltage * 1000 # in Ampere
 
 scenario_name <- "active_end_user"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_network/", sep = "")
 
 file_name <- "TSO_actual_AC_Q_node.csv"
@@ -4188,7 +4188,7 @@ NO_power_system_plot_temp
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_network/", sep = "")
 
 file_name <- "whole_actual_AC_voltage_angle.csv"
@@ -4274,7 +4274,7 @@ NO_field_plot
 setwd(parent_dir)
 
 scenario_name <- "ref_01"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_network/", sep = "")
 
 file_name <- "whole_actual_AC_voltage_angle.csv"
@@ -4360,7 +4360,7 @@ NO_field_plot
 setwd(parent_dir)
 
 scenario_name <- "ref_02"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_network/", sep = "")
 
 file_name <- "whole_actual_AC_voltage_angle.csv"
@@ -4444,7 +4444,7 @@ NO_field_plot
 setwd(parent_dir)
 
 scenario_name <- "ref_02"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_network/", sep = "")
 
 file_name <- "whole_actual_AC_voltage_angle.csv"
@@ -4530,7 +4530,7 @@ NO_field_plot
 setwd(parent_dir)
 
 scenario_name <- "active_end_user"
-time_name <- "0101-0107"
+time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_network/", sep = "")
 
 file_name <- "whole_actual_AC_voltage_angle.csv"
@@ -4614,7 +4614,7 @@ NO_field_plot
 setwd(parent_dir)
 
 scenario_name <- "active_end_user"
-time_name <- "0701-0707"
+time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_network/", sep = "")
 
 file_name <- "whole_actual_AC_voltage_angle.csv"
