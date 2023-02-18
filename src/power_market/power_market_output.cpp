@@ -62,6 +62,8 @@ namespace local{
 			basic::write_file(Market.operation.industrial.EOM.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
 			fout_name = name + "_operation_EOM_pump_storage.csv";
 			basic::write_file(Market.operation.pump_storage.EOM.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
+			fout_name = name + "_operation_EOM_slack.csv";
+			basic::write_file(Market.operation.slack.EOM.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
 			fout_name = name + "_operation_EOM_wind.csv";
 			basic::write_file(Market.operation.wind.EOM.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
 			fout_name = name + "_operation_redispatch_cross_border.csv";
@@ -74,6 +76,8 @@ namespace local{
 			basic::write_file(Market.operation.industrial.redispatch.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
 			fout_name = name + "_operation_redispatch_pump_storage.csv";
 			basic::write_file(Market.operation.pump_storage.redispatch.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
+			fout_name = name + "_operation_redispatch_slack.csv";
+			basic::write_file(Market.operation.slack.redispatch.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
 			fout_name = name + "_operation_redispatch_wind.csv";
 			basic::write_file(Market.operation.wind.redispatch.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
 			fout_name = name + "_operation_balancing_cross_border.csv";
@@ -86,6 +90,8 @@ namespace local{
 			basic::write_file(Market.operation.industrial.balancing.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
 			fout_name = name + "_operation_balancing_pump_storage.csv";
 			basic::write_file(Market.operation.pump_storage.balancing.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
+			fout_name = name + "_operation_balancing_slack.csv";
+			basic::write_file(Market.operation.slack.balancing.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
 			fout_name = name + "_operation_balancing_wind.csv";
 			basic::write_file(Market.operation.wind.balancing.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
 

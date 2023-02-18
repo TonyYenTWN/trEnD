@@ -207,6 +207,15 @@ namespace local{
 		}
 		fout_name = "csv/output/agent/pump_storage_LV_plant.csv";
 		basic::write_file(Output_data, fout_name, var_names);
+
+		int slack_LV_num = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant.size();
+		Output_data = Eigen::MatrixXd::Zero(slack_LV_num, var_num);
+		for(int agent_iter = 0; agent_iter < slack_LV_num; ++ agent_iter){
+			Output_data.row(agent_iter) = output_row_store(var_num, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].settlement);
+			Output_data(agent_iter, 0) = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].original_ID;
+		}
+		fout_name = "csv/output/agent/slack_LV_plant.csv";
+		basic::write_file(Output_data, fout_name, var_names);
 	}
 }
 

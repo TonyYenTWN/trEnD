@@ -247,6 +247,16 @@ void power_market::Filtered_bid_supply_calculation(int tick, market_whole_inform
 		Power_market_inform.DSO_Markets[DSO_ID].submitted_supply.col(point_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.filter_supply;
 	}
 
+	int slack_LV_num = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant.size();
+	for(int agent_iter = 0; agent_iter < slack_LV_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].point_ID;
+		int node_ID = Power_network_inform.points.node(point_ID);
+		int DSO_ID = Power_network_inform.nodes.cluster(node_ID);
+		point_ID = Power_network_inform.points.in_cluster_ID(point_ID);
+
+		Power_market_inform.DSO_Markets[DSO_ID].submitted_supply.col(point_ID) += Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids.filter_supply;
+	}
+
 	for(int DSO_iter = 0; DSO_iter < Power_market_inform.DSO_Markets.size(); ++ DSO_iter){
 		if(Power_network_inform.DSO_cluster[DSO_iter].points_ID.size() == 0){
 			continue;
