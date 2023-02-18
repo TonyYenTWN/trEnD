@@ -1435,6 +1435,7 @@ namespace{
 		int wind_num = Power_network_inform.plants.wind.cap.size();
 		double cutoff_power = agent::power_supplier::parameters::cutoff_power();
 
+		// Hydro and pump storage
 		agent::power_supplier::profiles power_supplier_profiles;
 		power_supplier_profiles.hydro.HV_hybrid.reserve(hydro_num);
 		power_supplier_profiles.hydro.HV_plant.reserve(hydro_num);
@@ -1505,6 +1506,7 @@ namespace{
 			}
 		}
 
+		// Wind power plants
 		power_supplier_profiles.wind.HV_hybrid.reserve(wind_num);
 		power_supplier_profiles.wind.HV_plant.reserve(wind_num);
 		power_supplier_profiles.wind.LV_hybrid.reserve(wind_num);
@@ -1543,6 +1545,31 @@ namespace{
 			else{
 				power_supplier_profiles.wind.LV_plant.push_back(profile_temp);
 			}
+		}
+
+		// Slack power plants
+		power_supplier_profiles.slack.LV_plant.reserve(point_num);
+		for(int agent_iter = 0; agent_iter < point_num; ++ agent_iter){
+			int point_ID = agent_iter;
+			int node_ID = Power_network_inform.points.node(point_ID);
+			double bid_quan = Power_network_inform.points.nominal_mean_demand_field(point_ID, start_time);
+			bid_quan *= Power_network_inform.points.population_density(point_ID);
+			bid_quan *= Power_network_inform.points.point_area / 1000.;
+
+			agent::power_supplier::plant_profile profile_temp;
+			profile_temp.point_ID = point_ID;
+			profile_temp.original_ID = agent_iter;
+			profile_temp.fix_cost = 199.5;
+			int price_supply_flex_ID = Power_market_inform.price_map.price_ID[profile_temp.fix_cost];
+
+			// Set bids information
+			agent_bids_initialization(profile_temp.bids);
+			agent_results_set(profile_temp.results);
+			profile_temp.bids.submitted_supply_flex(price_supply_flex_ID) = bid_quan;
+			profile_temp.bids.redispatch_supply = profile_temp.bids.submitted_supply_flex;
+			profile_temp.bids.filter_supply = profile_temp.bids.submitted_supply_flex;
+			profile_temp.bids.balancing_supply = profile_temp.bids.submitted_supply_flex;
+			power_supplier_profiles.slack.LV_plant.push_back(profile_temp);
 		}
 
 		return power_supplier_profiles;
@@ -1739,6 +1766,22 @@ namespace{
 			}
 			Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.redispatch_supply(marginal_price_ID) *= Power_market_inform.DSO_Markets[DSO_ID].confirmed.ratio_supply(point_ID);
 			Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.balancing_supply = Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.redispatch_supply;
+		}
+
+		int slack_LV_num = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant.size();
+		for(int agent_iter = 0; agent_iter < slack_LV_num; ++ agent_iter){
+			int point_ID = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].point_ID;
+			int node_ID = Power_network_inform.points.node(point_ID);
+			int DSO_ID = Power_network_inform.nodes.cluster(node_ID);
+			point_ID = Power_network_inform.points.in_cluster_ID(point_ID);
+			double marginal_price = Power_market_inform.DSO_Markets[DSO_ID].confirmed.price(tick, point_ID);
+			int marginal_price_ID = Power_market_inform.price_map.price_ID[marginal_price];
+
+			if(marginal_price_ID < price_interval + 1){
+				Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids.redispatch_supply.tail(price_interval + 1 - marginal_price_ID) *= 0.;
+			}
+			Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids.redispatch_supply(marginal_price_ID) *= Power_market_inform.DSO_Markets[DSO_ID].confirmed.ratio_supply(point_ID);
+			Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids.balancing_supply = Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.redispatch_supply;
 		}
 	}
 
@@ -2010,6 +2053,26 @@ namespace{
 
 			// Settlement of redispatch
 			agent_redispatch_settlement_calculation(tick, node_ID, original_price, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].settlement);
+		}
+
+		int slack_LV_num = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant.size();
+		for(int agent_iter = 0; agent_iter < slack_LV_num; ++ agent_iter){
+			int point_ID = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].point_ID;
+			int node_ID = Power_network_inform.points.node(point_ID);
+			int bz_ID = Power_network_inform.points.bidding_zone(point_ID);
+			double marginal_price = Power_market_inform.TSO_Market.confirmed.price(tick, node_ID);
+			int marginal_price_ID = Power_market_inform.price_map.price_ID[marginal_price];
+			double original_price = Power_market_inform.International_Market.confirmed.price(tick, bz_ID);
+			int original_price_ID = Power_market_inform.price_map.price_ID[original_price];
+
+			// Calculate scheduled results
+			agent_scheduled_results_calculation(bz_ID, node_ID, marginal_price_ID, original_price_ID, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].results);
+
+			// Settlement in EOM
+			agent_EOM_settlement_calculation(tick, node_ID, original_price, original_price, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].settlement);
+
+			// Settlement of redispatch
+			agent_redispatch_settlement_calculation(tick, node_ID, original_price, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].settlement);
 		}
 
 		//std::cout << "\n";
@@ -2520,7 +2583,25 @@ namespace{
 			// Market operation update
 			market_operation_update(tick, bz_ID, Power_market_inform.International_Market.operation.pump_storage, Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].results);
 		}
-		//std::cout << "\n";
+
+		int slack_LV_num = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant.size();
+		for(int agent_iter = 0; agent_iter < slack_LV_num; ++ agent_iter){
+			int point_ID = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].point_ID;
+			int node_ID = Power_network_inform.points.node(point_ID);
+			int bz_ID = Power_network_inform.nodes.bidding_zone(node_ID);
+
+			double marginal_price = Power_market_inform.TSO_Market.actual.price(tick, node_ID);
+			int marginal_price_ID = Power_market_inform.price_map.price_ID[marginal_price];
+
+			// Calculate actual results
+			agent_actual_results_calculation(node_ID, marginal_price_ID, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].results, control_reserve_flag);
+
+			// Balancing settlement
+			agent_balancing_settlement_calculation(tick, node_ID, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].settlement, 1);
+
+			// Market operation update
+			market_operation_update(tick, bz_ID, Power_market_inform.International_Market.operation.slack, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].results);
+		}
 	}
 
 	void agents_balancing_settlement(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
@@ -2845,6 +2926,25 @@ namespace{
 			Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.redispatch_supply = bid_vec;
 			Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.filter_supply = bid_vec;
 			Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.balancing_supply = bid_vec;
+		}
+
+		int slack_LV_num = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant.size();
+		for(int agent_iter = 0; agent_iter < slack_LV_num; ++ agent_iter){
+			int point_ID = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].point_ID;
+			int price_supply_flex_ID = Power_market_inform.price_map.price_ID[Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].fix_cost];
+			double bid_quan = Power_network_inform.points.nominal_mean_demand_field(point_ID, tick);
+			bid_quan *= Power_network_inform.points.population_density(point_ID);
+			bid_quan *= Power_network_inform.points.point_area / 1000.;
+			Eigen::VectorXd bid_vec = Eigen::VectorXd::Zero(price_interval + 2);
+			bid_vec(price_supply_flex_ID) = bid_quan;
+
+			// Set bids information
+			agent_bids_initialization(Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids);
+			agent_results_set(Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].results);
+			Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids.submitted_supply_flex = bid_vec;
+			Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids.redispatch_supply = bid_vec;
+			Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids.filter_supply = bid_vec;
+			Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids.balancing_supply = bid_vec;
 		}
 	}
 }

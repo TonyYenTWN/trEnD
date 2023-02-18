@@ -132,6 +132,7 @@ namespace power_market{
 		schedule hydro;
 		schedule wind;
 		schedule pump_storage;
+		schedule slack;
 	};
 
 	/**Information of a power market.*/

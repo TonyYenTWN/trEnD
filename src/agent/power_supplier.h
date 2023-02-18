@@ -15,6 +15,7 @@ namespace agent{
 			int original_ID;
 			int point_ID;
 			double cap;
+			double fix_cost;
 			bids bids;
 			results results;
 			settlement settlement;
@@ -52,6 +53,7 @@ namespace agent{
 			plants hydro;
 			plants wind;
 			plants solar;
+			plants slack;
 			storage pump_storage;
 		};
 	}
