@@ -1781,7 +1781,7 @@ namespace{
 				Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids.redispatch_supply.tail(price_interval + 1 - marginal_price_ID) *= 0.;
 			}
 			Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids.redispatch_supply(marginal_price_ID) *= Power_market_inform.DSO_Markets[DSO_ID].confirmed.ratio_supply(point_ID);
-			Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids.balancing_supply = Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.redispatch_supply;
+			Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids.balancing_supply = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids.redispatch_supply;
 		}
 	}
 
