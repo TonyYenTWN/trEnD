@@ -243,7 +243,7 @@ namespace power_network{
 		/** Voltage level of connection between the transmission and the distribution network.*/
 		int voltage_cutoff_conn = 66;
 		/** Cutoff voltage level of the distribution network.*/
-		int voltage_cutoff_distr = 22;
+		int voltage_cutoff_distr = 40;
 		/** Power carrying capacity per voltage (MW / kV) of transmission lines.*/
 		double power_limit_trans = .75;
 		/** Power carrying capacity per voltage (MW / kV) of HV distribution lines.*/
@@ -261,7 +261,7 @@ namespace power_network{
 		/** Density of power lines per point connecting distribution and transmission power network.*/
 		double line_density_conn = 2;
 		/** Total number of power lines in the distribution network.*/
-		int line_num_distr = 122782 * 1; // >=0: 126435; >= 40: 3653
+		int line_num_distr = 122782 * 1.; // >=0: 126435; >= 40: 3653
 		/** Density of power lines per point in the distribution network.*/
 		double line_density_distr;
 		/** Fractional dimension of the distribution network.*/
@@ -285,7 +285,7 @@ namespace power_network{
 		/** Shunt admittance (ohm^(-1) per meter) of MV distribution line.*/
 		std::complex<double> y_distr_shunt = std::complex<double> (0., 1. * pow(10., -10.));
 		/**Phase angle limits on a transmission node.*/
-		double theta_trans_limit = boost::math::constants::pi<double>() / 54.; // pi / 270 as default in scenario 1; 225 is possible
+		double theta_trans_limit = boost::math::constants::pi<double>() / 90.; // pi / 270 as default in scenario 1; 225 is possible
 		/**Phase angle limits on a distribution node.*/
 		double theta_distr_limit = theta_trans_limit / 2.;
 		/**Hash table (mapping) of per phase power flow limits on an edge at different voltage base levels, in MW.*/
