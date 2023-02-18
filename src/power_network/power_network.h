@@ -285,7 +285,7 @@ namespace power_network{
 		/** Shunt admittance (ohm^(-1) per meter) of MV distribution line.*/
 		std::complex<double> y_distr_shunt = std::complex<double> (0., 1. * pow(10., -10.));
 		/**Phase angle limits on a transmission node.*/
-		double theta_trans_limit = boost::math::constants::pi<double>() / 270.; // pi / 270 as default in scenario 1; 225 is possible
+		double theta_trans_limit = boost::math::constants::pi<double>() / 54.; // pi / 270 as default in scenario 1; 225 is possible
 		/**Phase angle limits on a distribution node.*/
 		double theta_distr_limit = theta_trans_limit / 2.;
 		/**Hash table (mapping) of per phase power flow limits on an edge at different voltage base levels, in MW.*/

@@ -978,6 +978,17 @@ void power_network::HELM_Node_Update(int tick, network_inform &Power_network_inf
 		real_power -= Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].results.actual_demand;
 		Power_network_inform.power_flow.P_node(tick, node_num + point_ID) += real_power;
 	}
+
+	int slack_HV_num = Power_market_inform.agent_profiles.power_supplier.slack.HV_plant.size();
+	for(int agent_iter = 0; agent_iter < slack_HV_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.slack.HV_plant[agent_iter].point_ID;
+		int node_ID = Power_network_inform.points.node(point_ID);
+
+		double real_power = Power_market_inform.agent_profiles.power_supplier.slack.HV_plant[agent_iter].results.actual_supply;
+		real_power /= 1. - power_network::parameters::loss_factor();
+		real_power -= Power_market_inform.agent_profiles.power_supplier.slack.HV_plant[agent_iter].results.actual_demand;
+		Power_network_inform.power_flow.P_node(tick, node_ID) += real_power;
+	}
 }
 
 void power_network::HELM_Solve(int tick, network_inform &Power_network_inform, power_market::market_whole_inform& Power_market_inform){

@@ -196,13 +196,13 @@ void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Powe
 	}
 
 	// Slack power plants
-	int slack_LV_num = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant.size();
-	for(int agent_iter = 0; agent_iter < slack_LV_num; ++ agent_iter){
-		int point_ID = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].point_ID;
+	int slack_HV_num = Power_market_inform.agent_profiles.power_supplier.slack.HV_plant.size();
+	for(int agent_iter = 0; agent_iter < slack_HV_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.slack.HV_plant[agent_iter].point_ID;
 		int node_ID = Power_network_inform.points.node(point_ID);
 
-		Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids.redispatch_supply;
-		Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids.redispatch_demand;
+		Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.slack.HV_plant[agent_iter].bids.redispatch_supply;
+		Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.slack.HV_plant[agent_iter].bids.redispatch_demand;
 	}
 
 //	for(int node_iter = 0; node_iter < Power_market_inform.TSO_Market.submitted_supply.cols(); ++ node_iter){
@@ -371,13 +371,13 @@ void power_market::Balancing_bid_calculation(int tick, market_whole_inform &Powe
 	}
 
 	// Slack power plants
-	int slack_LV_num = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant.size();
-	for(int agent_iter = 0; agent_iter < slack_LV_num; ++ agent_iter){
-		int point_ID = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].point_ID;
+	int slack_HV_num = Power_market_inform.agent_profiles.power_supplier.slack.HV_plant.size();
+	for(int agent_iter = 0; agent_iter < slack_HV_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.slack.HV_plant[agent_iter].point_ID;
 		int node_ID = Power_network_inform.points.node(point_ID);
 
-		Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids.balancing_supply;
-		Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids.balancing_demand;
+		Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.slack.HV_plant[agent_iter].bids.balancing_supply;
+		Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.slack.HV_plant[agent_iter].bids.balancing_demand;
 	}
 }
 
