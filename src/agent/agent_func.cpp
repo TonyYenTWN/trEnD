@@ -2568,9 +2568,9 @@ namespace{
 			market_operation_update(tick, bz_ID, Power_market_inform.International_Market.operation.pump_storage, Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].results);
 		}
 
-		int slack_HV_num = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant.size();
+		int slack_HV_num = Power_market_inform.agent_profiles.power_supplier.slack.HV_plant.size();
 		for(int agent_iter = 0; agent_iter < slack_HV_num; ++ agent_iter){
-			int point_ID = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].point_ID;
+			int point_ID = Power_market_inform.agent_profiles.power_supplier.slack.HV_plant[agent_iter].point_ID;
 			int node_ID = Power_network_inform.points.node(point_ID);
 			int bz_ID = Power_network_inform.nodes.bidding_zone(node_ID);
 
@@ -2578,13 +2578,17 @@ namespace{
 			int marginal_price_ID = Power_market_inform.price_map.price_ID[marginal_price];
 
 			// Calculate actual results
-			agent_actual_results_calculation(node_ID, marginal_price_ID, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].results, control_reserve_flag);
+			agent_actual_results_calculation(node_ID, marginal_price_ID, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.slack.HV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.slack.HV_plant[agent_iter].results, control_reserve_flag);
 
 			// Balancing settlement
-			agent_balancing_settlement_calculation(tick, node_ID, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].settlement, 1);
+			agent_balancing_settlement_calculation(tick, node_ID, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.slack.HV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.slack.HV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.slack.HV_plant[agent_iter].settlement, 1);
 
 			// Market operation update
-			market_operation_update(tick, bz_ID, Power_market_inform.International_Market.operation.slack, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].results);
+			market_operation_update(tick, bz_ID, Power_market_inform.International_Market.operation.slack, Power_market_inform.agent_profiles.power_supplier.slack.HV_plant[agent_iter].results);
+//			if(Power_market_inform.agent_profiles.power_supplier.slack.HV_plant[agent_iter].results.actual_supply > 0.){
+//				std::cout << Power_market_inform.agent_profiles.power_supplier.slack.HV_plant[agent_iter].results.actual_supply << "\t";
+//				std::cout << Power_market_inform.International_Market.operation.slack.redispatch(tick, bz_ID) << "\n";
+//			}
 		}
 	}
 
