@@ -1559,7 +1559,7 @@ namespace{
 			agent::power_supplier::plant_profile profile_temp;
 			profile_temp.point_ID = point_ID;
 			profile_temp.original_ID = agent_iter;
-			profile_temp.fix_cost = 199.5;
+			profile_temp.fix_cost = 99.5;
 			int price_supply_flex_ID = Power_market_inform.price_map.price_ID[profile_temp.fix_cost];
 
 			// Set bids information
