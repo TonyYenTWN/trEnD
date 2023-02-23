@@ -297,12 +297,12 @@ void power_market::Submitted_bid_calculation(market_whole_inform &Power_market_i
 		Power_market_inform.International_Market.submitted_supply.col(bz_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.submitted_supply_flex;
 		Power_market_inform.International_Market.submitted_demand.col(bz_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.submitted_demand_flex;
 	}
-	int slack_HV_num = Power_market_inform.agent_profiles.power_supplier.slack.HV_plant.size();
-	for(int agent_iter = 0; agent_iter < slack_HV_num; ++ agent_iter){
-		int point_ID = Power_market_inform.agent_profiles.power_supplier.slack.HV_plant[agent_iter].point_ID;
+	int slack_LV_num = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant.size();
+	for(int agent_iter = 0; agent_iter < slack_LV_num; ++ agent_iter){
+		int point_ID = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].point_ID;
 		int bz_ID = Power_network_inform.points.bidding_zone(point_ID);
-		Power_market_inform.International_Market.submitted_supply.col(bz_ID) += Power_market_inform.agent_profiles.power_supplier.slack.HV_plant[agent_iter].bids.submitted_supply_flex;
-		Power_market_inform.International_Market.submitted_demand.col(bz_ID) += Power_market_inform.agent_profiles.power_supplier.slack.HV_plant[agent_iter].bids.submitted_demand_flex;
+		Power_market_inform.International_Market.submitted_supply.col(bz_ID) += Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids.submitted_supply_flex;
+		Power_market_inform.International_Market.submitted_demand.col(bz_ID) += Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids.submitted_demand_flex;
 	}
 }
 
