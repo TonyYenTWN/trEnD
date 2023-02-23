@@ -2942,10 +2942,10 @@ namespace{
 		for(int agent_iter = 0; agent_iter < slack_LV_num; ++ agent_iter){
 			int point_ID = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].point_ID;
 			int price_supply_flex_ID = Power_market_inform.price_map.price_ID[Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].fix_cost];
-//			double bid_quan = Power_network_inform.points.nominal_mean_demand_field(point_ID, tick);
-//			bid_quan *= Power_network_inform.points.population_density(point_ID);
-//			bid_quan *= Power_network_inform.points.point_area / 1000.;
-			double bid_quan = std::numeric_limits<double>::infinity();
+			double bid_quan = Power_network_inform.points.nominal_mean_demand_field(point_ID, tick);
+			bid_quan *= Power_network_inform.points.population_density(point_ID);
+			bid_quan *= Power_network_inform.points.point_area / 1000.;
+//			double bid_quan = std::numeric_limits<double>::infinity();
 			Eigen::VectorXd bid_vec = Eigen::VectorXd::Zero(price_interval + 2);
 			bid_vec(price_supply_flex_ID) = bid_quan;
 
