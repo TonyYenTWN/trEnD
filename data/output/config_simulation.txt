@@ -1,0 +1,6 @@
+TSO phase angle: pi / 270
+DSO phase angle: .5 * TSO
+redispatch_price_max: 0
+distribution_voltage: 22
+slack power plants: no
+submitted_demand_flex price: flexible
