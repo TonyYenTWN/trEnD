@@ -124,10 +124,10 @@ res_field  <- 10000
 fractal_power <- 1
 reference_power_dc <- 2200
 reference_power_ac <- 0
-reference_power_dc_diff_1 <- 550
-reference_power_dc_diff_2 <- 20
-reference_edge_dc_diff_1 <- .2
-reference_edge_dc_diff_2 <- .01
+reference_power_dc_diff_1 <- 0
+reference_power_dc_diff_2 <- 8
+reference_edge_dc_diff_1 <- 0
+reference_edge_dc_diff_2 <- .006
 reference_voltage <- c(1, 1)
 ```
 

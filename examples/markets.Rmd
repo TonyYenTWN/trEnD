@@ -49,12 +49,13 @@ parent_dir = dirname(getwd())
 setwd(parent_dir)
 
 ### Plot canvas for price time series
-price_range <- c(15, 75)
+price_range_EOM <- c(15, 75)
+price_range_EOM_diff <- c(-8.5, 8.5)
 price_plot <- plot_ly(type = 'scatter', mode = 'lines') %>%
   layout(showlegend = T, 
   legend = list(orientation = 'h', x = 0.25, y = -0.05),
   xaxis = list(rangeslider = list(visible = F), showgrid = F),
-  yaxis = list(showgrid = F, showline = T, title = "Price (EUR / MWh)", range = price_range),
+  yaxis = list(showgrid = F, showline = T, title = "Price (EUR / MWh)"),
   font = list(family = "times new roman")    
   )
 price_plot <- price_plot %>%
@@ -256,7 +257,148 @@ fig <- fig %>%
 fig
 ```
 
-### Active End-users
+#### July
+```{r system supply jul ref 2, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "ref_02"
+time_name <- "0701-0714"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "TSO_confirmed_supply.csv"
+TSO_confirmed_supply <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_redispatch_supply.csv"
+TSO_redispatch_supply <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_balancing_supply.csv"
+TSO_balancing_supply <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+name <- c("EOM", "Redispatch", "Balancing", "Total")
+value <- c(sum(TSO_confirmed_supply - TSO_redispatch_supply), sum(TSO_redispatch_supply), sum(TSO_balancing_supply))
+value[4] <- sum(value)
+value <- value / 10^3
+measure <- c("relative", "relative", "relative", "total")
+text <- paste(round(value, 3), "GWh")
+
+data <- data.frame(name = factor(name, levels = name), measure, text, value)
+
+
+fig <- plot_ly(data, name = "", type = "waterfall", measure = ~measure, x = ~name, textposition = "outside", y= ~value, text =~text, connector = list(line = list(color= "rgb(63, 63, 63)")))
+
+fig <- fig %>%
+  layout(title = "",
+        xaxis = list(title = "", showgrid = FALSE),
+        yaxis = list(title = "Electricity Supply (GWh)", showgrid = FALSE),
+        autosize = TRUE,
+        showlegend = FALSE,
+        font = list(family = "times new roman")
+        )%>%
+  config(
+    toImageButtonOptions = list(
+      format = "svg",
+      filename = "system_supply"
+    )
+  )
+
+fig
+```
+
+### Active End-users {.tabset .tabset-fade .tabset-pills}
+
+#### January
+```{r system supply jan active, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "active_end_user"
+time_name <- "0101-0114"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "TSO_confirmed_supply.csv"
+TSO_confirmed_supply <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_redispatch_supply.csv"
+TSO_redispatch_supply <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_balancing_supply.csv"
+TSO_balancing_supply <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+name <- c("EOM", "Redispatch", "Balancing", "Total")
+value <- c(sum(TSO_confirmed_supply - TSO_redispatch_supply), sum(TSO_redispatch_supply), sum(TSO_balancing_supply))
+value[4] <- sum(value)
+value <- value / 10^3
+measure <- c("relative", "relative", "relative", "total")
+text <- paste(round(value, 3), "GWh")
+
+data <- data.frame(name = factor(name, levels = name), measure, text, value)
+
+
+fig <- plot_ly(data, name = "", type = "waterfall", measure = ~measure, x = ~name, textposition = "outside", y= ~value, text =~text, connector = list(line = list(color= "rgb(63, 63, 63)")))
+
+fig <- fig %>%
+  layout(title = "",
+        xaxis = list(title = "", showgrid = FALSE),
+        yaxis = list(title = "Electricity Supply (GWh)", showgrid = FALSE),
+        autosize = TRUE,
+        showlegend = FALSE,
+        font = list(family = "times new roman")
+        )%>%
+  config(
+    toImageButtonOptions = list(
+      format = "svg",
+      filename = "system_supply"
+    )
+  )
+
+fig
+```
+
+#### July
+```{r system supply jul active, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "active_end_user"
+time_name <- "0701-0714"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "TSO_confirmed_supply.csv"
+TSO_confirmed_supply <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_redispatch_supply.csv"
+TSO_redispatch_supply <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+file_name <- "TSO_balancing_supply.csv"
+TSO_balancing_supply <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+name <- c("EOM", "Redispatch", "Balancing", "Total")
+value <- c(sum(TSO_confirmed_supply - TSO_redispatch_supply), sum(TSO_redispatch_supply), sum(TSO_balancing_supply))
+value[4] <- sum(value)
+value <- value / 10^3
+measure <- c("relative", "relative", "relative", "total")
+text <- paste(round(value, 3), "GWh")
+
+data <- data.frame(name = factor(name, levels = name), measure, text, value)
+
+
+fig <- plot_ly(data, name = "", type = "waterfall", measure = ~measure, x = ~name, textposition = "outside", y= ~value, text =~text, connector = list(line = list(color= "rgb(63, 63, 63)")))
+
+fig <- fig %>%
+  layout(title = "",
+        xaxis = list(title = "", showgrid = FALSE),
+        yaxis = list(title = "Electricity Supply (GWh)", showgrid = FALSE),
+        autosize = TRUE,
+        showlegend = FALSE,
+        font = list(family = "times new roman")
+        )%>%
+  config(
+    toImageButtonOptions = list(
+      format = "svg",
+      filename = "system_supply"
+    )
+  )
+
+fig
+```
 
 <!-- title for toc -->
 ## - System-wide Demand {.tabset .tabset-fade .tabset-pills}
@@ -861,6 +1003,7 @@ IMO_confirmed_price <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 price_plot_temp <- price_plot
 
 price_plot_temp <- price_plot_temp %>%
+  layout(yaxis = list(range = price_range_EOM)) %>%
   add_trace(x = timestamp_01, y = IMO_confirmed_price$NO1[1:Time], name = "NO1") %>%
   add_trace(x = timestamp_01, y = IMO_confirmed_price$NO2[1:Time], name = "NO2") %>%
   add_trace(x = timestamp_01, y = IMO_confirmed_price$NO3[1:Time], name = "NO3") %>%
@@ -884,6 +1027,7 @@ IMO_confirmed_price <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 price_plot_temp <- price_plot
 
 price_plot_temp <- price_plot_temp %>%
+  layout(yaxis = list(range = price_range_EOM)) %>%
   add_trace(x = timestamp_02, y = IMO_confirmed_price$NO1[1:Time], name = "NO1") %>%
   add_trace(x = timestamp_02, y = IMO_confirmed_price$NO2[1:Time], name = "NO2") %>%
   add_trace(x = timestamp_02, y = IMO_confirmed_price$NO3[1:Time], name = "NO3") %>%
@@ -909,6 +1053,7 @@ IMO_confirmed_price <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 price_plot_temp <- price_plot
 
 price_plot_temp <- price_plot_temp %>%
+  layout(yaxis = list(range = price_range_EOM)) %>%
   add_trace(x = timestamp_01, y = IMO_confirmed_price$NO1[1:Time], name = "NO1") %>%
   add_trace(x = timestamp_01, y = IMO_confirmed_price$NO2[1:Time], name = "NO2") %>%
   add_trace(x = timestamp_01, y = IMO_confirmed_price$NO3[1:Time], name = "NO3") %>%
@@ -932,6 +1077,7 @@ IMO_confirmed_price <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 price_plot_temp <- price_plot
 
 price_plot_temp <- price_plot_temp %>%
+  layout(yaxis = list(range = price_range_EOM)) %>%
   add_trace(x = timestamp_02, y = IMO_confirmed_price$NO1[1:Time], name = "NO1") %>%
   add_trace(x = timestamp_02, y = IMO_confirmed_price$NO2[1:Time], name = "NO2") %>%
   add_trace(x = timestamp_02, y = IMO_confirmed_price$NO3[1:Time], name = "NO3") %>%
@@ -957,6 +1103,7 @@ IMO_confirmed_price <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 price_plot_temp <- price_plot
 
 price_plot_temp <- price_plot_temp %>%
+  layout(yaxis = list(range = price_range_EOM)) %>%
   add_trace(x = timestamp_01, y = IMO_confirmed_price$NO1[1:Time], name = "NO1") %>%
   add_trace(x = timestamp_01, y = IMO_confirmed_price$NO2[1:Time], name = "NO2") %>%
   add_trace(x = timestamp_01, y = IMO_confirmed_price$NO3[1:Time], name = "NO3") %>%
@@ -980,11 +1127,151 @@ IMO_confirmed_price <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 price_plot_temp <- price_plot
 
 price_plot_temp <- price_plot_temp %>%
+  layout(yaxis = list(range = price_range_EOM)) %>%
   add_trace(x = timestamp_02, y = IMO_confirmed_price$NO1[1:Time], name = "NO1") %>%
   add_trace(x = timestamp_02, y = IMO_confirmed_price$NO2[1:Time], name = "NO2") %>%
   add_trace(x = timestamp_02, y = IMO_confirmed_price$NO3[1:Time], name = "NO3") %>%
   add_trace(x = timestamp_02, y = IMO_confirmed_price$NO4[1:Time], name = "NO4") %>%
   add_trace(x = timestamp_02, y = IMO_confirmed_price$NO5[1:Time], name = "NO5") 
+
+price_plot_temp
+```
+
+<!-- title for toc -->
+## EOM Price Difference {.tabset .tabset-fade .tabset-pills}
+
+### Difference Ref 2 - Ref 1 {.tabset .tabset-fade .tabset-pills}
+
+#### January
+```{r EOM price jan ref 02 - ref 01, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "ref_01"
+time_name <- "0101-0114"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "IMO_confirmed_price.csv"
+IMO_confirmed_price_1 <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+scenario_name <- "ref_02"
+time_name <- "0101-0114"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "IMO_confirmed_price.csv"
+IMO_confirmed_price_2 <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+IMO_confirmed_price <- IMO_confirmed_price_2 - IMO_confirmed_price_1
+
+price_plot_temp <- price_plot
+
+price_plot_temp <- price_plot_temp %>%
+  layout(yaxis = list(range = price_range_EOM_diff)) %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO1[1:Time], name = "NO1") %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO2[1:Time], name = "NO2") %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO3[1:Time], name = "NO3") %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO4[1:Time], name = "NO4") %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO5[1:Time], name = "NO5") 
+
+price_plot_temp
+```
+
+#### July
+```{r EOM price jul ref 02 - ref 01, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "ref_01"
+time_name <- "0701-0714"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "IMO_confirmed_price.csv"
+IMO_confirmed_price_1 <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+scenario_name <- "ref_02"
+time_name <- "0701-0714"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "IMO_confirmed_price.csv"
+IMO_confirmed_price_2 <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+IMO_confirmed_price <- IMO_confirmed_price_2 - IMO_confirmed_price_1
+
+price_plot_temp <- price_plot
+
+price_plot_temp <- price_plot_temp %>%
+  layout(yaxis = list(range = price_range_EOM_diff)) %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO1[1:Time], name = "NO1") %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO2[1:Time], name = "NO2") %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO3[1:Time], name = "NO3") %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO4[1:Time], name = "NO4") %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO5[1:Time], name = "NO5") 
+
+price_plot_temp
+```
+
+### Difference Active - Ref 2 {.tabset .tabset-fade .tabset-pills}
+
+#### January
+```{r EOM price jan active - ref 02, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "ref_02"
+time_name <- "0101-0114"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "IMO_confirmed_price.csv"
+IMO_confirmed_price_1 <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+scenario_name <- "active_end_user"
+time_name <- "0101-0114"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "IMO_confirmed_price.csv"
+IMO_confirmed_price_2 <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+IMO_confirmed_price <- IMO_confirmed_price_2 - IMO_confirmed_price_1
+
+price_plot_temp <- price_plot
+
+price_plot_temp <- price_plot_temp %>%
+  layout(yaxis = list(range = price_range_EOM_diff)) %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO1[1:Time], name = "NO1") %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO2[1:Time], name = "NO2") %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO3[1:Time], name = "NO3") %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO4[1:Time], name = "NO4") %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO5[1:Time], name = "NO5") 
+
+price_plot_temp
+```
+
+#### July
+```{r EOM price jul active - ref 02, echo = FALSE}
+setwd(parent_dir)
+
+scenario_name <- "ref_02"
+time_name <- "0701-0714"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "IMO_confirmed_price.csv"
+IMO_confirmed_price_1 <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+scenario_name <- "active_end_user"
+time_name <- "0701-0714"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
+
+file_name <- "IMO_confirmed_price.csv"
+IMO_confirmed_price_2 <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+IMO_confirmed_price <- IMO_confirmed_price_2 - IMO_confirmed_price_1
+
+price_plot_temp <- price_plot
+
+price_plot_temp <- price_plot_temp %>%
+  layout(yaxis = list(range = price_range_EOM_diff)) %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO1[1:Time], name = "NO1") %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO2[1:Time], name = "NO2") %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO3[1:Time], name = "NO3") %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO4[1:Time], name = "NO4") %>%
+  add_trace(x = timestamp_01, y = IMO_confirmed_price$NO5[1:Time], name = "NO5") 
 
 price_plot_temp
 ```

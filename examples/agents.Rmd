@@ -150,10 +150,9 @@ wtp_user <- 3000
 ```
 
 <!-- title for toc -->
-# Average Electricity Price Reduction Per Capita
+# Average Electricity Price Reduction Per Capita {.tabset .tabset-fade .tabset-pills}
 
-<!-- title for toc -->
-## - Reference 1 {.tabset .tabset-fade .tabset-pills}
+## Reference 1 {.tabset .tabset-fade .tabset-pills}
 
 ### January
 ```{r price reduction jan ref 01, echo = FALSE, message = FALSE, warning = FALSE}
@@ -174,7 +173,7 @@ price_0 <- end_user_type_0$EOM_price
 price_0 <- price_0 + end_user_type_0$redispatch_price
 price_0 <- price_0 / (end_user_type_0$EOM_demand + end_user_type_0$redispatch_demand_up - end_user_type_0$redispatch_demand_down)
 
-surplus_supply_2 <- end_user_type_2$BESS_supply - (end_user_type_2$EOM_supply + end_user_type_2$redispatch_supply_up - end_user_type_2$redispatch_supply_down)
+surplus_supply_2 <- end_user_type_2$BESS_supply - (end_user_type_2$EOM_supply + end_user_type_2$redispatch_supply_up - end_user_type_2$redispatch_supply_down + end_user_type_2$balancing_supply_up - end_user_type_2$balancing_supply_down)
 price_2 <- end_user_type_2$EOM_price
 price_2 <- price_2 + end_user_type_2$redispatch_price
 price_2 <- price_2 / (end_user_type_2$EOM_demand + end_user_type_2$redispatch_demand_up - end_user_type_2$redispatch_demand_down + surplus_supply_2)
@@ -224,7 +223,7 @@ price_0 <- end_user_type_0$EOM_price
 price_0 <- price_0 + end_user_type_0$redispatch_price
 price_0 <- price_0 / (end_user_type_0$EOM_demand + end_user_type_0$redispatch_demand_up - end_user_type_0$redispatch_demand_down)
 
-surplus_supply_2 <- end_user_type_2$BESS_supply - (end_user_type_2$EOM_supply + end_user_type_2$redispatch_supply_up - end_user_type_2$redispatch_supply_down)
+surplus_supply_2 <- end_user_type_2$BESS_supply - (end_user_type_2$EOM_supply + end_user_type_2$redispatch_supply_up - end_user_type_2$redispatch_supply_down + end_user_type_2$balancing_supply_up - end_user_type_2$balancing_supply_down)
 price_2 <- end_user_type_2$EOM_price
 price_2 <- price_2 + end_user_type_2$redispatch_price
 price_2 <- price_2 / (end_user_type_2$EOM_demand + end_user_type_2$redispatch_demand_up - end_user_type_2$redispatch_demand_down + surplus_supply_2)
@@ -251,7 +250,7 @@ box_plot_temp
 
 ```
 
-## - Reference 2 {.tabset .tabset-fade .tabset-pills}
+## Reference 2 {.tabset .tabset-fade .tabset-pills}
 
 ### January
 ```{r price reduction jan ref 02, echo = FALSE, message = FALSE, warning = FALSE}
@@ -272,7 +271,7 @@ price_0 <- end_user_type_0$EOM_price
 price_0 <- price_0 + end_user_type_0$redispatch_price
 price_0 <- price_0 / (end_user_type_0$EOM_demand + end_user_type_0$redispatch_demand_up - end_user_type_0$redispatch_demand_down)
 
-surplus_supply_2 <- end_user_type_2$BESS_supply - (end_user_type_2$EOM_supply + end_user_type_2$redispatch_supply_up - end_user_type_2$redispatch_supply_down)
+surplus_supply_2 <- end_user_type_2$BESS_supply - (end_user_type_2$EOM_supply + end_user_type_2$redispatch_supply_up - end_user_type_2$redispatch_supply_down + end_user_type_2$balancing_supply_up - end_user_type_2$balancing_supply_down)
 price_2 <- end_user_type_2$EOM_price
 price_2 <- price_2 + end_user_type_2$redispatch_price
 price_2 <- price_2 / (end_user_type_2$EOM_demand + end_user_type_2$redispatch_demand_up - end_user_type_2$redispatch_demand_down + surplus_supply_2)
@@ -322,7 +321,7 @@ price_0 <- end_user_type_0$EOM_price
 price_0 <- price_0 + end_user_type_0$redispatch_price
 price_0 <- price_0 / (end_user_type_0$EOM_demand + end_user_type_0$redispatch_demand_up - end_user_type_0$redispatch_demand_down)
 
-surplus_supply_2 <- end_user_type_2$BESS_supply - (end_user_type_2$EOM_supply + end_user_type_2$redispatch_supply_up - end_user_type_2$redispatch_supply_down)
+surplus_supply_2 <- end_user_type_2$BESS_supply - (end_user_type_2$EOM_supply + end_user_type_2$redispatch_supply_up - end_user_type_2$redispatch_supply_down + end_user_type_2$balancing_supply_up - end_user_type_2$balancing_supply_down)
 price_2 <- end_user_type_2$EOM_price
 price_2 <- price_2 + end_user_type_2$redispatch_price
 price_2 <- price_2 / (end_user_type_2$EOM_demand + end_user_type_2$redispatch_demand_up - end_user_type_2$redispatch_demand_down + surplus_supply_2)
@@ -373,12 +372,12 @@ price_0 <- end_user_type_0$EOM_price
 price_0 <- price_0 + end_user_type_0$redispatch_price
 price_0 <- price_0 / (end_user_type_0$EOM_demand + end_user_type_0$redispatch_demand_up - end_user_type_0$redispatch_demand_down)
 
-surplus_supply_2 <- end_user_type_2$BESS_supply - (end_user_type_2$EOM_supply + end_user_type_2$redispatch_supply_up - end_user_type_2$redispatch_supply_down)
+surplus_supply_2 <- end_user_type_2$BESS_supply - (end_user_type_2$EOM_supply + end_user_type_2$redispatch_supply_up - end_user_type_2$redispatch_supply_down + end_user_type_2$balancing_supply_up - end_user_type_2$balancing_supply_down)
 price_2 <- end_user_type_2$EOM_price
 price_2 <- price_2 + end_user_type_2$redispatch_price
 price_2 <- price_2 / (end_user_type_2$EOM_demand + end_user_type_2$redispatch_demand_up - end_user_type_2$redispatch_demand_down + surplus_supply_2)
 
-surplus_supply_3 <- end_user_type_3$BESS_supply - (end_user_type_3$EOM_supply + end_user_type_3$redispatch_supply_up - end_user_type_3$redispatch_supply_down)
+surplus_supply_3 <- end_user_type_3$BESS_supply - (end_user_type_3$EOM_supply + end_user_type_3$redispatch_supply_up - end_user_type_3$redispatch_supply_down + end_user_type_3$balancing_supply_up - end_user_type_3$balancing_supply_down)
 price_3 <- end_user_type_3$EOM_price
 price_3 <- price_3 + end_user_type_3$redispatch_price - end_user_type_3$redispatch_reimbursement
 price_3 <- price_3 / (end_user_type_3$EOM_demand + end_user_type_3$redispatch_demand_up - end_user_type_3$redispatch_demand_down + surplus_supply_3)
@@ -433,12 +432,12 @@ price_0 <- end_user_type_0$EOM_price
 price_0 <- price_0 + end_user_type_0$redispatch_price
 price_0 <- price_0 / (end_user_type_0$EOM_demand + end_user_type_0$redispatch_demand_up - end_user_type_0$redispatch_demand_down)
 
-surplus_supply_2 <- end_user_type_2$BESS_supply - (end_user_type_2$EOM_supply + end_user_type_2$redispatch_supply_up - end_user_type_2$redispatch_supply_down)
+surplus_supply_2 <- end_user_type_2$BESS_supply - (end_user_type_2$EOM_supply + end_user_type_2$redispatch_supply_up - end_user_type_2$redispatch_supply_down + end_user_type_2$balancing_supply_up - end_user_type_2$balancing_supply_down)
 price_2 <- end_user_type_2$EOM_price
 price_2 <- price_2 + end_user_type_2$redispatch_price
 price_2 <- price_2 / (end_user_type_2$EOM_demand + end_user_type_2$redispatch_demand_up - end_user_type_2$redispatch_demand_down + surplus_supply_2)
 
-surplus_supply_3 <- end_user_type_3$BESS_supply - (end_user_type_3$EOM_supply + end_user_type_3$redispatch_supply_up - end_user_type_3$redispatch_supply_down)
+surplus_supply_3 <- end_user_type_3$BESS_supply - (end_user_type_3$EOM_supply + end_user_type_3$redispatch_supply_up - end_user_type_3$redispatch_supply_down + end_user_type_3$balancing_supply_up - end_user_type_3$balancing_supply_down)
 price_3 <- end_user_type_3$EOM_price
 price_3 <- price_3 + end_user_type_3$redispatch_price - end_user_type_3$redispatch_reimbursement
 price_3 <- price_3 / (end_user_type_3$EOM_demand + end_user_type_3$redispatch_demand_up - end_user_type_3$redispatch_demand_down + surplus_supply_3)
