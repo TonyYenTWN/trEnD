@@ -105,7 +105,7 @@ namespace agent{
 			/*@{*/
 			/**kWh per person per hour of usage.*/
 			double energy_demand = 7.671;
-			// 44.8 * .25 *.25 = 2.8 (TWh / yr)
+			// 44.8 * .25 (number of electric cars) *.25 (efficiency conversion between electric and oil) = 2.8 (TWh / yr)
 			// = 3.836 (GWh / time)
 			// = 7.671 (kWh / car / time)
 			/** The time intervals when EV is parked in the house.*/

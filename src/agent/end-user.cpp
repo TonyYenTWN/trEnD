@@ -255,9 +255,11 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 		bound_box.row(s_b_ID) << 0., profile.operation.BESS.energy_scale;
 		bound_box.row(d_b_ID) << Eigen::RowVector2d::Constant(profile.operation.BESS.self_consumption);
 		bound_box.row(ch_ev_ID) << 0., profile.operation.EV.BESS.capacity_scale;
-		bound_box.row(ch_ev_ID) *= profile.investment.decision.EV_self_charging;
+		bound_box.row(ch_ev_ID) *= profile.investment.decision.EV_self_charging ;
+		bound_box.row(ch_ev_ID) *= profile.operation.EV.house_default_period(tock);
 		bound_box.row(dc_ev_ID) << 0., profile.operation.EV.BESS.capacity_scale;
-		bound_box.row(dc_ev_ID) *= profile.investment.decision.EV_self_charging;
+		bound_box.row(dc_ev_ID) *= profile.investment.decision.EV_self_charging ;
+		bound_box.row(dc_ev_ID) *= profile.operation.EV.house_default_period(tock);
 		bound_box.row(s_ev_ID) << 0., profile.operation.EV.BESS.energy_scale;
 		bound_box.row(d_ev_ID) << Eigen::RowVector2d::Constant(profile.operation.EV.default_demand_profile(tock) + profile.operation.EV.BESS.self_consumption);
 		if(tock == 0){
@@ -355,8 +357,16 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 		profile.operation.bids.submitted_demand_flex(price_demand_flex_ID) += sol[4] - sol[14];
 		profile.operation.bids.submitted_demand_flex(price_demand_flex_ID) += std::max(sol[2], 0.);
 		profile.operation.bids.submitted_supply_flex(price_supply_flex_ID) += -std::min(sol[2], 0.);
-		profile.operation.bids.submitted_demand_flex(price_demand_flex_ID) += std::max(sol[3], 0.);
-		profile.operation.bids.submitted_supply_flex(price_supply_flex_ID) += -std::min(sol[3], 0.);
+
+		// Check if EV can still be flexibly managed
+		if(tick % foresight_time >= 3 && tick % foresight_time <= 6){
+			profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::max(sol[3], 0.);
+			profile.operation.bids.submitted_supply_inflex(price_supply_inflex_ID) += -std::min(sol[3], 0.);
+		}
+		else{
+			profile.operation.bids.submitted_demand_flex(price_demand_flex_ID) += std::max(sol[3], 0.);
+			profile.operation.bids.submitted_supply_flex(price_supply_flex_ID) += -std::min(sol[3], 0.);
+		}
 	}
 	else{
 		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += sol[4] - sol[14];
