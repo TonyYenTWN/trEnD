@@ -1977,8 +1977,8 @@ TSO_actual_demand <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 file_name <- "TSO_actual_DC_power.csv"
 TSO_actual_DC_power <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
-# node_average_balance <- apply(TSO_actual_supply - TSO_actual_demand, 2, mean)
-node_average_balance <- as.matrix(TSO_actual_supply)[96,] - as.matrix(TSO_actual_demand)[96,]
+node_average_balance <- apply(TSO_actual_supply - TSO_actual_demand, 2, mean)
+# node_average_balance <- as.matrix(TSO_actual_supply)[96,] - as.matrix(TSO_actual_demand)[96,]
 edge_average_flow <- apply(abs(TSO_actual_DC_power), 2, mean)
 edge_average_flow <- edge_average_flow / edge_data[, 3]
 reference_power <- max(max(node_average_balance), -min(node_average_balance), reference_power_dc)
@@ -2745,6 +2745,10 @@ edge_average_flow <- edge_average_flow_02 - edge_average_flow_01
 reference_power <- max(abs(range(node_average_balance)), reference_power_dc_diff_1)
 reference_flow <- max(abs(range(edge_average_flow)), reference_edge_dc_diff_1)
 
+# node_average_balance_01[40]
+# node_average_balance_02[40]
+# node_average_balance[40]
+
 ### Plot
 NO_power_system_plot_temp <- NO_power_system_plot
 for(edge_iter in 1:length(edge_average_flow)){
@@ -3018,17 +3022,17 @@ for(level_iter in 1:length(edge_level)){
 NO_power_system_plot_temp
 ```
 
-### Difference Active - Ref 2 {.tabset .tabset-fade .tabset-pills}
+### Difference Active - Ref 1 {.tabset .tabset-fade .tabset-pills}
 
 #### January
-```{r dc power flow jan active - ref 2, echo = FALSE, message = FALSE, warning = FALSE}
+```{r dc power flow jan active - ref 1, echo = FALSE, message = FALSE, warning = FALSE}
 setwd(parent_dir)
 
 dir_name <- paste(getwd(), "/data/input/", sep = "")
 file_name <- "TSO_simplified_network.csv"
 edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
-scenario_name <- "ref_02"
+scenario_name <- "ref_01"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -3181,14 +3185,14 @@ NO_power_system_plot_temp
 ```
 
 #### July
-```{r dc power flow jul active - ref 2, echo = FALSE, message = FALSE, warning = FALSE}
+```{r dc power flow jul active - ref 1, echo = FALSE, message = FALSE, warning = FALSE}
 setwd(parent_dir)
 
 dir_name <- paste(getwd(), "/data/input/", sep = "")
 file_name <- "TSO_simplified_network.csv"
 edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
-scenario_name <- "ref_02"
+scenario_name <- "ref_01"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
