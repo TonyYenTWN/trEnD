@@ -322,28 +322,6 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 		profile.operation.smart_appliance.scheduled_demand(tock) = sol[14 + tock];
 	}
 //	std::cout << rep.terminationtype << "\n";
-//	std::cout << sol[0] << "\t";
-//	std::cout << sol[1] << "\t";
-//	std::cout << sol[2] << "\t";
-//	std::cout << sol[3] << "\t";
-//	std::cout << sol[4] << "\t";
-//	std::cout << sol[5] << "\t";
-//	std::cout << sol[6] << "\t";
-//	std::cout << sol[7] << "\t";
-//	std::cout << sol[8] << "\t";
-//	std::cout << sol[9] << "\n";
-//	std::cout << sol[variable_per_time] << "\t";
-//	std::cout << sol[variable_per_time + 1] << "\t";
-//	std::cout << sol[variable_per_time + 2] << "\t";
-//	std::cout << sol[variable_per_time + 3] << "\t";
-//	std::cout << sol[variable_per_time + 4] << "\t";
-//	std::cout << sol[variable_per_time + 5] << "\t";
-//	std::cout << sol[variable_per_time + 6] << "\t";
-//	std::cout << sol[variable_per_time + 7] << "\t";
-//	std::cout << sol[variable_per_time + 8] << "\t";
-//	std::cout << sol[variable_per_time + 9] << "\n\n";
-//	std::cout << -sol[6] + sol[7] + sol[8] + sol[9] << "\n";
-//	std::cout << bidded_price_map.price_ID[profile.operation.price_demand_profile(0)] << "\n\n";
 
 	int price_demand_inflex_ID = price_interval + 1;
 	int price_demand_flex_ID = bidded_price_map.price_ID[profile.operation.price_demand_profile(0)];
