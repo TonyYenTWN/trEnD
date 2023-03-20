@@ -248,16 +248,16 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 		bound_box.row(U_ev_ID) << -std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity();
 		bound_box.row(U_sa_ID) << -std::numeric_limits<double>::infinity(), std::numeric_limits<double>::infinity();
 		bound_box.row(RL_ID) << Eigen::RowVector2d::Constant(profile.operation.default_demand_profile(tock) - profile.operation.default_PV_profile(tock));
-		bound_box.row(ch_b_ID) << 0., profile.operation.BESS.capacity_scale;
+		bound_box.row(ch_b_ID) << 0., (tock != 0) * profile.operation.BESS.capacity_scale;
 		bound_box.row(ch_b_ID) *= profile.investment.decision.BESS;
-		bound_box.row(dc_b_ID) << 0., profile.operation.BESS.capacity_scale;
+		bound_box.row(dc_b_ID) << 0., (tock != 0) * profile.operation.BESS.capacity_scale;
 		bound_box.row(dc_b_ID) *= profile.investment.decision.BESS;
 		bound_box.row(s_b_ID) << 0., profile.operation.BESS.energy_scale;
 		bound_box.row(d_b_ID) << Eigen::RowVector2d::Constant(profile.operation.BESS.self_consumption);
-		bound_box.row(ch_ev_ID) << 0., profile.operation.EV.BESS.capacity_scale;
+		bound_box.row(ch_ev_ID) << 0., (tock != 0) * profile.operation.EV.BESS.capacity_scale;
 		bound_box.row(ch_ev_ID) *= profile.investment.decision.EV_self_charging ;
 		bound_box.row(ch_ev_ID) *= profile.operation.EV.house_default_period(tock);
-		bound_box.row(dc_ev_ID) << 0., profile.operation.EV.BESS.capacity_scale;
+		bound_box.row(dc_ev_ID) << 0., (tock != 0) * profile.operation.EV.BESS.capacity_scale;
 		bound_box.row(dc_ev_ID) *= profile.investment.decision.EV_self_charging ;
 		bound_box.row(dc_ev_ID) *= profile.operation.EV.house_default_period(tock);
 		bound_box.row(s_ev_ID) << 0., profile.operation.EV.BESS.energy_scale;
@@ -329,10 +329,12 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 	double price_supply_flex_BESS = bidded_price_map.bidded_price(price_interval + 1);
 	double price_demand_flex_BESS = bidded_price_map.bidded_price(0);
 	double avail_supply_BESS = std::min(profile.operation.BESS.capacity_scale, profile.operation.BESS.soc - profile.operation.BESS.self_consumption);
+	avail_supply_BESS  *= profile.operation.BESS.efficiency;
 	double avail_demand_BESS = std::min(profile.operation.BESS.capacity_scale, profile.operation.BESS.energy_scale - profile.operation.BESS.soc + profile.operation.BESS.self_consumption);
+	avail_demand_BESS /= profile.operation.BESS.efficiency;
 	bool change_hold_supply_BESS = 0;
 	bool change_hold_demand_BESS = 0;
-	for(int tock = 0; tock < foresight_time; ++ tock){
+	for(int tock = 1; tock < foresight_time; ++ tock){
 		double tol = 1E-6;
 		int row_start = tock * variable_per_time;
 		int ch_b_ID = row_start + 6;
@@ -373,10 +375,14 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 	double price_supply_flex_EV = bidded_price_map.bidded_price(price_interval + 1);
 	double price_demand_flex_EV = bidded_price_map.bidded_price(0);
 	double avail_supply_EV = std::min(profile.operation.EV.BESS.capacity_scale, profile.operation.EV.BESS.soc - profile.operation.EV.BESS.self_consumption);
+	avail_supply_EV *= profile.operation.EV.BESS.efficiency;
+	avail_supply_EV *= profile.operation.EV.house_default_period(0);
 	double avail_demand_EV = std::min(profile.operation.EV.BESS.capacity_scale, profile.operation.EV.BESS.energy_scale - profile.operation.EV.BESS.soc + profile.operation.EV.BESS.self_consumption);
+	avail_demand_EV *= profile.operation.EV.house_default_period(0);
+	avail_demand_EV /= profile.operation.EV.BESS.efficiency;
 	bool change_hold_supply_EV = 0;
 	bool change_hold_demand_EV = 0;
-	for(int tock = 0; tock < free_time_EV; ++ tock){
+	for(int tock = 1; tock < free_time_EV; ++ tock){
 		double tol = 1E-6;
 		int row_start = tock * variable_per_time;
 		int ch_ev_ID = row_start + 10;
@@ -419,12 +425,14 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 	profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += sol[14];
 	if(profile.investment.decision.redispatch){
 		profile.operation.bids.submitted_demand_flex(price_demand_flex_ID) += sol[4] - sol[14];
+
+		// New
 		profile.operation.bids.submitted_demand_flex(price_demand_flex_BESS_ID) += avail_demand_BESS;
 		profile.operation.bids.submitted_supply_flex(price_supply_flex_BESS_ID) += avail_supply_BESS;
 		profile.operation.bids.submitted_demand_flex(price_demand_flex_EV_ID) += avail_demand_EV;
 		profile.operation.bids.submitted_supply_flex(price_supply_flex_EV_ID) += avail_supply_EV;
 
-		// Original
+//		// Original
 //		profile.operation.bids.submitted_demand_flex(price_demand_flex_ID) += std::max(sol[2], 0.);
 //		profile.operation.bids.submitted_supply_flex(price_supply_flex_ID) += -std::min(sol[2], 0.);
 //
@@ -440,14 +448,18 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 	}
 	else{
 		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += sol[4] - sol[14];
-//		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::max(sol[2], 0.);
-//		profile.operation.bids.submitted_supply_inflex(price_supply_inflex_ID) += -std::min(sol[2], 0.);
-//		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::max(sol[3], 0.);
-//		profile.operation.bids.submitted_supply_inflex(price_supply_inflex_ID) += -std::min(sol[3], 0.);
+
+		// New
 		profile.operation.bids.submitted_demand_inflex(price_demand_flex_BESS_ID) += avail_demand_BESS;
 		profile.operation.bids.submitted_supply_inflex(price_supply_flex_BESS_ID) += avail_supply_BESS;
 		profile.operation.bids.submitted_demand_inflex(price_demand_flex_EV_ID) += avail_demand_EV;
 		profile.operation.bids.submitted_supply_inflex(price_supply_flex_EV_ID) += avail_supply_EV;
+
+		// Original
+//		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::max(sol[2], 0.);
+//		profile.operation.bids.submitted_supply_inflex(price_supply_inflex_ID) += -std::min(sol[2], 0.);
+//		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::max(sol[3], 0.);
+//		profile.operation.bids.submitted_supply_inflex(price_supply_inflex_ID) += -std::min(sol[3], 0.);
 	}
 
 //	std::cout << profile.operation.BESS.scheduled_capacity << "\t" << profile.operation.smart_appliance.scheduled_demand << "\n";

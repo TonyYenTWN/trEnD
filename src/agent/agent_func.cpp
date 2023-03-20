@@ -1339,15 +1339,13 @@ namespace{
 				end_user_profiles[point_iter][sample_iter].operation.BESS.soc = end_user_profiles[point_iter][sample_iter].operation.BESS.energy_scale / 2;
 				end_user_profiles[point_iter][sample_iter].operation.BESS.soc *= end_user_profiles[point_iter][sample_iter].investment.decision.BESS;
 				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.energy_scale = Power_market_inform.agent_profiles.end_user_type(7, sample_iter);
-				//end_user_profiles[point_iter][sample_iter].operation.EV.BESS.energy_scale *= end_user_profiles[point_iter][sample_iter].investment.decision.EV_self_charging;
 				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.capacity_scale = Power_market_inform.agent_profiles.end_user_type(8, sample_iter);
-				//end_user_profiles[point_iter][sample_iter].operation.EV.BESS.capacity_scale *= end_user_profiles[point_iter][sample_iter].investment.decision.EV_self_charging;
 				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.soc = end_user_profiles[point_iter][sample_iter].operation.EV.BESS.energy_scale / 2;
 				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.soc *= end_user_profiles[point_iter][sample_iter].investment.decision.EV_self_charging;
 
 				// Initialization of input profiles
-				end_user_profiles[point_iter][sample_iter].operation.EV.house_default_period = end_user_profiles[point_iter][sample_iter].operation.EV.house_schedule(0);
-				end_user_profiles[point_iter][sample_iter].operation.EV.default_demand_profile = end_user_profiles[point_iter][sample_iter].operation.EV.demand_profile(0);
+				end_user_profiles[point_iter][sample_iter].operation.EV.house_default_period = end_user_profiles[point_iter][sample_iter].operation.EV.house_schedule(start_time);
+				end_user_profiles[point_iter][sample_iter].operation.EV.default_demand_profile = end_user_profiles[point_iter][sample_iter].operation.EV.demand_profile(start_time);
 				end_user_profiles[point_iter][sample_iter].operation.EV.default_demand_profile *= end_user_profiles[point_iter][sample_iter].investment.decision.EV_self_charging;
 				end_user_profiles[point_iter][sample_iter].operation.default_demand_profile = Power_network_inform.points.nominal_mean_demand_field.row(point_iter).segment(start_time, foresight_time);
 				end_user_profiles[point_iter][sample_iter].operation.default_demand_profile *= agent::parameters::residential_ratio();
