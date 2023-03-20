@@ -422,17 +422,31 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 	int price_supply_flex_ID = bidded_price_map.price_ID[profile.operation.price_supply_profile(0)];
 	profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::max(sol[5], 0.);
 	profile.operation.bids.submitted_supply_inflex(price_supply_inflex_ID) += -std::min(sol[5], 0.);
-	profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += sol[14];
 	if(profile.investment.decision.redispatch){
-		profile.operation.bids.submitted_demand_flex(price_demand_flex_ID) += sol[4] - sol[14];
-
 		// New
 		profile.operation.bids.submitted_demand_flex(price_demand_flex_BESS_ID) += avail_demand_BESS;
 		profile.operation.bids.submitted_supply_flex(price_supply_flex_BESS_ID) += avail_supply_BESS;
 		profile.operation.bids.submitted_demand_flex(price_demand_flex_EV_ID) += avail_demand_EV;
 		profile.operation.bids.submitted_supply_flex(price_supply_flex_EV_ID) += avail_supply_EV;
 
+		// Smart price for smart appliance
+		for(int tock = 0; tock < 2 * load_shift_time + 1; ++ tock){
+			double price_demand_flex_sa = bidded_price_map.bidded_price(price_interval + 1);
+
+			// Determine best time to shift load
+			for(int tuck = 0; tuck < 2 * load_shift_time + 1; ++ tuck){
+				int tuck_ID = tock + tuck - 2 * load_shift_time;
+				if(tuck_ID > 0 && tuck_ID < foresight_time){
+					price_demand_flex_sa = std::min(price_demand_flex_sa, profile.operation.price_demand_profile(tuck_ID));
+				}
+			}
+			int price_demand_flex_sa_ID =  bidded_price_map.price_ID[price_demand_flex_sa];
+			profile.operation.bids.submitted_demand_flex(price_demand_flex_sa_ID) += profile.operation.smart_appliance.unfulfilled_demand(tock);
+		}
+
 //		// Original
+//		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += sol[14];
+//		profile.operation.bids.submitted_demand_flex(price_demand_flex_ID) += sol[4] - sol[14];
 //		profile.operation.bids.submitted_demand_flex(price_demand_flex_ID) += std::max(sol[2], 0.);
 //		profile.operation.bids.submitted_supply_flex(price_supply_flex_ID) += -std::min(sol[2], 0.);
 //
@@ -447,15 +461,29 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 //		}
 	}
 	else{
-		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += sol[4] - sol[14];
-
 		// New
 		profile.operation.bids.submitted_demand_inflex(price_demand_flex_BESS_ID) += avail_demand_BESS;
 		profile.operation.bids.submitted_supply_inflex(price_supply_flex_BESS_ID) += avail_supply_BESS;
 		profile.operation.bids.submitted_demand_inflex(price_demand_flex_EV_ID) += avail_demand_EV;
 		profile.operation.bids.submitted_supply_inflex(price_supply_flex_EV_ID) += avail_supply_EV;
 
+		// Smart price for smart appliance
+		for(int tock = 0; tock < 2 * load_shift_time + 1; ++ tock){
+			double price_demand_flex_sa = bidded_price_map.bidded_price(price_interval + 1);
+
+			// Determine best time to shift load
+			for(int tuck = 0; tuck < 2 * load_shift_time + 1; ++ tuck){
+				int tuck_ID = tock + tuck - 2 * load_shift_time;
+				if(tuck_ID > 0 && tuck_ID < foresight_time){
+					price_demand_flex_sa = std::min(price_demand_flex_sa, profile.operation.price_demand_profile(tuck_ID));
+				}
+			}
+			int price_demand_flex_sa_ID =  bidded_price_map.price_ID[price_demand_flex_sa];
+			profile.operation.bids.submitted_demand_inflex(price_demand_flex_sa_ID) += profile.operation.smart_appliance.unfulfilled_demand(tock);
+		}
+
 		// Original
+//		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += sol[4];
 //		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::max(sol[2], 0.);
 //		profile.operation.bids.submitted_supply_inflex(price_supply_inflex_ID) += -std::min(sol[2], 0.);
 //		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::max(sol[3], 0.);

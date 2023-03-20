@@ -1312,8 +1312,6 @@ namespace{
 		}
 
 		// Initialization of forecast demand profile and operation strategies
-//		Eigen::VectorXd weight(sample_num);
-//		weight = Eigen::VectorXd::Constant(sample_num, 1. / sample_num);
 		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
 			for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
 				// Initialization of investment parameters
@@ -1328,10 +1326,8 @@ namespace{
 
 				// Initialization of operational parameters
 				end_user_profiles[point_iter][sample_iter].operation.foresight_time = foresight_time;
-				//end_user_profiles[point_iter][sample_iter].operation.weight = weight(sample_iter);
 				end_user_profiles[point_iter][sample_iter].operation.weight = Power_market_inform.agent_profiles.end_user_type(0, sample_iter);
 				end_user_profiles[point_iter][sample_iter].operation.PV_scale = Power_market_inform.agent_profiles.end_user_type(4, sample_iter);
-				//end_user_profiles[point_iter][sample_iter].operation.PV_scale *= end_user_profiles[point_iter][sample_iter].investment.decision.PV;
 				int load_shift_time_temp = std::min(load_shift_time, foresight_time / 2);
 				end_user_profiles[point_iter][sample_iter].operation.smart_appliance.shift_time = load_shift_time_temp;
 				end_user_profiles[point_iter][sample_iter].operation.BESS.energy_scale = Power_market_inform.agent_profiles.end_user_type(5, sample_iter);
@@ -1382,10 +1378,8 @@ namespace{
 
 				// Scale the bids correctly
 				double scale = end_user_profiles[point_iter][sample_iter].operation.weight;
-				//scale *= agent::parameters::residential_ratio();
 				scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
 				agent_submitted_bids_scale(scale, end_user_profiles[point_iter][sample_iter].operation.bids);
-				//end_user_profiles[point_iter][sample_iter].operation.direct_demand *= scale;
 			}
 		}
 
@@ -2772,7 +2766,6 @@ namespace{
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.default_demand_profile *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.EV_self_charging;
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile = Power_network_inform.points.nominal_mean_demand_field.row(point_iter).segment(tick, foresight_time);
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile *= agent::parameters::residential_ratio();
-				//Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.default_demand_profile;
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand.head(foresight_time + load_shift_time - 1) = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand.tail(foresight_time + load_shift_time - 1);
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(foresight_time + load_shift_time - 1) = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick + foresight_time - 1) * agent::parameters::residential_ratio();
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(foresight_time + load_shift_time - 1) *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.smart_appliance * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scale;
@@ -2801,10 +2794,8 @@ namespace{
 
 				// Scale the bids correctly
 				double scale = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.weight;
-//				scale *= agent::parameters::residential_ratio();
 				scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
 				agent_submitted_bids_scale(scale, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids);
-//				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.direct_demand *= scale;
 			}
 		}
 	}
