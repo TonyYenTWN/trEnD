@@ -2292,7 +2292,7 @@ namespace{
 
 				// Actual demand smaller than initially planned
 				while(gap > 0.){
-					// Reduce BESS charge
+					// Reduce BESS charge from scheduled
 					double BESS_flex_lb = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.soc - Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.self_consumption;
 					BESS_flex_lb = -std::min(BESS_flex_lb, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.capacity_scale);
 					double BESS_flex = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity;
@@ -2314,7 +2314,7 @@ namespace{
 						}
 					}
 
-					// Reduce EV charge
+					// Reduce EV charge from scheduled
 					double EV_flex_lb = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc - Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.self_consumption;
 					EV_flex_lb -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.default_demand_profile(0);
 					EV_flex_lb = -std::min(EV_flex_lb, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.capacity_scale);
@@ -2324,6 +2324,7 @@ namespace{
 						EV_flex = std::max(EV_flex, EV_flex_lb);
 						gap -= (Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity - EV_flex) / Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency;
 						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity = EV_flex;
+						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.house_default_period(0);
 						if(gap == 0.){
 							break;
 						}
@@ -2332,12 +2333,13 @@ namespace{
 						EV_flex = std::max(EV_flex_lb, EV_flex - gap / Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency);
 						gap -= (Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity - EV_flex) * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency;
 						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity = EV_flex;
+						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.house_default_period(0);
 						if(gap == 0.){
 							break;
 						}
 					}
 
-					// Reduce smart appliance demand
+					// Reduce smart appliance demand from scheduled
 					for(int tock = 0; tock < 2 * load_shift_time + 1; ++ tock){
 						int tock_ID = 2 * load_shift_time - tock;
 						double sa_flex = std::max(0., Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scheduled_demand(tock_ID) - gap);
@@ -2352,7 +2354,7 @@ namespace{
 
 				// Actual demand greater than initially planned
 				while(gap < 0.){
-					// Increase BESS charge
+					// Increase BESS charge from scheduled
 					double BESS_flex_ub = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.energy_scale;
 					BESS_flex_ub -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.soc;
 					BESS_flex_ub += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.self_consumption;
@@ -2373,7 +2375,7 @@ namespace{
 						break;
 					}
 
-					// Increase EV charge
+					// Increase EV charge from scheduled
 					double EV_flex_ub = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.energy_scale;
 					EV_flex_ub -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc;
 					EV_flex_ub += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.self_consumption;
@@ -2384,6 +2386,7 @@ namespace{
 						EV_flex = std::min(0., EV_flex - gap / Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency);
 						gap -= (Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity - EV_flex) * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency;
 						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity = EV_flex;
+						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.house_default_period(0);
 						if(gap == 0.){
 							break;
 						}
@@ -2391,11 +2394,12 @@ namespace{
 					EV_flex = std::min(EV_flex_ub, EV_flex - gap * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency);
 					gap -= (Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity - EV_flex) / Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency;
 					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity = EV_flex;
+					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.house_default_period(0);
 					if(gap == 0.){
 						break;
 					}
 
-					// Decrease PV output
+					// Decrease PV output from scheduled
 					double PV_flex = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.PV_output;
 					PV_flex = std::min(PV_flex, -gap);
 					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.PV_output -= PV_flex;
@@ -2411,7 +2415,7 @@ namespace{
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.soc += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity;
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.soc -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.self_consumption;
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity;
-				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.self_consumption;
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.self_consumption;
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.default_demand_profile(0);
 				for(int tock = 0; tock < 2 * load_shift_time + 1; ++ tock){
 					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(tock) -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scheduled_demand(tock);

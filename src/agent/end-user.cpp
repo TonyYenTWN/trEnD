@@ -415,7 +415,7 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 		price_demand_flex_EV_ID = bidded_price_map.price_ID[int(price_demand_flex_EV) + .5];
 	}
 	if(tick == 4364){
-		std::cout << avail_supply_EV << price_supply_flex_EV_ID << avail_demand_EV << price_demand_flex_EV_ID << "\n";
+		std::cout << avail_supply_EV << "\t"<< price_supply_flex_EV_ID << "\t" << avail_demand_EV << "\t" << price_demand_flex_EV_ID << "\n";
 	}
 
 	// Give the bids
@@ -431,6 +431,15 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 		profile.operation.bids.submitted_supply_flex(price_supply_flex_BESS_ID) += avail_supply_BESS;
 		profile.operation.bids.submitted_demand_flex(price_demand_flex_EV_ID) += avail_demand_EV;
 		profile.operation.bids.submitted_supply_flex(price_supply_flex_EV_ID) += avail_supply_EV;
+
+//		// Check if EV can still be flexibly managed
+//		if(tick % foresight_time >= 3 && tick % foresight_time <= 6){
+//			profile.operation.bids.submitted_demand_flex(price_demand_inflex_ID) += avail_demand_EV;
+//		}
+//		else{
+//			profile.operation.bids.submitted_demand_flex(price_demand_flex_EV_ID) += avail_demand_EV;
+//			profile.operation.bids.submitted_supply_flex(price_supply_flex_EV_ID) += avail_supply_EV;
+//		}
 
 		// Smart price for smart appliance
 		for(int tock = 0; tock < 2 * load_shift_time + 1; ++ tock){
@@ -469,6 +478,15 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 		profile.operation.bids.submitted_supply_inflex(price_supply_flex_BESS_ID) += avail_supply_BESS;
 		profile.operation.bids.submitted_demand_inflex(price_demand_flex_EV_ID) += avail_demand_EV;
 		profile.operation.bids.submitted_supply_inflex(price_supply_flex_EV_ID) += avail_supply_EV;
+
+//		// Check if EV can still be flexibly managed
+//		if(tick % foresight_time >= 3 && tick % foresight_time <= 6){
+//			profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += avail_demand_EV;
+//		}
+//		else{
+//			profile.operation.bids.submitted_demand_inflex(price_demand_flex_EV_ID) += avail_demand_EV;
+//			profile.operation.bids.submitted_supply_inflex(price_supply_flex_EV_ID) += avail_supply_EV;
+//		}
 
 		// Smart price for smart appliance
 		for(int tock = 0; tock < 2 * load_shift_time + 1; ++ tock){
