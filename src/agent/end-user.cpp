@@ -414,6 +414,9 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 	else{
 		price_demand_flex_EV_ID = bidded_price_map.price_ID[int(price_demand_flex_EV) + .5];
 	}
+	if(tick == 4364){
+		std::cout << avail_supply_EV << price_supply_flex_EV_ID << avail_demand_EV << price_demand_flex_EV_ID << "\n";
+	}
 
 	// Give the bids
 	int price_demand_inflex_ID = price_interval + 1;
