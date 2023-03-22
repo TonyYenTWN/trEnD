@@ -2251,8 +2251,10 @@ namespace{
 				}
 
 				// New
+				double scale = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.weight;
+				scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
 				double demand_remain = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_demand;
-				demand_remain /= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
+				demand_remain /= scale;
 
 				// Fulfill default demand first
 				demand_remain -= std::min(demand_remain,  Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile(0));
@@ -2273,6 +2275,7 @@ namespace{
 						double EV_flex = std::min(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.capacity_scale, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.energy_scale - Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc + Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.self_consumption);
 						EV_flex *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.house_default_period(0);
 						EV_flex /= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency;
+						std::cout << price_iter << "\t" << EV_flex << "\t" << demand_remain << "\n";
 						EV_flex = std::min(EV_flex, demand_remain);
 						demand_remain -= EV_flex;
 						EV_flex *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency;
@@ -2297,7 +2300,8 @@ namespace{
 				}
 
 				double supply_remain = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_supply;
-				supply_remain /= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
+				supply_remain /= scale;
+
 				// Fulfill supply from lowest marginal costs
 				for(int price_iter = 0; price_iter < price_interval + 1; ++ price_iter){
 					// Fulfill PV supply first
@@ -2316,6 +2320,7 @@ namespace{
 					// Fulfill EV supply last
 					if(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.price_demand == bidded_price_map.bidded_price(price_iter)){
 						double EV_flex = std::min(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.capacity_scale, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc - Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.self_consumption);
+						EV_flex *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.house_default_period(0);
 						EV_flex *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency;
 						EV_flex = std::min(EV_flex, supply_remain);
 						supply_remain -= EV_flex;
@@ -2328,6 +2333,10 @@ namespace{
 						break;
 					}
 				}
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.soc -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.self_consumption;
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.self_consumption;
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.default_demand_profile(0);
+
 //
 ////				// Original
 ////				// Should comment this section after validate
@@ -2520,8 +2529,6 @@ namespace{
 				vol_dc += -(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity < 0.) * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity;
 				vol_ch /= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.efficiency;
 				vol_dc *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.efficiency;
-				double scale = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.weight;
-				scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
 				vol_ch *= scale;
 				vol_dc *= scale;
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement.volume_demand.BESS += vol_ch;

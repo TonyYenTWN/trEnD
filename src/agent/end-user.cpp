@@ -433,8 +433,8 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 
 		// Check if EV can still be flexibly managed
 		if(tick % foresight_time >= 3 && tick % foresight_time <= 6){
-			profile.operation.EV.BESS.scheduled_capacity = avail_demand_EV;
-			profile.operation.EV.BESS.scheduled_capacity *= profile.operation.EV.BESS.efficiency;
+//			profile.operation.EV.BESS.scheduled_capacity = avail_demand_EV;
+//			profile.operation.EV.BESS.scheduled_capacity *= profile.operation.EV.BESS.efficiency;
 			profile.operation.bids.submitted_demand_flex(price_demand_inflex_ID) += avail_demand_EV;
 			profile.operation.EV.BESS.price_demand = bidded_price_map.bidded_price(price_interval + 1);
 		}
@@ -487,8 +487,8 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 
 		// Check if EV can still be flexibly managed
 		if(tick % foresight_time >= 3 && tick % foresight_time <= 6){
-			profile.operation.EV.BESS.scheduled_capacity = avail_demand_EV;
-			profile.operation.EV.BESS.scheduled_capacity *= profile.operation.EV.BESS.efficiency;
+//			profile.operation.EV.BESS.scheduled_capacity = avail_demand_EV;
+//			profile.operation.EV.BESS.scheduled_capacity *= profile.operation.EV.BESS.efficiency;
 			profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += avail_demand_EV;
 			profile.operation.EV.BESS.price_demand = bidded_price_map.bidded_price(price_interval + 1);
 
