@@ -499,6 +499,7 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 		}
 
 		// Smart price for smart appliance
+		profile.operation.smart_appliance.price_demand = Eigen::VectorXd(2 * load_shift_time + 1);
 		for(int tock = 0; tock < 2 * load_shift_time + 1; ++ tock){
 			double price_demand_flex_sa = bidded_price_map.bidded_price(price_interval + 1);
 
@@ -532,12 +533,4 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 //			profile.operation.bids.submitted_supply_inflex(price_supply_flex_ID) += -std::min(sol[3], 0.);
 //		}
 	}
-
-//	std::cout << profile.operation.BESS.scheduled_capacity << "\t" << profile.operation.smart_appliance.scheduled_demand << "\n";
-//	std::cout << rep.lagbc[7] << "\t" << rep.lagbc[14] << "\n\n";
-//	if(abs(sol[2]) > 1E-12){
-//		std::cout << sol[2] << "\t" << sol[41] << "\t" << sol[80] <<  "\t" << sol[119] << "\t" << sol[158] << "\t" << sol[197] << "\n";
-//		std::cout << rep.lagbc[7] << "\t" << rep.lagbc[46] << "\t" << rep.lagbc[85] <<  "\t" << rep.lagbc[124] << "\t" << rep.lagbc[163] << "\t" << rep.lagbc[202] << "\n\n";
-//	}
-	//std::cout << sol[4] << "\t" << sol[43] << "\t" << sol[82] <<  "\t" << sol[121] << "\t" << sol[160] << "\n\n";
 }
