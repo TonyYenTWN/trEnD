@@ -67,6 +67,7 @@ namespace agent{
 			Eigen::VectorXd unfulfilled_demand;
 			/** Scheduled flexible demand at current time step (kWh per hour per person).*/
 			Eigen::VectorXd scheduled_demand;
+			Eigen::VectorXd price_demand;
 			/*@{*/
 		};
 
@@ -94,6 +95,8 @@ namespace agent{
 			double soc;
 			/** Scheduled charge / discharge output at current time step (kWh per hour per person).*/
 			double scheduled_capacity;
+			double price_demand;
+			double price_supply;
 			/*@{*/
 		};
 
