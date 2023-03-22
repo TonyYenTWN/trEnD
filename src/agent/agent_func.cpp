@@ -2253,6 +2253,8 @@ namespace{
 				// New
 				double scale = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.weight;
 				scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
+				double tol = 1E-12;
+
 				double demand_remain = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_demand;
 				demand_remain /= scale;
 
@@ -2275,7 +2277,7 @@ namespace{
 						double EV_flex = std::min(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.capacity_scale, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.energy_scale - Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc + Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.self_consumption);
 						EV_flex *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.house_default_period(0);
 						EV_flex /= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency;
-						std::cout << price_iter << "\t" << EV_flex << "\t" << demand_remain << "\n";
+						//std::cout << price_iter << "\t" << EV_flex << "\t" << demand_remain << "\n";
 						EV_flex = std::min(EV_flex, demand_remain);
 						demand_remain -= EV_flex;
 						EV_flex *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency;
@@ -2294,7 +2296,7 @@ namespace{
 						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.soc += BESS_flex;
 					}
 
-					if(demand_remain == 0.){
+					if(demand_remain < tol){
 						break;
 					}
 				}
@@ -2329,7 +2331,7 @@ namespace{
 						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc -= EV_flex;
 					}
 
-					if(supply_remain == 0.){
+					if(supply_remain < tol){
 						break;
 					}
 				}
