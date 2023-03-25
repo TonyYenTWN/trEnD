@@ -2257,12 +2257,14 @@ namespace{
 
 				double demand_remain = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_demand;
 				demand_remain /= scale;
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity = 0.;
+				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity = 0.;
 
 				// Fulfill default demand first
 				demand_remain -= std::min(demand_remain,  Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile(0));
 
 				// Fulfill demand from highest marginal benefits
-				for(int price_iter = price_interval + 1; price_iter > 0; -- price_iter){
+				for(int price_iter = price_interval + 1; price_iter >= 0; -- price_iter){
 					// Fulfill smart appliance first, from earliest to latest
 					for(int tock = 0; tock < 2 * load_shift_time + 1; ++ tock){
 						if(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.price_demand(tock) == bidded_price_map.bidded_price(price_iter)){
@@ -2281,7 +2283,7 @@ namespace{
 						EV_flex = std::min(EV_flex, demand_remain);
 						demand_remain -= EV_flex;
 						EV_flex *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency;
-						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity = EV_flex;
+						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity += EV_flex;
 						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc += EV_flex;
 					}
 
@@ -2292,7 +2294,7 @@ namespace{
 						BESS_flex = std::min(BESS_flex, demand_remain);
 						demand_remain -= BESS_flex;
 						BESS_flex *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.efficiency;
-						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity = BESS_flex;
+						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity += BESS_flex;
 						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.soc += BESS_flex;
 					}
 
@@ -2315,7 +2317,7 @@ namespace{
 						BESS_flex = std::min(BESS_flex, supply_remain);
 						supply_remain -= BESS_flex;
 						BESS_flex /= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.efficiency;
-						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity = -BESS_flex;
+						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity -= BESS_flex;
 						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.soc -= BESS_flex;
 					}
 
@@ -2327,7 +2329,7 @@ namespace{
 						EV_flex = std::min(EV_flex, supply_remain);
 						supply_remain -= EV_flex;
 						EV_flex /= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency;
-						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity = -EV_flex;
+						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity -= EV_flex;
 						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc -= EV_flex;
 					}
 
@@ -2517,7 +2519,7 @@ namespace{
 //				}
 
 				if(point_iter == 1111 && sample_iter == 2){
-					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scheduled_demand.transpose() << "\n";
+					//std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scheduled_demand.transpose() << "\n";
 					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity << "\t";
 					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.soc << "\t";
 					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity << "\t";
