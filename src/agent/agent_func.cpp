@@ -1351,7 +1351,7 @@ namespace{
 					end_user_profiles[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(tick) *= end_user_profiles[point_iter][sample_iter].investment.decision.smart_appliance * end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale;
 				}
 				if(end_user_profiles[point_iter][sample_iter].operation.EV.BESS.energy_scale != 0.){
-					end_user_profiles[point_iter][sample_iter].operation.default_demand_profile *= .9;
+					end_user_profiles[point_iter][sample_iter].operation.default_demand_profile *= 1.;
 				}
 				end_user_profiles[point_iter][sample_iter].operation.default_demand_profile *= 1. - end_user_profiles[point_iter][sample_iter].investment.decision.smart_appliance * end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale;
 				end_user_profiles[point_iter][sample_iter].operation.default_PV_profile = Power_network_inform.points.solar_cf.row(point_iter).segment(start_time, foresight_time);
@@ -1587,7 +1587,7 @@ namespace{
 				continue;
 			}
 			bool sink_flag = Power_market_inform.International_Market.network.confirmed_power(tick, edge_iter) >= 0.;
-			int price_inflex_ID = 1 + sink_flag * (Power_market_inform.International_Market.price_intervals - 1);
+			int price_inflex_ID = 0 + sink_flag * (Power_market_inform.International_Market.price_intervals - 0);
 			double price_flex = Power_market_inform.International_Market.confirmed.price(tick, entry_bz_ID);
 			int price_flex_ID = Power_market_inform.price_map.price_ID[price_flex];
 			double source = -(1 - sink_flag) * Power_market_inform.International_Market.network.confirmed_power(tick, edge_iter);
@@ -2880,7 +2880,7 @@ namespace{
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(foresight_time + load_shift_time - 1) = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick + foresight_time - 1) * agent::parameters::residential_ratio();
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(foresight_time + load_shift_time - 1) *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.smart_appliance * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scale;
 				if(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.energy_scale != 0.){
-					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile *= .9;
+					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile *= 1.;
 				}
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile *= 1. - Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.smart_appliance * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scale;
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_PV_profile = Power_network_inform.points.solar_cf.row(point_iter).segment(tick, foresight_time);
