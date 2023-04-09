@@ -51,7 +51,7 @@ namespace agent{
 			/** Indicates how much ratio of the total demand in the time interval can be shifted around flexibly;
 			* assuming the default is constant profile before shifting.
 			*/
-			double scale = .5; // Change for sensitivity
+			double scale = .2; // Change for sensitivity
 			/**  Maximum load shifting time length of a flexible demand;
 			* indicates how flexible the smart appliances are.
 			*/

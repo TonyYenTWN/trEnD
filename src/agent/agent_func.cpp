@@ -1356,12 +1356,6 @@ namespace{
 						end_user_profiles[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(tick) = Power_network_inform.points.nominal_mean_demand_field(point_iter, start_time + tick - load_shift_time_temp) * agent::parameters::residential_ratio();
 						end_user_profiles[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(tick) *= end_user_profiles[point_iter][sample_iter].investment.decision.smart_appliance * end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale;
 					}
-					if(point_iter == 1111 && sample_iter == 2){
-						std::cout << end_user_profiles[point_iter][sample_iter].investment.decision.smart_appliance << "\t";
-						std::cout << end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale << "\t";
-						std::cout << Power_network_inform.points.nominal_mean_demand_field(point_iter, start_time + tick - load_shift_time_temp) << "\t";
-						std::cout << end_user_profiles[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(tick) << "\n";
-					}
 				}
 				if(end_user_profiles[point_iter][sample_iter].operation.EV.BESS.energy_scale != 0.){
 					end_user_profiles[point_iter][sample_iter].operation.default_demand_profile *= 1.;
