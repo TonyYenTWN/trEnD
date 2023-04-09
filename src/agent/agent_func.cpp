@@ -1332,11 +1332,13 @@ namespace{
 				end_user_profiles[point_iter][sample_iter].operation.smart_appliance.shift_time = load_shift_time_temp;
 				end_user_profiles[point_iter][sample_iter].operation.BESS.energy_scale = Power_market_inform.agent_profiles.end_user_type(5, sample_iter);
 				end_user_profiles[point_iter][sample_iter].operation.BESS.capacity_scale = Power_market_inform.agent_profiles.end_user_type(6, sample_iter);
-				end_user_profiles[point_iter][sample_iter].operation.BESS.soc = end_user_profiles[point_iter][sample_iter].operation.BESS.energy_scale / 2;
+				//end_user_profiles[point_iter][sample_iter].operation.BESS.soc = end_user_profiles[point_iter][sample_iter].operation.BESS.energy_scale / 2;
+				end_user_profiles[point_iter][sample_iter].operation.BESS.soc = 0.;
 				end_user_profiles[point_iter][sample_iter].operation.BESS.soc *= end_user_profiles[point_iter][sample_iter].investment.decision.BESS;
 				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.energy_scale = Power_market_inform.agent_profiles.end_user_type(7, sample_iter);
 				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.capacity_scale = Power_market_inform.agent_profiles.end_user_type(8, sample_iter);
-				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.soc = end_user_profiles[point_iter][sample_iter].operation.EV.BESS.energy_scale / 2;
+				//end_user_profiles[point_iter][sample_iter].operation.EV.BESS.soc = end_user_profiles[point_iter][sample_iter].operation.EV.BESS.energy_scale / 2;
+				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.soc = 0.;
 				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.soc *= end_user_profiles[point_iter][sample_iter].investment.decision.EV_self_charging;
 
 				// Initialization of input profiles
@@ -1347,8 +1349,19 @@ namespace{
 				end_user_profiles[point_iter][sample_iter].operation.default_demand_profile *= agent::parameters::residential_ratio();
 				end_user_profiles[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand = Eigen::VectorXd::Zero(foresight_time + load_shift_time_temp);
 				for(int tick = load_shift_time_temp; tick < foresight_time + load_shift_time_temp; ++ tick){
-					end_user_profiles[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(tick) = Power_network_inform.points.nominal_mean_demand_field(point_iter, start_time + tick - load_shift_time_temp) * agent::parameters::residential_ratio();
-					end_user_profiles[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(tick) *= end_user_profiles[point_iter][sample_iter].investment.decision.smart_appliance * end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale;
+					if(start_time + tick - load_shift_time_temp < 0){
+						end_user_profiles[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(tick) = 0.;
+					}
+					else{
+						end_user_profiles[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(tick) = Power_network_inform.points.nominal_mean_demand_field(point_iter, start_time + tick - load_shift_time_temp) * agent::parameters::residential_ratio();
+						end_user_profiles[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(tick) *= end_user_profiles[point_iter][sample_iter].investment.decision.smart_appliance * end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale;
+					}
+					if(point_iter == 1111 && sample_iter == 2){
+						std::cout << end_user_profiles[point_iter][sample_iter].investment.decision.smart_appliance << "\t";
+						std::cout << end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale << "\t";
+						std::cout << Power_network_inform.points.nominal_mean_demand_field(point_iter, start_time + tick - load_shift_time_temp) << "\t";
+						std::cout << end_user_profiles[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(tick) << "\n";
+					}
 				}
 				if(end_user_profiles[point_iter][sample_iter].operation.EV.BESS.energy_scale != 0.){
 					end_user_profiles[point_iter][sample_iter].operation.default_demand_profile *= 1.;
@@ -1550,7 +1563,9 @@ namespace{
 		for(int agent_iter = 0; agent_iter < point_num; ++ agent_iter){
 			int point_ID = agent_iter;
 			int node_ID = Power_network_inform.points.node(point_ID);
+			int bz_ID = Power_network_inform.nodes.bidding_zone(node_ID);
 			double bid_quan = Power_network_inform.points.nominal_mean_demand_field(point_ID, start_time);
+			//double bid_quan = 0.;
 			bid_quan *= Power_network_inform.points.population_density(point_ID);
 			bid_quan *= Power_network_inform.points.point_area / 1000.;
 //			bid_quan *= 10.;
@@ -1559,13 +1574,17 @@ namespace{
 			agent::power_supplier::plant_profile profile_temp;
 			profile_temp.point_ID = point_ID;
 			profile_temp.original_ID = agent_iter;
-			profile_temp.fix_cost = 99.5;
-			int price_supply_flex_ID = Power_market_inform.price_map.price_ID[profile_temp.fix_cost];
+			profile_temp.fix_cost = 0.;
+			profile_temp.var_cost = profile_temp.fix_cost;
+			profile_temp.var_cost += Power_market_inform.International_Market.confirmed.price(start_time, bz_ID);
+			int price_supply_flex_ID = Power_market_inform.price_map.price_ID[profile_temp.var_cost];
+			int price_length = price_interval - price_supply_flex_ID;
+			//std::cout << price_supply_flex_ID << "\t" << profile_temp.var_cost << "\n";
 
 			// Set bids information
 			agent_bids_initialization(profile_temp.bids);
 			agent_results_set(profile_temp.results);
-			profile_temp.bids.submitted_supply_flex(price_supply_flex_ID) = bid_quan;
+			profile_temp.bids.submitted_supply_flex.segment(price_supply_flex_ID, price_length) = Eigen::VectorXd::Ones(price_length) * bid_quan / price_length;
 			profile_temp.bids.redispatch_supply = profile_temp.bids.submitted_supply_flex;
 			profile_temp.bids.filter_supply = profile_temp.bids.submitted_supply_flex;
 			profile_temp.bids.balancing_supply = profile_temp.bids.submitted_supply_flex;
@@ -2522,7 +2541,7 @@ namespace{
 //				}
 
 				if(point_iter == 1111 && sample_iter == 2){
-					//std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scheduled_demand.transpose() << "\n";
+					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand.transpose() << "\n";
 					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity << "\t";
 					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.soc << "\t";
 					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity << "\t";
@@ -3043,14 +3062,20 @@ namespace{
 		int slack_LV_num = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant.size();
 		for(int agent_iter = 0; agent_iter < slack_LV_num; ++ agent_iter){
 			int point_ID = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].point_ID;
-			int price_supply_flex_ID = Power_market_inform.price_map.price_ID[Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].fix_cost];
+			int bz_ID = Power_network_inform.points.bidding_zone(point_ID);
+//			Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].fix_cost = 30. + Power_market_inform.International_Market.confirmed.price(tick, bz_ID);
+//			int price_supply_flex_ID = Power_market_inform.price_map.price_ID[Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].fix_cost];
+			Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].var_cost = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].fix_cost;
+			Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].var_cost += Power_market_inform.International_Market.confirmed.price(tick, bz_ID);
+			int price_supply_flex_ID = Power_market_inform.price_map.price_ID[Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].var_cost];
+			int price_length = price_interval - price_supply_flex_ID;
+
 			double bid_quan = Power_network_inform.points.nominal_mean_demand_field(point_ID, tick);
 			bid_quan *= Power_network_inform.points.population_density(point_ID);
 			bid_quan *= Power_network_inform.points.point_area / 1000.;
 //			double bid_quan = std::numeric_limits<double>::infinity();
 			Eigen::VectorXd bid_vec = Eigen::VectorXd::Zero(price_interval + 2);
-			bid_vec(price_supply_flex_ID) = bid_quan;
-
+			bid_vec.segment(price_supply_flex_ID, price_length) = Eigen::VectorXd::Ones(price_length) * bid_quan / price_length;
 
 			// Set bids information
 			agent_bids_initialization(Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids);

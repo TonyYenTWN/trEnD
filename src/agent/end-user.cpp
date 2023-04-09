@@ -526,7 +526,10 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile){
 			}
 			int price_demand_flex_sa_ID =  bidded_price_map.price_ID[price_demand_flex_sa];
 			profile.operation.smart_appliance.price_demand(tock) = bidded_price_map.bidded_price(price_demand_flex_sa_ID);
-			profile.operation.bids.submitted_demand_inflex(price_demand_flex_sa_ID) += profile.operation.smart_appliance.unfulfilled_demand(tock);
+			profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(tock);
+//			if(tock == load_shift_time){
+//				profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(tock);
+//			}
 		}
 
 ////		// Original

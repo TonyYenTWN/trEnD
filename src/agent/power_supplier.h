@@ -16,6 +16,7 @@ namespace agent{
 			int point_ID;
 			double cap;
 			double fix_cost;
+			double var_cost;
 			bids bids;
 			results results;
 			settlement settlement;
