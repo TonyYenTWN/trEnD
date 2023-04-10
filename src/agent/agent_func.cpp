@@ -2275,6 +2275,9 @@ namespace{
 				demand_remain /= scale;
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity = 0.;
 				Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity = 0.;
+//				if(sample_iter == 2){
+//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile(0) << "\t" << demand_remain << "\n";
+//				}
 
 				// Fulfill default demand first
 				demand_remain -= std::min(demand_remain,  Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.default_demand_profile(0));
@@ -2285,6 +2288,9 @@ namespace{
 					for(int tock = 0; tock < 2 * load_shift_time + 1; ++ tock){
 						if(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.price_demand(tock) == bidded_price_map.bidded_price(price_iter)){
 							double sa_flex = std::min(demand_remain, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(tock));
+//							if(sample_iter == 2){
+//								std::cout << bidded_price_map.bidded_price(price_iter) << "\t" << demand_remain << "\t" << sa_flex << "\n";
+//							}
 							Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(tock) -= sa_flex;
 							demand_remain -= sa_flex;
 						}
@@ -2301,6 +2307,9 @@ namespace{
 						EV_flex *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency;
 						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity += EV_flex;
 						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc += EV_flex;
+//						if(sample_iter == 2){
+//							std::cout << bidded_price_map.bidded_price(price_iter) << "\t" << demand_remain << "\t" << EV_flex << "\n";
+//						}
 					}
 
 					// Fulfill BESS demand last
@@ -2312,6 +2321,9 @@ namespace{
 						BESS_flex *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.efficiency;
 						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity += BESS_flex;
 						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.soc += BESS_flex;
+//						if(sample_iter == 2){
+//							std::cout << bidded_price_map.bidded_price(price_iter) << "\t" << demand_remain << "\t" << BESS_flex << "\n";
+//						}
 					}
 
 					if(demand_remain < tol){
@@ -2335,6 +2347,9 @@ namespace{
 						BESS_flex /= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.efficiency;
 						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity -= BESS_flex;
 						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.soc -= BESS_flex;
+//						if(sample_iter == 2){
+//							std::cout << bidded_price_map.bidded_price(price_iter) << "\t" << supply_remain << "\t" << BESS_flex << "\n";
+//						}
 					}
 
 					// Fulfill EV supply last
@@ -2347,6 +2362,9 @@ namespace{
 						EV_flex /= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency;
 						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity -= EV_flex;
 						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc -= EV_flex;
+//						if(sample_iter == 2){
+//							std::cout << bidded_price_map.bidded_price(price_iter) << "\t" << supply_remain << "\t" << EV_flex << "\n";
+//						}
 					}
 
 					if(supply_remain < tol){
@@ -2534,12 +2552,13 @@ namespace{
 //					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(tock) -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scheduled_demand(tock);
 //				}
 
-				if(point_iter == 1111 && sample_iter == 2){
-					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand.transpose() << "\n";
-					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity << "\t";
-					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.soc << "\t";
-					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity << "\t";
-					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc << "\n\n";
+				if(sample_iter == 2){
+					//std::cout << "\n";
+					//std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand.transpose() << "\n";
+					//std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity << "\t";
+					//std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.soc << "\t";
+					//std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity << "\t";
+					//std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc << "\n\n";
 				}
 
 				// Update storage settlement
