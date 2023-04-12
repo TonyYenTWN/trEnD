@@ -51,7 +51,7 @@ namespace agent{
 			/** Indicates how much ratio of the total demand in the time interval can be shifted around flexibly;
 			* assuming the default is constant profile before shifting.
 			*/
-			double scale = .2; // Change for sensitivity
+			double scale = .1; // Change for sensitivity
 			/**  Maximum load shifting time length of a flexible demand;
 			* indicates how flexible the smart appliances are.
 			*/
@@ -108,7 +108,7 @@ namespace agent{
 			*/
 			/*@{*/
 			/**kWh per person per hour of usage.*/
-			double energy_demand = 7.671;
+			double energy_demand = 4.;
 			// 44.8 * .25 (number of electric cars) *.25 (efficiency conversion between electric and oil) = 2.8 (TWh / yr)
 			// = 3.836 (GWh / time)
 			// = 7.671 (kWh / car / time)
