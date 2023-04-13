@@ -3,4 +3,9 @@ DSO phase angle: .5 * TSO
 redispatch_price_max: 1000
 distribution_voltage: 33
 slack power plants: yes
-submitted_demand_flex price for redispatch: flexible
+submitted_demand_flex price for redispatch: flexible / smart
+DSO filter: no
+flex factor: 1.
+smart appliance: .1
+BESS: 10 kWh / 1 kWh
+EV: 8 kWh / 2 kWh
