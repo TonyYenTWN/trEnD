@@ -23,6 +23,10 @@ int main(){
 		return 0;
 	}
 
+	// Set folder and file name for log messages
+	std::filesystem::create_directories("csv/output/log");
+	std::freopen( "csv/output/log/log.txt", "w", stdout);
+
 	// Initialization of power network information
 	power_network::network_inform Power_network_inform;
 	power_network::power_network_input_process(Power_network_inform, "csv/input/power_network/");

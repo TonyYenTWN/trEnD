@@ -2553,7 +2553,7 @@ namespace{
 //					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand(tock) -= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scheduled_demand(tock);
 //				}
 
-				if(point_iter == 0 && sample_iter == 2){
+				if(point_iter == 0 && sample_iter == 3){
 					//std::cout << "\n";
 					//std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand.transpose() << "\n";
 					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity << "\t";
