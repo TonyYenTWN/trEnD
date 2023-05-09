@@ -8,12 +8,12 @@
 #include "power_supplier.h"
 
 namespace agent{
-	void agents_set(int, power_market::market_whole_inform&, power_network::network_inform&, std::string);
-	void agents_redispatch_update(int, power_market::market_whole_inform&, power_network::network_inform&);
+	void agents_set(int, power_market::market_whole_inform&, power_network::network_inform&, std::string, configuration::process_config&);
+	void agents_redispatch_update(int, power_market::market_whole_inform&, power_network::network_inform&, configuration::process_config&);
 	void agents_filter_demand_update(int, power_market::market_whole_inform&, power_network::network_inform&);
 	void agents_filter_supply_update(int, power_market::market_whole_inform&, power_network::network_inform&);
 	void agents_balancing_update(int, power_market::market_whole_inform&, power_network::network_inform&);
 	void agents_status_update(int, power_market::market_whole_inform&, power_network::network_inform&, bool);
-	void agents_submit_update(int, power_market::market_whole_inform&, power_network::network_inform&);
+	void agents_submit_update(int, power_market::market_whole_inform&, power_network::network_inform&, configuration::process_config&);
 	void agents_results_print(power_market::market_whole_inform&, power_network::network_inform&);
 }

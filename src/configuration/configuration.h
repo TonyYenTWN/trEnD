@@ -17,6 +17,8 @@ namespace configuration{
 		bool simulation_flag;
 		bool DSO_filter_flag;
 		bool control_reserve_flag;
+		bool encourage_redispatch;
+		bool rule_based;
 		std::vector <int> time_boundary;
 
 		void process_default_get(){
@@ -30,6 +32,8 @@ namespace configuration{
 			this->simulation_flag = 1;
 			this->DSO_filter_flag = 0;
 			this->control_reserve_flag = 0;
+			this->encourage_redispatch = 0;
+			this->rule_based = 0;
 			this->time_boundary.push_back(0);
 			this->time_boundary.push_back(168);
 		}
@@ -51,6 +55,14 @@ namespace configuration{
 				std::cout << "Control reserve?          Yes: 1 / No: 0 | ";
 				std::cin >> this->control_reserve_flag;
 				std::cout << "\n";
+
+				std::cout << "Encourage Redispatch?     Yes: 1 / No: 0 | ";
+				std::cin >> this->encourage_redispatch;
+				std::cout << "\n";
+
+				std::cout << "Rule based?               Yes: 1 / No: 0 | ";
+				std::cin >> this->rule_based;
+				std::cout << "\n";
 			}
 
 			if(this->estimation_flag || this->simulation_flag){
@@ -66,6 +78,40 @@ namespace configuration{
 				this->time_boundary.push_back(time_length);
 				std::cout << "\n";
 			}
+		}
+
+		void process_bool_output(){
+			std::cout << "Estimate spatial fields?  Yes: 1 / No: 0 | ";
+			std::cout << this->estimation_flag;
+			std::cout << "\n";
+
+			std::cout << "Simulate operation?       Yes: 1 / No: 0 | ";
+			std::cout << this->simulation_flag;
+			std::cout << "\n";
+
+			std::cout << "DSOs filter bids?         Yes: 1 / No: 0 | ";
+			std::cout << this->DSO_filter_flag;
+			std::cout << "\n";
+
+			std::cout << "Control reserve?          Yes: 1 / No: 0 | ";
+			std::cout << this->control_reserve_flag;
+			std::cout << "\n";
+
+			std::cout << "Encourage Redispatch?     Yes: 1 / No: 0 | ";
+			std::cout << this->encourage_redispatch;
+			std::cout << "\n";
+
+			std::cout << "Rule based?               Yes: 1 / No: 0 | ";
+			std::cout << this->rule_based;
+			std::cout << "\n";
+
+			std::cout << "Start tick?                              | ";
+			std::cout << this->time_boundary[0];
+			std::cout << "\n";
+
+			std::cout << "Run time length?                         | ";
+			std::cout << this->time_boundary[1];
+			std::cout << "\n\n";
 		}
 	};
 }

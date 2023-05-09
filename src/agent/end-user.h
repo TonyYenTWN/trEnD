@@ -1,5 +1,6 @@
 // Header file for operation and investment of end-user
 #pragma once
+#include "src/configuration/configuration.h"
 #include "agent_basic.h"
 
 namespace agent{
@@ -109,6 +110,7 @@ namespace agent{
 			/*@{*/
 			/**kWh per person per hour of usage.*/
 			double energy_demand = 4.;
+			// Previous default is 4.
 			// 44.8 * .25 (number of electric cars) *.25 (efficiency conversion between electric and oil) = 2.8 (TWh / yr)
 			// = 3.836 (GWh / time)
 			// = 7.671 (kWh / car / time)
@@ -236,6 +238,6 @@ namespace agent{
 
 		// Functions
 		void end_user_LP_set(profile&);
-		void end_user_LP_optimize(int tick, profile&);
+		void end_user_LP_optimize(int tick, profile&, configuration::process_config&);
 	}
 }

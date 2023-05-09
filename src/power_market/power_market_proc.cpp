@@ -50,14 +50,14 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 
 	// Bidding strategies of agents
 	std::string end_user_type_file = "csv/input/agent/end_user_types.csv";
-	agent::agents_set(process_par.time_boundary[0], Power_market_inform, Power_network_inform, end_user_type_file);
+	agent::agents_set(process_par.time_boundary[0], Power_market_inform, Power_network_inform, end_user_type_file, process_par);
 
 	// Ideal market clearing in IMO
 	Submitted_bid_calculation(Power_market_inform, Power_network_inform);
 	International_Market_Optimization(process_par.time_boundary[0], Power_market_inform.International_Market);
 
 	// Equivalent redispatch bids of agents
-	agent::agents_redispatch_update(process_par.time_boundary[0], Power_market_inform, Power_network_inform);
+	agent::agents_redispatch_update(process_par.time_boundary[0], Power_market_inform, Power_network_inform, process_par);
 
 	// Redispatch in DSO
 	if(process_par.DSO_filter_flag){
@@ -99,14 +99,14 @@ void power_market::power_market_process_update(power_network::network_inform &Po
 		International_Market_Price_Estimation(tick, Power_market_inform.International_Market, Power_network_inform, process_par);
 
 		// Bidding strategies of agents
-		agent::agents_submit_update(tick, Power_market_inform, Power_network_inform);
+		agent::agents_submit_update(tick, Power_market_inform, Power_network_inform, process_par);
 
 		// Ideal market clearing in IMO
 		Submitted_bid_calculation(Power_market_inform, Power_network_inform);
 		International_Market_Optimization(tick, Power_market_inform.International_Market);
 
 		// Equivalent redispatch bids of agents
-		agent::agents_redispatch_update(tick, Power_market_inform, Power_network_inform);
+		agent::agents_redispatch_update(tick, Power_market_inform, Power_network_inform, process_par);
 
 		// Redispatch in DSO
 		if(process_par.DSO_filter_flag){
