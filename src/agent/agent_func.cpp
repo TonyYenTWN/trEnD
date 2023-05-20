@@ -1562,7 +1562,7 @@ namespace{
 			//double bid_quan = 0.;
 			bid_quan *= Power_network_inform.points.population_density(point_ID);
 			bid_quan *= Power_network_inform.points.point_area / 1000.;
-//			bid_quan *= 10.;
+			//bid_quan *= 1.;
 //			double bid_quan = std::numeric_limits<double>::infinity();
 
 			agent::power_supplier::plant_profile profile_temp;
@@ -1635,6 +1635,8 @@ namespace{
 		//int sample_num = agent::end_user::parameters::sample_num();
 		int sample_num = Power_market_inform.agent_profiles.end_user_type.cols();
 		int price_interval = power_market::parameters::price_interval();
+		power_market::parameters::price_ID_bimap bidded_price_map;
+		power_market::parameters::bidded_price(bidded_price_map);
 
 		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
 			int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
@@ -1658,8 +1660,12 @@ namespace{
 
 				// Flexible bids have redispatcch priority in between
 				if(process_par.encourage_redispatch){
-					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand(marginal_price_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_flex.sum();
-					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply(marginal_price_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_flex.sum();
+					int price_supply_flex_BESS_ID = bidded_price_map.price_ID[Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.price_supply];
+					int price_demand_flex_BESS_ID = bidded_price_map.price_ID[Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.price_demand];
+					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand(price_demand_flex_BESS_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_flex.sum();
+					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply(price_supply_flex_BESS_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_flex.sum();
+					//Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_flex;
+					//Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_flex;
 				}
 				else{
 					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_flex;
@@ -1908,10 +1914,10 @@ namespace{
 
 				// Settlement of redispatch
 				agent_redispatch_settlement_calculation(tick, node_ID, original_price, Power_market_inform, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement, 1);
-				if(point_iter == 3818 && sample_iter == 0){
-					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.cleared_demand << "\t";
-					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.confirmed_demand << "\n";
-				}
+//				if(point_iter == 3818 && sample_iter == 0){
+//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.cleared_demand << "\t";
+//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.confirmed_demand << "\n";
+//				}
 				//end_user_redispatch_settlement_calculation(tick, node_ID, original_price, Power_market_inform, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation, Power_market_inform.agent_profiles.aggregators[point_iter], 1);
 			}
 		}
@@ -2228,7 +2234,7 @@ namespace{
 		}
 	}
 
-	void end_user_status_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, bool control_reserve_flag){
+	void end_user_status_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, configuration::process_config &process_par){
 		int point_num = Power_network_inform.points.bidding_zone.size();
 		int sample_num = Power_market_inform.agent_profiles.end_user_type.cols();
 		int load_shift_time = agent::end_user::parameters::load_shift_time();
@@ -2247,7 +2253,7 @@ namespace{
 //			}
 
 			for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
-				if(control_reserve_flag){
+				if(process_par.control_reserve_flag){
 					if(marginal_price_ID > 0){
 						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results.actual_supply += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.balancing_supply.head(marginal_price_ID).sum();
 					}
@@ -2312,23 +2318,25 @@ namespace{
 						}
 					}
 
-					// Fulfill EV demand second
-					if(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.price_demand == bidded_price_map.bidded_price(price_iter)){
-						double EV_flex = std::min(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.capacity_scale, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.energy_scale - Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc + Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.self_consumption);
-						EV_flex *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.house_default_period(0);
-						EV_flex /= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency;
-						//std::cout << price_iter << "\t" << EV_flex << "\t" << demand_remain << "\n";
-						EV_flex = std::min(EV_flex, demand_remain);
-						demand_remain -= EV_flex;
-						EV_flex *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency;
-						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity += EV_flex;
-						Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc += EV_flex;
-//						if(sample_iter == 2){
-//							std::cout << bidded_price_map.bidded_price(price_iter) << "\t" << demand_remain << "\t" << EV_flex << "\n";
-//						}
+					// Fulfill EV demand second if not encourage redispatch mode
+					if(!process_par.encourage_redispatch){
+						if(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.price_demand == bidded_price_map.bidded_price(price_iter)){
+							double EV_flex = std::min(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.capacity_scale, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.energy_scale - Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc + Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.self_consumption);
+							EV_flex *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.house_default_period(0);
+							EV_flex /= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency;
+							//std::cout << price_iter << "\t" << EV_flex << "\t" << demand_remain << "\n";
+							EV_flex = std::min(EV_flex, demand_remain);
+							demand_remain -= EV_flex;
+							EV_flex *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency;
+							Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity += EV_flex;
+							Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc += EV_flex;
+	//						if(sample_iter == 2){
+	//							std::cout << bidded_price_map.bidded_price(price_iter) << "\t" << demand_remain << "\t" << EV_flex << "\n";
+	//						}
+						}
 					}
 
-					// Fulfill BESS demand last
+					// Fulfill BESS demand last if not encourage redispatch mode
 					if(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.price_demand == bidded_price_map.bidded_price(price_iter)){
 						double BESS_flex = std::min(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.capacity_scale, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.energy_scale - Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.soc + Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.self_consumption);
 						BESS_flex /= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.efficiency;
@@ -2340,6 +2348,25 @@ namespace{
 //						if(sample_iter == 2){
 //							std::cout << bidded_price_map.bidded_price(price_iter) << "\t" << demand_remain << "\t" << BESS_flex << "\n";
 //						}
+					}
+
+					// Fulfill EV demand last if encourage redispatch mode
+					if(process_par.encourage_redispatch){
+						if(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.price_demand == bidded_price_map.bidded_price(price_iter)){
+							double EV_flex = std::min(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.capacity_scale, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.energy_scale - Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc + Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.self_consumption);
+							EV_flex *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.house_default_period(0);
+							EV_flex /= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency;
+							//std::cout << price_iter << "\t" << EV_flex << "\t" << demand_remain << "\n";
+							EV_flex = std::min(EV_flex, 1.);
+							EV_flex = std::min(EV_flex, demand_remain);
+							demand_remain -= EV_flex;
+							EV_flex *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.efficiency;
+							Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity += EV_flex;
+							Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc += EV_flex;
+	//						if(sample_iter == 2){
+	//							std::cout << bidded_price_map.bidded_price(price_iter) << "\t" << demand_remain << "\t" << EV_flex << "\n";
+	//						}
+						}
 					}
 
 					if(demand_remain < tol){
@@ -3103,6 +3130,7 @@ namespace{
 			double bid_quan = Power_network_inform.points.nominal_mean_demand_field(point_ID, tick);
 			bid_quan *= Power_network_inform.points.population_density(point_ID);
 			bid_quan *= Power_network_inform.points.point_area / 1000.;
+			//bid_quan *= 1.;
 //			double bid_quan = std::numeric_limits<double>::infinity();
 			Eigen::VectorXd bid_vec = Eigen::VectorXd::Zero(price_interval + 2);
 			bid_vec.segment(price_supply_flex_ID, price_length) = Eigen::VectorXd::Ones(price_length) * bid_quan / price_length;
@@ -3152,11 +3180,11 @@ void agent::agents_balancing_update(int tick, power_market::market_whole_inform 
 	agents_redispatch_settlement(tick, Power_market_inform, Power_network_inform);
 }
 
-void agent::agents_status_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, bool control_reserve_flag){
-	cross_border_status_update(tick, Power_market_inform, Power_network_inform, control_reserve_flag);
-	end_user_status_update(tick, Power_market_inform, Power_network_inform, control_reserve_flag);
-	industrial_status_update(tick, Power_market_inform, Power_network_inform, control_reserve_flag);
-	power_supplier_status_update(tick, Power_market_inform, Power_network_inform, control_reserve_flag);
+void agent::agents_status_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, configuration::process_config &process_par){
+	cross_border_status_update(tick, Power_market_inform, Power_network_inform, process_par.control_reserve_flag);
+	end_user_status_update(tick, Power_market_inform, Power_network_inform, process_par);
+	industrial_status_update(tick, Power_market_inform, Power_network_inform, process_par.control_reserve_flag);
+	power_supplier_status_update(tick, Power_market_inform, Power_network_inform, process_par.control_reserve_flag);
 	agents_balancing_settlement(tick, Power_market_inform, Power_network_inform);
 }
 
