@@ -118,7 +118,7 @@ NO_power_system_plot <- NO_power_system_plot %>%
 ```{r system supply jan, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "ref_01"
+scenario_name <- "ref"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -165,7 +165,7 @@ fig
 ```{r system supply jul, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "ref_01"
+scenario_name <- "ref"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -214,7 +214,7 @@ fig
 ```{r system supply jan ref 2, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "ref_02"
+scenario_name <- "part"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -261,7 +261,7 @@ fig
 ```{r system supply jul ref 2, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "ref_02"
+scenario_name <- "part"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -310,7 +310,7 @@ fig
 ```{r system supply jan active, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "active_end_user"
+scenario_name <- "full"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -357,7 +357,7 @@ fig
 ```{r system supply jul active, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "active_end_user"
+scenario_name <- "full"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -409,7 +409,7 @@ fig
 ```{r system demand jan, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "ref_01"
+scenario_name <- "ref"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -456,7 +456,7 @@ fig
 ```{r system demand jul, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "ref_01"
+scenario_name <- "ref"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -505,7 +505,7 @@ fig
 ```{r system demand jan ref 2, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "ref_02"
+scenario_name <- "part"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -552,7 +552,7 @@ fig
 ```{r system demand jul ref 2, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "ref_02"
+scenario_name <- "part"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -601,7 +601,7 @@ fig
 ```{r system demand jan active, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "active_end_user"
+scenario_name <- "full"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -648,7 +648,7 @@ fig
 ```{r system demand jul active, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "active_end_user"
+scenario_name <- "full"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -700,7 +700,7 @@ fig
 ```{r system cost jan, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "ref_01"
+scenario_name <- "ref"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -746,7 +746,7 @@ fig
 ```{r system cost jul, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "ref_01"
+scenario_name <- "ref"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -795,7 +795,7 @@ fig
 ```{r system cost jan ref 2, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "ref_02"
+scenario_name <- "part"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -842,7 +842,7 @@ fig
 ```{r system cost jul ref 2, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "ref_02"
+scenario_name <- "part"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -891,7 +891,7 @@ fig
 ```{r system cost jan active, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "active_end_user"
+scenario_name <- "full"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -938,7 +938,7 @@ fig
 ```{r system cost jul active, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "active_end_user"
+scenario_name <- "full"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -993,7 +993,7 @@ fig
 ```{r EOM price jan, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "ref_01"
+scenario_name <- "ref"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -1017,7 +1017,7 @@ price_plot_temp
 ```{r EOM price jul, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "ref_01"
+scenario_name <- "ref"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -1043,7 +1043,7 @@ price_plot_temp
 ```{r EOM price jan ref 2, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "ref_02"
+scenario_name <- "part"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -1067,7 +1067,7 @@ price_plot_temp
 ```{r EOM price jul ref 2, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "ref_02"
+scenario_name <- "part"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -1093,7 +1093,7 @@ price_plot_temp
 ```{r EOM price jan active, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "active_end_user"
+scenario_name <- "full"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -1117,7 +1117,7 @@ price_plot_temp
 ```{r EOM price jul active, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "active_end_user"
+scenario_name <- "full"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -1146,14 +1146,14 @@ price_plot_temp
 ```{r EOM price jan ref 02 - ref 01, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "ref_01"
+scenario_name <- "ref"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
 file_name <- "IMO_confirmed_price.csv"
 IMO_confirmed_price_1 <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
-scenario_name <- "ref_02"
+scenario_name <- "part"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -1179,14 +1179,14 @@ price_plot_temp
 ```{r EOM price jul ref 02 - ref 01, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "ref_01"
+scenario_name <- "ref"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
 file_name <- "IMO_confirmed_price.csv"
 IMO_confirmed_price_1 <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
-scenario_name <- "ref_02"
+scenario_name <- "part"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -1214,14 +1214,14 @@ price_plot_temp
 ```{r EOM price jan active - ref 02, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "ref_02"
+scenario_name <- "part"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
 file_name <- "IMO_confirmed_price.csv"
 IMO_confirmed_price_1 <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
-scenario_name <- "active_end_user"
+scenario_name <- "full"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -1247,14 +1247,14 @@ price_plot_temp
 ```{r EOM price jul active - ref 02, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "ref_02"
+scenario_name <- "part"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
 file_name <- "IMO_confirmed_price.csv"
 IMO_confirmed_price_1 <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
-scenario_name <- "active_end_user"
+scenario_name <- "full"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -1283,7 +1283,7 @@ price_plot_temp
 ```{r redispatch price jan, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "ref_01"
+scenario_name <- "ref"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -1306,7 +1306,7 @@ price_plot_temp
 ```{r redispatch price jul, echo = FALSE}
 setwd(parent_dir)
 
-scenario_name <- "ref_01"
+scenario_name <- "ref"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -1337,7 +1337,7 @@ dir_name <- paste(getwd(), "/data/input/", sep = "")
 file_name <- "TSO_simplified_network.csv"
 edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
-scenario_name <- "ref_01"
+scenario_name <- "ref"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -1417,7 +1417,7 @@ dir_name <- paste(getwd(), "/data/input/", sep = "")
 file_name <- "TSO_simplified_network.csv"
 edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
-scenario_name <- "ref_01"
+scenario_name <- "ref"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -1500,7 +1500,7 @@ dir_name <- paste(getwd(), "/data/input/", sep = "")
 file_name <- "TSO_simplified_network.csv"
 edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
-scenario_name <- "ref_01"
+scenario_name <- "ref"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 
@@ -1600,7 +1600,7 @@ dir_name <- paste(getwd(), "/data/input/", sep = "")
 file_name <- "TSO_simplified_network.csv"
 edge_data <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
-scenario_name <- "ref_01"
+scenario_name <- "ref"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/power_market/", sep = "")
 

@@ -144,7 +144,7 @@ end_user_types_active <- read.csv(paste(dir_name, file_name, sep = ""), sep = ",
 ##################################################################################
 
 reference_gain <- c(Inf, -Inf)
-reference_redispatch <- c(-120, 460) / 1000
+reference_redispatch <- c(-600, 600) / 1000
 bat_eff <- .95
 wtp_user <- 3000
 
@@ -153,14 +153,14 @@ wtp_user <- 3000
 <!-- title for toc -->
 # Average Electricity Price Reduction Per Capita {.tabset .tabset-fade .tabset-pills}
 
-## Reference 1 {.tabset .tabset-fade .tabset-pills}
+## Reference  {.tabset .tabset-fade .tabset-pills}
 
 ### January
 ```{r price reduction jan ref 01, echo = FALSE, message = FALSE, warning = FALSE}
 
 setwd(parent_dir)
 
-scenario_name <- "ref_01"
+scenario_name <- "ref"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/agent/", sep = "")
 
@@ -210,7 +210,7 @@ box_plot_temp
 
 setwd(parent_dir)
 
-scenario_name <- "ref_01"
+scenario_name <- "ref"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/agent/", sep = "")
 
@@ -251,14 +251,14 @@ box_plot_temp
 
 ```
 
-## Reference 2 {.tabset .tabset-fade .tabset-pills}
+## Partially Flexible {.tabset .tabset-fade .tabset-pills}
 
 ### January
-```{r price reduction jan ref 02, echo = FALSE, message = FALSE, warning = FALSE}
+```{r price reduction jan part, echo = FALSE, message = FALSE, warning = FALSE}
 
 setwd(parent_dir)
 
-scenario_name <- "ref_02"
+scenario_name <- "part"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/agent/", sep = "")
 
@@ -268,6 +268,9 @@ end_user_type_0 <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 file_name <- "end_user_type_2.csv"
 end_user_type_2 <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
+file_name <- "end_user_type_3.csv"
+end_user_type_3 <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
 price_0 <- end_user_type_0$EOM_price
 price_0 <- price_0 + end_user_type_0$redispatch_price
 price_0 <- price_0 / (end_user_type_0$EOM_demand + end_user_type_0$redispatch_demand_up - end_user_type_0$redispatch_demand_down)
@@ -277,38 +280,45 @@ price_2 <- end_user_type_2$EOM_price
 price_2 <- price_2 + end_user_type_2$redispatch_price
 price_2 <- price_2 / (end_user_type_2$EOM_demand + end_user_type_2$redispatch_demand_up - end_user_type_2$redispatch_demand_down + surplus_supply_2)
 
+surplus_supply_3 <- end_user_type_3$BESS_supply - (end_user_type_3$EOM_supply + end_user_type_3$redispatch_supply_up - end_user_type_3$redispatch_supply_down + end_user_type_3$balancing_supply_up - end_user_type_3$balancing_supply_down)
+price_3 <- end_user_type_3$EOM_price
+price_3 <- price_3 + end_user_type_3$redispatch_price - end_user_type_3$redispatch_reimbursement
+price_3 <- price_3 / (end_user_type_3$EOM_demand + end_user_type_3$redispatch_demand_up - end_user_type_3$redispatch_demand_down + surplus_supply_3)
+
 average_diff <- c()
-medium_weighted_prices <- matrix(nrow = length(bidding_zone_points), ncol = 2)
+medium_weighted_prices <- matrix(nrow = length(bidding_zone_points), ncol = 3)
 rownames(medium_weighted_prices) <- paste("Bidding Zones ", c(1:5), sep = "")
-colnames(medium_weighted_prices) <- c("Inflexible", "Flexible Ordinary")
-medium_prices <- matrix(nrow = length(bidding_zone_points), ncol = 2)
+colnames(medium_weighted_prices) <- c("Inflexible", "Flexible Ordinary", "Flexible Active")
+medium_prices <- matrix(nrow = length(bidding_zone_points), ncol = 3)
 for(bz_iter in 1:length(bidding_zone_points)){
   average_diff[bz_iter] <- sum((price_0[bidding_zone_points[[bz_iter]]] - price_2[bidding_zone_points[[bz_iter]]]) * point_data$pop_density[bidding_zone_points[[bz_iter]]]) / sum(point_data$pop_density[bidding_zone_points[[bz_iter]]])
   medium_weighted_prices[bz_iter, 1] <- wtd.quantile(price_0[bidding_zone_points[[bz_iter]]], weight =  point_data$pop_density[bidding_zone_points[[bz_iter]]])
   medium_weighted_prices[bz_iter, 2] <- wtd.quantile(price_2[bidding_zone_points[[bz_iter]]], weight =  point_data$pop_density[bidding_zone_points[[bz_iter]]])
+  medium_weighted_prices[bz_iter, 3] <- wtd.quantile(price_3[bidding_zone_points[[bz_iter]]], weight =  point_data$pop_density[bidding_zone_points[[bz_iter]]]) 
   medium_prices[bz_iter, 1] <- median(price_0[bidding_zone_points[[bz_iter]]])
   medium_prices[bz_iter, 2] <- median(price_2[bidding_zone_points[[bz_iter]]])
+  medium_prices[bz_iter, 3] <- median(price_3[bidding_zone_points[[bz_iter]]])    
 }
 kable(round(medium_weighted_prices, 3), caption = "Weighted median average electricity prices", align = "cccc")
 average_total_0 <- sum(price_0 * point_data$pop_density) / sum(point_data$pop_density)
 
 box_plot_temp <- box_plot
+box_plot_temp <- box_plot_temp %>%
+  layout(showlegend = T, 
+  legend = list(orientation = 'h', x = 0.25, y = -0.15)
+  )
 box_plot_temp <- box_plot_temp %>% add_trace(x = DSO_data$Bidding_Zone[point_data$DSO], y = price_0, name = "Inflexible")
-box_plot_temp <- box_plot_temp %>% add_trace(x = DSO_data$Bidding_Zone[point_data$DSO], y = price_2, name = "Flexible")
-box_plot_temp <- box_plot_temp %>% add_trace(x = DSO_data$Bidding_Zone[point_data$DSO], y = price_0, xaxis='x2', yaxis='y2', name = "Inflexible", showlegend = F)
-box_plot_temp <- box_plot_temp %>% add_trace(x = DSO_data$Bidding_Zone[point_data$DSO], y = price_2, xaxis='x2', yaxis='y2', name = "Flexible", showlegend = F)
-box_plot_temp <- box_plot_temp %>% 
-  layout(xaxis2 = list(domain = c(0.6, 1), anchor='y2', rangeslider = list(visible = F), showgrid = F, showline = T, title = "", showticklabels = FALSE),
-         yaxis2 = list(domain = c(0.6, 1), anchor='x2', showgrid = F, showline = T, title = "", range = c(0, 500)))
+box_plot_temp <- box_plot_temp %>% add_trace(x = DSO_data$Bidding_Zone[point_data$DSO], y = price_2, name = "Flexible Ordinary")
+box_plot_temp <- box_plot_temp %>% add_trace(x = DSO_data$Bidding_Zone[point_data$DSO], y = price_3, name = "Flexible Active")
 box_plot_temp
 ```
 
 ### July
-```{r price reduction jul ref 02, echo = FALSE, message = FALSE, warning = FALSE}
+```{r price reduction jul part, echo = FALSE, message = FALSE, warning = FALSE}
 
 setwd(parent_dir)
 
-scenario_name <- "ref_02"
+scenario_name <- "part"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/agent/", sep = "")
 
@@ -318,6 +328,9 @@ end_user_type_0 <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 file_name <- "end_user_type_2.csv"
 end_user_type_2 <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
+file_name <- "end_user_type_3.csv"
+end_user_type_3 <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
 price_0 <- end_user_type_0$EOM_price
 price_0 <- price_0 + end_user_type_0$redispatch_price
 price_0 <- price_0 / (end_user_type_0$EOM_demand + end_user_type_0$redispatch_demand_up - end_user_type_0$redispatch_demand_down)
@@ -327,36 +340,47 @@ price_2 <- end_user_type_2$EOM_price
 price_2 <- price_2 + end_user_type_2$redispatch_price
 price_2 <- price_2 / (end_user_type_2$EOM_demand + end_user_type_2$redispatch_demand_up - end_user_type_2$redispatch_demand_down + surplus_supply_2)
 
+surplus_supply_3 <- end_user_type_3$BESS_supply - (end_user_type_3$EOM_supply + end_user_type_3$redispatch_supply_up - end_user_type_3$redispatch_supply_down + end_user_type_3$balancing_supply_up - end_user_type_3$balancing_supply_down)
+price_3 <- end_user_type_3$EOM_price
+price_3 <- price_3 + end_user_type_3$redispatch_price - end_user_type_3$redispatch_reimbursement
+price_3 <- price_3 / (end_user_type_3$EOM_demand + end_user_type_3$redispatch_demand_up - end_user_type_3$redispatch_demand_down + surplus_supply_3)
+
 average_diff <- c()
-medium_weighted_prices <- matrix(nrow = length(bidding_zone_points), ncol = 2)
+medium_weighted_prices <- matrix(nrow = length(bidding_zone_points), ncol = 3)
 rownames(medium_weighted_prices) <- paste("Bidding Zones ", c(1:5), sep = "")
-colnames(medium_weighted_prices) <- c("Inflexible", "Flexible Ordinary")
-medium_prices <- matrix(nrow = length(bidding_zone_points), ncol = 2)
+colnames(medium_weighted_prices) <- c("Inflexible", "Flexible Ordinary", "Flexible Active")
+medium_prices <- matrix(nrow = length(bidding_zone_points), ncol = 3)
 for(bz_iter in 1:length(bidding_zone_points)){
   average_diff[bz_iter] <- sum((price_0[bidding_zone_points[[bz_iter]]] - price_2[bidding_zone_points[[bz_iter]]]) * point_data$pop_density[bidding_zone_points[[bz_iter]]]) / sum(point_data$pop_density[bidding_zone_points[[bz_iter]]])
   medium_weighted_prices[bz_iter, 1] <- wtd.quantile(price_0[bidding_zone_points[[bz_iter]]], weight =  point_data$pop_density[bidding_zone_points[[bz_iter]]])
   medium_weighted_prices[bz_iter, 2] <- wtd.quantile(price_2[bidding_zone_points[[bz_iter]]], weight =  point_data$pop_density[bidding_zone_points[[bz_iter]]])
+  medium_weighted_prices[bz_iter, 3] <- wtd.quantile(price_3[bidding_zone_points[[bz_iter]]], weight =  point_data$pop_density[bidding_zone_points[[bz_iter]]]) 
   medium_prices[bz_iter, 1] <- median(price_0[bidding_zone_points[[bz_iter]]])
   medium_prices[bz_iter, 2] <- median(price_2[bidding_zone_points[[bz_iter]]])
+  medium_prices[bz_iter, 3] <- median(price_3[bidding_zone_points[[bz_iter]]])    
 }
 kable(round(medium_weighted_prices, 3), caption = "Weighted median average electricity prices", align = "cccc")
 average_total_0 <- sum(price_0 * point_data$pop_density) / sum(point_data$pop_density)
 
 box_plot_temp <- box_plot
+box_plot_temp <- box_plot_temp %>%
+  layout(showlegend = T, 
+  legend = list(orientation = 'h', x = 0.25, y = -0.15)
+  )
 box_plot_temp <- box_plot_temp %>% add_trace(x = DSO_data$Bidding_Zone[point_data$DSO], y = price_0, name = "Inflexible")
-box_plot_temp <- box_plot_temp %>% add_trace(x = DSO_data$Bidding_Zone[point_data$DSO], y = price_2, name = "Flexible")
+box_plot_temp <- box_plot_temp %>% add_trace(x = DSO_data$Bidding_Zone[point_data$DSO], y = price_2, name = "Flexible Ordinary")
+box_plot_temp <- box_plot_temp %>% add_trace(x = DSO_data$Bidding_Zone[point_data$DSO], y = price_3, name = "Flexible Active")
 box_plot_temp
-
 ```
 
-## Active End-users {.tabset .tabset-fade .tabset-pills}
+## Fully Flexible {.tabset .tabset-fade .tabset-pills}
 
 ### January
 ```{r price reduction jan active, echo = FALSE, message = FALSE, warning = FALSE}
 
 setwd(parent_dir)
 
-scenario_name <- "active_end_user"
+scenario_name <- "full"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/agent/", sep = "")
 
@@ -416,7 +440,7 @@ box_plot_temp
 
 setwd(parent_dir)
 
-scenario_name <- "active_end_user"
+scenario_name <- "full"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/agent/", sep = "")
 
@@ -477,14 +501,14 @@ box_plot_temp
 <!-- title for toc -->
 ## - Active Flexible vs Inflexible {.tabset .tabset-fade .tabset-pills}
 
-### Reference 1 {.tabset .tabset-fade .tabset-pills}
+### Reference  {.tabset .tabset-fade .tabset-pills}
 
 #### January 
 ```{r cost reduction jan, echo = FALSE, message = FALSE, warning = FALSE}
 
 setwd(parent_dir)
 
-scenario_name <- "ref_01"
+scenario_name <- "ref"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/agent/", sep = "")
 
@@ -564,7 +588,7 @@ NO_field_plot
 
 setwd(parent_dir)
 
-scenario_name <- "ref_01"
+scenario_name <- "ref"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/agent/", sep = "")
 
@@ -639,14 +663,14 @@ NO_field_plot
 
 ```
 
-### Reference 2 {.tabset .tabset-fade .tabset-pills}
+### Partially Flexible {.tabset .tabset-fade .tabset-pills}
 
 #### January 
 ```{r cost reduction jan ref 2, echo = FALSE, message = FALSE, warning = FALSE}
 
 setwd(parent_dir)
 
-scenario_name <- "ref_01"
+scenario_name <- "ref"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/agent/", sep = "")
 
@@ -727,14 +751,14 @@ NO_field_plot
 <!-- title for toc -->
 ## - Active Flexible vs Inflexible {.tabset .tabset-fade .tabset-pills}
 
-### Reference 1 {.tabset .tabset-fade .tabset-pills}
+### Reference  {.tabset .tabset-fade .tabset-pills}
 
 #### January
 ```{r net welfare jan, echo = FALSE, message = FALSE, warning = FALSE}
 
 setwd(parent_dir)
 
-scenario_name <- "ref_01"
+scenario_name <- "ref"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/agent/", sep = "")
 
@@ -826,7 +850,7 @@ NO_field_plot
 
 setwd(parent_dir)
 
-scenario_name <- "ref_01"
+scenario_name <- "ref"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/agent/", sep = "")
 
@@ -916,14 +940,14 @@ for(level_iter in 1:length(net_welfare_level)){
 NO_field_plot
 ```
 
-### Reference 2 {.tabset .tabset-fade .tabset-pills}
+### Partially Flexible {.tabset .tabset-fade .tabset-pills}
 
 #### January
 ```{r net welfare jan ref 2, echo = FALSE, message = FALSE, warning = FALSE}
 
 setwd(parent_dir)
 
-scenario_name <- "ref_02"
+scenario_name <- "part"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/agent/", sep = "")
 
@@ -1014,7 +1038,7 @@ NO_field_plot
 
 setwd(parent_dir)
 
-scenario_name <- "ref_02"
+scenario_name <- "part"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/agent/", sep = "")
 
@@ -1101,14 +1125,14 @@ NO_field_plot
 ```
 
 
-### Active End-users {.tabset .tabset-fade .tabset-pills}
+### Fully Flexible {.tabset .tabset-fade .tabset-pills}
 
 #### January
 ```{r net welfare jan active, echo = FALSE, message = FALSE, warning = FALSE}
 
 setwd(parent_dir)
 
-scenario_name <- "active_end_user"
+scenario_name <- "full"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/agent/", sep = "")
 
@@ -1209,7 +1233,7 @@ NO_field_plot
 
 setwd(parent_dir)
 
-scenario_name <- "active_end_user"
+scenario_name <- "full"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/agent/", sep = "")
 
@@ -1296,14 +1320,17 @@ NO_field_plot
 ```
 
 <!-- title for toc -->
-## - Redispatch from Active End-users {.tabset .tabset-fade .tabset-pills}
+# - Redispatch
+
+<!-- title for toc -->
+## - Redispatch from Fully Flexible {.tabset .tabset-fade .tabset-pills}
 
 ### January
 ```{r redispatch end jan, echo = FALSE, message = FALSE, warning = FALSE}
 
 setwd(parent_dir)
 
-scenario_name <- "active_end_user"
+scenario_name <- "full"
 time_name <- "0101-0114"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/agent/", sep = "")
 
@@ -1311,7 +1338,7 @@ file_name <- "end_user_type_3.csv"
 end_user_type_3 <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
 redispatch_up <- end_user_type_3$redispatch_demand_down + end_user_type_3$redispatch_supply_up
-redispatch_up <- redispatch_up - end_user_type_3$redispatch_demand_up + end_user_type_3$redispatch_supply_down
+redispatch_up <- redispatch_up - end_user_type_3$redispatch_demand_up - end_user_type_3$redispatch_supply_down
 redispatch_up <- redispatch_up / 100 / point_data$pop_density / end_user_types_active$X3[1]
 
 redispatch_up_Mat <- as.matrix(point_matrix)
@@ -1331,9 +1358,9 @@ w_min <- min(min(range(redispatch_up_Mat,na.rm = T)), reference_redispatch[1])
 w_max <- max(max(range(redispatch_up_Mat,na.rm = T)), reference_redispatch[2])
 w_max <- (w_max - w_min)^(1 / 1)
 w_extend <- seq(0, w_max, length.out = 10000)
-cols_extend <- scales::col_numeric("YlOrRd", domain = NULL)(w_extend)
-start_ID <- round((min(range(redispatch_up_Mat,na.rm = T)) - w_min)^(1 / 1) / (w_max - w_min) * length(w_extend))
-end_ID <- round((max(range(redispatch_up_Mat,na.rm = T)) - w_min)^(1 / 1) / (w_max - w_min) * length(w_extend))
+cols_extend <- scales::col_numeric("RdYlGn", domain = NULL)(w_extend)
+start_ID <- round((min(range(redispatch_up_Mat,na.rm = T)) - w_min)^(1 / 1) / w_max * length(w_extend))
+end_ID <- round((max(range(redispatch_up_Mat,na.rm = T)) - w_min)^(1 / 1) / w_max * length(w_extend))
 end_ID <- min(end_ID, 10000)
 w_vals <- w_extend[start_ID:end_ID]
 w_vals_norm <- unique(scales::rescale(c(w_vals)))
@@ -1385,7 +1412,7 @@ NO_field_plot
 
 setwd(parent_dir)
 
-scenario_name <- "active_end_user"
+scenario_name <- "full"
 time_name <- "0701-0714"
 dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/agent/", sep = "")
 
@@ -1393,7 +1420,7 @@ file_name <- "end_user_type_3.csv"
 end_user_type_3 <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
 
 redispatch_up <- end_user_type_3$redispatch_demand_down + end_user_type_3$redispatch_supply_up
-redispatch_up <- redispatch_up - end_user_type_3$redispatch_demand_up + end_user_type_3$redispatch_supply_down
+redispatch_up <- redispatch_up - end_user_type_3$redispatch_demand_up - end_user_type_3$redispatch_supply_down
 redispatch_up <- redispatch_up / 100 / point_data$pop_density / end_user_types_active$X3[1]
 
 redispatch_up_Mat <- as.matrix(point_matrix)
@@ -1413,9 +1440,176 @@ w_min <- min(min(range(redispatch_up_Mat,na.rm = T)), reference_redispatch[1])
 w_max <- max(max(range(redispatch_up_Mat,na.rm = T)), reference_redispatch[2])
 w_max <- (w_max - w_min)^(1 / 1)
 w_extend <- seq(0, w_max, length.out = 10000)
-cols_extend <- scales::col_numeric("YlOrRd", domain = NULL)(w_extend)
-start_ID <- round((min(range(redispatch_up_Mat,na.rm = T)) - w_min)^(1 / 1) / (w_max - w_min) * length(w_extend))
-end_ID <- round((max(range(redispatch_up_Mat,na.rm = T)) - w_min)^(1 / 1) / (w_max - w_min) * length(w_extend))
+cols_extend <- scales::col_numeric("RdYlGn", domain = NULL)(w_extend)
+start_ID <- round((min(range(redispatch_up_Mat,na.rm = T)) - w_min)^(1 / 1) / w_max * length(w_extend))
+end_ID <- round((max(range(redispatch_up_Mat,na.rm = T)) - w_min)^(1 / 1) / w_max * length(w_extend))
+end_ID <- min(end_ID, 10000)
+w_vals <- w_extend[start_ID:end_ID]
+w_vals_norm <- unique(scales::rescale(c(w_vals)))
+cols <- cols_extend[start_ID:end_ID]
+colz <- setNames(data.frame(w_vals_norm, cols), NULL)
+
+NO_field_plot <- NO_power_system_plot %>%
+  add_trace(x = seq(x_range_field [1], x_range_field [2], res_field),
+  y = seq(y_range_field [1], y_range_field [2], res_field),
+  z = redispatch_up_Mat, type = "heatmap",
+  hoverinfo = 'none',
+  showscale = F,
+  colorscale = colz)
+
+NO_field_plot <- NO_field_plot %>%
+  add_trace(x = point_data$x, y = point_data$y,
+  type = 'scatter', mode = 'markers',
+  marker = list(color = "black", size = 0),
+  opacity = 0,
+  text = paste("\nlon: ", round(point_data$lon, 3), "°",
+               "\nlat: ", round(point_data$lat, 3), "°",
+               "\n\ntotal upward redispatch:\n", round(redispatch_up * 1000, 3),
+               " kWh",
+               sep = ""),
+  hoverinfo = 'text'
+  )
+
+NO_field_plot <- NO_field_plot %>%
+  add_text(x = node_data$x[132] + 150000, y = node_data$y[116] - 25000 + 100000 + 50000,
+  textfont = list(size = 18), text = "Total Net Redispatch (kWh / ppl):", textposition = "top right", hoverinfo = 'none')
+palette_level <- cols_extend[c(1, seq(.25, .75, .25) * length(w_extend), length(w_extend))]
+redispatch_up_level <- round(w_extend[c(1, seq(.25, .75, .25) * length(w_extend), length(w_extend))]^1 + w_min, 3)
+for(level_iter in 1:length(redispatch_up_level)){
+  NO_field_plot <- NO_field_plot %>%
+    add_trace(x = node_data$x[132] + 50000 + 100000 * level_iter + 60000 * c(0: 1), y = rep(node_data$y[116] + 100000, 2),
+    type = 'scatter', mode = 'lines', line = list(color = palette_level[level_iter], width = 10),
+    hoverinfo = 'none'
+    )
+  NO_field_plot <- NO_field_plot %>%
+    add_text(x = node_data$x[132] + 80000 + 100000 * level_iter, y = node_data$y[116] - 25000 + 100000,
+    textfont = list(size = 14), text = redispatch_up_level[level_iter] * 1000, textposition = "bottom center", hoverinfo = 'none')
+}
+
+NO_field_plot
+```
+
+<!-- title for toc -->
+## - Redispatch from Fully Flexible 3x {.tabset .tabset-fade .tabset-pills}
+
+### January
+```{r redispatch end jan 3x, echo = FALSE, message = FALSE, warning = FALSE}
+
+setwd(parent_dir)
+
+scenario_name <- "full_3x"
+time_name <- "0101-0114"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/agent/", sep = "")
+
+file_name <- "end_user_type_3.csv"
+end_user_type_3 <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+redispatch_up <- end_user_type_3$redispatch_demand_down + end_user_type_3$redispatch_supply_up
+redispatch_up <- redispatch_up - end_user_type_3$redispatch_demand_up - end_user_type_3$redispatch_supply_down
+redispatch_up <- redispatch_up / 100 / point_data$pop_density / end_user_types_active$X3[1]
+
+redispatch_up_Mat <- as.matrix(point_matrix)
+for(row_iter in 1:nrow(redispatch_up_Mat)){
+  for(col_iter in 1:ncol(redispatch_up_Mat)){
+    if(point_matrix[row_iter, col_iter] == -1){
+      redispatch_up_Mat[row_iter, col_iter] <- NA
+    }else{
+      redispatch_up_Mat[row_iter, col_iter] <- redispatch_up[point_matrix[row_iter, col_iter]]
+    }
+  }
+}
+redispatch_up_Mat <- t(redispatch_up_Mat)
+
+### Parameters for the field
+w_min <- min(min(range(redispatch_up_Mat,na.rm = T)), reference_redispatch[1])
+w_max <- max(max(range(redispatch_up_Mat,na.rm = T)), reference_redispatch[2])
+w_max <- (w_max - w_min)^(1 / 1)
+w_extend <- seq(0, w_max, length.out = 10000)
+cols_extend <- scales::col_numeric("RdYlGn", domain = NULL)(w_extend)
+start_ID <- round((min(range(redispatch_up_Mat,na.rm = T)) - w_min)^(1 / 1) / w_max * length(w_extend))
+end_ID <- round((max(range(redispatch_up_Mat,na.rm = T)) - w_min)^(1 / 1) / w_max * length(w_extend))
+end_ID <- min(end_ID, 10000)
+w_vals <- w_extend[start_ID:end_ID]
+w_vals_norm <- unique(scales::rescale(c(w_vals)))
+cols <- cols_extend[start_ID:end_ID]
+colz <- setNames(data.frame(w_vals_norm, cols), NULL)
+
+NO_field_plot <- NO_power_system_plot %>%
+  add_trace(x = seq(x_range_field [1], x_range_field [2], res_field),
+  y = seq(y_range_field [1], y_range_field [2], res_field),
+  z = redispatch_up_Mat, type = "heatmap",
+  hoverinfo = 'none',
+  showscale = F,
+  colorscale = colz)
+
+NO_field_plot <- NO_field_plot %>%
+  add_trace(x = point_data$x, y = point_data$y,
+  type = 'scatter', mode = 'markers',
+  marker = list(color = "black", size = 0),
+  opacity = 0,
+  text = paste("\nlon: ", round(point_data$lon, 3), "°",
+               "\nlat: ", round(point_data$lat, 3), "°",
+               "\n\ntotal upward redispatch:\n", round(redispatch_up * 1000, 3),
+               " kWh",
+               sep = ""),
+  hoverinfo = 'text'
+  )
+
+NO_field_plot <- NO_field_plot %>%
+  add_text(x = node_data$x[132] + 150000, y = node_data$y[116] - 25000 + 100000 + 50000,
+  textfont = list(size = 18), text = "Total Net Redispatch (kWh / ppl):", textposition = "top right", hoverinfo = 'none')
+palette_level <- cols_extend[c(1, seq(.25, .75, .25) * length(w_extend), length(w_extend))]
+redispatch_up_level <- round(w_extend[c(1, seq(.25, .75, .25) * length(w_extend), length(w_extend))]^1 + w_min, 3)
+for(level_iter in 1:length(redispatch_up_level)){
+  NO_field_plot <- NO_field_plot %>%
+    add_trace(x = node_data$x[132] + 50000 + 100000 * level_iter + 60000 * c(0: 1), y = rep(node_data$y[116] + 100000, 2),
+    type = 'scatter', mode = 'lines', line = list(color = palette_level[level_iter], width = 10),
+    hoverinfo = 'none'
+    )
+  NO_field_plot <- NO_field_plot %>%
+    add_text(x = node_data$x[132] + 80000 + 100000 * level_iter, y = node_data$y[116] - 25000 + 100000,
+    textfont = list(size = 14), text = redispatch_up_level[level_iter] * 1000, textposition = "bottom center", hoverinfo = 'none')
+}
+
+NO_field_plot
+```
+
+### July
+```{r redispatch end jul 3x, echo = FALSE, message = FALSE, warning = FALSE}
+
+setwd(parent_dir)
+
+scenario_name <- "full_3x"
+time_name <- "0701-0714"
+dir_name <- paste(getwd(), "/data/output/", scenario_name, "/", time_name, "/agent/", sep = "")
+
+file_name <- "end_user_type_3.csv"
+end_user_type_3 <- read.csv(paste(dir_name, file_name, sep = ""), sep = "")
+
+redispatch_up <- end_user_type_3$redispatch_demand_down + end_user_type_3$redispatch_supply_up
+redispatch_up <- redispatch_up - end_user_type_3$redispatch_demand_up - end_user_type_3$redispatch_supply_down
+redispatch_up <- redispatch_up / 100 / point_data$pop_density / end_user_types_active$X3[1]
+
+redispatch_up_Mat <- as.matrix(point_matrix)
+for(row_iter in 1:nrow(redispatch_up_Mat)){
+  for(col_iter in 1:ncol(redispatch_up_Mat)){
+    if(point_matrix[row_iter, col_iter] == -1){
+      redispatch_up_Mat[row_iter, col_iter] <- NA
+    }else{
+      redispatch_up_Mat[row_iter, col_iter] <- redispatch_up[point_matrix[row_iter, col_iter]]
+    }
+  }
+}
+redispatch_up_Mat <- t(redispatch_up_Mat)
+
+### Parameters for the field
+w_min <- min(min(range(redispatch_up_Mat,na.rm = T)), reference_redispatch[1])
+w_max <- max(max(range(redispatch_up_Mat,na.rm = T)), reference_redispatch[2])
+w_max <- (w_max - w_min)^(1 / 1)
+w_extend <- seq(0, w_max, length.out = 10000)
+cols_extend <- scales::col_numeric("RdYlGn", domain = NULL)(w_extend)
+start_ID <- round((min(range(redispatch_up_Mat,na.rm = T)) - w_min)^(1 / 1) / w_max * length(w_extend))
+end_ID <- round((max(range(redispatch_up_Mat,na.rm = T)) - w_min)^(1 / 1) / w_max * length(w_extend))
 end_ID <- min(end_ID, 10000)
 w_vals <- w_extend[start_ID:end_ID]
 w_vals_norm <- unique(scales::rescale(c(w_vals)))
