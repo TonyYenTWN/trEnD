@@ -1,0 +1,7736 @@
+Estimate spatial fields?  Yes: 1 / No: 0 | 0
+Simulate operation?       Yes: 1 / No: 0 | 1
+DSOs filter bids?         Yes: 1 / No: 0 | 1
+Control reserve?          Yes: 1 / No: 0 | 1
+Encourage Redispatch?     Yes: 1 / No: 0 | 1
+Rule based?               Yes: 1 / No: 0 | 0
+Start tick?                              | 4344
+Run time length?                         | 336
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14937.4	14937.4
+-1104.67 757.154 9405.26
+-0.0174533 0.0174533
+-484.839 1104.67
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14937.4	14937.4
+-1104.67 757.154 9405.26
+-0.0174533 0.0174533
+-484.839 1104.67
+
+2	0	5	0	4
+
+3	1	6	0	4
+
+0.995435	1.00174
+
+-74.5245	96.6325
+
+Time:	4345:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14851.2	14851.2
+-1109.91 741.635 9317.34
+-0.0174533 0.0174533
+-484.379 1109.91
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14851.2	14851.2
+-1109.91 741.635 9317.34
+-0.0174533 0.0174533
+-484.379 1109.91
+
+2	0	5	0	4
+
+3	1	7	0	4
+
+0.995075	1.00174
+
+-72.6768	108.535
+
+Time:	4346:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14591.3	14591.3
+-1021.72 869.558 9334.06
+-0.0174533 0.0174533
+-471.704 1021.72
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14591.3	14591.3
+-1021.72 869.558 9334.06
+-0.0174533 0.0174533
+-471.704 1021.72
+
+2	0	5	0	4
+
+3	1	8	0	4
+
+0.995129	1.00164
+
+-87.5066	112.03
+
+Time:	4347:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15206.9	15206.9
+-887.92 950.272 9616.66
+-0.0174533 0.0174533
+-454.771 860.518
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15206.9	15206.9
+-887.92 950.272 9616.66
+-0.0174533 0.0174533
+-454.771 860.518
+
+2	0	5	1	5
+
+3	1	9	1	5
+
+0.994468	1.00161
+
+-96.1455	85.6798
+
+Time:	4348:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15732.1	15732.1
+-972 1124.31 10049.9
+-0.0174533 0.0174533
+-616.343 972
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15732.1	15732.1
+-972 1124.31 10049.9
+-0.0174533 0.0174533
+-616.343 972
+
+2	0	5	1	6
+
+3	1	10	1	6
+
+0.994428	1.00163
+
+-112.63	85.2867
+
+Time:	4349:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16203.3	16203.3
+-961.648 1253.46 10089.6
+-0.0174533 0.0174533
+-630 961.648
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16203.3	16203.3
+-961.648 1253.46 10089.6
+-0.0174533 0.0174533
+-630 961.648
+
+2	0	5	1	7
+
+3	0	10	1	7
+
+0.994362	1.00174
+
+-135.28	73.3923
+
+Time:	4350:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+17005.5	17005.5
+-1022.84 1149.85 10789.3
+-0.0174533 0.0174533
+-630 974
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+17005.5	17005.5
+-1022.84 1149.85 10789.3
+-0.0174533 0.0174533
+-630 974
+
+2	0	5	1	8
+
+3	0	10	1	8
+
+0.99418	1.0017
+
+-117.396	83.5983
+
+Time:	4351:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16299.1	16299.1
+-976.893 869.765 10614.8
+-0.0174533 0.0174533
+-630 639
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16299.1	16299.1
+-976.893 869.765 10614.8
+-0.0174533 0.0174533
+-630 639
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.99467	1.00137
+
+-73.918	93.0602
+
+Time:	4352:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16338.1	16338.1
+-987.358 775.503 10584.9
+-0.0174533 0.0174533
+-630 600
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16338.1	16338.1
+-987.358 775.503 10584.9
+-0.0174533 0.0174533
+-630 600
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.994359	1.00097
+
+-60.9829	94.9354
+
+Time:	4353:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16528	16528
+-981.165 860.399 10511.9
+-0.0174533 0.0174533
+-630 600
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16528	16528
+-981.165 860.399 10511.9
+-0.0174533 0.0174533
+-630 600
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.993529	1.00097
+
+-77.5157	81.9339
+
+Time:	4354:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16649.9	16649.9
+-990.471 822.619 10315.8
+-0.0174533 0.0174533
+-630 600
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16649.9	16649.9
+-990.471 822.619 10315.8
+-0.0174533 0.0174533
+-630 600
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.993356	1.00097
+
+-75.5322	79.527
+
+Time:	4355:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16588.1	16588.1
+-980.627 826.366 10294.6
+-0.0174533 0.0174533
+-630 600
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16588.1	16588.1
+-980.627 826.366 10294.6
+-0.0174533 0.0174533
+-630 600
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.993279	1.00097
+
+-75.761	78.7667
+
+Time:	4356:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16614.8	16614.8
+-980.051 831.122 10313.4
+-0.0174533 0.0174533
+-630 600
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16614.8	16614.8
+-980.051 831.122 10313.4
+-0.0174533 0.0174533
+-630 600
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.993237	1.00097
+
+-76.4776	78.5538
+
+Time:	4357:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16672.4	16672.4
+-961.722 837.101 10390
+-0.0174533 0.0174533
+-630 600
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16672.4	16672.4
+-961.722 837.101 10390
+-0.0174533 0.0174533
+-630 600
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.993074	1.00097
+
+-77.3542	76.9078
+
+Time:	4358:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16651.7	16651.7
+-942.777 877.775 10539.5
+-0.0174533 0.0174533
+-630 600
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16651.7	16651.7
+-942.777 877.775 10539.5
+-0.0174533 0.0174533
+-630 600
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.992986	1.0009
+
+-79.7636	87.29
+
+Time:	4359:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16677.9	16677.9
+-983.049 804.534 10763.5
+-0.0174533 0.0174533
+-630 600
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16677.9	16677.9
+-983.049 804.534 10763.5
+-0.0174533 0.0174533
+-630 600
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.993177	1.00081
+
+-66.4984	92.9022
+
+Time:	4360:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16722.5	16722.5
+-982.563 840.773 10765.8
+-0.0174533 0.0174533
+-630 609.088
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16722.5	16722.5
+-982.563 840.773 10765.8
+-0.0174533 0.0174533
+-630 609.088
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.993222	1.00131
+
+-72.461	94.0358
+
+Time:	4361:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16933.2	16933.2
+-940 1235.02 10597.9
+-0.0174533 0.0174533
+-630 940
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16933.2	16933.2
+-940 1235.02 10597.9
+-0.0174533 0.0174533
+-630 940
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.993242	1.00169
+
+-129.336	75.1541
+
+Time:	4362:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16960.7	16960.7
+-998.827 1141.89 10467.6
+-0.0174533 0.0174533
+-630 998.827
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16960.7	16960.7
+-998.827 1141.89 10467.6
+-0.0174533 0.0174533
+-630 998.827
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.993199	1.00175
+
+-119.59	80.1821
+
+Time:	4363:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16914.5	16914.5
+-986.261 1188.51 10408.3
+-0.0174533 0.0174533
+-630 986.261
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16914.5	16914.5
+-986.261 1188.51 10408.3
+-0.0174533 0.0174533
+-630 986.261
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.993346	1.00175
+
+-125.868	68.7235
+
+Time:	4364:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16898.5	16898.5
+-980.771 1200.55 10372.6
+-0.0174533 0.0174533
+-630 980.771
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16898.5	16898.5
+-980.771 1200.55 10372.6
+-0.0174533 0.0174533
+-630 980.771
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.993311	1.00174
+
+-127.76	68.4408
+
+Time:	4365:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15977.8	15977.8
+-999.183 1131.62 10023.5
+-0.0174533 0.0174533
+-588.896 999.183
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15977.8	15977.8
+-999.183 1131.62 10023.5
+-0.0174533 0.0174533
+-588.896 999.183
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.994354	1.00175
+
+-119.501	73.2041
+
+Time:	4366:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15798.9	15798.9
+-1050.87 917.682 9908.89
+-0.0174533 0.0174533
+-511.261 1050.87
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15798.9	15798.9
+-1050.87 917.682 9908.89
+-0.0174533 0.0174533
+-511.261 1050.87
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.994455	1.00173
+
+-93.2247	70.0549
+
+Time:	4367:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15121.4	15121.4
+-1093.13 803.05 9506.97
+-0.0174533 0.0174533
+-488.765 1093.13
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15121.4	15121.4
+-1093.13 803.05 9506.97
+-0.0174533 0.0174533
+-488.765 1093.13
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995009	1.00172
+
+-78.9925	70.9206
+
+Time:	4368:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14522.6	14522.6
+-1089.27 773.674 9178.92
+-0.0174533 0.0174533
+-486.206 1089.27
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14522.6	14522.6
+-1089.27 773.674 9178.92
+-0.0174533 0.0174533
+-486.206 1089.27
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995604	1.0017
+
+-76.2542	85.7483
+
+Time:	4369:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14243.9	14243.9
+-1089.56 768.462 9135.07
+-0.0174533 0.0174533
+-489.113 1089.56
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14243.9	14243.9
+-1089.56 768.462 9135.07
+-0.0174533 0.0174533
+-489.113 1089.56
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995777	1.00168
+
+-75.7072	95.644
+
+Time:	4370:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14190.8	14190.8
+-1092.62 715.84 9082.34
+-0.0174533 0.0174533
+-491.115 1092.62
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14190.8	14190.8
+-1092.62 715.84 9082.34
+-0.0174533 0.0174533
+-491.115 1092.62
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995775	1.00166
+
+-70.722	96.7086
+
+Time:	4371:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14878.4	14878.4
+-1082.2 754.575 9468.68
+-0.0174533 0.0174533
+-484.487 1082.2
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14878.4	14878.4
+-1082.2 754.575 9468.68
+-0.0174533 0.0174533
+-484.487 1082.2
+
+2	0	5	1	5
+
+3	0	10	1	5
+
+0.995104	1.00165
+
+-74.3251	75.8778
+
+Time:	4372:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14984.3	14984.3
+-1081.56 736.082 9591.96
+-0.0174533 0.0174533
+-484.032 1081.56
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14984.3	14984.3
+-1081.56 736.082 9591.96
+-0.0174533 0.0174533
+-484.032 1081.56
+
+2	0	5	1	6
+
+3	0	10	1	6
+
+0.995336	1.00165
+
+-72.5479	73.2827
+
+Time:	4373:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15614.6	15614.6
+-986.505 964.503 9800.38
+-0.0174533 0.0174533
+-604.531 986.505
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15614.6	15614.6
+-986.505 964.503 9800.38
+-0.0174533 0.0174533
+-604.531 986.505
+
+2	0	5	1	7
+
+3	0	10	1	7
+
+0.995173	1.00168
+
+-105.258	69.0138
+
+Time:	4374:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16791.3	16791.3
+-1036.59 826.249 10529.2
+-0.0174533 0.0174533
+-630 1036.59
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16791.3	16791.3
+-1036.59 826.249 10529.2
+-0.0174533 0.0174533
+-630 1036.59
+
+2	0	5	1	8
+
+3	0	10	1	8
+
+0.994748	1.00167
+
+-84.7377	80.6539
+
+Time:	4375:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16513	16513
+-1043.93 839.741 10420.7
+-0.0174533 0.0174533
+-630 1043.93
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16513	16513
+-1043.93 839.741 10420.7
+-0.0174533 0.0174533
+-630 1043.93
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995235	1.00169
+
+-87.8666	78.3138
+
+Time:	4376:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16725.8	16725.8
+-1043.13 839.483 10569
+-0.0174533 0.0174533
+-630 1043.13
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16725.8	16725.8
+-1043.13 839.483 10569
+-0.0174533 0.0174533
+-630 1043.13
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.99483	1.00169
+
+-86.7397	79.1489
+
+Time:	4377:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+17139.9	17139.9
+-1046.99 881.69 10878
+-0.0174533 0.0174533
+-630 1046.99
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+17139.9	17139.9
+-1046.99 881.69 10878
+-0.0174533 0.0174533
+-630 1046.99
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.994095	1.0017
+
+-88.5111	80.804
+
+Time:	4378:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+17268.9	17268.9
+-1048.31 895.774 10951.3
+-0.0174533 0.0174533
+-630 1048.31
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+17268.9	17268.9
+-1048.31 895.774 10951.3
+-0.0174533 0.0174533
+-630 1048.31
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.993836	1.0017
+
+-89.7601	85.3157
+
+Time:	4379:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+17295	17295
+-1048.55 901.344 10939.1
+-0.0174533 0.0174533
+-630 1048.55
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+17295	17295
+-1048.55 901.344 10939.1
+-0.0174533 0.0174533
+-630 1048.55
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.993703	1.0017
+
+-90.3617	86.9035
+
+Time:	4380:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+17205.9	17205.9
+-1042.88 931.396 10825.1
+-0.0174533 0.0174533
+-630 1042.88
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+17205.9	17205.9
+-1042.88 931.396 10825.1
+-0.0174533 0.0174533
+-630 1042.88
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.993811	1.00171
+
+-93.8911	85.759
+
+Time:	4381:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+17128.6	17128.6
+-1045.07 928.659 10820.5
+-0.0174533 0.0174533
+-630 1045.07
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+17128.6	17128.6
+-1045.07 928.659 10820.5
+-0.0174533 0.0174533
+-630 1045.07
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.993877	1.00172
+
+-92.5333	83.5062
+
+Time:	4382:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+17021.7	17021.7
+-1036.71 951.909 10664.5
+-0.0174533 0.0174533
+-630 1036.71
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+17021.7	17021.7
+-1036.71 951.909 10664.5
+-0.0174533 0.0174533
+-630 1036.71
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.994128	1.00174
+
+-95.692	76.9127
+
+Time:	4383:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16213.2	16213.2
+-1024.65 939.469 10216.6
+-0.0174533 0.0174533
+-630 1024.65
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16213.2	16213.2
+-1024.65 939.469 10216.6
+-0.0174533 0.0174533
+-630 1024.65
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995132	1.00173
+
+-97.9794	75.7332
+
+Time:	4384:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16107.3	16107.3
+-1016 948.925 10155.5
+-0.0174533 0.0174533
+-630 1016
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16107.3	16107.3
+-1016 948.925 10155.5
+-0.0174533 0.0174533
+-630 1016
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995092	1.00173
+
+-99.4906	74.524
+
+Time:	4385:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16126.3	16126.3
+-999.983 1028.57 10119
+-0.0174533 0.0174533
+-630 999.983
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16126.3	16126.3
+-999.983 1028.57 10119
+-0.0174533 0.0174533
+-630 999.983
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995009	1.00173
+
+-109	71.6912
+
+Time:	4386:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16007.4	16007.4
+-991.224 1083.77 10081.8
+-0.0174533 0.0174533
+-630 991.224
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16007.4	16007.4
+-991.224 1083.77 10081.8
+-0.0174533 0.0174533
+-630 991.224
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.994967	1.00174
+
+-115.914	70.1841
+
+Time:	4387:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15843.8	15843.8
+-983.192 1117.1 10011
+-0.0174533 0.0174533
+-630 983.192
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15843.8	15843.8
+-983.192 1117.1 10011
+-0.0174533 0.0174533
+-630 983.192
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995105	1.00174
+
+-120.276	69.4816
+
+Time:	4388:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15474	15474
+-942.609 1255.15 9793.3
+-0.0174533 0.0174533
+-630 942.609
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15474	15474
+-942.609 1255.15 9793.3
+-0.0174533 0.0174533
+-630 942.609
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995249	1.00175
+
+-137.566	65.8544
+
+Time:	4389:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15399	15399
+-1008.21 1023.88 9755.72
+-0.0174533 0.0174533
+-559.908 1008.21
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15399	15399
+-1008.21 1023.88 9755.72
+-0.0174533 0.0174533
+-559.908 1008.21
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995143	1.00174
+
+-108.583	62.6145
+
+Time:	4390:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15223.3	15223.3
+-1039.54 918.497 9719.34
+-0.0174533 0.0174533
+-507.857 1039.54
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15223.3	15223.3
+-1039.54 918.497 9719.34
+-0.0174533 0.0174533
+-507.857 1039.54
+
+2	0	5	0	4
+
+3	-1	9	0	4
+
+0.995131	1.00173
+
+-94.6218	64.7603
+
+Time:	4391:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14766.1	14766.1
+-1084.1 803.428 9465.92
+-0.0174533 0.0174533
+-489.283 1084.1
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14766.1	14766.1
+-1084.1 803.428 9465.92
+-0.0174533 0.0174533
+-489.283 1084.1
+
+2	0	5	0	4
+
+3	-1.56519e-12	9	0	4
+
+0.995308	1.00173
+
+-79.1033	67.5057
+
+Time:	4392:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14380.3	14380.3
+-1090.54 769.987 9203.44
+-0.0174533 0.0174533
+-491.834 1090.54
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14380.3	14380.3
+-1090.54 769.987 9203.44
+-0.0174533 0.0174533
+-491.834 1090.54
+
+2	0	5	0	4
+
+3	-1	8	0	4
+
+0.995667	1.00172
+
+-75.997	73.4692
+
+Time:	4393:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14174.5	14174.5
+-1089.26 765.31 9088.96
+-0.0174533 0.0174533
+-492.977 1089.26
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14174.5	14174.5
+-1089.26 765.31 9088.96
+-0.0174533 0.0174533
+-492.977 1089.26
+
+2	0	5	0	4
+
+3	-1	7	0	4
+
+0.995724	1.00172
+
+-75.5951	86.1069
+
+Time:	4394:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13943.4	13943.4
+-1090.8 747.024 8957.65
+-0.0174533 0.0174533
+-492.86 1090.8
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13943.4	13943.4
+-1090.8 747.024 8957.65
+-0.0174533 0.0174533
+-492.86 1090.8
+
+2	0	5	0	4
+
+3	-1	6	0	4
+
+0.995762	1.00172
+
+-73.7992	96.465
+
+Time:	4395:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14608.1	14608.1
+-1085.2 749.326 9286.44
+-0.0174533 0.0174533
+-491.17 1085.2
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14608.1	14608.1
+-1085.2 749.326 9286.44
+-0.0174533 0.0174533
+-491.17 1085.2
+
+2	0	5	1	5
+
+3	0	6	1	5
+
+0.995175	1.00172
+
+-73.8644	71.09
+
+Time:	4396:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14619.1	14619.1
+-1088.43 740.189 9249.25
+-0.0174533 0.0174533
+-491.069 1088.43
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14619.1	14619.1
+-1088.43 740.189 9249.25
+-0.0174533 0.0174533
+-491.069 1088.43
+
+2	0	5	1	6
+
+3	0	6	1	6
+
+0.995398	1.00172
+
+-72.9919	70.78
+
+Time:	4397:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14912.9	14912.9
+-1076.14 774.202 9411.23
+-0.0174533 0.0174533
+-490.985 1076.14
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14912.9	14912.9
+-1076.14 774.202 9411.23
+-0.0174533 0.0174533
+-490.985 1076.14
+
+2	0	5	1	7
+
+3	0	6	1	7
+
+0.995378	1.00172
+
+-76.4276	64.0946
+
+Time:	4398:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15111.7	15111.7
+-1057.02 774.693 9480.91
+-0.0174533 0.0174533
+-473.75 1057.02
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15111.7	15111.7
+-1057.02 774.693 9480.91
+-0.0174533 0.0174533
+-473.75 1057.02
+
+2	0	5	1	8
+
+3	0	6	1	8
+
+0.995296	1.00174
+
+-80.209	66.2292
+
+Time:	4399:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14771.7	14771.7
+-1084.99 743.127 9404.41
+-0.0174533 0.0174533
+-487.134 1084.99
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14771.7	14771.7
+-1084.99 743.127 9404.41
+-0.0174533 0.0174533
+-487.134 1084.99
+
+2	0	5	0	4
+
+3	-1	5	0	4
+
+0.995866	1.00173
+
+-76.1167	67.6228
+
+Time:	4400:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15267.4	15267.4
+-988.66 980.682 9568.25
+-0.0174533 0.0174533
+-580.817 988.66
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15267.4	15267.4
+-988.66 980.682 9568.25
+-0.0174533 0.0174533
+-580.817 988.66
+
+2	0	5	0	4
+
+3	-1	4	0	4
+
+0.995428	1.00176
+
+-108.301	62.267
+
+Time:	4401:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15490	15490
+-955.707 1108.58 9720.87
+-0.0174533 0.0174533
+-630 955.707
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15490	15490
+-955.707 1108.58 9720.87
+-0.0174533 0.0174533
+-630 955.707
+
+2	0	5	0	4
+
+3	-1	3	0	4
+
+0.995318	1.00177
+
+-123.496	65.6335
+
+Time:	4402:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15589.8	15589.8
+-982.894 1019.77 9805.91
+-0.0174533 0.0174533
+-630 982.894
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15589.8	15589.8
+-982.894 1019.77 9805.91
+-0.0174533 0.0174533
+-630 982.894
+
+2	0	5	0	4
+
+3	-1	2	0	4
+
+0.995326	1.00176
+
+-112.547	68.538
+
+Time:	4403:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15533.7	15533.7
+-978.614 1025.01 9766.88
+-0.0174533 0.0174533
+-630 978.614
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15533.7	15533.7
+-978.614 1025.01 9766.88
+-0.0174533 0.0174533
+-630 978.614
+
+2	0	5	0	4
+
+3	-1	1	0	4
+
+0.995359	1.00176
+
+-113.399	68.0853
+
+Time:	4404:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15509.5	15509.5
+-974.762 1036.29 9736.09
+-0.0174533 0.0174533
+-630 974.762
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15509.5	15509.5
+-974.762 1036.29 9736.09
+-0.0174533 0.0174533
+-630 974.762
+
+2	0	5	0	4
+
+3	-1	1.11022e-16	0	4
+
+0.995406	1.00176
+
+-114.946	67.7651
+
+Time:	4405:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15449	15449
+-986.999 959.756 9703.79
+-0.0174533 0.0174533
+-630 986.999
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15449	15449
+-986.999 959.756 9703.79
+-0.0174533 0.0174533
+-630 986.999
+
+2	0	5	0	4
+
+3	0	1.11022e-16	0	4
+
+0.995486	1.00176
+
+-106.174	69.4361
+
+Time:	4406:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15343.4	15343.4
+-975.334 1017.17 9670.61
+-0.0174533 0.0174533
+-630 975.334
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15343.4	15343.4
+-975.334 1017.17 9670.61
+-0.0174533 0.0174533
+-630 975.334
+
+2	0	5	0	4
+
+3	0	1.11022e-16	0	4
+
+0.995494	1.00176
+
+-113.013	68.1174
+
+Time:	4407:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15377	15377
+-952.986 1200.94 9813.39
+-0.0174533 0.0174533
+-630 952.986
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15377	15377
+-952.986 1200.94 9813.39
+-0.0174533 0.0174533
+-630 952.986
+
+2	0	5	0	4
+
+3	0	1.11022e-16	0	4
+
+0.995491	1.00174
+
+-131.568	66.9244
+
+Time:	4408:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15409.5	15409.5
+-950.071 1210.98 9818.44
+-0.0174533 0.0174533
+-630 950.071
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15409.5	15409.5
+-950.071 1210.98 9818.44
+-0.0174533 0.0174533
+-630 950.071
+
+2	0	5	0	4
+
+3	0	1.11022e-16	0	4
+
+0.99549	1.00175
+
+-132.704	66.8443
+
+Time:	4409:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15404.4	15404.4
+-937.379 1267.13 9807.67
+-0.0174533 0.0174533
+-630 937.379
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15404.4	15404.4
+-937.379 1267.13 9807.67
+-0.0174533 0.0174533
+-630 937.379
+
+2	0	5	0	4
+
+3	0	1.11022e-16	0	4
+
+0.995483	1.00175
+
+-139.108	65.7142
+
+Time:	4410:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15309.9	15309.9
+-967.709 1176.74 9754.72
+-0.0174533 0.0174533
+-590.425 967.709
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15309.9	15309.9
+-967.709 1176.74 9754.72
+-0.0174533 0.0174533
+-590.425 967.709
+
+2	0	5	0	4
+
+3	0	1.11022e-16	0	4
+
+0.995448	1.00175
+
+-127.956	63.5431
+
+Time:	4411:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15226.1	15226.1
+-987.147 1076.64 9687.83
+-0.0174533 0.0174533
+-570.664 987.147
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15226.1	15226.1
+-987.147 1076.64 9687.83
+-0.0174533 0.0174533
+-570.664 987.147
+
+2	0	5	0	4
+
+3	0	1.11022e-16	0	4
+
+0.99556	1.00174
+
+-116.292	62.7276
+
+Time:	4412:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15076.1	15076.1
+-1038.14 902.359 9608.95
+-0.0174533 0.0174533
+-495.243 1038.14
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15076.1	15076.1
+-1038.14 902.359 9608.95
+-0.0174533 0.0174533
+-495.243 1038.14
+
+2	0	5	0	4
+
+3	0	1.11022e-16	0	4
+
+0.995484	1.00173
+
+-93.5996	61.0087
+
+Time:	4413:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14986.2	14986.2
+-1054.6 864.441 9582.05
+-0.0174533 0.0174533
+-475.64 1054.6
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14986.2	14986.2
+-1054.6 864.441 9582.05
+-0.0174533 0.0174533
+-475.64 1054.6
+
+2	0	5	0	4
+
+3	0	1.11022e-16	0	4
+
+0.99553	1.00173
+
+-88.323	62.3364
+
+Time:	4414:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14869.7	14869.7
+-1066.82 826.418 9474.74
+-0.0174533 0.0174533
+-476.065 1066.82
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14869.7	14869.7
+-1066.82 826.418 9474.74
+-0.0174533 0.0174533
+-476.065 1066.82
+
+2	0	5	0	4
+
+3	0	1.11022e-16	0	4
+
+0.99556	1.00172
+
+-83.22	63.4022
+
+Time:	4415:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14510.3	14510.3
+-1091.52 767.357 9258.73
+-0.0174533 0.0174533
+-489.61 1091.52
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14510.3	14510.3
+-1091.52 767.357 9258.73
+-0.0174533 0.0174533
+-489.61 1091.52
+
+2	0	5	0	4
+
+3	0	1.11022e-16	0	4
+
+0.995654	1.00172
+
+-75.7298	67.6112
+
+Time:	4416:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14261.4	14261.4
+-1090.26 763.908 9103.76
+-0.0174533 0.0174533
+-492.518 1090.26
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14261.4	14261.4
+-1090.26 763.908 9103.76
+-0.0174533 0.0174533
+-492.518 1090.26
+
+2	0	5	0	4
+
+3	0	1.11022e-16	0	4
+
+0.995702	1.00172
+
+-75.4435	80.6824
+
+Time:	4417:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13988.4	13988.4
+-1091.89 747.097 8981.87
+-0.0174533 0.0174533
+-491.581 1091.89
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13988.4	13988.4
+-1091.89 747.097 8981.87
+-0.0174533 0.0174533
+-491.581 1091.89
+
+2	0	5	0	4
+
+3	1	1	0	4
+
+0.995725	1.00171
+
+-73.7603	91.8169
+
+Time:	4418:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13887.9	13887.9
+-1089.43 749.567 8910.08
+-0.0174533 0.0174533
+-491.352 1089.43
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13887.9	13887.9
+-1089.43 749.567 8910.08
+-0.0174533 0.0174533
+-491.352 1089.43
+
+2	0	5	0	4
+
+3	0.928303	1.9283	0	4
+
+0.99575	1.00171
+
+-74.0411	97.5648
+
+Time:	4419:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14561.1	14561.1
+-1086.02 751.714 9280.61
+-0.0174533 0.0174533
+-493.211 1086.02
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14561.1	14561.1
+-1086.02 751.714 9280.61
+-0.0174533 0.0174533
+-493.211 1086.02
+
+2	0	5	1	5
+
+3	-2.22045e-16	1.9283	1	5
+
+0.995124	1.00171
+
+-74.0634	71.036
+
+Time:	4420:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14558.5	14558.5
+-1087.92 753.321 9218.16
+-0.0174533 0.0174533
+-490.77 1087.92
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14558.5	14558.5
+-1087.92 753.321 9218.16
+-0.0174533 0.0174533
+-490.77 1087.92
+
+2	0	5	1	6
+
+3	0	1.9283	1	6
+
+0.995365	1.00171
+
+-74.2227	72.8963
+
+Time:	4421:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14626.9	14626.9
+-1088.58 742.403 9246.37
+-0.0174533 0.0174533
+-487.561 1088.58
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14626.9	14626.9
+-1088.58 742.403 9246.37
+-0.0174533 0.0174533
+-487.561 1088.58
+
+2	0	5	1	7
+
+3	0	1.9283	1	7
+
+0.995417	1.00171
+
+-73.1496	72.0982
+
+Time:	4422:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14767.7	14767.7
+-1081.56 739.524 9341.5
+-0.0174533 0.0174533
+-487.306 1081.56
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14767.7	14767.7
+-1081.56 739.524 9341.5
+-0.0174533 0.0174533
+-487.306 1081.56
+
+2	0	5	1	8
+
+3	0	1.9283	1	8
+
+0.995389	1.00172
+
+-74.0427	72.2718
+
+Time:	4423:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14241.1	14241.1
+-1105.6 678.999 9022.06
+-0.0174533 0.0174533
+-490.385 1105.6
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14241.1	14241.1
+-1105.6 678.999 9022.06
+-0.0174533 0.0174533
+-490.385 1105.6
+
+2	0	5	0	4
+
+3	1	2.9283	0	4
+
+0.995937	1.00173
+
+-66.9906	73.451
+
+Time:	4424:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14705.6	14705.6
+-1085.33 749.756 9382.96
+-0.0174533 0.0174533
+-486.01 1085.33
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14705.6	14705.6
+-1085.33 749.756 9382.96
+-0.0174533 0.0174533
+-486.01 1085.33
+
+2	0	5	0	4
+
+3	0.150923	3.07923	0	4
+
+0.995552	1.00173
+
+-75.7992	74.0054
+
+Time:	4425:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14868.4	14868.4
+-1056.38 776.384 9436.8
+-0.0174533 0.0174533
+-494.014 1056.38
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14868.4	14868.4
+-1056.38 776.384 9436.8
+-0.0174533 0.0174533
+-494.014 1056.38
+
+2	0	5	0	4
+
+3	-0.687262	2.39196	0	4
+
+0.995528	1.00173
+
+-81.4581	67.0516
+
+Time:	4426:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14963.7	14963.7
+-1036.89 838.887 9477.24
+-0.0174533 0.0174533
+-530.83 1036.89
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14963.7	14963.7
+-1036.89 838.887 9477.24
+-0.0174533 0.0174533
+-530.83 1036.89
+
+2	0	5	0	4
+
+3	-1	1.39196	0	4
+
+0.995452	1.00174
+
+-90.0158	65.9377
+
+Time:	4427:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14977	14977
+-1022.69 882.395 9491.19
+-0.0174533 0.0174533
+-552.897 1022.69
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14977	14977
+-1022.69 882.395 9491.19
+-0.0174533 0.0174533
+-552.897 1022.69
+
+2	0	5	0	4
+
+3	-0.993862	0.398102	0	4
+
+0.995417	1.00174
+
+-95.7667	65.48
+
+Time:	4428:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14935	14935
+-1033.07 843.931 9481.37
+-0.0174533 0.0174533
+-540.739 1033.07
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14935	14935
+-1033.07 843.931 9481.37
+-0.0174533 0.0174533
+-540.739 1033.07
+
+2	0	5	0	4
+
+3	-0.398102	1.94289e-13	0	4
+
+0.995422	1.00174
+
+-90.9023	66.1064
+
+Time:	4429:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14927.8	14927.8
+-1036.71 839.564 9479.66
+-0.0174533 0.0174533
+-537.52 1036.71
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14927.8	14927.8
+-1036.71 839.564 9479.66
+-0.0174533 0.0174533
+-537.52 1036.71
+
+2	0	5	0	4
+
+3	0	1.94289e-13	0	4
+
+0.995408	1.00174
+
+-90.0516	66.5227
+
+Time:	4430:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14897.5	14897.5
+-1018.05 881.411 9438.5
+-0.0174533 0.0174533
+-567.206 1018.05
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14897.5	14897.5
+-1018.05 881.411 9438.5
+-0.0174533 0.0174533
+-567.206 1018.05
+
+2	0	5	0	4
+
+3	0	1.94289e-13	0	4
+
+0.995475	1.00174
+
+-95.9951	64.4428
+
+Time:	4431:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15052.6	15052.6
+-993.248 925.859 9469.7
+-0.0174533 0.0174533
+-599.816 993.248
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15052.6	15052.6
+-993.248 925.859 9469.7
+-0.0174533 0.0174533
+-599.816 993.248
+
+2	0	5	0	4
+
+3	0	1.94289e-13	0	4
+
+0.995434	1.00174
+
+-102.579	65.8452
+
+Time:	4432:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15158.6	15158.6
+-949.953 1140.15 9644.2
+-0.0174533 0.0174533
+-630 949.953
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15158.6	15158.6
+-949.953 1140.15 9644.2
+-0.0174533 0.0174533
+-630 949.953
+
+2	0	5	0	4
+
+3	0	1.94289e-13	0	4
+
+0.995424	1.00175
+
+-126.557	66.7514
+
+Time:	4433:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15427.2	15427.2
+-947.279 1203.34 9776
+-0.0174533 0.0174533
+-630 947.279
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15427.2	15427.2
+-947.279 1203.34 9776
+-0.0174533 0.0174533
+-630 947.279
+
+2	0	5	0	4
+
+3	0	1.94289e-13	0	4
+
+0.99539	1.00174
+
+-132.212	66.3034
+
+Time:	4434:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15429.2	15429.2
+-947.191 1215.43 9801.77
+-0.0174533 0.0174533
+-630 947.191
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15429.2	15429.2
+-947.191 1215.43 9801.77
+-0.0174533 0.0174533
+-630 947.191
+
+2	0	5	0	4
+
+3	0	1.94289e-13	0	4
+
+0.995379	1.00174
+
+-133.385	66.1297
+
+Time:	4435:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15394.8	15394.8
+-949.046 1211.13 9819.41
+-0.0174533 0.0174533
+-630 949.046
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15394.8	15394.8
+-949.046 1211.13 9819.41
+-0.0174533 0.0174533
+-630 949.046
+
+2	0	5	0	4
+
+3	0	1.94289e-13	0	4
+
+0.995372	1.00174
+
+-132.867	66.1743
+
+Time:	4436:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15292.1	15292.1
+-939.361 1246.31 9781.2
+-0.0174533 0.0174533
+-630 939.361
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15292.1	15292.1
+-939.361 1246.31 9781.2
+-0.0174533 0.0174533
+-630 939.361
+
+2	0	5	0	4
+
+3	0	1.94289e-13	0	4
+
+0.995412	1.00174
+
+-137.057	66.1843
+
+Time:	4437:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15226	15226
+-1004.8 1002.43 9698.62
+-0.0174533 0.0174533
+-557.121 1004.8
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15226	15226
+-1004.8 1002.43 9698.62
+-0.0174533 0.0174533
+-557.121 1004.8
+
+2	0	5	0	4
+
+3	0	1.94289e-13	0	4
+
+0.995404	1.00172
+
+-107.439	62.0472
+
+Time:	4438:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15010.7	15010.7
+-1039.96 888.62 9618.57
+-0.0174533 0.0174533
+-501.196 1039.96
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15010.7	15010.7
+-1039.96 888.62 9618.57
+-0.0174533 0.0174533
+-501.196 1039.96
+
+2	0	5	0	4
+
+3	0	1.94289e-13	0	4
+
+0.995441	1.00171
+
+-92.5938	63.7592
+
+Time:	4439:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14539.2	14539.2
+-1093.61 768.22 9357.33
+-0.0174533 0.0174533
+-491.96 1093.61
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14539.2	14539.2
+-1093.61 768.22 9357.33
+-0.0174533 0.0174533
+-491.96 1093.61
+
+2	0	5	0	4
+
+3	0	1.94289e-13	0	4
+
+0.995694	1.00169
+
+-75.6883	70.2618
+
+Time:	4440:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14197.4	14197.4
+-1092.06 770.79 9199.99
+-0.0174533 0.0174533
+-493.614 1092.06
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14197.4	14197.4
+-1092.06 770.79 9199.99
+-0.0174533 0.0174533
+-493.614 1092.06
+
+2	0	5	0	4
+
+3	0	1.94289e-13	0	4
+
+0.995752	1.00169
+
+-75.9347	79.9712
+
+Time:	4441:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14058.4	14058.4
+-1091.68 748.31 9085.71
+-0.0174533 0.0174533
+-493.358 1091.68
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14058.4	14058.4
+-1091.68 748.31 9085.71
+-0.0174533 0.0174533
+-493.358 1091.68
+
+2	0	5	0	4
+
+3	1	1	0	4
+
+0.995778	1.00168
+
+-73.8319	87.4649
+
+Time:	4442:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13994.1	13994.1
+-1091.5 729.876 9020.8
+-0.0174533 0.0174533
+-491.953 1091.5
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13994.1	13994.1
+-1091.5 729.876 9020.8
+-0.0174533 0.0174533
+-491.953 1091.5
+
+2	0	5	0	4
+
+3	1.37057e-12	1	0	4
+
+0.995763	1.00167
+
+-72.0987	96.035
+
+Time:	4443:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14789	14789
+-1081.45 771.676 9406.81
+-0.0174533 0.0174533
+-488.317 1081.45
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14789	14789
+-1081.45 771.676 9406.81
+-0.0174533 0.0174533
+-488.317 1081.45
+
+2	0	5	1	5
+
+3	0	1	1	5
+
+0.995126	1.00166
+
+-75.9701	75.9467
+
+Time:	4444:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14954.3	14954.3
+-1081.25 755.862 9530.54
+-0.0174533 0.0174533
+-486.887 1081.25
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14954.3	14954.3
+-1081.25 755.862 9530.54
+-0.0174533 0.0174533
+-486.887 1081.25
+
+2	0	5	1	6
+
+3	0	1	1	6
+
+0.995352	1.00166
+
+-74.5317	73.8955
+
+Time:	4445:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15611.7	15611.7
+-927.389 1101.27 9698.36
+-0.0174533 0.0174533
+-630 927.389
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15611.7	15611.7
+-927.389 1101.27 9698.36
+-0.0174533 0.0174533
+-630 927.389
+
+2	0	5	1	7
+
+3	-4.44089e-16	1	1	7
+
+0.995213	1.00169
+
+-123.221	66.3589
+
+Time:	4446:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16619.8	16619.8
+-1022.27 867.093 10375.8
+-0.0174533 0.0174533
+-630 1022.27
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16619.8	16619.8
+-1022.27 867.093 10375.8
+-0.0174533 0.0174533
+-630 1022.27
+
+2	0	5	1	8
+
+3	0	1	1	8
+
+0.994906	1.00166
+
+-91.9923	77.4017
+
+Time:	4447:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16345.9	16345.9
+-1028.41 856.56 10369.1
+-0.0174533 0.0174533
+-630 1028.41
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16345.9	16345.9
+-1028.41 856.56 10369.1
+-0.0174533 0.0174533
+-630 1028.41
+
+2	0	5	0	4
+
+3	-0.46835	0.53165	0	4
+
+0.995372	1.00166
+
+-91.4789	75.2923
+
+Time:	4448:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16546.1	16546.1
+-1041.93 857.252 10608
+-0.0174533 0.0174533
+-630 1041.93
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16546.1	16546.1
+-1041.93 857.252 10608
+-0.0174533 0.0174533
+-630 1041.93
+
+2	0	5	0	4
+
+3	-0.53165	0	0	4
+
+0.995133	1.00164
+
+-90.3145	79.2584
+
+Time:	4449:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16713.8	16713.8
+-1046.11 860.879 10741.9
+-0.0174533 0.0174533
+-630 1046.11
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16713.8	16713.8
+-1046.11 860.879 10741.9
+-0.0174533 0.0174533
+-630 1046.11
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995006	1.00163
+
+-90.9102	81.261
+
+Time:	4450:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16629.7	16629.7
+-1044.77 865.251 10696.7
+-0.0174533 0.0174533
+-630 1044.77
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16629.7	16629.7
+-1044.77 865.251 10696.7
+-0.0174533 0.0174533
+-630 1044.77
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995144	1.00163
+
+-91.4802	82.171
+
+Time:	4451:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16651.9	16651.9
+-1045.17 859.483 10701.5
+-0.0174533 0.0174533
+-630 1045.17
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16651.9	16651.9
+-1045.17 859.483 10701.5
+-0.0174533 0.0174533
+-630 1045.17
+
+2	0	5	0	4
+
+3	1	1	0	4
+
+0.995158	1.00163
+
+-90.8336	81.2998
+
+Time:	4452:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16622.3	16622.3
+-1043.15 864.882 10661.5
+-0.0174533 0.0174533
+-630 1043.15
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16622.3	16622.3
+-1043.15 864.882 10661.5
+-0.0174533 0.0174533
+-630 1043.15
+
+2	0	5	0	4
+
+3	-1	0	0	4
+
+0.995191	1.00163
+
+-91.7932	80.9182
+
+Time:	4453:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16695.7	16695.7
+-1041.23 868.333 10669.1
+-0.0174533 0.0174533
+-630 1041.23
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16695.7	16695.7
+-1041.23 868.333 10669.1
+-0.0174533 0.0174533
+-630 1041.23
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995052	1.00162
+
+-92.4928	79.6522
+
+Time:	4454:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16608.7	16608.7
+-1027.89 861.886 10517.6
+-0.0174533 0.0174533
+-630 1027.89
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16608.7	16608.7
+-1027.89 861.886 10517.6
+-0.0174533 0.0174533
+-630 1027.89
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995221	1.00164
+
+-91.9	76.4
+
+Time:	4455:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16515.8	16515.8
+-1034.84 847.322 10413.3
+-0.0174533 0.0174533
+-630 1034.84
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16515.8	16515.8
+-1034.84 847.322 10413.3
+-0.0174533 0.0174533
+-630 1034.84
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995278	1.00166
+
+-89.642	77.5452
+
+Time:	4456:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16476.3	16476.3
+-1029.23 851.024 10343.1
+-0.0174533 0.0174533
+-630 1029.23
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16476.3	16476.3
+-1029.23 851.024 10343.1
+-0.0174533 0.0174533
+-630 1029.23
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995236	1.00167
+
+-90.2273	76.9065
+
+Time:	4457:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16418.5	16418.5
+-1018.58 887.245 10332.5
+-0.0174533 0.0174533
+-630 1018.58
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16418.5	16418.5
+-1018.58 887.245 10332.5
+-0.0174533 0.0174533
+-630 1018.58
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995267	1.00168
+
+-94.7005	75.7554
+
+Time:	4458:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16161.2	16161.2
+-1007.35 915.506 10139.7
+-0.0174533 0.0174533
+-630 1007.35
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16161.2	16161.2
+-1007.35 915.506 10139.7
+-0.0174533 0.0174533
+-630 1007.35
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995409	1.00169
+
+-98.4125	74.6174
+
+Time:	4459:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16034.2	16034.2
+-998.545 953.629 10078.1
+-0.0174533 0.0174533
+-630 998.545
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16034.2	16034.2
+-998.545 953.629 10078.1
+-0.0174533 0.0174533
+-630 998.545
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995371	1.0017
+
+-103.401	73.3049
+
+Time:	4460:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15808.2	15808.2
+-974.705 1057.91 9990.46
+-0.0174533 0.0174533
+-630 974.705
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15808.2	15808.2
+-974.705 1057.91 9990.46
+-0.0174533 0.0174533
+-630 974.705
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995464	1.00171
+
+-115.85	70.813
+
+Time:	4461:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15557.7	15557.7
+-960.953 1098 9714.78
+-0.0174533 0.0174533
+-630 960.953
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15557.7	15557.7
+-960.953 1098 9714.78
+-0.0174533 0.0174533
+-630 960.953
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995511	1.00171
+
+-121.096	68.5308
+
+Time:	4462:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15272.3	15272.3
+-994.114 979.092 9565.6
+-0.0174533 0.0174533
+-582.735 994.114
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15272.3	15272.3
+-994.114 979.092 9565.6
+-0.0174533 0.0174533
+-582.735 994.114
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995614	1.00171
+
+-106.354	64.5175
+
+Time:	4463:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14453.2	14453.2
+-1095.09 777.704 9302.1
+-0.0174533 0.0174533
+-480.156 1095.09
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14453.2	14453.2
+-1095.09 777.704 9302.1
+-0.0174533 0.0174533
+-480.156 1095.09
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995641	1.00169
+
+-76.5525	71.7064
+
+Time:	4464:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14149.4	14149.4
+-1091.01 767.923 9067.81
+-0.0174533 0.0174533
+-483.031 1091.01
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14149.4	14149.4
+-1091.01 767.923 9067.81
+-0.0174533 0.0174533
+-483.031 1091.01
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995751	1.00169
+
+-75.7279	77.9466
+
+Time:	4465:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13981.7	13981.7
+-1088.82 763.664 8963.06
+-0.0174533 0.0174533
+-483.462 1088.82
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13981.7	13981.7
+-1088.82 763.664 8963.06
+-0.0174533 0.0174533
+-483.462 1088.82
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995826	1.00169
+
+-75.3688	89.0315
+
+Time:	4466:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13961.9	13961.9
+-1089.13 767.161 8954.34
+-0.0174533 0.0174533
+-482.394 1089.13
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13961.9	13961.9
+-1089.13 767.161 8954.34
+-0.0174533 0.0174533
+-482.394 1089.13
+
+2	0	5	0	4
+
+3	1	1	0	4
+
+0.995802	1.00169
+
+-75.6717	99.6714
+
+Time:	4467:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14821.7	14821.7
+-1084.79 784.188 9370.31
+-0.0174533 0.0174533
+-480.421 1084.79
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14821.7	14821.7
+-1084.79 784.188 9370.31
+-0.0174533 0.0174533
+-480.421 1084.79
+
+2	0	5	1	5
+
+3	1.56475e-12	1	1	5
+
+0.995082	1.00167
+
+-77.2039	73.8082
+
+Time:	4468:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14887.9	14887.9
+-1084.61 778.743 9481.28
+-0.0174533 0.0174533
+-481.692 1084.61
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14887.9	14887.9
+-1084.61 778.743 9481.28
+-0.0174533 0.0174533
+-481.692 1084.61
+
+2	0	5	1	6
+
+3	-2.22045e-16	1	1	6
+
+0.995358	1.00167
+
+-76.6386	74.4912
+
+Time:	4469:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15471.6	15471.6
+-1002.78 934.526 9636.72
+-0.0174533 0.0174533
+-584.427 1002.78
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15471.6	15471.6
+-1002.78 934.526 9636.72
+-0.0174533 0.0174533
+-584.427 1002.78
+
+2	0	5	1	7
+
+3	-3.33067e-16	1	1	7
+
+0.995132	1.00169
+
+-100.774	67.091
+
+Time:	4470:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16484.5	16484.5
+-1024.06 897.468 10214.1
+-0.0174533 0.0174533
+-630 1024.06
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16484.5	16484.5
+-1024.06 897.468 10214.1
+-0.0174533 0.0174533
+-630 1024.06
+
+2	0	5	1	8
+
+3	0	1	1	8
+
+0.994784	1.00169
+
+-94.4264	76.9383
+
+Time:	4471:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16353.6	16353.6
+-1028.53 865.423 10154.4
+-0.0174533 0.0174533
+-630 1028.53
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16353.6	16353.6
+-1028.53 865.423 10154.4
+-0.0174533 0.0174533
+-630 1028.53
+
+2	0	5	0	4
+
+3	-1	0	0	4
+
+0.995262	1.00168
+
+-91.9079	74.5551
+
+Time:	4472:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16612.5	16612.5
+-1042.47 838.782 10343.2
+-0.0174533 0.0174533
+-630 1042.47
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16612.5	16612.5
+-1042.47 838.782 10343.2
+-0.0174533 0.0174533
+-630 1042.47
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995044	1.00167
+
+-87.665	77.7503
+
+Time:	4473:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16445.6	16445.6
+-1020 840.202 10267.6
+-0.0174533 0.0174533
+-630 1020
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16445.6	16445.6
+-1020 840.202 10267.6
+-0.0174533 0.0174533
+-630 1020
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995151	1.00167
+
+-89.7175	80.448
+
+Time:	4474:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16031.8	16031.8
+-992.938 860.494 10360.3
+-0.0174533 0.0174533
+-630 668
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16031.8	16031.8
+-992.938 860.494 10360.3
+-0.0174533 0.0174533
+-630 668
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995074	1.00071
+
+-83.3577	91.6908
+
+Time:	4475:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15618.2	15618.2
+-978.293 859.373 9742.64
+-0.0174533 0.0174533
+-396.419 600
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15618.2	15618.2
+-978.293 859.373 9742.64
+-0.0174533 0.0174533
+-396.419 600
+
+2	0	5	0	4
+
+3	1	1	0	4
+
+0.995114	1.00076
+
+-88.8877	85.4528
+
+Time:	4476:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15515.4	15515.4
+-969.703 883.284 9740.41
+-0.0174533 0.0174533
+-405.133 600
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15515.4	15515.4
+-969.703 883.284 9740.41
+-0.0174533 0.0174533
+-405.133 600
+
+2	0	5	0	4
+
+3	-1	0	0	4
+
+0.994835	1.00118
+
+-92.0252	92.0098
+
+Time:	4477:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15684.4	15684.4
+-989.149 759.398 9824.54
+-0.0174533 0.0174533
+-448.163 600
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15684.4	15684.4
+-989.149 759.398 9824.54
+-0.0174533 0.0174533
+-448.163 600
+
+2	0	5	0	4
+
+3	1	1	0	4
+
+0.994906	1.0017
+
+-78.1176	93.0756
+
+Time:	4478:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15769.2	15769.2
+-968.125 779.055 9810.44
+-0.0174533 0.0174533
+-450 600
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15769.2	15769.2
+-968.125 779.055 9810.44
+-0.0174533 0.0174533
+-450 600
+
+2	0	5	0	4
+
+3	-1	0	0	4
+
+0.994874	1.00078
+
+-80.6919	89.1157
+
+Time:	4479:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16301	16301
+-1020.69 956.207 10883.9
+-0.0174533 0.0174533
+-630 640
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16301	16301
+-1020.69 956.207 10883.9
+-0.0174533 0.0174533
+-630 640
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.994504	1.00081
+
+-95.2639	96.7444
+
+Time:	4480:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16321.2	16321.2
+-1029.17 784.374 10346.3
+-0.0174533 0.0174533
+-630 1029.17
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16321.2	16321.2
+-1029.17 784.374 10346.3
+-0.0174533 0.0174533
+-630 1029.17
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995193	1.00158
+
+-85.6772	75.0596
+
+Time:	4481:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16093.3	16093.3
+-1018.08 815.976 10254.2
+-0.0174533 0.0174533
+-630 1018.08
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16093.3	16093.3
+-1018.08 815.976 10254.2
+-0.0174533 0.0174533
+-630 1018.08
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995214	1.00159
+
+-89.8476	73.2955
+
+Time:	4482:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15903.5	15903.5
+-1000.68 915.111 10137.4
+-0.0174533 0.0174533
+-630 1000.68
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15903.5	15903.5
+-1000.68 915.111 10137.4
+-0.0174533 0.0174533
+-630 1000.68
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995434	1.0016
+
+-102.637	71.5922
+
+Time:	4483:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15575.6	15575.6
+-991.888 905.146 10007
+-0.0174533 0.0174533
+-630 991.888
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15575.6	15575.6
+-991.888 905.146 10007
+-0.0174533 0.0174533
+-630 991.888
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.99548	1.0016
+
+-102.277	70.6845
+
+Time:	4484:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15489.6	15489.6
+-1025.63 848.525 10009.7
+-0.0174533 0.0174533
+-586.052 1025.63
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15489.6	15489.6
+-1025.63 848.525 10009.7
+-0.0174533 0.0174533
+-586.052 1025.63
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995511	1.0016
+
+-93.7889	69.0522
+
+Time:	4485:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15431.4	15431.4
+-996.292 892.894 9968.84
+-0.0174533 0.0174533
+-617.746 996.292
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15431.4	15431.4
+-996.292 892.894 9968.84
+-0.0174533 0.0174533
+-617.746 996.292
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995354	1.00161
+
+-99.2956	68.4073
+
+Time:	4486:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15184	15184
+-1054.82 733.629 9869.24
+-0.0174533 0.0174533
+-528.073 1054.82
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15184	15184
+-1054.82 733.629 9869.24
+-0.0174533 0.0174533
+-528.073 1054.82
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995484	1.0016
+
+-78.3621	72.2055
+
+Time:	4487:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14168.4	14168.4
+-819 942.268 9388.38
+-0.0174533 0.0174533
+-519.534 819
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14168.4	14168.4
+-819 942.268 9388.38
+-0.0174533 0.0174533
+-519.534 819
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995801	1.0008
+
+-100.578	153.878
+
+Time:	4488:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13823	13823
+-719.665 928.016 9034.44
+-0.0174533 0.0174533
+-467.24 600
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13823	13823
+-719.665 928.016 9034.44
+-0.0174533 0.0174533
+-467.24 600
+
+2	0	5	0	4
+
+3	1	1	2.22045e-16	4
+
+0.99596	1.0008
+
+-101.26	145.909
+
+Time:	4489:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13606.2	13606.2
+-720.959 885.712 8905.27
+-0.0174533 0.0174533
+-454.592 600
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13606.2	13606.2
+-720.959 885.712 8905.27
+-0.0174533 0.0174533
+-454.592 600
+
+2	0	5	0	4
+
+3	1	2	0	4
+
+0.995981	1.0008
+
+-95.9301	134.921
+
+Time:	4490:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13613.7	13613.7
+-701.868 933.078 8888.01
+-0.0174533 0.0174533
+-470.735 641
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13613.7	13613.7
+-701.868 933.078 8888.01
+-0.0174533 0.0174533
+-470.735 641
+
+2	0	5	0	4
+
+3	1	3	2.22045e-16	4
+
+0.995975	1.00076
+
+-102.467	149.782
+
+Time:	4491:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14380.9	14380.9
+-720 948.837 9230.29
+-0.0174533 0.0174533
+-496.664 720
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14380.9	14380.9
+-720 948.837 9230.29
+-0.0174533 0.0174533
+-496.664 720
+
+2	0	5	1	5
+
+3	1	4	1	5
+
+0.995291	1.00078
+
+-103.367	155.376
+
+Time:	4492:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14640.9	14640.9
+-872 933.824 9381.4
+-0.0174533 0.0174533
+-497.581 872
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14640.9	14640.9
+-872 933.824 9381.4
+-0.0174533 0.0174533
+-497.581 872
+
+2	0	5	1	6
+
+3	1	5	1	6
+
+0.995485	1.00076
+
+-100.564	153.075
+
+Time:	4493:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15285.6	15285.6
+-968 922.565 10006.1
+-0.0174533 0.0174533
+-495.968 968
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15285.6	15285.6
+-968 922.565 10006.1
+-0.0174533 0.0174533
+-495.968 968
+
+2	0	5	1	7
+
+3	4.10005e-13	5	1	7
+
+0.995249	1.00071
+
+-94.8353	101.777
+
+Time:	4494:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16126.1	16126.1
+-1010.34 896.203 10150.4
+-0.0174533 0.0174533
+-593.282 1010.34
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16126.1	16126.1
+-1010.34 896.203 10150.4
+-0.0174533 0.0174533
+-593.282 1010.34
+
+2	0	5	1	8
+
+3	4.09339e-13	5	1	8
+
+0.994884	1.00159
+
+-99.3738	71.6988
+
+Time:	4495:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15823.6	15823.6
+-909.423 944.835 10414.2
+-0.0174533 0.0174533
+-525.41 820
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15823.6	15823.6
+-909.423 944.835 10414.2
+-0.0174533 0.0174533
+-525.41 820
+
+2	0	5	0	4
+
+3	1	6	0	4
+
+0.995355	1.00079
+
+-97.4728	79.4548
+
+Time:	4496:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15990	15990
+-951.092 952.562 10504.8
+-0.0174533 0.0174533
+-564.877 829
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15990	15990
+-951.092 952.562 10504.8
+-0.0174533 0.0174533
+-564.877 829
+
+2	0	5	0	4
+
+3	1	7	0	4
+
+0.995222	1.00081
+
+-98.9231	78.3252
+
+Time:	4497:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16036.6	16036.6
+-1008.25 953.793 10649
+-0.0174533 0.0174533
+-534.222 651
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16036.6	16036.6
+-1008.25 953.793 10649
+-0.0174533 0.0174533
+-534.222 651
+
+2	0	5	0	4
+
+3	1	8	0	4
+
+0.995265	1.00081
+
+-98.4309	86.792
+
+Time:	4498:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15736.5	15736.5
+-983.684 947.283 10369.4
+-0.0174533 0.0174533
+-468.809 600
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15736.5	15736.5
+-983.684 947.283 10369.4
+-0.0174533 0.0174533
+-468.809 600
+
+2	0	5	0	4
+
+3	1	9	0	4
+
+0.995189	1.00096
+
+-97.0915	92.4715
+
+Time:	4499:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15620.1	15620.1
+-997.239 943.527 10347.2
+-0.0174533 0.0174533
+-470.82 600
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15620.1	15620.1
+-997.239 943.527 10347.2
+-0.0174533 0.0174533
+-470.82 600
+
+2	0	5	0	4
+
+3	-8.471e-14	9	0	4
+
+0.995255	1.00097
+
+-96.1546	93.3647
+
+Time:	4500:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15529.7	15529.7
+-991.412 941.436 10289.7
+-0.0174533 0.0174533
+-466.628 600
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15529.7	15529.7
+-991.412 941.436 10289.7
+-0.0174533 0.0174533
+-466.628 600
+
+2	0	5	0	4
+
+3	1	10	0	4
+
+0.995354	1.00097
+
+-96.9294	91.7887
+
+Time:	4501:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15601.6	15601.6
+-983.519 942.366 10342.8
+-0.0174533 0.0174533
+-483.063 600
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15601.6	15601.6
+-983.519 942.366 10342.8
+-0.0174533 0.0174533
+-483.063 600
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995418	1.00081
+
+-96.9564	98.1553
+
+Time:	4502:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15908.9	15908.9
+-976.565 941.683 10518.6
+-0.0174533 0.0174533
+-497.996 632
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15908.9	15908.9
+-976.565 941.683 10518.6
+-0.0174533 0.0174533
+-497.996 632
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995442	1.00089
+
+-97.0321	91.4679
+
+Time:	4503:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16335.6	16335.6
+-995.301 924.671 10498
+-0.0174533 0.0174533
+-630 981
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16335.6	16335.6
+-995.301 924.671 10498
+-0.0174533 0.0174533
+-630 981
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995518	1.00151
+
+-101.394	76.4786
+
+Time:	4504:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16382.2	16382.2
+-1015.69 910.254 10442.2
+-0.0174533 0.0174533
+-630 1015.69
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16382.2	16382.2
+-1015.69 910.254 10442.2
+-0.0174533 0.0174533
+-630 1015.69
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995001	1.00161
+
+-99.2139	75.6169
+
+Time:	4505:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16382.4	16382.4
+-1006.37 914.431 10384
+-0.0174533 0.0174533
+-630 1006.37
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16382.4	16382.4
+-1006.37 914.431 10384
+-0.0174533 0.0174533
+-630 1006.37
+
+2	0	5	0	4
+
+3	-1	9	0	4
+
+0.994972	1.00161
+
+-100.663	72.7321
+
+Time:	4506:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16241.7	16241.7
+-984.926 910.028 10234.8
+-0.0174533 0.0174533
+-630 984.926
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16241.7	16241.7
+-984.926 910.028 10234.8
+-0.0174533 0.0174533
+-630 984.926
+
+2	0	5	0	4
+
+3	-1	8	0	4
+
+0.995075	1.00161
+
+-101.915	70.1346
+
+Time:	4507:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16010.1	16010.1
+-1011.84 888.203 10112.1
+-0.0174533 0.0174533
+-600.471 1011.84
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16010.1	16010.1
+-1011.84 888.203 10112.1
+-0.0174533 0.0174533
+-600.471 1011.84
+
+2	0	5	0	4
+
+3	-1	7	0	4
+
+0.995264	1.00162
+
+-97.7316	72.2994
+
+Time:	4508:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15799.5	15799.5
+-1087.49 684.123 10144.1
+-0.0174533 0.0174533
+-487.172 1087.49
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15799.5	15799.5
+-1087.49 684.123 10144.1
+-0.0174533 0.0174533
+-487.172 1087.49
+
+2	0	5	0	4
+
+3	-1	6	0	4
+
+0.995364	1.00161
+
+-68.8336	79.524
+
+Time:	4509:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15634.9	15634.9
+-1094.29 660.086 10016
+-0.0174533 0.0174533
+-470.162 1094.29
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15634.9	15634.9
+-1094.29 660.086 10016
+-0.0174533 0.0174533
+-470.162 1094.29
+
+2	0	5	0	4
+
+3	1	7	0	4
+
+0.995533	1.00163
+
+-65.2151	74.9163
+
+Time:	4510:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15380.6	15380.6
+-1062.8 819.912 9844.84
+-0.0174533 0.0174533
+-513.576 1062.8
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15380.6	15380.6
+-1062.8 819.912 9844.84
+-0.0174533 0.0174533
+-513.576 1062.8
+
+2	0	5	0	4
+
+3	1	8	0	4
+
+0.995788	1.00165
+
+-85.6909	72.0291
+
+Time:	4511:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15150.7	15150.7
+-1101.27 669.723 9591.8
+-0.0174533 0.0174533
+-481.741 1101.27
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15150.7	15150.7
+-1101.27 669.723 9591.8
+-0.0174533 0.0174533
+-481.741 1101.27
+
+2	0	5	0	4
+
+3	1	9	0	4
+
+0.995912	1.00165
+
+-66.2782	74.3188
+
+Time:	4512:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14927.9	14927.9
+-1098.64 658.891 9453.82
+-0.0174533 0.0174533
+-481.516 1098.64
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14927.9	14927.9
+-1098.64 658.891 9453.82
+-0.0174533 0.0174533
+-481.516 1098.64
+
+2	0	5	0	4
+
+3	-1.11022e-16	9	0	4
+
+0.995831	1.00164
+
+-65.2544	104.114
+
+Time:	4513:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14790.6	14790.6
+-1097.16 658.701 9361.93
+-0.0174533 0.0174533
+-481.2 1097.16
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14790.6	14790.6
+-1097.16 658.701 9361.93
+-0.0174533 0.0174533
+-481.2 1097.16
+
+2	0	5	0	4
+
+3	0	9	0	4
+
+0.995782	1.00164
+
+-65.259	107.933
+
+Time:	4514:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14734.3	14734.3
+-1100.38 653.459 9350.59
+-0.0174533 0.0174533
+-479.593 1100.38
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14734.3	14734.3
+-1100.38 653.459 9350.59
+-0.0174533 0.0174533
+-479.593 1100.38
+
+2	0	5	0	4
+
+3	-3.33067e-16	9	0	4
+
+0.995828	1.00165
+
+-64.7904	122.148
+
+Time:	4515:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15534.3	15534.3
+-1091.36 709.17 9809.72
+-0.0174533 0.0174533
+-480.118 1091.36
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15534.3	15534.3
+-1091.36 709.17 9809.72
+-0.0174533 0.0174533
+-480.118 1091.36
+
+2	0	5	1	5
+
+3	0	9	1	5
+
+0.995086	1.00164
+
+-70.0286	82.2374
+
+Time:	4516:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15678.9	15678.9
+-1086.45 705.819 9902.88
+-0.0174533 0.0174533
+-479.748 1086.45
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15678.9	15678.9
+-1086.45 705.819 9902.88
+-0.0174533 0.0174533
+-479.748 1086.45
+
+2	0	5	1	6
+
+3	0	9	1	6
+
+0.9954	1.00165
+
+-69.6897	71.9966
+
+Time:	4517:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16279.9	16279.9
+-991.206 939.694 10106.2
+-0.0174533 0.0174533
+-600.035 991.206
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16279.9	16279.9
+-991.206 939.694 10106.2
+-0.0174533 0.0174533
+-600.035 991.206
+
+2	0	5	1	7
+
+3	0	9	1	7
+
+0.995141	1.00167
+
+-102.511	69.59
+
+Time:	4518:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+17098.2	17098.2
+-1005.84 920.37 10526.4
+-0.0174533 0.0174533
+-630 1005.84
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+17098.2	17098.2
+-1005.84 920.37 10526.4
+-0.0174533 0.0174533
+-630 1005.84
+
+2	0	5	1	8
+
+3	-2.22045e-16	9	1	8
+
+0.994947	1.00168
+
+-98.4494	76.3976
+
+Time:	4519:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16744.2	16744.2
+-1014.95 892.45 10390.6
+-0.0174533 0.0174533
+-630 1014.95
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16744.2	16744.2
+-1014.95 892.45 10390.6
+-0.0174533 0.0174533
+-630 1014.95
+
+2	0	5	0	4
+
+3	0	9	0	4
+
+0.9955	1.00169
+
+-95.8746	75.9055
+
+Time:	4520:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16781.5	16781.5
+-1021.77 887.133 10468.1
+-0.0174533 0.0174533
+-630 1021.77
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16781.5	16781.5
+-1021.77 887.133 10468.1
+-0.0174533 0.0174533
+-630 1021.77
+
+2	0	5	0	4
+
+3	0	9	0	4
+
+0.99527	1.00169
+
+-94.2058	78.1883
+
+Time:	4521:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16718.5	16718.5
+-1026.36 845.444 10463.6
+-0.0174533 0.0174533
+-630 1026.36
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16718.5	16718.5
+-1026.36 845.444 10463.6
+-0.0174533 0.0174533
+-630 1026.36
+
+2	0	5	0	4
+
+3	0	9	0	4
+
+0.995392	1.00168
+
+-89.6676	78.6019
+
+Time:	4522:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15965.8	15965.8
+-1096.13 786.764 10332.8
+-0.0174533 0.0174533
+-421.85 1096.13
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15965.8	15965.8
+-1096.13 786.764 10332.8
+-0.0174533 0.0174533
+-421.85 1096.13
+
+2	0	5	0	4
+
+3	-2.22045e-16	9	0	4
+
+0.995507	1.00167
+
+-77.0639	102.968
+
+Time:	4523:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16645.9	16645.9
+-1020.32 857.436 10415.8
+-0.0174533 0.0174533
+-630 1020.32
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16645.9	16645.9
+-1020.32 857.436 10415.8
+-0.0174533 0.0174533
+-630 1020.32
+
+2	0	5	0	4
+
+3	-1.11022e-16	9	0	4
+
+0.995546	1.00168
+
+-91.4791	77.1713
+
+Time:	4524:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16669.3	16669.3
+-1014.76 877.958 10399.3
+-0.0174533 0.0174533
+-630 1014.76
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16669.3	16669.3
+-1014.76 877.958 10399.3
+-0.0174533 0.0174533
+-630 1014.76
+
+2	0	5	0	4
+
+3	-1	8	0	4
+
+0.995486	1.00168
+
+-93.9964	76.5735
+
+Time:	4525:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16422.3	16422.3
+-1006.78 917.479 10274.4
+-0.0174533 0.0174533
+-630 1006.78
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16422.3	16422.3
+-1006.78 917.479 10274.4
+-0.0174533 0.0174533
+-630 1006.78
+
+2	0	5	0	4
+
+3	-2.22045e-16	8	0	4
+
+0.995483	1.00169
+
+-98.7185	75.8471
+
+Time:	4526:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16377.5	16377.5
+-1010.44 912.641 10271.5
+-0.0174533 0.0174533
+-630 1010.44
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16377.5	16377.5
+-1010.44 912.641 10271.5
+-0.0174533 0.0174533
+-630 1010.44
+
+2	0	5	0	4
+
+3	-1	7	0	4
+
+0.995502	1.0017
+
+-97.6711	77.2065
+
+Time:	4527:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16359.9	16359.9
+-1004.39 929.169 10227.1
+-0.0174533 0.0174533
+-630 1004.39
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16359.9	16359.9
+-1004.39 929.169 10227.1
+-0.0174533 0.0174533
+-630 1004.39
+
+2	0	5	0	4
+
+3	-1	6	0	4
+
+0.99551	1.0017
+
+-99.8967	76.162
+
+Time:	4528:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16381.4	16381.4
+-997.147 968.902 10225.4
+-0.0174533 0.0174533
+-630 997.147
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16381.4	16381.4
+-997.147 968.902 10225.4
+-0.0174533 0.0174533
+-630 997.147
+
+2	0	5	0	4
+
+3	-1	5	0	4
+
+0.995499	1.00171
+
+-104.4	75.4243
+
+Time:	4529:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16304.6	16304.6
+-973.179 1071.66 10163.7
+-0.0174533 0.0174533
+-630 973.179
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16304.6	16304.6
+-973.179 1071.66 10163.7
+-0.0174533 0.0174533
+-630 973.179
+
+2	0	5	0	4
+
+3	-1	4	0	4
+
+0.99551	1.00172
+
+-117.273	72.229
+
+Time:	4530:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16174	16174
+-966.534 1098.18 10117.4
+-0.0174533 0.0174533
+-630 966.534
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16174	16174
+-966.534 1098.18 10117.4
+-0.0174533 0.0174533
+-630 966.534
+
+2	0	5	0	4
+
+3	-1	3	0	4
+
+0.9955	1.00172
+
+-120.396	71.4029
+
+Time:	4531:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16106.6	16106.6
+-952.873 1136.48 10059
+-0.0174533 0.0174533
+-630 952.873
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16106.6	16106.6
+-952.873 1136.48 10059
+-0.0174533 0.0174533
+-630 952.873
+
+2	0	5	0	4
+
+3	-1	2	0	4
+
+0.995506	1.00172
+
+-125.326	69.4747
+
+Time:	4532:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15968.1	15968.1
+-907.058 1264.36 9916.05
+-0.0174533 0.0174533
+-630 907.058
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15968.1	15968.1
+-907.058 1264.36 9916.05
+-0.0174533 0.0174533
+-630 907.058
+
+2	0	5	0	4
+
+3	-1	1	0	4
+
+0.995545	1.00173
+
+-140.837	64.9822
+
+Time:	4533:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15684.4	15684.4
+-1021.26 915.811 9881.07
+-0.0174533 0.0174533
+-539.04 1021.26
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15684.4	15684.4
+-1021.26 915.811 9881.07
+-0.0174533 0.0174533
+-539.04 1021.26
+
+2	0	5	0	4
+
+3	-1	0	0	4
+
+0.995622	1.00171
+
+-96.9813	78.5178
+
+Time:	4534:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15487.2	15487.2
+-1052.04 816.306 9834.99
+-0.0174533 0.0174533
+-497.233 1052.04
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15487.2	15487.2
+-1052.04 816.306 9834.99
+-0.0174533 0.0174533
+-497.233 1052.04
+
+2	0	5	0	4
+
+3	0	0	0	4
+
+0.995662	1.0017
+
+-84.1202	78.5479
+
+Time:	4535:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14645.8	14645.8
+-1064.81 790.004 9422.21
+-0.0174533 0.0174533
+-479.084 1064.81
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14645.8	14645.8
+-1064.81 790.004 9422.21
+-0.0174533 0.0174533
+-479.084 1064.81
+
+2	0	5	0	4
+
+3	1	1	0	4
+
+0.995711	1.00169
+
+-80.6045	62.0692
+
+Time:	4536:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14348.8	14348.8
+-1091.56 769.648 9228.77
+-0.0174533 0.0174533
+-488.766 1091.56
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14348.8	14348.8
+-1091.56 769.648 9228.77
+-0.0174533 0.0174533
+-488.766 1091.56
+
+2	0	5	0	4
+
+3	1	2	0	4
+
+0.9958	1.00169
+
+-75.8428	71.468
+
+Time:	4537:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14193	14193
+-1090.86 764.905 9112.98
+-0.0174533 0.0174533
+-489.616 1090.86
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14193	14193
+-1090.86 764.905 9112.98
+-0.0174533 0.0174533
+-489.616 1090.86
+
+2	0	5	0	4
+
+3	1	3	0	4
+
+0.995833	1.00169
+
+-75.4518	77.2552
+
+Time:	4538:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14099.2	14099.2
+-1089.64 764.849 9048.83
+-0.0174533 0.0174533
+-491.096 1089.64
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14099.2	14099.2
+-1089.64 764.849 9048.83
+-0.0174533 0.0174533
+-491.096 1089.64
+
+2	0	5	0	4
+
+3	1	4	0	4
+
+0.995804	1.00169
+
+-75.48	85.0655
+
+Time:	4539:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14827.4	14827.4
+-1080.21 775.837 9378.16
+-0.0174533 0.0174533
+-488.802 1080.21
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14827.4	14827.4
+-1080.21 775.837 9378.16
+-0.0174533 0.0174533
+-488.802 1080.21
+
+2	0	5	1	5
+
+3	1	5	1	5
+
+0.995137	1.0017
+
+-76.5259	66.5822
+
+Time:	4540:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14959.6	14959.6
+-1066.69 780.266 9511.65
+-0.0174533 0.0174533
+-485.792 1066.69
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14959.6	14959.6
+-1066.69 780.266 9511.65
+-0.0174533 0.0174533
+-485.792 1066.69
+
+2	0	5	1	6
+
+3	1	6	1	6
+
+0.995414	1.0017
+
+-77.9054	63.4276
+
+Time:	4541:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15462	15462
+-924.919 1243.89 9677.43
+-0.0174533 0.0174533
+-623.464 924.919
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15462	15462
+-924.919 1243.89 9677.43
+-0.0174533 0.0174533
+-623.464 924.919
+
+2	0	5	1	7
+
+3	1	7	1	7
+
+0.995311	1.00174
+
+-137.107	65.1352
+
+Time:	4542:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16455.3	16455.3
+-1008.33 943.684 10211.7
+-0.0174533 0.0174533
+-630 1008.33
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16455.3	16455.3
+-1008.33 943.684 10211.7
+-0.0174533 0.0174533
+-630 1008.33
+
+2	0	5	1	8
+
+3	-2.22045e-16	7	1	8
+
+0.995249	1.00173
+
+-98.9866	76.9392
+
+Time:	4543:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16171	16171
+-1011.8 907.133 10013.1
+-0.0174533 0.0174533
+-630 1011.8
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16171	16171
+-1011.8 907.133 10013.1
+-0.0174533 0.0174533
+-630 1011.8
+
+2	0	5	0	4
+
+3	-1.56442e-12	7	0	4
+
+0.996047	1.00173
+
+-96.8173	74.8101
+
+Time:	4544:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16330.5	16330.5
+-1022.33 876.274 10227.3
+-0.0174533 0.0174533
+-630 1022.33
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16330.5	16330.5
+-1022.33 876.274 10227.3
+-0.0174533 0.0174533
+-630 1022.33
+
+2	0	5	0	4
+
+3	2.94986e-13	7	0	4
+
+0.99574	1.00172
+
+-91.7156	77.4616
+
+Time:	4545:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16360.9	16360.9
+-1032.26 866.396 10268.6
+-0.0174533 0.0174533
+-630 1032.26
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16360.9	16360.9
+-1032.26 866.396 10268.6
+-0.0174533 0.0174533
+-630 1032.26
+
+2	0	5	0	4
+
+3	-1.56419e-12	7	0	4
+
+0.995682	1.00172
+
+-89.9436	78.8716
+
+Time:	4546:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16362.9	16362.9
+-1030.71 876.037 10232
+-0.0174533 0.0174533
+-630 1030.71
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16362.9	16362.9
+-1030.71 876.037 10232
+-0.0174533 0.0174533
+-630 1030.71
+
+2	0	5	0	4
+
+3	-1.56453e-12	7	0	4
+
+0.995705	1.00173
+
+-91.0812	78.6983
+
+Time:	4547:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16396.3	16396.3
+-1029.43 893.5 10239.8
+-0.0174533 0.0174533
+-630 1029.43
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16396.3	16396.3
+-1029.43 893.5 10239.8
+-0.0174533 0.0174533
+-630 1029.43
+
+2	0	5	0	4
+
+3	0.588533	7.58853	0	4
+
+0.995595	1.00173
+
+-92.9668	78.1688
+
+Time:	4548:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16401.9	16401.9
+-1027.21 913.125 10287.3
+-0.0174533 0.0174533
+-630 1027.21
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16401.9	16401.9
+-1027.21 913.125 10287.3
+-0.0174533 0.0174533
+-630 1027.21
+
+2	0	5	0	4
+
+3	0.860973	8.44951	0	4
+
+0.99517	1.00173
+
+-94.6794	76.3515
+
+Time:	4549:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16205.5	16205.5
+-1016.22 943.936 10168.9
+-0.0174533 0.0174533
+-630 1016.22
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16205.5	16205.5
+-1016.22 943.936 10168.9
+-0.0174533 0.0174533
+-630 1016.22
+
+2	0	5	0	4
+
+3	0.440284	8.88979	0	4
+
+0.995161	1.00173
+
+-98.6388	74.6868
+
+Time:	4550:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16062	16062
+-1006.65 983.178 10102
+-0.0174533 0.0174533
+-630 1006.65
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16062	16062
+-1006.65 983.178 10102
+-0.0174533 0.0174533
+-630 1006.65
+
+2	0	5	0	4
+
+3	1	9.88979	0	4
+
+0.995133	1.00173
+
+-103.905	73.0669
+
+Time:	4551:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15939.5	15939.5
+-1000.32 1022.16 10065.7
+-0.0174533 0.0174533
+-630 1000.32
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15939.5	15939.5
+-1000.32 1022.16 10065.7
+-0.0174533 0.0174533
+-630 1000.32
+
+2	0	5	0	4
+
+3	0.110211	10	0	4
+
+0.995171	1.00174
+
+-108.417	72.1948
+
+Time:	4552:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15627.3	15627.3
+-980.067 1142.63 9980.26
+-0.0174533 0.0174533
+-630 980.067
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15627.3	15627.3
+-980.067 1142.63 9980.26
+-0.0174533 0.0174533
+-630 980.067
+
+2	0	5	0	4
+
+3	-1	9	0	4
+
+0.995158	1.00174
+
+-123.401	69.1764
+
+Time:	4553:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15580.9	15580.9
+-968.662 1173.85 9934.03
+-0.0174533 0.0174533
+-630 968.662
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15580.9	15580.9
+-968.662 1173.85 9934.03
+-0.0174533 0.0174533
+-630 968.662
+
+2	0	5	0	4
+
+3	-1	8	0	4
+
+0.995141	1.00174
+
+-127.492	67.7734
+
+Time:	4554:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15450.4	15450.4
+-953.784 1242.71 9889.02
+-0.0174533 0.0174533
+-630 953.784
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15450.4	15450.4
+-953.784 1242.71 9889.02
+-0.0174533 0.0174533
+-630 953.784
+
+2	0	5	0	4
+
+3	-1	7	0	4
+
+0.995145	1.00175
+
+-135.699	67.3417
+
+Time:	4555:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15305.2	15305.2
+-944.085 1254.85 9764.87
+-0.0174533 0.0174533
+-617.22 944.085
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15305.2	15305.2
+-944.085 1254.85 9764.87
+-0.0174533 0.0174533
+-617.22 944.085
+
+2	0	5	0	4
+
+3	-1	6	0	4
+
+0.995189	1.00175
+
+-137.471	65.9499
+
+Time:	4556:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15208.9	15208.9
+-905.704 1337.04 9629.59
+-0.0174533 0.0174533
+-630 905.704
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15208.9	15208.9
+-905.704 1337.04 9629.59
+-0.0174533 0.0174533
+-630 905.704
+
+2	0	5	0	4
+
+3	-1	5	0	4
+
+0.995323	1.00174
+
+-147.962	67.2681
+
+Time:	4557:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15105.9	15105.9
+-1001.2 1057.91 9625.68
+-0.0174533 0.0174533
+-542.995 1001.2
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15105.9	15105.9
+-1001.2 1057.91 9625.68
+-0.0174533 0.0174533
+-542.995 1001.2
+
+2	0	5	0	4
+
+3	-1	4	0	4
+
+0.995297	1.00174
+
+-113.329	63.2037
+
+Time:	4558:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14918.8	14918.8
+-1041.28 910.906 9552.93
+-0.0174533 0.0174533
+-482.777 1041.28
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14918.8	14918.8
+-1041.28 910.906 9552.93
+-0.0174533 0.0174533
+-482.777 1041.28
+
+2	0	5	0	4
+
+3	-1	3	0	4
+
+0.995335	1.00173
+
+-94.3129	64.2497
+
+Time:	4559:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14726.3	14726.3
+-911.526 1248.42 9257.29
+-0.0174533 0.0174533
+-558.487 911.526
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14726.3	14726.3
+-911.526 1248.42 9257.29
+-0.0174533 0.0174533
+-558.487 911.526
+
+2	0	5	0	4
+
+3	0.0657829	3.06578	0	4
+
+0.99579	1.00173
+
+-138.797	62.8071
+
+Time:	4560:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14361.4	14361.4
+-1089.14 763.457 9179.07
+-0.0174533 0.0174533
+-497.706 1089.14
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14361.4	14361.4
+-1089.14 763.457 9179.07
+-0.0174533 0.0174533
+-497.706 1089.14
+
+2	0	5	0	4
+
+3	0.0184818	3.08426	0	4
+
+0.995863	1.0017
+
+-75.2988	65.5879
+
+Time:	4561:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14065.4	14065.4
+-1089.76 763.579 8988.77
+-0.0174533 0.0174533
+-497.198 1089.76
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14065.4	14065.4
+-1089.76 763.579 8988.77
+-0.0174533 0.0174533
+-497.198 1089.76
+
+2	0	5	0	4
+
+3	0.231243	3.31551	0	4
+
+0.995941	1.0017
+
+-75.3455	73.9742
+
+Time:	4562:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13856.4	13856.4
+-1086.99 755.201 8854.84
+-0.0174533 0.0174533
+-494.645 1086.99
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13856.4	13856.4
+-1086.99 755.201 8854.84
+-0.0174533 0.0174533
+-494.645 1086.99
+
+2	0	5	0	4
+
+3	1	4.31551	0	4
+
+0.996005	1.0017
+
+-74.5973	86.8722
+
+Time:	4563:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14604.6	14604.6
+-1073.41 770.429 9272.74
+-0.0174533 0.0174533
+-492.003 1073.41
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14604.6	14604.6
+-1073.41 770.429 9272.74
+-0.0174533 0.0174533
+-492.003 1073.41
+
+2	0	5	1	5
+
+3	0	4.31551	1	5
+
+0.995383	1.00169
+
+-76.0424	63.9044
+
+Time:	4564:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14644.4	14644.4
+-1080.96 763.119 9205
+-0.0174533 0.0174533
+-492.982 1080.96
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14644.4	14644.4
+-1080.96 763.119 9205
+-0.0174533 0.0174533
+-492.982 1080.96
+
+2	0	5	1	6
+
+3	0	4.31551	1	6
+
+0.99561	1.00169
+
+-75.317	64.4883
+
+Time:	4565:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14690.1	14690.1
+-1079.24 762.963 9259.3
+-0.0174533 0.0174533
+-488.758 1079.24
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14690.1	14690.1
+-1079.24 762.963 9259.3
+-0.0174533 0.0174533
+-488.758 1079.24
+
+2	0	5	1	7
+
+3	0	4.31551	1	7
+
+0.995606	1.00169
+
+-75.3032	64.6261
+
+Time:	4566:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14963.2	14963.2
+-1047.25 821.69 9390.28
+-0.0174533 0.0174533
+-473.621 1047.25
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14963.2	14963.2
+-1047.25 821.69 9390.28
+-0.0174533 0.0174533
+-473.621 1047.25
+
+2	0	5	1	8
+
+3	0	4.31551	1	8
+
+0.995539	1.0017
+
+-84.6522	61.3513
+
+Time:	4567:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14746.6	14746.6
+-1076.1 772.754 9260.14
+-0.0174533 0.0174533
+-485.494 1076.1
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14746.6	14746.6
+-1076.1 772.754 9260.14
+-0.0174533 0.0174533
+-485.494 1076.1
+
+2	0	5	0	4
+
+3	1	5.31551	0	4
+
+0.996044	1.00169
+
+-78.2228	61.944
+
+Time:	4568:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14999.7	14999.7
+-1013.71 883.151 9349.47
+-0.0174533 0.0174533
+-554.899 1013.71
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14999.7	14999.7
+-1013.71 883.151 9349.47
+-0.0174533 0.0174533
+-554.899 1013.71
+
+2	0	5	0	4
+
+3	1	6.31551	0	4
+
+0.995595	1.00172
+
+-96.8364	61.9089
+
+Time:	4569:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15326.4	15326.4
+-966.836 962.257 9475.17
+-0.0174533 0.0174533
+-630 966.836
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15326.4	15326.4
+-966.836 962.257 9475.17
+-0.0174533 0.0174533
+-630 966.836
+
+2	0	5	0	4
+
+3	1	7.31551	0	4
+
+0.995465	1.00173
+
+-108.535	69.031
+
+Time:	4570:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15220.9	15220.9
+-904.864 936.838 9529.39
+-0.0174533 0.0174533
+-630 841
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15220.9	15220.9
+-904.864 936.838 9529.39
+-0.0174533 0.0174533
+-630 841
+
+2	0	5	0	4
+
+3	1	8.31551	0	4
+
+0.995435	1.00162
+
+-100.659	68.5452
+
+Time:	4571:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15234.6	15234.6
+-919.805 898.136 9719.09
+-0.0174533 0.0174533
+-630 722
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15234.6	15234.6
+-919.805 898.136 9719.09
+-0.0174533 0.0174533
+-630 722
+
+2	0	5	0	4
+
+3	1	9.31551	0	4
+
+0.995495	1.00156
+
+-87.4666	76.8555
+
+Time:	4572:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15091	15091
+-910.689 827.09 9708.76
+-0.0174533 0.0174533
+-585.533 630
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15091	15091
+-910.689 827.09 9708.76
+-0.0174533 0.0174533
+-585.533 630
+
+2	0	5	0	4
+
+3	0.684492	10	0	4
+
+0.995521	1.00078
+
+-75.4125	78.858
+
+Time:	4573:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15220	15220
+-932.362 885.184 9718.84
+-0.0174533 0.0174533
+-627.567 729
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15220	15220
+-932.362 885.184 9718.84
+-0.0174533 0.0174533
+-627.567 729
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.99562	1.00154
+
+-86.5642	71.9493
+
+Time:	4574:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15172.3	15172.3
+-892.286 894.792 9729.43
+-0.0174533 0.0174533
+-542.809 764
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15172.3	15172.3
+-892.286 894.792 9729.43
+-0.0174533 0.0174533
+-542.809 764
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995612	1.00152
+
+-87.8517	72.5032
+
+Time:	4575:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15092.8	15092.8
+-881.876 901.056 9847.19
+-0.0174533 0.0174533
+-550.716 831
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15092.8	15092.8
+-881.876 901.056 9847.19
+-0.0174533 0.0174533
+-550.716 831
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995643	1.00152
+
+-89.3873	71.8866
+
+Time:	4576:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15237.5	15237.5
+-954.49 980.882 9583.02
+-0.0174533 0.0174533
+-630 954.49
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15237.5	15237.5
+-954.49 980.882 9583.02
+-0.0174533 0.0174533
+-630 954.49
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995595	1.00166
+
+-110.215	67.7948
+
+Time:	4577:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15175.7	15175.7
+-954.406 986.887 9574.78
+-0.0174533 0.0174533
+-630 954.406
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15175.7	15175.7
+-954.406 986.887 9574.78
+-0.0174533 0.0174533
+-630 954.406
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995585	1.00167
+
+-110.742	67.6959
+
+Time:	4578:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15248	15248
+-955.509 985.759 9568.52
+-0.0174533 0.0174533
+-627.045 955.509
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15248	15248
+-955.509 985.759 9568.52
+-0.0174533 0.0174533
+-627.045 955.509
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995632	1.00167
+
+-110.45	66.9773
+
+Time:	4579:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15198.8	15198.8
+-952.388 1005.05 9511.63
+-0.0174533 0.0174533
+-598.833 952.388
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15198.8	15198.8
+-952.388 1005.05 9511.63
+-0.0174533 0.0174533
+-598.833 952.388
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995705	1.00168
+
+-112.275	63.2898
+
+Time:	4580:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15063.1	15063.1
+-988.128 948.373 9466.1
+-0.0174533 0.0174533
+-550.01 988.128
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15063.1	15063.1
+-988.128 948.373 9466.1
+-0.0174533 0.0174533
+-550.01 988.128
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995803	1.00168
+
+-104.249	62.2286
+
+Time:	4581:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14886.3	14886.3
+-1022.92 869.848 9433.61
+-0.0174533 0.0174533
+-498.985 1022.92
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14886.3	14886.3
+-1022.92 869.848 9433.61
+-0.0174533 0.0174533
+-498.985 1022.92
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995844	1.00168
+
+-93.4311	61.324
+
+Time:	4582:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14677	14677
+-1054.02 804.313 9310.73
+-0.0174533 0.0174533
+-476.139 1054.02
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14677	14677
+-1054.02 804.313 9310.73
+-0.0174533 0.0174533
+-476.139 1054.02
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995907	1.00168
+
+-84.0408	60.8484
+
+Time:	4583:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14449	14449
+-1067.42 795.428 9236.91
+-0.0174533 0.0174533
+-483.308 1067.42
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14449	14449
+-1067.42 795.428 9236.91
+-0.0174533 0.0174533
+-483.308 1067.42
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995827	1.00168
+
+-81.7249	62.3166
+
+Time:	4584:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14271.2	14271.2
+-1093.38 769.332 9112.16
+-0.0174533 0.0174533
+-500.148 1093.38
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14271.2	14271.2
+-1093.38 769.332 9112.16
+-0.0174533 0.0174533
+-500.148 1093.38
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995847	1.00169
+
+-75.765	71.5962
+
+Time:	4585:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13981.5	13981.5
+-1089.27 764.58 8971.45
+-0.0174533 0.0174533
+-493.598 1089.27
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13981.5	13981.5
+-1089.27 764.58 8971.45
+-0.0174533 0.0174533
+-493.598 1089.27
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995901	1.00169
+
+-75.4208	86.6537
+
+Time:	4586:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13766.3	13766.3
+-1087.38 761.2 8825.81
+-0.0174533 0.0174533
+-492.231 1087.38
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13766.3	13766.3
+-1087.38 761.2 8825.81
+-0.0174533 0.0174533
+-492.231 1087.38
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995942	1.00169
+
+-75.1442	94.7392
+
+Time:	4587:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14518.1	14518.1
+-1078.67 772.205 9220.92
+-0.0174533 0.0174533
+-489.003 1078.67
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14518.1	14518.1
+-1078.67 772.205 9220.92
+-0.0174533 0.0174533
+-489.003 1078.67
+
+2	0	5	1	5
+
+3	0	10	1	5
+
+0.995288	1.00168
+
+-76.1882	79.0857
+
+Time:	4588:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14417.4	14417.4
+-1082.39 767.901 9117.23
+-0.0174533 0.0174533
+-489.021 1082.39
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14417.4	14417.4
+-1082.39 767.901 9117.23
+-0.0174533 0.0174533
+-489.021 1082.39
+
+2	0	5	1	6
+
+3	0	10	1	6
+
+0.995516	1.00169
+
+-75.774	79.3718
+
+Time:	4589:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14639.7	14639.7
+-1084 767.861 9220.44
+-0.0174533 0.0174533
+-494.751 1084
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14639.7	14639.7
+-1084 767.861 9220.44
+-0.0174533 0.0174533
+-494.751 1084
+
+2	0	5	1	7
+
+3	0	10	1	7
+
+0.995557	1.00169
+
+-75.7287	66.786
+
+Time:	4590:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14699.6	14699.6
+-1077.85 753.466 9289.74
+-0.0174533 0.0174533
+-487.489 1077.85
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14699.6	14699.6
+-1077.85 753.466 9289.74
+-0.0174533 0.0174533
+-487.489 1077.85
+
+2	0	5	1	8
+
+3	-0.32571	9.67429	1	8
+
+0.99552	1.00172
+
+-77.0664	71.7986
+
+Time:	4591:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14271	14271
+-1109.11 617.657 8876.95
+-0.0174533 0.0174533
+-489.601 1109.11
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14271	14271
+-1109.11 617.657 8876.95
+-0.0174533 0.0174533
+-489.601 1109.11
+
+2	0	5	0	4
+
+3	0.32571	10	0	4
+
+0.996032	1.00171
+
+-61.1385	69.5008
+
+Time:	4592:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14856.5	14856.5
+-1061.73 781.536 9237.62
+-0.0174533 0.0174533
+-487.227 1061.73
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14856.5	14856.5
+-1061.73 781.536 9237.62
+-0.0174533 0.0174533
+-487.227 1061.73
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995632	1.00172
+
+-82.5121	68.5851
+
+Time:	4593:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15124.9	15124.9
+-987.743 929.876 9273.48
+-0.0174533 0.0174533
+-576.14 987.743
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15124.9	15124.9
+-987.743 929.876 9273.48
+-0.0174533 0.0174533
+-576.14 987.743
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995549	1.00173
+
+-103.64	61.6821
+
+Time:	4594:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15136.5	15136.5
+-1032.53 816.492 9365.42
+-0.0174533 0.0174533
+-549.367 1032.53
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15136.5	15136.5
+-1032.53 816.492 9365.42
+-0.0174533 0.0174533
+-549.367 1032.53
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995537	1.00172
+
+-88.3858	62.9668
+
+Time:	4595:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15211	15211
+-998.832 907.543 9361.8
+-0.0174533 0.0174533
+-585.319 998.832
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15211	15211
+-998.832 907.543 9361.8
+-0.0174533 0.0174533
+-585.319 998.832
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995546	1.00173
+
+-100.464	63.8909
+
+Time:	4596:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15194	15194
+-935.988 1030.08 9297.9
+-0.0174533 0.0174533
+-629.295 935.988
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15194	15194
+-935.988 1030.08 9297.9
+-0.0174533 0.0174533
+-629.295 935.988
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995581	1.00174
+
+-116.772	63.9705
+
+Time:	4597:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15243.8	15243.8
+-945.422 1009.11 9335.96
+-0.0174533 0.0174533
+-630 945.422
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15243.8	15243.8
+-945.422 1009.11 9335.96
+-0.0174533 0.0174533
+-630 945.422
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995613	1.00174
+
+-113.991	65.1998
+
+Time:	4598:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15124	15124
+-983.86 925.426 9301.76
+-0.0174533 0.0174533
+-593.541 983.86
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15124	15124
+-983.86 925.426 9301.76
+-0.0174533 0.0174533
+-593.541 983.86
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995721	1.00173
+
+-103.353	63.8251
+
+Time:	4599:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15201.7	15201.7
+-983.077 948.691 9346.63
+-0.0174533 0.0174533
+-598.951 983.077
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15201.7	15201.7
+-983.077 948.691 9346.63
+-0.0174533 0.0174533
+-598.951 983.077
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995619	1.00174
+
+-105.822	64.222
+
+Time:	4600:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15226.2	15226.2
+-1009.14 962.285 9522.9
+-0.0174533 0.0174533
+-560.241 1009.14
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15226.2	15226.2
+-1009.14 962.285 9522.9
+-0.0174533 0.0174533
+-560.241 1009.14
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995583	1.00172
+
+-102.387	63.3037
+
+Time:	4601:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15243.7	15243.7
+-1002.41 1009.73 9538.13
+-0.0174533 0.0174533
+-573.473 1002.41
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15243.7	15243.7
+-1002.41 1009.73 9538.13
+-0.0174533 0.0174533
+-573.473 1002.41
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995539	1.00173
+
+-108.323	64.2902
+
+Time:	4602:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15383	15383
+-1010.02 962.805 9568
+-0.0174533 0.0174533
+-566.67 1010.02
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15383	15383
+-1010.02 962.805 9568
+-0.0174533 0.0174533
+-566.67 1010.02
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995498	1.00173
+
+-102.4	64.039
+
+Time:	4603:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15363.6	15363.6
+-1009.82 967.885 9577.56
+-0.0174533 0.0174533
+-563.041 1009.82
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15363.6	15363.6
+-1009.82 967.885 9577.56
+-0.0174533 0.0174533
+-563.041 1009.82
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995524	1.00173
+
+-102.885	63.6665
+
+Time:	4604:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15290	15290
+-1018.97 948.158 9552.71
+-0.0174533 0.0174533
+-545.939 1018.97
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15290	15290
+-1018.97 948.158 9552.71
+-0.0174533 0.0174533
+-545.939 1018.97
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995557	1.00173
+
+-100.067	62.6075
+
+Time:	4605:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15216.4	15216.4
+-989.395 1055.63 9497.29
+-0.0174533 0.0174533
+-573.915 989.395
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15216.4	15216.4
+-989.395 1055.63 9497.29
+-0.0174533 0.0174533
+-573.915 989.395
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995613	1.00174
+
+-114.081	62.8545
+
+Time:	4606:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15107.7	15107.7
+-1017.19 947.888 9444.38
+-0.0174533 0.0174533
+-535.51 1017.19
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15107.7	15107.7
+-1017.19 947.888 9444.38
+-0.0174533 0.0174533
+-535.51 1017.19
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.99567	1.00173
+
+-100.233	60.912
+
+Time:	4607:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14709.6	14709.6
+-1077.83 773.741 9256.41
+-0.0174533 0.0174533
+-486.928 1077.83
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14709.6	14709.6
+-1077.83 773.741 9256.41
+-0.0174533 0.0174533
+-486.928 1077.83
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995721	1.00172
+
+-76.4921	63.6804
+
+Time:	4608:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14385	14385
+-1091.54 759.413 9137.1
+-0.0174533 0.0174533
+-497.079 1091.54
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14385	14385
+-1091.54 759.413 9137.1
+-0.0174533 0.0174533
+-497.079 1091.54
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995831	1.00172
+
+-74.9909	69.4384
+
+Time:	4609:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14097.2	14097.2
+-1088.64 760.434 8907.78
+-0.0174533 0.0174533
+-496.126 1088.64
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14097.2	14097.2
+-1088.64 760.434 8907.78
+-0.0174533 0.0174533
+-496.126 1088.64
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995839	1.00172
+
+-75.1339	79.6482
+
+Time:	4610:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13968.2	13968.2
+-1087.9 761.164 8871.55
+-0.0174533 0.0174533
+-496.017 1087.9
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13968.2	13968.2
+-1087.9 761.164 8871.55
+-0.0174533 0.0174533
+-496.017 1087.9
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995844	1.00172
+
+-75.2274	87.2724
+
+Time:	4611:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14757.6	14757.6
+-1037.24 898.015 9321.56
+-0.0174533 0.0174533
+-489.804 1037.24
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14757.6	14757.6
+-1037.24 898.015 9321.56
+-0.0174533 0.0174533
+-489.804 1037.24
+
+2	0	5	1	5
+
+3	0	10	1	5
+
+0.995184	1.00172
+
+-92.2622	62.1732
+
+Time:	4612:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14934.9	14934.9
+-995.851 1037.4 9355.51
+-0.0174533 0.0174533
+-514.032 995.851
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14934.9	14934.9
+-995.851 1037.4 9355.51
+-0.0174533 0.0174533
+-514.032 995.851
+
+2	0	5	1	6
+
+3	0	10	1	6
+
+0.995402	1.00173
+
+-110.992	61.2887
+
+Time:	4613:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15589.6	15589.6
+-969.099 1150.61 9737.48
+-0.0174533 0.0174533
+-585.849 969.099
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15589.6	15589.6
+-969.099 1150.61 9737.48
+-0.0174533 0.0174533
+-585.849 969.099
+
+2	0	5	1	7
+
+3	0	10	1	7
+
+0.995197	1.00174
+
+-124.454	64.5367
+
+Time:	4614:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16394	16394
+-1000.17 999.602 10176.5
+-0.0174533 0.0174533
+-630 1000.17
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16394	16394
+-1000.17 999.602 10176.5
+-0.0174533 0.0174533
+-630 1000.17
+
+2	0	5	1	8
+
+3	0	10	1	8
+
+0.994925	1.00173
+
+-104.851	74.9335
+
+Time:	4615:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16032.1	16032.1
+-1004.8 1005.03 10030.8
+-0.0174533 0.0174533
+-630 1004.8
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16032.1	16032.1
+-1004.8 1005.03 10030.8
+-0.0174533 0.0174533
+-630 1004.8
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995442	1.00174
+
+-106.622	72.2574
+
+Time:	4616:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16148.6	16148.6
+-973.257 1207.81 10394.4
+-0.0174533 0.0174533
+-630 946
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16148.6	16148.6
+-973.257 1207.81 10394.4
+-0.0174533 0.0174533
+-630 946
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995187	1.00171
+
+-126.781	75.5312
+
+Time:	4617:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16198	16198
+-988.372 1316.15 10615.1
+-0.0174533 0.0174533
+-670.389 883
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16198	16198
+-988.372 1316.15 10615.1
+-0.0174533 0.0174533
+-670.389 883
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995145	1.00162
+
+-138.082	81.6572
+
+Time:	4618:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16045.9	16045.9
+-971.688 1054.47 10506.5
+-0.0174533 0.0174533
+-630 811
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16045.9	16045.9
+-971.688 1054.47 10506.5
+-0.0174533 0.0174533
+-630 811
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.99513	1.00161
+
+-104.378	83.2922
+
+Time:	4619:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15869.5	15869.5
+-968.937 900.227 10497.1
+-0.0174533 0.0174533
+-630 720
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15869.5	15869.5
+-968.937 900.227 10497.1
+-0.0174533 0.0174533
+-630 720
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995162	1.00157
+
+-82.694	88.2554
+
+Time:	4620:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15522.4	15522.4
+-960.643 776.423 10342.3
+-0.0174533 0.0174533
+-630 614.35
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15522.4	15522.4
+-960.643 776.423 10342.3
+-0.0174533 0.0174533
+-630 614.35
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995184	1.00097
+
+-60.9879	96.49
+
+Time:	4621:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15694.1	15694.1
+-948.289 866.315 10411.2
+-0.0174533 0.0174533
+-630 641.301
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15694.1	15694.1
+-948.289 866.315 10411.2
+-0.0174533 0.0174533
+-630 641.301
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995179	1.00138
+
+-74.3594	91.2218
+
+Time:	4622:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15684	15684
+-948.547 866.834 10368.8
+-0.0174533 0.0174533
+-630 662
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15684	15684
+-948.547 866.834 10368.8
+-0.0174533 0.0174533
+-630 662
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995256	1.00158
+
+-76.177	89.19
+
+Time:	4623:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15982	15982
+-955.012 1190.58 10269.1
+-0.0174533 0.0174533
+-630 948
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15982	15982
+-955.012 1190.58 10269.1
+-0.0174533 0.0174533
+-630 948
+
+2	0	5	0	4
+
+3	-0.759795	9.2402	0	4
+
+0.995274	1.00171
+
+-126.215	73.3715
+
+Time:	4624:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16557.6	16557.6
+-1030.5 906.876 10319.3
+-0.0174533 0.0174533
+-630 1030.5
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16557.6	16557.6
+-1030.5 906.876 10319.3
+-0.0174533 0.0174533
+-630 1030.5
+
+2	0	5	0	4
+
+3	0.759795	10	0	4
+
+0.995207	1.00173
+
+-94.2421	77.2818
+
+Time:	4625:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16438.3	16438.3
+-1018.14 946.895 10244.4
+-0.0174533 0.0174533
+-630 1018.14
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16438.3	16438.3
+-1018.14 946.895 10244.4
+-0.0174533 0.0174533
+-630 1018.14
+
+2	0	5	0	4
+
+3	1.56319e-12	10	0	4
+
+0.995232	1.00173
+
+-99.1952	75.5112
+
+Time:	4626:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16466.9	16466.9
+-1012.78 953.664 10228.9
+-0.0174533 0.0174533
+-630 1012.78
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16466.9	16466.9
+-1012.78 953.664 10228.9
+-0.0174533 0.0174533
+-630 1012.78
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995271	1.00173
+
+-100.586	74.6836
+
+Time:	4627:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16259.8	16259.8
+-1006.84 962.697 10167.4
+-0.0174533 0.0174533
+-630 1006.84
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16259.8	16259.8
+-1006.84 962.697 10167.4
+-0.0174533 0.0174533
+-630 1006.84
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995203	1.00172
+
+-102.094	73.251
+
+Time:	4628:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16184.5	16184.5
+-989.934 1038.56 10125.5
+-0.0174533 0.0174533
+-630 989.934
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16184.5	16184.5
+-989.934 1038.56 10125.5
+-0.0174533 0.0174533
+-630 989.934
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995039	1.00172
+
+-112.005	69.8812
+
+Time:	4629:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15851.3	15851.3
+-961.177 1128.92 9953.34
+-0.0174533 0.0174533
+-630 961.177
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15851.3	15851.3
+-961.177 1128.92 9953.34
+-0.0174533 0.0174533
+-630 961.177
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995122	1.00171
+
+-124.494	66.1753
+
+Time:	4630:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15642.6	15642.6
+-1067.63 822.105 9971.32
+-0.0174533 0.0174533
+-480.049 1067.63
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15642.6	15642.6
+-1067.63 822.105 9971.32
+-0.0174533 0.0174533
+-480.049 1067.63
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.99461	1.00169
+
+-82.7146	74.1435
+
+Time:	4631:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14879.3	14879.3
+-825 920.677 9551.19
+-0.0174533 0.0174533
+-527.003 825
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14879.3	14879.3
+-825 920.677 9551.19
+-0.0174533 0.0174533
+-527.003 825
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995489	1.00156
+
+-93.6283	69.349
+
+Time:	4632:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14650.7	14650.7
+-916 957.441 9319.43
+-0.0174533 0.0174533
+-515.274 916
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14650.7	14650.7
+-916 957.441 9319.43
+-0.0174533 0.0174533
+-515.274 916
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995325	1.00156
+
+-98.7813	70.7152
+
+Time:	4633:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14486.2	14486.2
+-1016 917.329 9186.15
+-0.0174533 0.0174533
+-491.774 1016
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14486.2	14486.2
+-1016 917.329 9186.15
+-0.0174533 0.0174533
+-491.774 1016
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995281	1.00162
+
+-94.7784	77.6388
+
+Time:	4634:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14272	14272
+-925 997.822 9147.66
+-0.0174533 0.0174533
+-529.125 925
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14272	14272
+-925 997.822 9147.66
+-0.0174533 0.0174533
+-529.125 925
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.99516	1.00156
+
+-103.868	85.0533
+
+Time:	4635:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15123.8	15123.8
+-927 1044.21 9672.6
+-0.0174533 0.0174533
+-549.37 927
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15123.8	15123.8
+-927 1044.21 9672.6
+-0.0174533 0.0174533
+-549.37 927
+
+2	0	5	1	5
+
+3	0	10	1	5
+
+0.994336	1.00157
+
+-106.971	80.1384
+
+Time:	4636:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15346.4	15346.4
+-1019.13 929.828 9572.29
+-0.0174533 0.0174533
+-485.835 1019.13
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15346.4	15346.4
+-1019.13 929.828 9572.29
+-0.0174533 0.0174533
+-485.835 1019.13
+
+2	0	5	1	6
+
+3	0	10	1	6
+
+0.994738	1.00169
+
+-99.1903	64.8797
+
+Time:	4637:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15640.1	15640.1
+-907.879 1158.47 9589.08
+-0.0174533 0.0174533
+-630 907.879
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15640.1	15640.1
+-907.879 1158.47 9589.08
+-0.0174533 0.0174533
+-630 907.879
+
+2	0	5	1	7
+
+3	0	10	1	7
+
+0.995235	1.00169
+
+-130.328	64.4662
+
+Time:	4638:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16830.3	16830.3
+-997.018 955.688 10269.4
+-0.0174533 0.0174533
+-630 997.018
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16830.3	16830.3
+-997.018 955.688 10269.4
+-0.0174533 0.0174533
+-630 997.018
+
+2	0	5	1	8
+
+3	0	10	1	8
+
+0.994967	1.00169
+
+-102.695	74.6886
+
+Time:	4639:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16400.5	16400.5
+-995.708 987.004 10080.9
+-0.0174533 0.0174533
+-630 995.708
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16400.5	16400.5
+-995.708 987.004 10080.9
+-0.0174533 0.0174533
+-630 995.708
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995597	1.00171
+
+-107.611	71.8335
+
+Time:	4640:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16428.5	16428.5
+-1008.88 934.135 10180.8
+-0.0174533 0.0174533
+-630 1008.88
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16428.5	16428.5
+-1008.88 934.135 10180.8
+-0.0174533 0.0174533
+-630 1008.88
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995379	1.00171
+
+-99.8043	74.6964
+
+Time:	4641:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16515.9	16515.9
+-1043.75 823.321 10397
+-0.0174533 0.0174533
+-630 1043.75
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16515.9	16515.9
+-1043.75 823.321 10397
+-0.0174533 0.0174533
+-630 1043.75
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995436	1.0017
+
+-84.6454	81.052
+
+Time:	4642:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16556.2	16556.2
+-1041.18 848.013 10372
+-0.0174533 0.0174533
+-630 1041.18
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16556.2	16556.2
+-1041.18 848.013 10372
+-0.0174533 0.0174533
+-630 1041.18
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995453	1.00171
+
+-87.7852	81.5662
+
+Time:	4643:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16603.1	16603.1
+-1041.67 847.037 10431
+-0.0174533 0.0174533
+-630 1041.67
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16603.1	16603.1
+-1041.67 847.037 10431
+-0.0174533 0.0174533
+-630 1041.67
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995425	1.00171
+
+-87.0689	82.5933
+
+Time:	4644:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16507.7	16507.7
+-1038.32 851.775 10329
+-0.0174533 0.0174533
+-630 1038.32
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16507.7	16507.7
+-1038.32 851.775 10329
+-0.0174533 0.0174533
+-630 1038.32
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995496	1.00172
+
+-87.8641	81.9878
+
+Time:	4645:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16438.1	16438.1
+-1035.02 873.671 10266
+-0.0174533 0.0174533
+-630 1035.02
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16438.1	16438.1
+-1035.02 873.671 10266
+-0.0174533 0.0174533
+-630 1035.02
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995486	1.00172
+
+-90.5114	81.0005
+
+Time:	4646:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16355.2	16355.2
+-1030.03 885.417 10184.8
+-0.0174533 0.0174533
+-630 1030.03
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16355.2	16355.2
+-1030.03 885.417 10184.8
+-0.0174533 0.0174533
+-630 1030.03
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995486	1.00172
+
+-92.0305	79.9115
+
+Time:	4647:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16291	16291
+-1020.7 906.044 10123.1
+-0.0174533 0.0174533
+-630 1020.7
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16291	16291
+-1020.7 906.044 10123.1
+-0.0174533 0.0174533
+-630 1020.7
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995476	1.00173
+
+-94.679	78.2967
+
+Time:	4648:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16437	16437
+-1027.89 909.09 10243.9
+-0.0174533 0.0174533
+-630 1027.89
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16437	16437
+-1027.89 909.09 10243.9
+-0.0174533 0.0174533
+-630 1027.89
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995402	1.00173
+
+-94.6705	78.2207
+
+Time:	4649:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16259.2	16259.2
+-1023.32 940.599 10200.5
+-0.0174533 0.0174533
+-630 1023.32
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16259.2	16259.2
+-1023.32 940.599 10200.5
+-0.0174533 0.0174533
+-630 1023.32
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995147	1.00173
+
+-98.3237	75.7416
+
+Time:	4650:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16211.8	16211.8
+-1014.59 947.811 10153.2
+-0.0174533 0.0174533
+-630 1014.59
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16211.8	16211.8
+-1014.59 947.811 10153.2
+-0.0174533 0.0174533
+-630 1014.59
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995082	1.00172
+
+-99.7617	74.2491
+
+Time:	4651:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16157.2	16157.2
+-1005.33 967.874 10092.5
+-0.0174533 0.0174533
+-630 1005.33
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16157.2	16157.2
+-1005.33 967.874 10092.5
+-0.0174533 0.0174533
+-630 1005.33
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995049	1.00172
+
+-102.782	72.4636
+
+Time:	4652:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15851.3	15851.3
+-997.704 1020.58 10044.7
+-0.0174533 0.0174533
+-630 997.704
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15851.3	15851.3
+-997.704 1020.58 10044.7
+-0.0174533 0.0174533
+-630 997.704
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.994816	1.00172
+
+-108.873	70.3901
+
+Time:	4653:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15503.7	15503.7
+-980.222 1068.6 9856.19
+-0.0174533 0.0174533
+-619.464 980.222
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15503.7	15503.7
+-980.222 1068.6 9856.19
+-0.0174533 0.0174533
+-619.464 980.222
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995129	1.00172
+
+-116.421	66.9895
+
+Time:	4654:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15362.4	15362.4
+-951.08 1165.54 9726.45
+-0.0174533 0.0174533
+-617.507 951.08
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15362.4	15362.4
+-951.08 1165.54 9726.45
+-0.0174533 0.0174533
+-617.507 951.08
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995211	1.00172
+
+-128.402	64.7925
+
+Time:	4655:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14757.3	14757.3
+-1090.77 784.724 9400.77
+-0.0174533 0.0174533
+-490.895 1090.77
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14757.3	14757.3
+-1090.77 784.724 9400.77
+-0.0174533 0.0174533
+-490.895 1090.77
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995372	1.00171
+
+-77.2175	71.5436
+
+Time:	4656:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14259.4	14259.4
+-1092.83 780.595 9180.66
+-0.0174533 0.0174533
+-484.204 1092.83
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14259.4	14259.4
+-1092.83 780.595 9180.66
+-0.0174533 0.0174533
+-484.204 1092.83
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995448	1.0017
+
+-76.9516	103.674
+
+Time:	4657:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14066.5	14066.5
+-1090.95 777.277 9060.87
+-0.0174533 0.0174533
+-484.935 1090.95
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14066.5	14066.5
+-1090.95 777.277 9060.87
+-0.0174533 0.0174533
+-484.935 1090.95
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995512	1.00169
+
+-76.6671	111.169
+
+Time:	4658:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13968.7	13968.7
+-1089.3 777.854 9003.97
+-0.0174533 0.0174533
+-484.123 1089.3
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+13968.7	13968.7
+-1089.3 777.854 9003.97
+-0.0174533 0.0174533
+-484.123 1089.3
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.995541	1.0017
+
+-76.7545	113.851
+
+Time:	4659:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14679.2	14679.2
+-1082.7 788.348 9354.73
+-0.0174533 0.0174533
+-482.839 1082.7
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14679.2	14679.2
+-1082.7 788.348 9354.73
+-0.0174533 0.0174533
+-482.839 1082.7
+
+2	0	5	1	5
+
+3	0	10	1	5
+
+0.994925	1.0017
+
+-77.7203	89.1059
+
+Time:	4660:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14796.6	14796.6
+-1088.17 779.081 9401.96
+-0.0174533 0.0174533
+-483.483 1088.17
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14796.6	14796.6
+-1088.17 779.081 9401.96
+-0.0174533 0.0174533
+-483.483 1088.17
+
+2	0	5	1	6
+
+3	0	10	1	6
+
+0.995127	1.0017
+
+-76.8257	79.6836
+
+Time:	4661:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15292.1	15292.1
+-1066.7 810.813 9826.18
+-0.0174533 0.0174533
+-475.996 1066.7
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15292.1	15292.1
+-1066.7 810.813 9826.18
+-0.0174533 0.0174533
+-475.996 1066.7
+
+2	0	5	1	7
+
+3	0	10	1	7
+
+0.994989	1.00171
+
+-79.7992	69.4165
+
+Time:	4662:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16073.9	16073.9
+-972.944 1140.93 10071.9
+-0.0174533 0.0174533
+-630 972.944
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16073.9	16073.9
+-972.944 1140.93 10071.9
+-0.0174533 0.0174533
+-630 972.944
+
+2	0	5	1	8
+
+3	-0.432363	9.56764	1	8
+
+0.994808	1.00173
+
+-122.835	70.2075
+
+Time:	4663:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15682.5	15682.5
+-968.829 1176.52 9913.16
+-0.0174533 0.0174533
+-630 968.829
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15682.5	15682.5
+-968.829 1176.52 9913.16
+-0.0174533 0.0174533
+-630 968.829
+
+2	0	5	0	4
+
+3	0.432363	10	0	4
+
+0.995381	1.00175
+
+-128.131	67.3296
+
+Time:	4664:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16031.4	16031.4
+-987.261 1106.48 10091.2
+-0.0174533 0.0174533
+-630 987.261
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16031.4	16031.4
+-987.261 1106.48 10091.2
+-0.0174533 0.0174533
+-630 987.261
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.99504	1.00174
+
+-118.546	69.8922
+
+Time:	4665:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16212.6	16212.6
+-998.222 1054.46 10183
+-0.0174533 0.0174533
+-630 998.222
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16212.6	16212.6
+-998.222 1054.46 10183
+-0.0174533 0.0174533
+-630 998.222
+
+2	0	5	0	4
+
+3	0	10	0	4
+
+0.994942	1.00174
+
+-111.794	71.3126
+
+Time:	4666:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16285.7	16285.7
+-1007.28 1007.47 10231.6
+-0.0174533 0.0174533
+-630 1007.28
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16285.7	16285.7
+-1007.28 1007.47 10231.6
+-0.0174533 0.0174533
+-630 1007.28
+
+2	0	5	0	4
+
+3	-0.772693	9.22731	0	4
+
+0.994952	1.00174
+
+-106.248	72.7338
+
+Time:	4667:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16254.4	16254.4
+-981.555 1153.98 10121.4
+-0.0174533 0.0174533
+-630 981.555
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16254.4	16254.4
+-981.555 1153.98 10121.4
+-0.0174533 0.0174533
+-630 981.555
+
+2	0	5	0	4
+
+3	-0.227307	9	0	4
+
+0.994962	1.00175
+
+-123.644	68.7267
+
+Time:	4668:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16331.1	16331.1
+-986.525 1110.92 10142.4
+-0.0174533 0.0174533
+-630 986.525
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16331.1	16331.1
+-986.525 1110.92 10142.4
+-0.0174533 0.0174533
+-630 986.525
+
+2	0	5	0	4
+
+3	-1	8	0	4
+
+0.994967	1.00175
+
+-119.019	68.591
+
+Time:	4669:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16408.8	16408.8
+-1003.33 1005.33 10182.4
+-0.0174533 0.0174533
+-630 1003.33
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16408.8	16408.8
+-1003.33 1005.33 10182.4
+-0.0174533 0.0174533
+-630 1003.33
+
+2	0	5	0	4
+
+3	0	8	0	4
+
+0.994995	1.00173
+
+-106.364	72.264
+
+Time:	4670:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16104.1	16104.1
+-972.498 1162.83 10039.1
+-0.0174533 0.0174533
+-630 972.498
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16104.1	16104.1
+-972.498 1162.83 10039.1
+-0.0174533 0.0174533
+-630 972.498
+
+2	0	5	0	4
+
+3	-1.56475e-12	8	0	4
+
+0.99506	1.00174
+
+-126.1	67.494
+
+Time:	4671:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16135.8	16135.8
+-967.136 1184.16 10075.2
+-0.0174533 0.0174533
+-630 967.136
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+16135.8	16135.8
+-967.136 1184.16 10075.2
+-0.0174533 0.0174533
+-630 967.136
+
+2	0	5	0	4
+
+3	-1	7	0	4
+
+0.995039	1.00174
+
+-128.751	67.8311
+
+Time:	4672:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15812.6	15812.6
+-952.361 1224.1 9940.05
+-0.0174533 0.0174533
+-630 952.361
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15812.6	15812.6
+-952.361 1224.1 9940.05
+-0.0174533 0.0174533
+-630 952.361
+
+2	0	5	0	4
+
+3	-1	6	0	4
+
+0.995029	1.00173
+
+-134.074	68.2241
+
+Time:	4673:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15691.8	15691.8
+-947.322 1223.57 9838.78
+-0.0174533 0.0174533
+-630 947.322
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15691.8	15691.8
+-947.322 1223.57 9838.78
+-0.0174533 0.0174533
+-630 947.322
+
+2	0	5	0	4
+
+3	-1	5	0	4
+
+0.995043	1.00173
+
+-134.396	67.7609
+
+Time:	4674:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15646.7	15646.7
+-962.923 1165.39 9815.1
+-0.0174533 0.0174533
+-615.915 962.923
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15646.7	15646.7
+-962.923 1165.39 9815.1
+-0.0174533 0.0174533
+-615.915 962.923
+
+2	0	5	0	4
+
+3	-1	4	0	4
+
+0.99512	1.00173
+
+-127.52	66.6627
+
+Time:	4675:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15706	15706
+-1023.96 934.927 9884.21
+-0.0174533 0.0174533
+-565.977 1023.96
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15706	15706
+-1023.96 934.927 9884.21
+-0.0174533 0.0174533
+-565.977 1023.96
+
+2	0	5	0	4
+
+3	-1	3	0	4
+
+0.995119	1.00171
+
+-98.4028	66.3057
+
+Time:	4676:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15416	15416
+-1020.16 939.103 9704.97
+-0.0174533 0.0174533
+-538.126 1020.16
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15416	15416
+-1020.16 939.103 9704.97
+-0.0174533 0.0174533
+-538.126 1020.16
+
+2	0	5	0	4
+
+3	-1	2	0	4
+
+0.995208	1.00171
+
+-99.581	64.1127
+
+Time:	4677:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15227.7	15227.7
+-1029.96 902.544 9612.41
+-0.0174533 0.0174533
+-510.9 1029.96
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15227.7	15227.7
+-1029.96 902.544 9612.41
+-0.0174533 0.0174533
+-510.9 1029.96
+
+2	0	5	0	4
+
+3	-1	1	0	4
+
+0.995288	1.0017
+
+-95.0899	64.3468
+
+Time:	4678:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15163.6	15163.6
+-1027.53 909.113 9545.64
+-0.0174533 0.0174533
+-505.616 1027.53
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+15163.6	15163.6
+-1027.53 909.113 9545.64
+-0.0174533 0.0174533
+-505.616 1027.53
+
+2	0	5	0	4
+
+3	-1	1.11022e-16	0	4
+
+0.995317	1.0017
+
+-96.0752	65.3649
+
+Time:	4679:
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14543.3	14543.3
+-1089.02 775.117 9338.28
+-0.0174533 0.0174533
+-493.34 1089.02
+
+DC Optimal Power Flow:
+LP problem is primal feasible.
+14543.3	14543.3
+-1089.02 775.117 9338.28
+-0.0174533 0.0174533
+-493.34 1089.02
+
+2	0	5	0	4
+
+3	-1.11022e-16	0	0	4
+
+0.995769	1.00168
+
+-76.9849	72.2996
+
