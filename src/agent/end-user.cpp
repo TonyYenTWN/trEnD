@@ -506,8 +506,8 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile, configura
 		// Smart price for smart appliance
 		profile.operation.smart_appliance.price_demand = Eigen::VectorXd::Zero(2 * load_shift_time + 1);
 		if(process_par.encourage_redispatch){
-			profile.operation.smart_appliance.price_demand(1) = bidded_price_map.bidded_price(price_interval + 1);
-			profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(1);
+			profile.operation.smart_appliance.price_demand(load_shift_time) = bidded_price_map.bidded_price(price_interval + 1);
+			profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(load_shift_time);
 		}
 		else{
 			if(process_par.rule_based){
@@ -602,8 +602,8 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile, configura
 
 		// Smart price for smart appliance
 		profile.operation.smart_appliance.price_demand = Eigen::VectorXd::Zero(2 * load_shift_time + 1);
-		profile.operation.smart_appliance.price_demand(1) = bidded_price_map.bidded_price(price_interval + 1);
-		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(1);
+		profile.operation.smart_appliance.price_demand(load_shift_time) = bidded_price_map.bidded_price(price_interval + 1);
+		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(load_shift_time);
 //		for(int tock = 0; tock < 2 * load_shift_time + 1; ++ tock){
 //			double price_demand_flex_sa = bidded_price_map.bidded_price(price_interval + 1);
 //
