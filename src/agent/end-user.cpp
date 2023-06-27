@@ -421,8 +421,8 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile, configura
 		else{
 			price_demand_flex_EV_ID = bidded_price_map.price_ID[int(price_demand_flex_EV) + .5];
 		}
-		profile.operation.EV.BESS.price_supply = bidded_price_map.bidded_price(price_supply_flex_BESS_ID);
-		profile.operation.EV.BESS.price_demand = bidded_price_map.bidded_price(price_demand_flex_BESS_ID);
+		profile.operation.EV.BESS.price_supply = bidded_price_map.bidded_price(price_supply_flex_EV_ID);
+		profile.operation.EV.BESS.price_demand = bidded_price_map.bidded_price(price_demand_flex_EV_ID);
 	}
 
 	// Give the bids

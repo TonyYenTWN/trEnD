@@ -1668,8 +1668,8 @@ namespace{
 
 				// Flexible bids have redispatcch priority in between
 				if(process_par.encourage_redispatch){
-					int price_supply_flex_BESS_ID = bidded_price_map.price_ID[Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.price_supply];
-					int price_demand_flex_BESS_ID = bidded_price_map.price_ID[Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.price_demand];
+					int price_supply_flex_BESS_ID = bidded_price_map.price_ID[Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.price_supply];
+					int price_demand_flex_BESS_ID = bidded_price_map.price_ID[Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.price_demand];
 					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand(price_demand_flex_BESS_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_flex.sum();
 					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_supply(price_supply_flex_BESS_ID) += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_supply_flex.sum();
 					//Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.redispatch_demand += Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_flex;
