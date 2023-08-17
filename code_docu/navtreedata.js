@@ -24,7 +24,7 @@
 */
 var NAVTREE =
 [
-  [ "trEnD", "index.html", [
+  [ "trEnD: Code Documentation", "index.html", [
     [ "Namespaces", "namespaces.html", [
       [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
@@ -49,10 +49,10 @@ var NAVTREE =
         [ "Functions", "globals_func.html", null ],
         [ "Macros", "globals_defs.html", null ]
       ] ]
-    ] ],
+    ] ]  ] ],
     [ "Return to Main Documentation Page", "../index.html", null ],
     [ "Github Repository", "^https://github.com/TonyYenTWN/trEnD", null ]
-  ] ]
+
 ];
 
 var NAVTREEINDEX =
