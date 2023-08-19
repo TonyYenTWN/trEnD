@@ -42,9 +42,17 @@ int main(){
 		// Create a folder to store the file
 		std::filesystem::create_directories("csv/processed/spatial_field");
 
-		spatial_field::demand_imbalance_estimation(Power_network_inform, Power_market_inform.International_Market, process_par);
-		//spatial_field::wind_on_cf_estimation(Power_network_inform, process_par);
-		//spatial_field::solar_radiation_estimation(Power_network_inform, process_par);
+		if(process_par.estimation_demand_flag){
+            spatial_field::demand_imbalance_estimation(Power_network_inform, Power_market_inform.International_Market, process_par);
+		}
+
+		if(process_par.estimation_wind_flag){
+            spatial_field::wind_on_cf_estimation(Power_network_inform, process_par);
+		}
+
+		if(process_par.estimation_solar_flag){
+            spatial_field::solar_radiation_estimation(Power_network_inform, process_par);
+		}
 	}
 
 	// Power market processes

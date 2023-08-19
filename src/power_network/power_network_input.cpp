@@ -39,14 +39,14 @@ namespace {
 	}
 
 	// Must read transmission data before points (DSO cluster initialize here)
-	void tranmission_data_input(power_network::network_inform &Power_network_inform, Eigen::MatrixXd bz_inform, std::string fin_node, std::string fin_edge, std::string fin_edge_simp){
+    void tranmission_data_input(power_network::network_inform &Power_network_inform, Eigen::MatrixXd bz_inform, std::string fin_node, std::string fin_edge, std::string fin_edge_simp){
 		// Read power network data
-		auto fin_node_dim = basic::get_file_dim(fin_node);
+        auto fin_node_dim = basic::get_file_dim(fin_node);
 		auto fin_edge_dim = basic::get_file_dim(fin_edge);
 		auto fin_edge_simp_dim = basic::get_file_dim(fin_edge_simp);
 		auto node_inform = basic::read_file(fin_node_dim[0], fin_node_dim[1], fin_node);
 		auto edge_inform = basic::read_file(fin_edge_dim[0], fin_edge_dim[1], fin_edge);
-		auto edge_simp_inform = basic::read_file(fin_edge_simp_dim[0], fin_edge_simp_dim[1], fin_edge_simp);
+//        auto edge_simp_inform = basic::read_file(fin_edge_simp_dim[0], fin_edge_simp_dim[1], fin_edge_simp);
 
 		// Initialize node ID for DSO-Clusters
 		int cluster_num = int(node_inform.col(1).maxCoeff());
@@ -176,9 +176,9 @@ namespace {
 
 		// Organize wind power plant data
 		Power_network_inform.plants.wind.node = Eigen::VectorXi(fin_wind_dim[0]);
-		for(int wind_iter = 0; wind_iter < fin_wind_dim[0]; ++ wind_iter){
+		//for(int wind_iter = 0; wind_iter < fin_wind_dim[0]; ++ wind_iter){
 			//Power_network_inform.plants.wind.node(wind_iter) = int(wind_inform(wind_iter, 0)) - 1;
-		}
+		//}
 		Power_network_inform.plants.wind.cap = wind_inform.col(1);
 		Power_network_inform.plants.wind.x = wind_inform.col(wind_inform.cols() - 4);
 		Power_network_inform.plants.wind.y = wind_inform.col(wind_inform.cols() - 3);
@@ -224,9 +224,9 @@ void power_network::power_network_input_process(network_inform &Power_network_in
 	auto fin_wind = dir_name + "wind_plants.csv";
 
 	auto fin_bz_dim = basic::get_file_dim(fin_bz);
-	auto bz_inform = basic::read_file(fin_bz_dim[0], fin_bz_dim[1], fin_bz);
+    auto bz_inform = basic::read_file(fin_bz_dim[0], fin_bz_dim[1], fin_bz);
 
-	cbt_data_input(Power_network_inform, fin_cbt, fin_entry);
+    cbt_data_input(Power_network_inform, fin_cbt, fin_entry);
 	tranmission_data_input(Power_network_inform, bz_inform, fin_node, fin_edge, fin_edge_simp);
 	points_data_input(Power_network_inform, bz_inform, fin_point, fin_point_matrix);
 	weather_station_data_input(Power_network_inform, fin_weather);

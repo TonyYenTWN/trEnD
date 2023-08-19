@@ -14,6 +14,9 @@ namespace configuration{
 	struct process_config{
 		bool default_flag;
 		bool estimation_flag;
+		bool estimation_demand_flag;
+		bool estimation_wind_flag;;
+		bool estimation_solar_flag;
 		bool simulation_flag;
 		bool DSO_filter_flag;
 		bool control_reserve_flag;
@@ -29,6 +32,9 @@ namespace configuration{
 
 		void process_bool_set(){
 			this->estimation_flag = 0;
+            this->estimation_demand_flag = 0;
+            this->estimation_wind_flag = 0;
+            this->estimation_solar_flag = 0;
 			this->simulation_flag = 1;
 			this->DSO_filter_flag = 0;
 			this->control_reserve_flag = 0;
@@ -42,6 +48,20 @@ namespace configuration{
 			std::cout << "Estimate spatial fields?  Yes: 1 / No: 0 | ";
 			std::cin >> this->estimation_flag;
 			std::cout << "\n";
+
+			if(this->estimation_flag == 1){
+                std::cout << "Estimate demand field?    Yes: 1 / No: 0 | ";
+                std::cin >> this->estimation_demand_flag;
+                std::cout << "\n";
+
+                std::cout << "Estimate wind cf field?   Yes: 1 / No: 0 | ";
+                std::cin >> this->estimation_wind_flag;
+                std::cout << "\n";
+
+                std::cout << "Estimate solar cf field?  Yes: 1 / No: 0 | ";
+                std::cin >> this->estimation_solar_flag;
+                std::cout << "\n";
+			}
 
 			std::cout << "Simulate operation?       Yes: 1 / No: 0 | ";
 			std::cin >> this->simulation_flag;
@@ -83,6 +103,18 @@ namespace configuration{
 		void process_bool_output(){
 			std::cout << "Estimate spatial fields?  Yes: 1 / No: 0 | ";
 			std::cout << this->estimation_flag;
+			std::cout << "\n";
+
+			std::cout << "Estimate demand field?  Yes: 1 / No: 0 | ";
+			std::cout << this->estimation_demand_flag;
+			std::cout << "\n";
+
+			std::cout << "Estimate wind field?  Yes: 1 / No: 0 | ";
+			std::cout << this->estimation_wind_flag;
+			std::cout << "\n";
+
+			std::cout << "Estimate solar field?  Yes: 1 / No: 0 | ";
+			std::cout << this->estimation_solar_flag;
 			std::cout << "\n";
 
 			std::cout << "Simulate operation?       Yes: 1 / No: 0 | ";
