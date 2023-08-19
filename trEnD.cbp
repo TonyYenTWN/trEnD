@@ -41,7 +41,7 @@
 			</Target>
 		</Build>
 		<Compiler>
-			<Add option="-Wall -fopenmp -mavx2 -mfma -DNDEBUG -O3 -s -std=c++20" />
+			<Add option="-Wall -fopenmp -mavx2 -mfma -DNDEBUG -O3 -s -std=c++2a" />
 		</Compiler>
 		<Linker>
 			<Add option="-static-libgcc -fopenmp -s" />
