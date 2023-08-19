@@ -63,15 +63,15 @@ The files can be found in the folder [power_network](https://github.com/TonyYenT
 
 ## Compiling the Source Codes
 ### Prerequisite for Compilation
-- [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page) library installed (I used version 3.4.0)
-- [Boost](https://www.boost.org/) library installed (I used version 1.78.0)
+- [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page) libray installed
+- [Boost](https://www.boost.org/) library installed
 
 The library [ALGLIB](https://www.alglib.net/) is also used in the model, but it is already in the source codes so you need not to download it in addition.
 
 Once compilation is complete, the input csv files, source files, object files and binary file will take about 120 MB of space.
 
 ### Compiler Choice and Settings
-I use [TDM-GCC 9.2.0](https://jmeubank.github.io/tdm-gcc/articles/2020-03/9.2.0-release) to compile the codes on windows, but other compilers should also work.
+I use TDM-GCC version [9.2.0](https://jmeubank.github.io/tdm-gcc/articles/2020-03/9.2.0-release) and [10.3.0](https://jmeubank.github.io/tdm-gcc/articles/2021-05/10.3.0-release) to compile the codes on windows, but other compilers should also work.
 
 I use [Code::Blocks](https://www.codeblocks.org/docs/main_codeblocks_en.html) for project management, and [a codeblock project file](https://github.com/TonyYenTWN/trEnD/blob/main/trEnD.cbp) is provided in the repository. Again it should be possible to use other IDEs for project management and code editing.
 
