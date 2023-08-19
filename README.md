@@ -63,8 +63,8 @@ The files can be found in the folder [power_network](https://github.com/TonyYenT
 
 ## Compiling the Source Codes
 ### Prerequisite for Compilation
-- [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page) libray installed
-- [Boost](https://www.boost.org/) library installed
+- [Eigen](https://eigen.tuxfamily.org/index.php?title=Main_Page) library installed (I used version 3.4.0)
+- [Boost](https://www.boost.org/) library installed (I used version 1.78.0)
 
 The library [ALGLIB](https://www.alglib.net/) is also used in the model, but it is already in the source codes so you need not to download it in addition.
 
