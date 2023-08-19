@@ -43,7 +43,7 @@ namespace {
 		// Read power network data
         auto fin_node_dim = basic::get_file_dim(fin_node);
 		auto fin_edge_dim = basic::get_file_dim(fin_edge);
-		auto fin_edge_simp_dim = basic::get_file_dim(fin_edge_simp);
+//		auto fin_edge_simp_dim = basic::get_file_dim(fin_edge_simp);
 		auto node_inform = basic::read_file(fin_node_dim[0], fin_node_dim[1], fin_node);
 		auto edge_inform = basic::read_file(fin_edge_dim[0], fin_edge_dim[1], fin_edge);
 //        auto edge_simp_inform = basic::read_file(fin_edge_simp_dim[0], fin_edge_simp_dim[1], fin_edge_simp);

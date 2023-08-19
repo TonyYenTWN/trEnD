@@ -65,5 +65,8 @@ int main(){
 		power_network::power_flow_results_print(Power_market_inform, Power_network_inform, process_par);
 		agent::agents_results_print(Power_market_inform, Power_network_inform);
 	}
+
+	// Close log file
+	std::fclose(stdout);
 }
 //	std::cin.get();
