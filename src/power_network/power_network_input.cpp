@@ -51,7 +51,7 @@ namespace {
 		// Initialize node ID for DSO-Clusters
 		int cluster_num = int(node_inform.col(1).maxCoeff());
 		Power_network_inform.DSO_cluster.clear();
-		Power_network_inform.DSO_cluster = std::vector <power_network::DSO_cluster> (cluster_num);
+		Power_network_inform.DSO_cluster = std::vector <power_network::DSO_cluster_struct> (cluster_num);
 		for(int cluster_iter = 0; cluster_iter < cluster_num; ++ cluster_iter){
 			Power_network_inform.DSO_cluster[cluster_iter].nodes_ID.clear();
 			Power_network_inform.DSO_cluster[cluster_iter].nodes_ID.reserve(fin_node_dim[0]);
@@ -188,7 +188,7 @@ namespace {
 }
 
 // Find the distance and covariance between points
-void power_network::point_distance_cov(points &point, double lambda){
+void power_network::point_distance_cov(points_struct &point, double lambda){
 	double pi = boost::math::constants::pi<double>();
 	double tol = 1E-8;
 	Eigen::MatrixXd covariance = Eigen::MatrixXd::Ones(point.lon.size(), point.lon.size());

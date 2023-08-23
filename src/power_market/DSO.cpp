@@ -128,14 +128,14 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 }
 
 namespace local{
-	void Source_Node_Set(power_market::market_inform &DSO_Market, power_network::DSO_cluster &DSO_cluster){
+	void Source_Node_Set(power_market::market_inform &DSO_Market, power_network::DSO_cluster_struct &DSO_cluster){
 		for(int node_iter = 0; node_iter < DSO_cluster.nodes_ID.size(); ++ node_iter){
 			DSO_Market.submitted_demand.col(DSO_cluster.points_ID.size() + node_iter)	= Eigen::VectorXd::Zero(DSO_Market.price_intervals + 2);
 			DSO_Market.submitted_supply(0, DSO_cluster.points_ID.size() + node_iter) =  std::numeric_limits<double>::infinity();
 		}
 	}
 
-	void Sink_Node_Set(power_market::market_inform &DSO_Market, power_network::DSO_cluster &DSO_cluster){
+	void Sink_Node_Set(power_market::market_inform &DSO_Market, power_network::DSO_cluster_struct &DSO_cluster){
 		for(int node_iter = 0; node_iter < DSO_cluster.nodes_ID.size(); ++ node_iter){
 			DSO_Market.submitted_supply.col(DSO_cluster.points_ID.size() + node_iter) = Eigen::VectorXd::Zero(DSO_Market.price_intervals + 2);
 			DSO_Market.submitted_demand(DSO_Market.price_intervals + 1, DSO_cluster.points_ID.size() + node_iter) =  std::numeric_limits<double>::infinity();
@@ -268,7 +268,7 @@ void power_market::Filtered_bid_supply_calculation(int tick, market_whole_inform
 	}
 }
 
-void power_market::DSO_Market_Results_Get(int tick, market_inform &Market, power_network::DSO_cluster &DSO_cluster, bool supply){
+void power_market::DSO_Market_Results_Get(int tick, market_inform &Market, power_network::DSO_cluster_struct &DSO_cluster, bool supply){
 	alglib::real_1d_array sol;
 	alglib::minlpreport rep;
 	alglib::minlpresults(Market.Problem, sol, rep);

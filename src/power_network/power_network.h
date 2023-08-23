@@ -18,7 +18,7 @@ namespace power_network{
 	}
 
     /** @brief Information of spatial points in the model.*/
-	struct points{
+	struct points_struct{
 		/**
 		* @name scale information
 		*/
@@ -79,7 +79,7 @@ namespace power_network{
 	};
 
 	/** @brief Information of nodes on the transmission network.*/
-	struct nodes{
+	struct nodes_struct{
 		/**
 		* @name hierarchy information
 		*/
@@ -116,7 +116,7 @@ namespace power_network{
 	};
 
 	/** @brief Transmission network edges (power lines) from the power network data.*/
-	struct edges{
+	struct edges_struct{
 		/**
 		* @name topological information
 		*/
@@ -146,7 +146,7 @@ namespace power_network{
 	};
 
 	/** @brief Information of cross-border transmission with neighboring nations on the boundary.*/
-	struct cbt{
+	struct cbt_struct{
 		/** Names of the bidding zones included in the internationally-coupled market model.*/
 		std::vector <std::string> bz_names;
 		/** Nodes where power sources / sinks of bidding zones from neighbor nations are located.*/
@@ -162,7 +162,7 @@ namespace power_network{
 	};
 
 	/** @brief Information of weather stations.*/
-	struct weather_stations{
+	struct weather_stations_struct{
 		/** Names of the weather stations.*/
 		std::vector <std::string> station_names;
 		/** Points of the weather stations.*/
@@ -216,7 +216,7 @@ namespace power_network{
 	};
 
 	/** @brief Clustered DSOs in the model.*/
-	struct DSO_cluster{
+	struct DSO_cluster_struct{
 		/** Indexes of spatial points included in the DSO cluster.*/
 		std::vector <int> points_ID;
 		/** Indexes of transmission nodes included in the DSO cluster.*/
@@ -305,7 +305,7 @@ namespace power_network{
 		/*@{*/
 
 		// Set the maps for levels of voltage and impedance base
-		void set_level_maps(edges &edges){
+		void set_level_maps(edges_struct &edges){
 			int voltage_min = edges.voltage_base.minCoeff();
 			int voltage_max = voltage_min;
 			int level_count = 0;
@@ -347,7 +347,7 @@ namespace power_network{
     * - matrix for time series of power source / sink at each node
     * - matrix for time series of power flow at each edge
     */
- 	struct power_flow{
+ 	struct power_flow_struct{
 		Eigen::SparseMatrix <std::complex <double>> nodal_admittance;
 		Eigen::SparseQR <Eigen::SparseMatrix <std::complex <double>>, Eigen::COLAMDOrdering <int>> solver;
 		Eigen::VectorXcd edge_admittance;
@@ -363,15 +363,15 @@ namespace power_network{
 	};
 
 	struct network_inform{
-		points points;
-		nodes nodes;
-		edges edges;
-		cbt cbt;
-		weather_stations weather_stations;
+		points_struct points;
+		nodes_struct nodes;
+		edges_struct edges;
+		cbt_struct cbt;
+		weather_stations_struct weather_stations;
 		plants_all plants;
-		std::vector <DSO_cluster> DSO_cluster;
+		std::vector <DSO_cluster_struct> DSO_cluster;
 		technical_parameters tech_parameters;
-		power_flow power_flow;
+		power_flow_struct power_flow;
 
 		// Set line density of distribution networks
 		void set_line_density(){
@@ -380,7 +380,7 @@ namespace power_network{
 	};
 
 	// Function for constructing distance and covariance matrix of points
-	void point_distance_cov(points&, double);
+	void point_distance_cov(points_struct&, double);
 
 	// Function for reading the files
 	void power_network_input_process(network_inform&, std::string parent_dir);

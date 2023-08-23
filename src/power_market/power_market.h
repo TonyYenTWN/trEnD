@@ -190,7 +190,7 @@ namespace power_market{
 		/**Settlement for balancing.*/
 		settlement balancing;
 		/**Actual power flow on the corresponding network.*/
-		power_network::power_flow power_flow;
+		power_network::power_flow_struct power_flow;
 		/**Operational schedule.*/
 		schedules operation;
 		/*@{*/
@@ -211,7 +211,7 @@ namespace power_market{
 	typedef std::vector <alglib::minlpstate> Problems;
 
 	/**Information of agents*/
-	struct agent_profiles{
+	struct agent_profiles_struct{
 		agent::aggregator::profiles aggregators;
 		agent::cross_border::edge_profiles cross_border;
 		agent::end_user::profiles end_users;
@@ -226,7 +226,7 @@ namespace power_market{
 		market_inform International_Market;
 		market_inform TSO_Market;
 		markets_inform DSO_Markets;
-		agent_profiles agent_profiles;
+		agent_profiles_struct agent_profiles;
 	};
 }
 
@@ -293,7 +293,7 @@ namespace power_market{
 	void DSO_Markets_Set(markets_inform&, power_network::network_inform&, int);
 	void Filtered_bid_demand_calculation(int, market_whole_inform&, power_network::network_inform&);
 	void Filtered_bid_supply_calculation(int, market_whole_inform&, power_network::network_inform&);
-	void DSO_Market_Results_Get(int, market_inform&, power_network::DSO_cluster&, bool supply = 1);
+	void DSO_Market_Results_Get(int, market_inform&, power_network::DSO_cluster_struct&, bool supply = 1);
 }
 
 #endif

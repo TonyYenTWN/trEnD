@@ -37,7 +37,7 @@ namespace local{
 		return var_names;
 	}
 
-	Eigen::RowVectorXd output_row_store(int col_num, agent::settlement &settlement){
+	Eigen::RowVectorXd output_row_store(int col_num, agent::settlement_struct &settlement){
 		Eigen::RowVectorXd output_row = Eigen::RowVectorXd::Zero(col_num);
 
 		output_row(1) = settlement.volume_supply.EOM;

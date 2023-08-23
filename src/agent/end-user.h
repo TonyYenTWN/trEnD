@@ -167,15 +167,15 @@ namespace agent{
 		};
 
 		/** @brief Information of the investment strategies of an end-user.*/
-		struct investment{
+		struct investment_struct{
 			// Input parameters
-			decision decision;
+			struct decision decision;
 
 			// Some social factors with complex systems modeling
 		};
 
 		/** @brief Information of the operation strategies of an end-user.*/
-		struct operation{
+		struct operation_struct{
 			/**
 			* @name input parameters
 			*/
@@ -204,7 +204,7 @@ namespace agent{
 			*/
 			/*@{*/
 			alglib::minlpstate Problem;
-			bids bids;
+			bids_struct bids;
 			//double direct_demand;
 			/*@{*/
 
@@ -212,8 +212,8 @@ namespace agent{
 			* @name output results
 			*/
 			/*@{*/
-			results results;
-			settlement settlement;
+			results_struct results;
+			settlement_struct settlement;
 			/*@{*/
 
 			/**
@@ -228,8 +228,8 @@ namespace agent{
 
 		/** @brief Complete profile of an end-user.*/
 		struct profile{
-			investment investment;
-			operation operation;
+			investment_struct investment;
+			operation_struct operation;
 		};
 
 		/** @brief A 2D vector of end-user profiles. The 1st dimension represents the spatial points,

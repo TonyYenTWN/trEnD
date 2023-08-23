@@ -18,9 +18,9 @@ namespace agent{
 
 		struct profile{
 			int point_ID;
-			bids bids;
-			results results;
-			settlement settlement;
+			bids_struct bids;
+			results_struct results;
+			settlement_struct settlement;
 		};
 
 		struct profiles{

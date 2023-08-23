@@ -17,9 +17,9 @@ namespace agent{
 			double cap;
 			double fix_cost;
 			double var_cost;
-			bids bids;
-			results results;
-			settlement settlement;
+			bids_struct bids;
+			results_struct results;
+			settlement_struct settlement;
 		};
 
 		struct storage_profile{
@@ -28,9 +28,9 @@ namespace agent{
 			double energy;
 			double cap;
 			double soc;
-			bids bids;
-			results results;
-			settlement settlement;
+			bids_struct bids;
+			results_struct results;
+			settlement_struct settlement;
 		};
 
 		struct hybrid_profile{

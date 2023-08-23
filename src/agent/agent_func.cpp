@@ -2,7 +2,7 @@
 #include "agent_func.h"
 
 namespace{
-	void agent_settlement_set(agent::settlement &settlement){
+	void agent_settlement_set(agent::settlement_struct &settlement){
 		settlement.cost_demand.balancing = 0.;
 		settlement.cost_demand.EOM = 0.;
 		settlement.cost_demand.redispatch = 0.;
@@ -40,7 +40,7 @@ namespace{
 		settlement.volume_supply_up.imbalance = 0.;
 	}
 
-	void agent_results_set(agent::results &results){
+	void agent_results_set(agent::results_struct &results){
 		results.cleared_supply = 0.;
 		results.cleared_demand = 0.;
 		results.confirmed_supply = 0.;
@@ -51,7 +51,7 @@ namespace{
 		results.actual_demand = 0.;
 	}
 
-	void agent_bids_initialization(agent::bids &bids){
+	void agent_bids_initialization(agent::bids_struct &bids){
 		int price_interval = power_market::parameters::price_interval();
 
 		bids.submitted_supply_inflex = Eigen::VectorXd::Zero(price_interval + 2);
@@ -68,14 +68,14 @@ namespace{
 		bids.imbalance_demand = Eigen::VectorXd::Zero(price_interval + 2);
 	}
 
-	void agent_submitted_bids_scale(double scale, agent::bids &bids){
+	void agent_submitted_bids_scale(double scale, agent::bids_struct &bids){
 		bids.submitted_supply_inflex *= scale;
 		bids.submitted_demand_inflex *= scale;
 		bids.submitted_supply_flex *= scale;
 		bids.submitted_demand_flex *= scale;
 	}
 
-	void agent_scheduled_results_calculation(int bz_ID, int node_ID, int marginal_price_ID, int original_price_ID, power_market::market_whole_inform &Power_market_inform, agent::bids &bids, agent::results &results, bool cleared = 1){
+	void agent_scheduled_results_calculation(int bz_ID, int node_ID, int marginal_price_ID, int original_price_ID, power_market::market_whole_inform &Power_market_inform, agent::bids_struct &bids, agent::results_struct &results, bool cleared = 1){
 		int price_interval = power_market::parameters::price_interval();
 
 		if(marginal_price_ID > 0){
@@ -107,7 +107,7 @@ namespace{
 		results.cleared_demand += Power_market_inform.International_Market.confirmed.ratio_demand(bz_ID) * bids.submitted_demand_flex(original_price_ID);
 	}
 
-	void agent_actual_results_calculation(int node_ID, int marginal_price_ID, power_market::market_whole_inform &Power_market_inform, agent::bids &bids, agent::results &results, bool control_reserve_flag){
+	void agent_actual_results_calculation(int node_ID, int marginal_price_ID, power_market::market_whole_inform &Power_market_inform, agent::bids_struct &bids, agent::results_struct &results, bool control_reserve_flag){
 		int price_interval = power_market::parameters::price_interval();
 
 		if(control_reserve_flag){
@@ -126,7 +126,7 @@ namespace{
 		}
 	}
 
-	void agent_EOM_settlement_calculation(int tick, int node_ID, double original_price_supply, double original_price_demand, power_market::market_whole_inform &Power_market_inform, agent::bids &bids, agent::results &results, agent::settlement &settlement, bool inflex_price = 0){
+	void agent_EOM_settlement_calculation(int tick, int node_ID, double original_price_supply, double original_price_demand, power_market::market_whole_inform &Power_market_inform, agent::bids_struct &bids, agent::results_struct &results, agent::settlement_struct &settlement, bool inflex_price = 0){
 		int price_interval = power_market::parameters::price_interval();
 
 		// Settlement of EOM
@@ -195,7 +195,7 @@ namespace{
 		}
 	}
 
-	void end_user_redispatch_settlement_calculation(int tick, int node_ID, double original_price, power_market::market_whole_inform &Power_market_inform, agent::end_user::operation &end_user, agent::aggregator::profile &aggregator, bool inflex_price = 0){
+	void end_user_redispatch_settlement_calculation(int tick, int node_ID, double original_price, power_market::market_whole_inform &Power_market_inform, agent::end_user::operation_struct &end_user, agent::aggregator::profile &aggregator, bool inflex_price = 0){
 		int price_interval = power_market::parameters::price_interval();
 		double redispatch_price_max = power_market::parameters::redispatch_price_max();
 
@@ -580,7 +580,7 @@ namespace{
 //		Power_market_inform.TSO_Market.redispatch.utility(tick, node_ID) -= over_est_utility_redispatch;
 	}
 
-	void agent_redispatch_settlement_calculation(int tick, int node_ID, double original_price, power_market::market_whole_inform &Power_market_inform, agent::bids &bids, agent::results &results, agent::settlement &settlement, bool inflex_price = 0){
+	void agent_redispatch_settlement_calculation(int tick, int node_ID, double original_price, power_market::market_whole_inform &Power_market_inform, agent::bids_struct &bids, agent::results_struct &results, agent::settlement_struct&settlement, bool inflex_price = 0){
 		int price_interval = power_market::parameters::price_interval();
 		double redispatch_price_max = power_market::parameters::redispatch_price_max();
 
@@ -914,7 +914,7 @@ namespace{
 		}
 	}
 
-	void agent_balancing_settlement_calculation(int tick, int node_ID, power_market::market_whole_inform &Power_market_inform, agent::bids &bids, agent::results &results, agent::settlement &settlement, bool inflex_price = 0){
+	void agent_balancing_settlement_calculation(int tick, int node_ID, power_market::market_whole_inform &Power_market_inform, agent::bids_struct &bids, agent::results_struct &results, agent::settlement_struct &settlement, bool inflex_price = 0){
 		int price_interval = power_market::parameters::price_interval();
 		double balancing_price_max = power_market::parameters::balancing_price_max();
 
@@ -1244,7 +1244,7 @@ namespace{
 		}
 	}
 
-	void market_operation_update(int tick, int bz_ID, power_market::schedule &agent, agent::results &results){
+	void market_operation_update(int tick, int bz_ID, power_market::schedule &agent, agent::results_struct &results){
 		agent.EOM(tick, bz_ID) += results.cleared_supply - results.cleared_demand;
 
 		agent.redispatch(tick, bz_ID) += results.confirmed_supply - results.cleared_supply;
@@ -1289,7 +1289,7 @@ namespace{
 			cross_border_profiles[edge_iter].entry_bz_ID = Power_network_inform.cbt.entry_bz(edge_iter);
 
 			int node_num = cross_border_profiles[edge_iter].node_num;
-			cross_border_profiles[edge_iter].profiles = agent::cross_border::profiles(node_num);
+			cross_border_profiles[edge_iter].profiles = agent::cross_border::profiles_typedef(node_num);
 			for(int node_iter = 0; node_iter < node_num; ++ node_iter){
 				// Set entry node
 				cross_border_profiles[edge_iter].profiles[node_iter].node_ID = Power_network_inform.cbt.entry_nodes(edge_iter, node_iter);

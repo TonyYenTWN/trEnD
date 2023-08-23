@@ -13,7 +13,7 @@ namespace agent{
 		}
 	}
 
-	struct bids{
+	struct bids_struct{
 		// Inflex: bids with dispatch priority
 		// Flex: bids that can be redispatched or provide control reserve
 
@@ -38,7 +38,7 @@ namespace agent{
 		Eigen::VectorXd balancing_demand;
 	};
 
-	struct results{
+	struct results_struct{
 		// Clearing results in the IMO
 		double cleared_supply;
 		double cleared_demand;
@@ -64,7 +64,7 @@ namespace agent{
 		double BESS;
 	};
 
-	struct settlement{
+	struct settlement_struct{
 		settlement_process volume_supply;
 		settlement_process volume_demand;
 		settlement_process volume_supply_up;

@@ -28,9 +28,9 @@ namespace agent{
 			Eigen::VectorXd price_expected_profile;
 			Eigen::VectorXd price_demand_profile;
 			Eigen::VectorXd price_supply_profile;
-			bids bids;
-			results results;
-			settlement settlement;
+			bids_struct bids;
+			results_struct results;
+			settlement_struct settlement;
 		};
 
 		typedef std::vector <profile> profiles;
