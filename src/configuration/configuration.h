@@ -6,7 +6,8 @@
 namespace configuration{
 	namespace parameters{
 		static inline int Time(){
-			int value = 8760;
+			//int value = 8760;
+			int value = 48;
 			return value;
 		}
 	}

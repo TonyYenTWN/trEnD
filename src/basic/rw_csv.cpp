@@ -66,7 +66,7 @@ std::vector <std::string> basic::get_row_name(std::string filename, int row_num)
 	if(in){
 	  	std::string line;
 	  	std::getline(in, line); // skip the first line
-	  	int row_ID = 0;
+	  	//int row_ID = 0;
 
 	  	while(getline(in, line)){
 	  	  	std::stringstream sep(line);

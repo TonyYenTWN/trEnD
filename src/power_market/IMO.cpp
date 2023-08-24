@@ -12,7 +12,7 @@ namespace{
 		// Demand at each point are 100% inflexible
 		for(int point_iter = 0; point_iter < Power_network_inform.points.bidding_zone.size(); ++ point_iter){
 			int node_ID = Power_network_inform.points.node(point_iter);
-			int DSO_ID = Power_network_inform.nodes.cluster(node_ID);
+			//int DSO_ID = Power_network_inform.nodes.cluster(node_ID);
 			int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
 			double bid_quan = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick);
 			bid_quan *= Power_network_inform.points.population_density(point_iter);
@@ -22,7 +22,7 @@ namespace{
 		}
 
 		// Supply at each power plant
-		double cutoff_power = agent::power_supplier::parameters::cutoff_power();
+		//double cutoff_power = agent::power_supplier::parameters::cutoff_power();
 		for(int hydro_iter = 0; hydro_iter < Power_network_inform.plants.hydro.node.size(); ++ hydro_iter){
 			int x_ID = int((Power_network_inform.plants.hydro.x(hydro_iter) - Power_network_inform.points.x.minCoeff()) / Power_network_inform.points.grid_length + .5);
 			int y_ID = int((Power_network_inform.plants.hydro.y(hydro_iter) - Power_network_inform.points.y.minCoeff()) / Power_network_inform.points.grid_length + .5);
@@ -31,7 +31,7 @@ namespace{
 				continue;
 			}
 			int node_ID = Power_network_inform.points.node(point_ID);
-			int DSO_ID = Power_network_inform.nodes.cluster(node_ID);
+			//int DSO_ID = Power_network_inform.nodes.cluster(node_ID);
 			int bz_ID = Power_network_inform.nodes.bidding_zone(node_ID);
 			Eigen::VectorXd bid_vec = International_Market.merit_order_curve.col(bz_ID);
 			bid_vec /= bid_vec.sum();
@@ -47,7 +47,7 @@ namespace{
 				continue;
 			}
 			int node_ID = Power_network_inform.points.node(point_ID);
-			int DSO_ID = Power_network_inform.nodes.cluster(node_ID);
+			//int DSO_ID = Power_network_inform.nodes.cluster(node_ID);
 			int bz_ID = Power_network_inform.nodes.bidding_zone(node_ID);
 			double bid_quan = Power_network_inform.points.wind_on_cf(point_ID, tick) * Power_network_inform.plants.wind.cap(wind_iter);
 

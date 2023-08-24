@@ -14,6 +14,7 @@ namespace {
 		Power_network_inform.cbt.bz_names = basic::get_col_name(fin_cbt, fin_cbt_dim[1]);
 
 		// Store entry points and corresponding bidding zones
+		// entry_bz = ID for the corresponding external bidding zone
 		Power_network_inform.cbt.entry_nodes = basic::read_file(fin_entry_dim[0], fin_entry_dim[1], fin_entry);
 		Power_network_inform.cbt.entry_bz = Eigen::VectorXi(fin_entry_dim[0]);
 		for(int edge_iter = 0; edge_iter < fin_entry_dim[0]; ++ edge_iter){

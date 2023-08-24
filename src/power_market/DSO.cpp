@@ -30,7 +30,7 @@ void power_market::DSO_Markets_Set(markets_inform &DSO_Markets, power_network::n
 		parameters::bidded_price(DSO_Markets[DSO_iter].bidded_price_map);
 
 		// Set compact incidence matrix and edge admittance matrix
-		double tol = 1.;
+		//double tol = 1.;
 		DSO_Markets[DSO_iter].network.incidence.reserve(DSO_Markets[DSO_iter].network.num_vertice * DSO_Markets[DSO_iter].network.num_vertice);
 		DSO_Markets[DSO_iter].network.admittance.reserve(DSO_Markets[DSO_iter].network.num_vertice * DSO_Markets[DSO_iter].network.num_vertice);
 		std::vector <double> power_limit;

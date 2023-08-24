@@ -57,7 +57,7 @@ int main(){
 
 	// Power market processes
 	if(process_par.simulation_flag){
-		power_market::power_market_process_set(Power_network_inform, Power_market_inform, process_par);
+        power_market::power_market_process_set(Power_network_inform, Power_market_inform, process_par);
 		power_market::power_market_process_update(Power_network_inform, Power_market_inform, process_par);
 
 		// Output results
