@@ -45,9 +45,9 @@ namespace local{
 			for(int item = 0; item < point_num; ++ item){
 				dmu(item) = inform.mu_scale(item) * pow(-log(1. - cdf(inform.norm_dist, inform.x(item))), .5) - inform.mu(item);
 				inform.mu(item) += dmu(item);
+				//std::cout << inform.x(item) << "\t" << inform.mu(item) << "\n";
 			}
-			Eigen::VectorXd mu_inv_0 = pow(inform.mu.array(), -1.);
-			dmu *= mu_inv_0;
+			dmu = dmu.array() / inform.mu.array();
 
 			//std::cout << inform.mu.minCoeff() << "\t" << inform.mu.maxCoeff() << "\t" << dmu.lpNorm<Eigen::Infinity>() << "\n";
 			count += 1;
@@ -105,7 +105,6 @@ void spatial_field::demand_imbalance_estimation(power_network::network_inform &P
 		Constraint_demand_Trip.push_back(Eigen::TripletXd(point_iter, bz_ID, value));
 	}
 	Constraint_demand.setFromTriplets(Constraint_demand_Trip.begin(), Constraint_demand_Trip.end());
-	//std::cout << Constraint_demand.topRows(10) << "\n\n";
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------
 	// Estimate the annual average of the normalized mean demand field
@@ -126,7 +125,7 @@ void spatial_field::demand_imbalance_estimation(power_network::network_inform &P
 
 	// estimation step
 	local::BME_copula(nominal_demand, Power_network_inform, Constraint_demand, 1E-12);
-	std::cout << nominal_demand.mu.transpose() * Constraint_demand << "\n\n";
+    std::cout << nominal_demand.mu.transpose() * Constraint_demand << "\n\n";
 
 	// Output the annual average of normalized mean demand field
 	std::string fout_name;
@@ -275,14 +274,19 @@ void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_n
 	wind_on_cf.mu_mean = (Wind_on_ts.colwise().sum()).segment(fin_wind_on_row_name, bz_num);
 	wind_on_cf.mu_mean /= Time;
 
-	// Column number 4 is redundant
-	int redunant_num = 1;
+	// Find redundant column
+	int redunant_num = 0;
 	std::map<int, int> corres_col;
-	corres_col.insert(std::pair<int, int>(0, 0));
-	corres_col.insert(std::pair<int, int>(1, 1));
-	corres_col.insert(std::pair<int, int>(2, 2));
-	corres_col.insert(std::pair<int, int>(3, 3));
-	corres_col.insert(std::pair<int, int>(4, -1));
+	for(int zone_iter = 0; zone_iter < bz_num; ++ zone_iter){
+        if(Wind_on_ts.col(zone_iter + 1).array().abs().sum() < 1E-12){
+            redunant_num += 1;
+            corres_col.insert(std::pair<int, int>(zone_iter , -1));
+            //std::cout << zone_iter << "\t" << corres_col[zone_iter] << "\n";
+            continue;
+        }
+        corres_col.insert(std::pair<int, int>(zone_iter , zone_iter - redunant_num));
+        //std::cout << zone_iter << "\t" << corres_col[zone_iter] << "\n";
+	}
 	Eigen::SparseMatrix <double> Redundant_col(bz_num - redunant_num, bz_num);
 	std::vector <Eigen::TripletXd> Redundant_col_trip;
 	Redundant_col_trip.reserve(bz_num - redunant_num);
@@ -295,8 +299,12 @@ void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_n
 		}
 	}
 	Redundant_col.setFromTriplets(Redundant_col_trip.begin(), Redundant_col_trip.end());
+	//std::cout << wind_on_cf.mu_mean << "\n";
 	wind_on_cf.mu_mean = Redundant_col * wind_on_cf.mu_mean;
+	//std::cout << wind_on_cf.mu_mean << "\n";
+	//std::cout << Constraint_wind_on << "\n";
 	Constraint_wind_on = Constraint_wind_on * Redundant_col.transpose();
+    //std::cout << Constraint_wind_on << "\n";
 
 	// Mean of weibull distribution = mu_0_scale * gamma(1 + 1 / k), here k = 2
 	double mu_0_scale = wind_on_cf.mu_mean.sum() / Constraint_wind_on.sum() * 2. / pow(pi, .5);
