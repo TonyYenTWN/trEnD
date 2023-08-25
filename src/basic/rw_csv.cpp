@@ -1,5 +1,6 @@
 // Read and write csv files
 #include "rw_csv.h"
+//#include <iostream> // just for checking
 
 std::vector <int> basic::get_file_dim(std::string filename){
 	std::ifstream in(filename);
@@ -81,6 +82,30 @@ std::vector <std::string> basic::get_row_name(std::string filename, int row_num)
 	in.close();
 	return row_names;
 }
+
+std::map<std::string, double> basic::read_config_file(std::string filename){
+    std::ifstream in(filename);
+    std::map<std::string, double> key_value;
+
+    if(in){
+	  	std::string line;
+	  	std::getline(in, line); // skip the first line
+
+	  	while(getline(in, line)){
+	  	  	std::stringstream sep(line);
+	  	  	std::string field;
+	  	  	std::getline(sep, field, ',');
+            std::string key = field;
+	  	  	std::getline(sep, field, ',');
+	  	  	double value =  std::stod(field);
+            key_value.insert(std::pair<std::string, int>(key, value));
+	  	}
+    }
+
+    // Close file
+	in.close();
+	return key_value;
+};
 
 Eigen::MatrixXd basic::read_file(int num_row, int num_col, std::string filename, bool row_name){
 	std::ifstream in(filename);
