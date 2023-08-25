@@ -13,6 +13,7 @@ var structconfiguration_1_1process__config =
     [ "estimation_solar_flag", "d2/de7/structconfiguration_1_1process__config.html#a112ef001ca659664108d63e33f052ccf", null ],
     [ "estimation_wind_flag", "d2/de7/structconfiguration_1_1process__config.html#aa499c40586f2e41bcba9db9fa048ee60", null ],
     [ "rule_based", "d2/de7/structconfiguration_1_1process__config.html#abf33461188416dc8d9aef1c5c933185f", null ],
+    [ "set_flag", "d2/de7/structconfiguration_1_1process__config.html#a6aa05f8b66ab15cbf9a98542009c9d84", null ],
     [ "simulation_flag", "d2/de7/structconfiguration_1_1process__config.html#a399f1b34e543ac00c3c7ad5c6b65a8a1", null ],
     [ "time_boundary", "d2/de7/structconfiguration_1_1process__config.html#a043a7f8de730dfe1c6fd1c0804e7828c", null ],
     [ "total_time", "d2/de7/structconfiguration_1_1process__config.html#ab1c7850684c69e86f7dfe28842772dd2", null ]
