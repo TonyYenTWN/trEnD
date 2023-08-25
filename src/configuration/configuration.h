@@ -1,29 +1,55 @@
 // Header file for setting the configuration of simulation
 #pragma once
 #include <iostream>
-#include "src/basic/basic_definitions.h"
+#include "src/basic/rw_csv.h"
 
 namespace configuration{
-	namespace parameters{
-		static inline int Time(){
-			//int value = 8760;
-			int value = 48;
-			return value;
-		}
-	}
+//	namespace parameters{
+//		static inline int Time(int value){
+//			//int value = 8760;
+//			//int value = 48;
+//			return value;
+//		}
+//	}
 
+    /** @brief Information of configuration for the process of the program*/
 	struct process_config{
+		/** Indicate whether the program should use default configuration.*/
 		bool default_flag;
+
+		/**
+		* @name configuration for the estimation step
+		*/
+		/*@{*/
+		/** Indicate whether estimation step should be proceeded. If this flag is false, then no estimation will occur regardless of the values of the other flags.*/
 		bool estimation_flag;
+		/** Indicate whether estimation of demand should be proceeded.*/
 		bool estimation_demand_flag;
-		bool estimation_wind_flag;;
+		/** Indicate whether estimation of wind cf should be proceeded.*/
+		bool estimation_wind_flag;
+		/** Indicate whether estimation of solar cf should be proceeded.*/
 		bool estimation_solar_flag;
+		/*@{*/
+
+		/**
+		* @name configuration for the simulation step
+		*/
+		/*@{*/
+		/** Indicate whether simulation should be proceeded. If this flag is false, then no simulation will occur regardless of the values of the other flags.*/
 		bool simulation_flag;
+		/** Indicate whether DSO filtering of bids on their network should occur.*/
 		bool DSO_filter_flag;
+		/** Indicate whether control reserve calculations should occur.*/
 		bool control_reserve_flag;
+		/** Indicate whether flexibility from end-users should be prioritized for redispatch.*/
 		bool encourage_redispatch;
+		/** Indicate whether active end-users use rule-based (and not optimization) when providing flexibility to the system.*/
 		bool rule_based;
+		/** Total time length of the input time series data (not the simulation time length!!)*/
+		int total_time;
+		/** Time boundary of simulation. 1st component = starting time; 2nd component = duration of the simulation.*/
 		std::vector <int> time_boundary;
+		/*@{*/
 
 		void process_default_get(){
 			std::cout << "Default procedure?        Yes: 1 / No: 0 | ";
@@ -32,19 +58,21 @@ namespace configuration{
 		}
 
 		void process_bool_set(){
-			this->estimation_flag = 0;
+            this->estimation_flag = 0;
             this->estimation_demand_flag = 0;
             this->estimation_wind_flag = 0;
             this->estimation_solar_flag = 0;
-			this->simulation_flag = 1;
-			this->DSO_filter_flag = 0;
-			this->control_reserve_flag = 0;
-			this->encourage_redispatch = 0;
-			this->rule_based = 0;
-			this->time_boundary.push_back(0);
-			this->time_boundary.push_back(168);
+            this->simulation_flag = 1;
+            this->DSO_filter_flag = 0;
+            this->control_reserve_flag = 0;
+            this->encourage_redispatch = 0;
+            this->rule_based = 0;
+            this->total_time = 8760;
+            this->time_boundary.push_back(0);
+            this->time_boundary.push_back(336);
 		}
 
+		// Keep this function so in the future can set an option for users to manage the configuration file on console
 		void process_bool_input(){
 			std::cout << "Estimate spatial fields?  Yes: 1 / No: 0 | ";
 			std::cin >> this->estimation_flag;
@@ -147,4 +175,7 @@ namespace configuration{
 			std::cout << "\n\n";
 		}
 	};
+
+    // Function for reading configuration data
+    void process_config_input(process_config&, std::string);
 }
