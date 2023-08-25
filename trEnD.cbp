@@ -79,6 +79,7 @@
 		<Unit filename="src/basic/eigen_sparse.h" />
 		<Unit filename="src/basic/rw_csv.cpp" />
 		<Unit filename="src/basic/rw_csv.h" />
+		<Unit filename="src/configuration/configuration.cpp" />
 		<Unit filename="src/configuration/configuration.h" />
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/power_market/DSO.cpp" />
