@@ -15,7 +15,16 @@ int main(){
 		process_par.process_bool_set();
 	}
 	else{
-	    process_config_input(process_par, "csv/input/configuration/");
+        bool set_flag;
+        std::cout << "Set configuration manually?   Yes: 1 / No: 0 | ";
+        std::cin >> set_flag;
+        std::cout << "\n";
+        if(set_flag){
+            process_par.process_bool_input();
+        }
+        else{
+            process_config_input(process_par, "csv/input/configuration/");
+        }
 	}
 
 	if(!process_par.estimation_flag && !process_par.simulation_flag){

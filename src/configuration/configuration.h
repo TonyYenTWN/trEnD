@@ -52,7 +52,7 @@ namespace configuration{
 		/*@{*/
 
 		void process_default_get(){
-			std::cout << "Default procedure?        Yes: 1 / No: 0 | ";
+			std::cout << "Default procedure?            Yes: 1 / No: 0 | ";
 			std::cin >> this->default_flag;
 			std::cout << "\n";
 		}
@@ -74,54 +74,58 @@ namespace configuration{
 
 		// Keep this function so in the future can set an option for users to manage the configuration file on console
 		void process_bool_input(){
-			std::cout << "Estimate spatial fields?  Yes: 1 / No: 0 | ";
+			std::cout << "Estimate spatial fields?      Yes: 1 / No: 0 | ";
 			std::cin >> this->estimation_flag;
 			std::cout << "\n";
 
 			if(this->estimation_flag == 1){
-                std::cout << "Estimate demand field?    Yes: 1 / No: 0 | ";
+                std::cout << "Estimate demand field?        Yes: 1 / No: 0 | ";
                 std::cin >> this->estimation_demand_flag;
                 std::cout << "\n";
 
-                std::cout << "Estimate wind cf field?   Yes: 1 / No: 0 | ";
+                std::cout << "Estimate wind cf field?       Yes: 1 / No: 0 | ";
                 std::cin >> this->estimation_wind_flag;
                 std::cout << "\n";
 
-                std::cout << "Estimate solar cf field?  Yes: 1 / No: 0 | ";
+                std::cout << "Estimate solar cf field?      Yes: 1 / No: 0 | ";
                 std::cin >> this->estimation_solar_flag;
                 std::cout << "\n";
 			}
 
-			std::cout << "Simulate operation?       Yes: 1 / No: 0 | ";
+			std::cout << "Simulate operation?           Yes: 1 / No: 0 | ";
 			std::cin >> this->simulation_flag;
 			std::cout << "\n";
 
 			if(this->simulation_flag == 1){
-				std::cout << "DSOs filter bids?         Yes: 1 / No: 0 | ";
+				std::cout << "DSOs filter bids?             Yes: 1 / No: 0 | ";
 				std::cin >> this->DSO_filter_flag;
 				std::cout << "\n";
 
-				std::cout << "Control reserve?          Yes: 1 / No: 0 | ";
+				std::cout << "Control reserve?              Yes: 1 / No: 0 | ";
 				std::cin >> this->control_reserve_flag;
 				std::cout << "\n";
 
-				std::cout << "Encourage Redispatch?     Yes: 1 / No: 0 | ";
+				std::cout << "Encourage Redispatch?         Yes: 1 / No: 0 | ";
 				std::cin >> this->encourage_redispatch;
 				std::cout << "\n";
 
-				std::cout << "Rule based?               Yes: 1 / No: 0 | ";
+				std::cout << "Rule based?                   Yes: 1 / No: 0 | ";
 				std::cin >> this->rule_based;
 				std::cout << "\n";
 			}
 
 			if(this->estimation_flag || this->simulation_flag){
-				std::cout << "Start tick?                              | ";
+                std::cout << "Total length of input data time series?      | ";
+                std::cin >> this->total_time;
+                std::cout << "\n";
+
+				std::cout << "Start tick?                                  | ";
 				int start_tick;
 				std::cin >> start_tick;
 				this->time_boundary.push_back(start_tick);
 				std::cout << "\n";
 
-				std::cout << "Run time length?                         | ";
+				std::cout << "Run time length?                             | ";
 				int time_length;
 				std::cin >> time_length;
 				this->time_boundary.push_back(time_length);
