@@ -37,8 +37,8 @@ void power_market::Market_Initialization(market_inform &Market){
 	Market.actual.ratio_demand = Eigen::VectorXd::Zero(Market.num_zone);
 }
 
-void power_market::Operation_Initialization(market_inform &Market){
-	int Time = configuration::parameters::Time();
+void power_market::Operation_Initialization(market_inform &Market, int Time){
+    //int Time = configuration::parameters::Time();
 
 	Market.operation.cross_border.balancing = Eigen::MatrixXd::Zero(Time, Market.num_zone);
 	Market.operation.end_user.balancing = Eigen::MatrixXd::Zero(Time, Market.num_zone);

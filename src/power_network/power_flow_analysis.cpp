@@ -245,7 +245,8 @@ void power_network::HELM_Transmission_Set(network_inform &Power_network_inform, 
 	// -------------------------------------------------------------------------------
 	// Initialize
 	// -------------------------------------------------------------------------------
-	int Time = configuration::parameters::Time();
+	//int Time = configuration::parameters::Time();
+	int Time = Power_market_inform.International_Market.time_intervals;
 
 	Power_market_inform.TSO_Market.power_flow.P_node = Eigen::MatrixXd::Zero(Time, node_num);
 	Power_market_inform.TSO_Market.power_flow.Q_node = Eigen::MatrixXd::Zero(Time, node_num);
@@ -849,7 +850,7 @@ void power_network::HELM_Set(network_inform &Power_network_inform, power_market:
 	// -------------------------------------------------------------------------------
 	// Initialize
 	// -------------------------------------------------------------------------------
-	int Time = configuration::parameters::Time();
+	int Time = Power_market_inform.International_Market.time_intervals;
 
 	Power_network_inform.power_flow.P_node = Eigen::MatrixXd::Zero(Time, bus_num);
 	Power_network_inform.power_flow.Q_node = Eigen::MatrixXd::Zero(Time, bus_num);

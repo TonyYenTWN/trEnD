@@ -11,11 +11,11 @@ int main(){
 	// Set booleans for the process
 	configuration::process_config process_par;
 	process_par.process_default_get();
-	if(!process_par.default_flag){
-		process_par.process_bool_input();
+	if(process_par.default_flag){
+		process_par.process_bool_set();
 	}
 	else{
-		process_par.process_bool_set();
+	    process_config_input(process_par, "csv/input/configuration/");
 	}
 
 	if(!process_par.estimation_flag && !process_par.simulation_flag){
@@ -35,7 +35,7 @@ int main(){
 	// Set bidding prices and default (residual) demand time series
 	power_market::market_whole_inform Power_market_inform;
 	power_market::parameters::bidded_price(Power_market_inform.price_map);
-	power_market::default_demand_set(Power_network_inform, Power_market_inform);
+	power_market::default_demand_set(Power_network_inform, Power_market_inform, process_par.total_time);
 
 	// Spatial fields estimation
 	if(process_par.estimation_flag){

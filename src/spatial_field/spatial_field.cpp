@@ -78,7 +78,7 @@ namespace local{
 void spatial_field::demand_imbalance_estimation(power_network::network_inform &Power_network_inform, power_market::market_inform &International_Market, configuration::process_config &process_par){
 	int bz_num = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
 	int point_num = Power_network_inform.points.bidding_zone.size();
-	int Time = configuration::parameters::Time();
+	int Time = process_par.total_time;
 	double pi = boost::math::constants::pi<double>();
 
 	// Read electricity demand data
@@ -242,7 +242,7 @@ void spatial_field::demand_imbalance_estimation(power_network::network_inform &P
 void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_network_inform, configuration::process_config &process_par){
 	int bz_num = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
 	int point_num = Power_network_inform.points.bidding_zone.size();
-	int Time = configuration::parameters::Time();
+	int Time = process_par.total_time;
 	double pi = boost::math::constants::pi<double>();
 
 	// Read onshore wind power data
@@ -368,7 +368,7 @@ void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_n
 // Function that calculates solar radiation field
 void spatial_field::solar_radiation_estimation(power_network::network_inform &Power_network_inform, configuration::process_config &process_par){
 	int point_num = Power_network_inform.points.bidding_zone.size();
-	int Time = configuration::parameters::Time();
+	int Time = process_par.total_time;
 	double pi = boost::math::constants::pi<double>();
 
 	// Read solar radiation data
