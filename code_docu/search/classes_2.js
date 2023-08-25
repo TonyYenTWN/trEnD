@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['cbt_0',['cbt',['../de/dd4/structpower__network_1_1cbt.html',1,'power_network']]]
+  ['cbt_5fstruct_0',['cbt_struct',['../dd/d90/structpower__network_1_1cbt__struct.html',1,'power_network']]]
 ];

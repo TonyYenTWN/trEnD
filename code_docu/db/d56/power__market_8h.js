@@ -1,6 +1,6 @@
 var power__market_8h =
 [
-    [ "power_market::agent_profiles", "da/d3a/structpower__market_1_1agent__profiles.html", "da/d3a/structpower__market_1_1agent__profiles" ],
+    [ "power_market::agent_profiles_struct", "d7/d7e/structpower__market_1_1agent__profiles__struct.html", "d7/d7e/structpower__market_1_1agent__profiles__struct" ],
     [ "power_market::fin_market", "d9/d9c/structpower__market_1_1fin__market.html", "d9/d9c/structpower__market_1_1fin__market" ],
     [ "power_market::market_inform", "d8/d2d/structpower__market_1_1market__inform.html", "d8/d2d/structpower__market_1_1market__inform" ],
     [ "power_market::market_whole_inform", "da/d16/structpower__market_1_1market__whole__inform.html", "da/d16/structpower__market_1_1market__whole__inform" ],
@@ -21,8 +21,8 @@ var power__market_8h =
     [ "Balancing_bid_calculation", "db/d56/power__market_8h.html#ac352c57798bb3fc7708f9ef0d81d8a56", null ],
     [ "bidded_price", "db/d56/power__market_8h.html#ae6afa0a9ab337a732c846fbecfd84854", null ],
     [ "Confirmed_bid_calculation", "db/d56/power__market_8h.html#af59e4a89036c989d46eabee693369420", null ],
-    [ "default_demand_set", "db/d56/power__market_8h.html#a40a028ec74fd392c003dca1f3ac99d2a", null ],
-    [ "DSO_Market_Results_Get", "db/d56/power__market_8h.html#a5b5aad5d8a4bf056074ffd27b93940bc", null ],
+    [ "default_demand_set", "db/d56/power__market_8h.html#a8bbc28e8f6d11d9e32c021e0b791cdd9", null ],
+    [ "DSO_Market_Results_Get", "db/d56/power__market_8h.html#a91f71e805e96a8a3dd5d47d55e8ad531", null ],
     [ "DSO_Markets_Set", "db/d56/power__market_8h.html#a33e114e901ed9959e3bf88c5fd7c2547", null ],
     [ "Filtered_bid_demand_calculation", "db/d56/power__market_8h.html#a72f976f20cdff23dc23ac97406a1a1ae", null ],
     [ "Filtered_bid_supply_calculation", "db/d56/power__market_8h.html#af883e29b5aa43429f3bc51c0820d1514", null ],
@@ -33,7 +33,7 @@ var power__market_8h =
     [ "International_Market_Set", "db/d56/power__market_8h.html#a5dee1a499afd2c8950e462d9c1018e43", null ],
     [ "Market_Initialization", "db/d56/power__market_8h.html#a3aaf51815c60ec67d4f4884ef57f5e3e", null ],
     [ "Markets_results_print", "db/d56/power__market_8h.html#aeaef3db591e83c0aca1fa575c06ad7f2", null ],
-    [ "Operation_Initialization", "db/d56/power__market_8h.html#af059c8a05dcbf9aa755a3e62d1481963", null ],
+    [ "Operation_Initialization", "db/d56/power__market_8h.html#aaa703ad615d4ec3c03faa2d721e59231", null ],
     [ "power_market_process_set", "db/d56/power__market_8h.html#a82c48ebe20753e09d6c4f17dacba7907", null ],
     [ "power_market_process_update", "db/d56/power__market_8h.html#aae2f2e8d7540c369c0d830dbe434de14", null ],
     [ "Simplified_network_print", "db/d56/power__market_8h.html#a21f28e83ea341641962306c240167316", null ],

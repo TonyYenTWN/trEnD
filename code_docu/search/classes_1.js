@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['bids_0',['bids',['../d6/d69/structagent_1_1bids.html',1,'agent']]]
+  ['bids_5fstruct_0',['bids_struct',['../d0/da2/structagent_1_1bids__struct.html',1,'agent']]]
 ];

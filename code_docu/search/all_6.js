@@ -7,5 +7,5 @@ var searchData=
   ['get_5fcol_5fname_4',['get_col_name',['../de/dbb/namespacebasic.html#a11ea1d6640d0bbd0d337cbfb5204b8a7',1,'basic']]],
   ['get_5ffile_5fdim_5',['get_file_dim',['../de/dbb/namespacebasic.html#a27f0ca57a03561dbb4cdad6525cc6bbb',1,'basic']]],
   ['get_5frow_5fname_6',['get_row_name',['../de/dbb/namespacebasic.html#a1d4fdfaa57e41d6f1d34d2bf0a092b10',1,'basic']]],
-  ['grid_5flength_7',['grid_length',['../d4/dbd/structpower__network_1_1points.html#a35c871e5774cdebfa9155f5669ae39c0',1,'power_network::points']]]
+  ['grid_5flength_7',['grid_length',['../d0/dee/structpower__network_1_1points__struct.html#a74d40f734f128f415624e32b725f528e',1,'power_network::points_struct']]]
 ];

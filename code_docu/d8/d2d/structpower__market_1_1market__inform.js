@@ -12,7 +12,7 @@ var structpower__market_1_1market__inform =
     [ "network", "d8/d2d/structpower__market_1_1market__inform.html#ac3c9a3f68d72f5afda35d1e3fdb0015f", null ],
     [ "num_zone", "d8/d2d/structpower__market_1_1market__inform.html#a13c28f90ad5d897c8eae678103452f5b", null ],
     [ "operation", "d8/d2d/structpower__market_1_1market__inform.html#a2bf470ffcd3d91416dc0785f10322799", null ],
-    [ "power_flow", "d8/d2d/structpower__market_1_1market__inform.html#abe753a33f528eb60270b0cb9b52722f2", null ],
+    [ "power_flow", "d8/d2d/structpower__market_1_1market__inform.html#ac470d32d8d64aa72f5f099d821492c2a", null ],
     [ "price_intervals", "d8/d2d/structpower__market_1_1market__inform.html#a87ca4403dcc9d625e4deb5d65897b148", null ],
     [ "Problem", "d8/d2d/structpower__market_1_1market__inform.html#ae3ff66f3861c47ea2c5b9b7e95abc09b", null ],
     [ "redispatch", "d8/d2d/structpower__market_1_1market__inform.html#ab75256086baeadf2892e474c7fb2b513", null ],
