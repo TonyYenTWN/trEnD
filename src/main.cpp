@@ -15,11 +15,10 @@ int main(){
 		process_par.process_bool_set();
 	}
 	else{
-        bool set_flag;
         std::cout << "Set configuration manually?   Yes: 1 / No: 0 | ";
-        std::cin >> set_flag;
+        std::cin >> process_par.set_flag;
         std::cout << "\n";
-        if(set_flag){
+        if(process_par.set_flag){
             process_par.process_bool_input();
         }
         else{

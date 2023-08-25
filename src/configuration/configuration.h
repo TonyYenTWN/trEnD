@@ -4,18 +4,17 @@
 #include "src/basic/rw_csv.h"
 
 namespace configuration{
-//	namespace parameters{
-//		static inline int Time(int value){
-//			//int value = 8760;
-//			//int value = 48;
-//			return value;
-//		}
-//	}
-
     /** @brief Information of configuration for the process of the program*/
 	struct process_config{
+		/**
+		* @name configuration for the initialization
+		*/
+		/*@{*/
 		/** Indicate whether the program should use default configuration.*/
 		bool default_flag;
+		/** Indicate whether the user wish to manually set the configuration for the main process.*/
+		bool set_flag;
+		/*@{*/
 
 		/**
 		* @name configuration for the estimation step
@@ -58,6 +57,7 @@ namespace configuration{
 		}
 
 		void process_bool_set(){
+		    this->set_flag = 0;
             this->estimation_flag = 0;
             this->estimation_demand_flag = 0;
             this->estimation_wind_flag = 0;
