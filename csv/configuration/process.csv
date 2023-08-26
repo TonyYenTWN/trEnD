@@ -1,0 +1,14 @@
+Type,Value
+estimation,0
+est_demand,0
+est_wind,0
+est_solar,0
+simulation,1
+DSO_filter,1
+control_reserve,1
+encourage_redispatch,0
+rule_based,0
+start_time,0
+duration,1
+total_time,8760
+folder_name,2021
