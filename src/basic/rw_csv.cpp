@@ -83,9 +83,9 @@ std::vector <std::string> basic::get_row_name(std::string filename, int row_num)
 	return row_names;
 }
 
-std::map<std::string, double> basic::read_config_file(std::string filename){
+std::map<std::string, std::string> basic::read_config_file(std::string filename){
     std::ifstream in(filename);
-    std::map<std::string, double> key_value;
+    std::map<std::string, std::string> key_value;
 
     if(in){
 	  	std::string line;
@@ -97,8 +97,7 @@ std::map<std::string, double> basic::read_config_file(std::string filename){
 	  	  	std::getline(sep, field, ',');
             std::string key = field;
 	  	  	std::getline(sep, field, ',');
-	  	  	double value =  std::stod(field);
-            key_value.insert(std::pair<std::string, int>(key, value));
+            key_value.insert(std::pair<std::string, std::string>(key, field));
 	  	}
     }
 

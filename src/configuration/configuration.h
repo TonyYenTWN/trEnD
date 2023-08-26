@@ -48,6 +48,8 @@ namespace configuration{
 		int total_time;
 		/** Time boundary of simulation. 1st component = starting time; 2nd component = duration of the simulation.*/
 		std::vector <int> time_boundary;
+		/**  Name of the directory where the csv files are read, processed, and stored*/
+		std::string folder_name;
 		/*@{*/
 
 		void process_default_get(){
@@ -131,6 +133,10 @@ namespace configuration{
 				this->time_boundary.push_back(time_length);
 				std::cout << "\n";
 			}
+
+			std::cout << "Folder name?                                 | ";
+			std::cin >> this->folder_name;
+			std::cout << "\n";
 		}
 
 		void process_bool_output(){
@@ -176,6 +182,10 @@ namespace configuration{
 
 			std::cout << "Run time length?                         | ";
 			std::cout << this->time_boundary[1];
+			std::cout << "\n";
+
+			std::cout << "Folder name?                                 | ";
+			std::cout << this->folder_name;
 			std::cout << "\n\n";
 		}
 	};

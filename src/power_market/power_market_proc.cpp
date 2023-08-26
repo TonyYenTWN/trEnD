@@ -4,19 +4,19 @@
 #include "src/power_network/power_flow_analysis.h"
 #include "src/spatial_field/spatial_field.h"
 
-void power_market::default_demand_set(power_network::network_inform &Power_network_inform, market_whole_inform &Power_market_inform, int Time){
+void power_market::default_demand_set(power_network::network_inform &Power_network_inform, market_whole_inform &Power_market_inform, configuration::process_config &process_par){
 	//int Time = configuration::parameters::Time();
 
 	// Initialization of the IMO
 	fin_market fin_market;
-	fin_market.dir = "csv/input/power_market/";
+	fin_market.dir = "csv/case/" + process_par.folder_name + "/input/power_market/";
 	fin_market.moc = fin_market.dir + "merit_order_curve_q_assimilated_2021.csv";
 	fin_market.demand = fin_market.dir + "generation_total_forecast_2021.csv";
 	fin_market.cbt = fin_market.dir + "cbt_forecast_2021.csv";
 	fin_market.solar= fin_market.dir + "generation_solar_forecast_2021.csv";
 	fin_market.wind_on = fin_market.dir + "generation_wind_onshore_forecast_2021.csv";
 	fin_market.wind_off = fin_market.dir + "generation_wind_offshore_forecast_2021.csv";
-	International_Market_Set(Power_market_inform.International_Market, Power_network_inform, Time, fin_market);
+	International_Market_Set(Power_market_inform.International_Market, Power_network_inform, process_par.total_time, fin_market);
 }
 
 void power_market::power_market_process_set(power_network::network_inform &Power_network_inform, market_whole_inform &Power_market_inform, configuration::process_config &process_par){
@@ -25,16 +25,16 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 
 	// Initialization of processed spatial fields
 	spatial_field::fin_field fin_field_processed;
-	fin_field_processed.dir = "csv/processed/spatial_field/";
-	fin_field_processed.demand = fin_field_processed.dir + "nominal_mean_demand_field_10km_ts_";
-	fin_field_processed.imbalance = fin_field_processed.dir + "imbalance_field_10km_ts_";
-	fin_field_processed.solar = fin_field_processed.dir + "solar_radiation_field_10km_ts_";
-	fin_field_processed.wind_on = fin_field_processed.dir + "wind_onshore_cf_field_10km_ts_";
+	fin_field_processed.dir = "csv/case/" + process_par.folder_name + "/processed/spatial_field/";
+	fin_field_processed.demand = fin_field_processed.dir + "demand/nominal_mean_demand_field_10km_ts_";
+	fin_field_processed.imbalance = fin_field_processed.dir + "imbalance/imbalance_field_10km_ts_";
+	fin_field_processed.solar = fin_field_processed.dir + "solar/solar_radiation_field_10km_ts_";
+	fin_field_processed.wind_on = fin_field_processed.dir + "wind/wind_onshore_cf_field_10km_ts_";
 	spatial_field::spatial_field_store(Power_network_inform, fin_field_processed, process_par, Time);
 
 	// Initialization of the TSO
 	TSO_Market_Set(Power_market_inform.TSO_Market, Power_network_inform, Time);
-	Simplified_network_print(Power_market_inform);
+	Simplified_network_print(Power_market_inform, process_par);
 	Flow_Based_Market_LP_Set(Power_market_inform.TSO_Market);
 
 	// Initialization of the DSO
@@ -50,7 +50,7 @@ void power_market::power_market_process_set(power_network::network_inform &Power
 	International_Market_Price_Estimation(process_par.time_boundary[0], Power_market_inform.International_Market, Power_network_inform, process_par);
 
 	// Bidding strategies of agents
-	std::string end_user_type_file = "csv/input/agent/end_user_types.csv";
+	std::string end_user_type_file = "csv/case/" + process_par.folder_name + "/input/agent/end_user_types.csv";
 	agent::agents_set(process_par.time_boundary[0], Power_market_inform, Power_network_inform, end_user_type_file, process_par);
 
 	// Ideal market clearing in IMO

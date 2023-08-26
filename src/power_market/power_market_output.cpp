@@ -165,34 +165,43 @@ namespace local{
 		basic::write_file(Market.balancing.supply_up.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]) - Market.balancing.supply_down.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
 		fout_name = dir_name + "/balancing_reimbursement.csv";
 		basic::write_file(Market.balancing.price_up.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]) + Market.balancing.price_down.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
+	}
+
+	void Flex_stat_results_print(power_market::market_inform &Market, std::string name, configuration::process_config &process_par){
+		std::string fout_name;
+		std::string dir_name;
 
         // Flexibility status
-        dir_name = name + "/flex_stat";
-        std::filesystem::create_directories(dir_name);
+        dir_name = name;
         fout_name = dir_name + "/demand_flex.csv";
-        basic::write_file(Market.balancing.price_up.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]) + Market.flex_stat.demand_flex.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
+        basic::write_file(Market.flex_stat.demand_flex.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
         fout_name = dir_name + "/demand_inflex.csv";
-        basic::write_file(Market.balancing.price_up.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]) + Market.flex_stat.demand_inflex.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
+        basic::write_file(Market.flex_stat.demand_inflex.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
         fout_name = dir_name + "/supply_flex.csv";
-        basic::write_file(Market.balancing.price_up.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]) + Market.flex_stat.supply_flex.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
+        basic::write_file(Market.flex_stat.supply_flex.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
         fout_name = dir_name + "/supply_inflex.csv";
-        basic::write_file(Market.balancing.price_up.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]) + Market.flex_stat.supply_inflex.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
+        basic::write_file(Market.flex_stat.supply_inflex.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
 	}
 }
 
 void power_market::Markets_results_print(market_whole_inform &Power_market_inform, configuration::process_config &process_par){
 	// Create a folder to store the file
-	std::string dir_name = "csv/output/power_market";
+	std::string dir_name = "csv/case/" + process_par.folder_name + "/output/power_market";
 	std::filesystem::create_directories(dir_name);
 	dir_name += "/";
 
 	local::Market_results_print(Power_market_inform.International_Market, dir_name + "IMO", process_par, 0);
 	local::Market_results_print(Power_market_inform.TSO_Market, dir_name + "TSO", process_par);
+
+    dir_name = "csv/case/" + process_par.folder_name + "/processed/power_market";
+	dir_name += "/flex_stat";
+	std::filesystem::create_directories(dir_name);
+	local::Flex_stat_results_print(Power_market_inform.TSO_Market, dir_name, process_par);
 }
 
-void power_market::Simplified_network_print(market_whole_inform &Power_market_inform){
+void power_market::Simplified_network_print(market_whole_inform &Power_market_inform, configuration::process_config &process_par){
 	// Create a folder to store the file
-	std::string dir_name = "csv/processed/power_market";
+	std::string dir_name = "csv/case/" + process_par.folder_name + "/processed/power_market";
 	std::filesystem::create_directories(dir_name);
 	dir_name += "/";
 

@@ -251,8 +251,8 @@ namespace power_market{
 	void Operation_Initialization(market_inform&, int);
 	void Flow_Based_Market_LP_Set(market_inform&);
 	void Flow_Based_Market_Optimization(market_inform&);
-	void default_demand_set(power_network::network_inform&, market_whole_inform&, int);
-	void power_market_process_set(power_network::network_inform&, market_whole_inform&, configuration::process_config &);
+	void default_demand_set(power_network::network_inform&, market_whole_inform&, configuration::process_config&);
+	void power_market_process_set(power_network::network_inform&, market_whole_inform&, configuration::process_config&);
 	void power_market_process_update(power_network::network_inform&, market_whole_inform&, configuration::process_config&);
 }
 
@@ -314,7 +314,7 @@ namespace power_market{
 
 namespace power_market{
 	void Markets_results_print(market_whole_inform&, configuration::process_config&);
-	void Simplified_network_print(market_whole_inform&);
+	void Simplified_network_print(market_whole_inform&, configuration::process_config&);
 }
 
 #endif

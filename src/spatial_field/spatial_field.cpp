@@ -87,7 +87,7 @@ void spatial_field::demand_imbalance_estimation(power_network::network_inform &P
 
 	// Read actual imbalance data
 	bool fin_imbalance_row_name = 1;
-	std::string fin_imbalance = "csv/input/power_market/control_reserve_activated_2021.csv";
+	std::string fin_imbalance = "csv/case/" + process_par.folder_name + "/input/power_market/control_reserve_activated_2021.csv";
 	auto fin_imbalance_dim = basic::get_file_dim(fin_imbalance);
 	auto Imbalance_ts_raw = basic::read_file(fin_imbalance_dim[0], fin_imbalance_dim[1], fin_imbalance);
 	Eigen::MatrixXd Imbalance_ts(Time, bz_num);
@@ -129,7 +129,7 @@ void spatial_field::demand_imbalance_estimation(power_network::network_inform &P
 
 	// Output the annual average of normalized mean demand field
 	std::string fout_name;
-	fout_name = "csv/processed/spatial_field/nominal_mean_demand_field_10km_annual_mean.csv";
+	fout_name = "csv/case/" + process_par.folder_name + "/processed/spatial_field/demand/nominal_mean_demand_field_10km_annual_mean.csv";
 	std::vector <std::string> col_name;
 	col_name.push_back("nominal_mean_demand");
 	basic::write_file(nominal_demand.mu, fout_name, col_name);
@@ -165,7 +165,7 @@ void spatial_field::demand_imbalance_estimation(power_network::network_inform &P
 	std::cout << imbalance.mu.transpose() * Constraint_imbalance << "\n\n";
 
 	// Output the annual average of normalized mean demand field
-	fout_name = "csv/processed/spatial_field/imbalance_field_10km_annual_mean.csv";
+	fout_name = "csv/case/" + process_par.folder_name + "/processed/spatial_field/imbalance/imbalance_field_10km_annual_mean.csv";
 	col_name.clear();
 	col_name.push_back("imbalance");
 	basic::write_file(imbalance.mu, fout_name, col_name);
@@ -205,7 +205,7 @@ void spatial_field::demand_imbalance_estimation(power_network::network_inform &P
 		}
 		col_name.clear();
 		col_name.push_back("nominal_mean_demand");
-		fout_name = "csv/processed/spatial_field/nominal_mean_demand_field_10km_ts_" + digit_zeros + std::to_string(tick) + ".csv";
+		fout_name = "csv/case/" + process_par.folder_name + "/processed/spatial_field/demand/nominal_mean_demand_field_10km_ts_" + digit_zeros + std::to_string(tick) + ".csv";
 		basic::write_file(nominal_demand.mu, fout_name, col_name);
 
 		// Set sparse matrix for equality constraints for imbalance
@@ -230,7 +230,7 @@ void spatial_field::demand_imbalance_estimation(power_network::network_inform &P
 		std::cout << imbalance.mu.transpose() * Constraint_imbalance << "\n\n";
 
 		// Output the annual average of imbalance field
-		fout_name = "csv/processed/spatial_field/imbalance_field_10km_ts_" + digit_zeros + std::to_string(tick) + ".csv";
+		fout_name = "csv/case/" + process_par.folder_name + "/processed/spatial_field/imbalance/imbalance_field_10km_ts_" + digit_zeros + std::to_string(tick) + ".csv";
 		col_name.clear();
 		col_name.push_back("imbalance");
 		basic::write_file(imbalance.mu, fout_name, col_name);
@@ -247,7 +247,7 @@ void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_n
 
 	// Read onshore wind power data
 	bool fin_wind_on_row_name = 1;
-	std::string fin_wind_on = "csv/input/power_market/generation_wind_onshore_forecast_2021.csv";
+	std::string fin_wind_on = "csv/case/" + process_par.folder_name + "/input/power_market/generation_wind_onshore_forecast_2021.csv";
 	auto fin_wind_on_dim = basic::get_file_dim(fin_wind_on);
 	auto Wind_on_ts = basic::read_file(fin_wind_on_dim[0], fin_wind_on_dim[1], fin_wind_on);
 
@@ -320,7 +320,7 @@ void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_n
 	std::cout << wind_on_cf.mu.transpose() * Constraint_wind_on << "\n\n";
 
 	// Output the annual average of onshore wind capacity factor field
-	std::string fout_name = "csv/processed/spatial_field/wind_onshore_cf_field_10km_annual_mean.csv";
+	std::string fout_name = "csv/case/" + process_par.folder_name + "/processed/spatial_field/wind/wind_onshore_cf_field_10km_annual_mean.csv";
 	std::vector <std::string> col_name;
 	col_name.push_back("wind_onshore_cf");
 	basic::write_file(wind_on_cf.mu, fout_name, col_name);
@@ -360,7 +360,7 @@ void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_n
 		}
 		col_name.clear();
 		col_name.push_back("wind_onshore_cf");
-		fout_name = "csv/processed/spatial_field/wind_onshore_cf_field_10km_ts_" + digit_zeros + std::to_string(tick) + ".csv";
+		fout_name = "csv/case/" + process_par.folder_name + "/processed/spatial_field/wind/wind_onshore_cf_field_10km_ts_" + digit_zeros + std::to_string(tick) + ".csv";
 		basic::write_file(wind_on_cf.mu, fout_name, col_name);
 	}
 }
@@ -372,7 +372,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 	double pi = boost::math::constants::pi<double>();
 
 	// Read solar radiation data
-	std::string fin_solar = "csv/input/power_market/solar_radiation_2021.csv";
+	std::string fin_solar = "csv/case/" + process_par.folder_name + "/input/power_market/solar_radiation_2021.csv";
 	auto fin_solar_dim = basic::get_file_dim(fin_solar);
 	auto Solar_ts = basic::read_file(fin_solar_dim[0], fin_solar_dim[1], fin_solar);
 	bool fin_solar_row_name = 1;
@@ -448,7 +448,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 
 	// Output the annual average of normalized mean demand field
 	std::string fout_name;
-	fout_name = "csv/processed/spatial_field/solar_radiation_field_10km_annual_mean.csv";
+	fout_name = "csv/case/" + process_par.folder_name + "/processed/spatial_field/solar/solar_radiation_field_10km_annual_mean.csv";
 	std::vector <std::string> col_name;
 	col_name.push_back("solar_radiation");
 	basic::write_file(solar_radiation.mu, fout_name, col_name);
@@ -536,7 +536,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 		}
 		col_name.clear();
 		col_name.push_back("solar_radiation");
-		fout_name = "csv/processed/spatial_field/solar_radiation_field_10km_ts_" + digit_zeros + std::to_string(tick) + ".csv";
+		fout_name = "csv/case/" + process_par.folder_name + "/processed/spatial_field/solar/solar_radiation_field_10km_ts_" + digit_zeros + std::to_string(tick) + ".csv";
 		basic::write_file(solar_radiation.mu, fout_name, col_name);
 	}
 }

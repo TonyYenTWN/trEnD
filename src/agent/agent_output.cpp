@@ -71,7 +71,7 @@ namespace local{
 		return output_row;
 	}
 
-	void aggregators_settlement_print(power_market::market_whole_inform &Power_market_inform){
+	void aggregators_settlement_print(power_market::market_whole_inform &Power_market_inform, std::string dir_name){
 		int point_num = Power_market_inform.agent_profiles.aggregators.size();
 		std::vector <std::string> var_names = var_names_set();
 		int var_num = var_names.size();
@@ -82,11 +82,11 @@ namespace local{
 			Output_data.row(point_iter) = output_row_store(var_num, Power_market_inform.agent_profiles.aggregators[point_iter].settlement);
 		}
 
-		std::string fout_name = "csv/output/agent/aggregator.csv";
+		std::string fout_name =  dir_name + "/aggregator.csv";
 		basic::write_file(Output_data, fout_name, var_names);
 	}
 
-	void cross_border_settlement_print(power_market::market_whole_inform &Power_market_inform){
+	void cross_border_settlement_print(power_market::market_whole_inform &Power_market_inform, std::string dir_name){
 		int edge_num = Power_market_inform.agent_profiles.cross_border.size();
 		std::vector <std::string> var_names = var_names_set();
 		int var_num = var_names.size();
@@ -109,11 +109,11 @@ namespace local{
 		for(int row_iter = 0; row_iter < stored_information.size(); ++ row_iter){
 			Output_data.row(row_iter) = stored_information[row_iter];
 		}
-		std::string fout_name = "csv/output/agent/cross_border.csv";
+		std::string fout_name =  dir_name + "/cross_border.csv";
 		basic::write_file(Output_data, fout_name, var_names);
 	}
 
-	void end_users_settlement_print(power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
+	void end_users_settlement_print(power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, std::string dir_name){
 		int point_num = Power_network_inform.points.bidding_zone.size();
 		//int sample_num = agent::end_user::parameters::sample_num();
 		int sample_num = Power_market_inform.agent_profiles.end_user_type.cols();
@@ -128,12 +128,12 @@ namespace local{
 				Output_data(point_iter, 0) = point_iter;
 			}
 
-			std::string fout_name = "csv/output/agent/end_user_type_" + std::to_string(sample_iter) + ".csv";
+			std::string fout_name =  dir_name + "/end_user_type_" + std::to_string(sample_iter) + ".csv";
 			basic::write_file(Output_data, fout_name, var_names);
 		}
 	}
 
-	void industrial_settlement_print(power_market::market_whole_inform &Power_market_inform){
+	void industrial_settlement_print(power_market::market_whole_inform &Power_market_inform, std::string dir_name){
 		std::vector <std::string> var_names = var_names_set();
 		int var_num = var_names.size();
 
@@ -144,11 +144,11 @@ namespace local{
 			Output_data(agent_iter, 0) = Power_market_inform.agent_profiles.industrial.HV[agent_iter].point_ID;
 		}
 
-		std::string fout_name = "csv/output/agent/industrial_HV.csv";
+		std::string fout_name =  dir_name + "/industrial_HV.csv";
 		basic::write_file(Output_data, fout_name, var_names);
 	}
 
-	void power_supplier_settlement_print(power_market::market_whole_inform &Power_market_inform){
+	void power_supplier_settlement_print(power_market::market_whole_inform &Power_market_inform, std::string dir_name){
 		std::vector <std::string> var_names = var_names_set();
 		int var_num = var_names.size();
 		Eigen::MatrixXd Output_data;
@@ -160,7 +160,7 @@ namespace local{
 			Output_data.row(agent_iter) = output_row_store(var_num, Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].settlement);
 			Output_data(agent_iter, 0) = Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].original_ID;
 		}
-		fout_name = "csv/output/agent/hydro_HV_plant.csv";
+		fout_name =  dir_name + "/hydro_HV_plant.csv";
 		basic::write_file(Output_data, fout_name, var_names);
 
 		int hydro_LV_plant_num = Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant.size();
@@ -169,7 +169,7 @@ namespace local{
 			Output_data.row(agent_iter) = output_row_store(var_num, Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].settlement);
 			Output_data(agent_iter, 0) = Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].original_ID;
 		}
-		fout_name = "csv/output/agent/hydro_LV_plant.csv";
+		fout_name =  dir_name + "/hydro_LV_plant.csv";
 		basic::write_file(Output_data, fout_name, var_names);
 
 		int wind_HV_plant_num = Power_market_inform.agent_profiles.power_supplier.wind.HV_plant.size();
@@ -178,7 +178,7 @@ namespace local{
 			Output_data.row(agent_iter) = output_row_store(var_num, Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].settlement);
 			Output_data(agent_iter, 0) = Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].original_ID;
 		}
-		fout_name = "csv/output/agent/wind_HV_plant.csv";
+		fout_name =  dir_name + "/wind_HV_plant.csv";
 		basic::write_file(Output_data, fout_name, var_names);
 
 		int wind_LV_plant_num = Power_market_inform.agent_profiles.power_supplier.wind.LV_plant.size();
@@ -187,7 +187,7 @@ namespace local{
 			Output_data.row(agent_iter) = output_row_store(var_num, Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].settlement);
 			Output_data(agent_iter, 0) = Power_market_inform.agent_profiles.power_supplier.wind.LV_plant[agent_iter].original_ID;
 		}
-		fout_name = "csv/output/agent/wind_LV_plant.csv";
+		fout_name =  dir_name + "/wind_LV_plant.csv";
 		basic::write_file(Output_data, fout_name, var_names);
 
 		int pump_HV_plant_num = Power_market_inform.agent_profiles.power_supplier.pump_storage.HV.size();
@@ -196,7 +196,7 @@ namespace local{
 			Output_data.row(agent_iter) = output_row_store(var_num, Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].settlement);
 			Output_data(agent_iter, 0) = Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].original_ID;
 		}
-		fout_name = "csv/output/agent/pump_storage_HV_plant.csv";
+		fout_name =  dir_name + "/pump_storage_HV_plant.csv";
 		basic::write_file(Output_data, fout_name, var_names);
 
 		int pump_LV_plant_num = Power_market_inform.agent_profiles.power_supplier.pump_storage.LV.size();
@@ -205,7 +205,7 @@ namespace local{
 			Output_data.row(agent_iter) = output_row_store(var_num, Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].settlement);
 			Output_data(agent_iter, 0) = Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].original_ID;
 		}
-		fout_name = "csv/output/agent/pump_storage_LV_plant.csv";
+		fout_name =  dir_name +  "/pump_storage_LV_plant.csv";
 		basic::write_file(Output_data, fout_name, var_names);
 
 		int slack_LV_num = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant.size();
@@ -214,18 +214,19 @@ namespace local{
 			Output_data.row(agent_iter) = output_row_store(var_num, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].settlement);
 			Output_data(agent_iter, 0) = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].original_ID;
 		}
-		fout_name = "csv/output/agent/slack_LV_plant.csv";
+		fout_name = dir_name + "/slack_LV_plant.csv";
 		basic::write_file(Output_data, fout_name, var_names);
 	}
 }
 
-void agent::agents_results_print(power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
+void agent::agents_results_print(power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, configuration::process_config &process_par){
 	// Create a folder to store the file
-	std::filesystem::create_directories("csv/output/agent");
+	std::string dir_name = "csv/case/" + process_par.folder_name + "/output/agent";
+	std::filesystem::create_directories(dir_name);
 
-	local::aggregators_settlement_print(Power_market_inform);
-	local::cross_border_settlement_print(Power_market_inform);
-	local::end_users_settlement_print(Power_market_inform, Power_network_inform);
-	local::industrial_settlement_print(Power_market_inform);
-	local::power_supplier_settlement_print(Power_market_inform);
+	local::aggregators_settlement_print(Power_market_inform, dir_name);
+	local::cross_border_settlement_print(Power_market_inform, dir_name);
+	local::end_users_settlement_print(Power_market_inform, Power_network_inform, dir_name);
+	local::industrial_settlement_print(Power_market_inform, dir_name);
+	local::power_supplier_settlement_print(Power_market_inform, dir_name);
 }

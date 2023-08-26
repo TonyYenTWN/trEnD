@@ -22,7 +22,7 @@ int main(){
             process_par.process_bool_input();
         }
         else{
-            process_config_input(process_par, "csv/input/configuration/");
+            process_config_input(process_par, "csv/configuration/");
         }
 	}
 
@@ -32,33 +32,39 @@ int main(){
 	}
 
 	// Set folder and file name for log messages
-	std::filesystem::create_directories("csv/output/log");
-	std::freopen( "csv/output/log/log.txt", "w", stdout);
+	std::string output_dir_name = "csv/case/" + process_par.folder_name;
+	std::string output_log_name = output_dir_name + "/log.txt";
+//	std::filesystem::create_directories(output_dir_name);
+	std::freopen(output_log_name.c_str() , "w", stdout);
 	process_par.process_bool_output();
 
 	// Initialization of power network information
 	power_network::network_inform Power_network_inform;
-	power_network::power_network_input_process(Power_network_inform, "csv/input/power_network/");
+	power_network::power_network_input_process(Power_network_inform, "csv/case/" + process_par.folder_name + "/input/power_network/");
 
 	// Set bidding prices and default (residual) demand time series
 	power_market::market_whole_inform Power_market_inform;
 	power_market::parameters::bidded_price(Power_market_inform.price_map);
-	power_market::default_demand_set(Power_network_inform, Power_market_inform, process_par.total_time);
+	power_market::default_demand_set(Power_network_inform, Power_market_inform, process_par);
 
 	// Spatial fields estimation
 	if(process_par.estimation_flag){
-		// Create a folder to store the file
-		std::filesystem::create_directories("csv/processed/spatial_field");
+        // Create a folder to store the file
+		std::filesystem::create_directories("csv/case/" + process_par.folder_name + "/processed/spatial_field");
 
 		if(process_par.estimation_demand_flag){
+            std::filesystem::create_directories("csv/case/" + process_par.folder_name + "/processed/spatial_field/demand");
+            std::filesystem::create_directories("csv/case/" + process_par.folder_name + "/processed/spatial_field/imbalance");
             spatial_field::demand_imbalance_estimation(Power_network_inform, Power_market_inform.International_Market, process_par);
 		}
 
 		if(process_par.estimation_wind_flag){
+            std::filesystem::create_directories("csv/case/" + process_par.folder_name + "/processed/spatial_field/wind");
             spatial_field::wind_on_cf_estimation(Power_network_inform, process_par);
 		}
 
 		if(process_par.estimation_solar_flag){
+            std::filesystem::create_directories("csv/case/" + process_par.folder_name + "/processed/spatial_field/solar");
             spatial_field::solar_radiation_estimation(Power_network_inform, process_par);
 		}
 	}
@@ -71,7 +77,7 @@ int main(){
 		// Output results
 		power_market::Markets_results_print(Power_market_inform, process_par);
 		power_network::power_flow_results_print(Power_market_inform, Power_network_inform, process_par);
-		agent::agents_results_print(Power_market_inform, Power_network_inform);
+		agent::agents_results_print(Power_market_inform, Power_network_inform, process_par);
 	}
 
 	// Close log file
