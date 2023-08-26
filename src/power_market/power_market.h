@@ -41,6 +41,14 @@ namespace power_market{
 	}
 
 	// Power market objects
+	/** Information of the flexibility situation at each market node (for contingency analysis).*/
+	struct flexibility_status{
+        Eigen::MatrixXd demand_inflex; // Currently = actual demand on the zone / node / spatial point after balancing (under normal operation)
+        Eigen::MatrixXd demand_flex;    // Consider this later
+        Eigen::MatrixXd supply_inflex;    // Currently = actual supply from active end-users
+        Eigen::MatrixXd supply_flex;       // Currently = total submitted supply from power supplier + positive redispatch from slack gas
+	};
+
 	/** Information of the corresponding power network of the market.*/
 	struct network_graph{
 		/**
@@ -193,6 +201,8 @@ namespace power_market{
 		power_network::power_flow_struct power_flow;
 		/**Operational schedule.*/
 		schedules operation;
+		/**Flexibility status.*/
+		flexibility_status flex_stat;
 		/*@{*/
 
 		/**

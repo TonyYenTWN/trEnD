@@ -91,8 +91,12 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 	TSO_Market.balancing.price_down = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.actual.supply = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.actual.demand = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
-	TSO_Market.actual.price = Eigen::MatrixXd(Time, TSO_Market.num_zone);
-	TSO_Market.network.actual_power = Eigen::MatrixXd(Time, TSO_Market.network.num_edges);
+	TSO_Market.actual.price = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.network.actual_power = Eigen::MatrixXd::Zero(Time, TSO_Market.network.num_edges);
+	TSO_Market.flex_stat.demand_flex = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.flex_stat.demand_inflex = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.flex_stat.supply_flex = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.flex_stat.supply_inflex = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 }
 
 void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
@@ -392,6 +396,7 @@ void power_market::TSO_Market_Actual_Results_Get(int tick, market_inform &Market
 		int row_start = 2 * Market.network.num_vertice + node_iter * (Market.price_intervals + 2);
 		Market.actual.supply(tick, node_iter) = (sol_vec.segment(row_start, Market.price_intervals + 2).array().max(0)).sum();
 		Market.actual.demand(tick, node_iter) = -(sol_vec.segment(row_start, Market.price_intervals + 2).array().min(0)).sum();
+		//Market.flex_stat.demand_inflex(tick, node_iter) += Market.actual.demand(tick, node_iter);
 
 		// Store nodal prices
 		Market.actual.price(tick, node_iter) = Market.bidded_price_map.bidded_price(0) + rep.lagbc[row_start];
