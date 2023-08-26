@@ -7,7 +7,8 @@
 namespace agent{
 	namespace parameters{
 		static inline double residential_ratio(){
-			//double value = 1.;
+		    // default is .4
+			//double value = 0.;
 			double value = .4;
 			return value;
 		}

@@ -2110,8 +2110,8 @@ namespace{
 			int bz_ID = Power_network_inform.points.bidding_zone(point_ID);
 			double marginal_price = Power_market_inform.TSO_Market.confirmed.price(tick, node_ID);
 			int marginal_price_ID = Power_market_inform.price_map.price_ID[marginal_price];
-			//double original_price = Power_market_inform.International_Market.confirmed.price(tick, bz_ID);
-			//int original_price_ID = Power_market_inform.price_map.price_ID[original_price];
+//			double original_price = Power_market_inform.International_Market.confirmed.price(tick, bz_ID);
+//			int original_price_ID = Power_market_inform.price_map.price_ID[original_price];
 			int original_price_ID = 0;
 			double original_price = Power_market_inform.price_map.bidded_price[original_price_ID];
 
