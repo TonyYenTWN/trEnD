@@ -374,18 +374,25 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile, configura
 	}
 
 	// Smart pricing for EV BESS
+	// Modification: should split flexibility into 2 parts according to a predetermined soc_min profile
+	// Cannot go below soc_min -> determines flexible and inflexible part of ch/ dc
 	int free_time_EV = (tick % foresight_time > 19) * (foresight_time - tick % foresight_time);
 	free_time_EV += 7 - (tick % foresight_time < 7) * (tick % foresight_time);
 	int price_supply_flex_EV_ID;
 	int price_demand_flex_EV_ID;
+	double soc_min_EV = (tick % foresight_time >= 3) * (tick % foresight_time <= 6) * profile.operation.EV.energy_demand * (tick % foresight_time - 2) / 4;
 	double price_supply_flex_EV = bidded_price_map.bidded_price(price_interval + 1);
 	double price_demand_flex_EV = bidded_price_map.bidded_price(0);
-	double avail_supply_EV = std::min(profile.operation.EV.BESS.capacity_scale, profile.operation.EV.BESS.soc - profile.operation.EV.BESS.self_consumption);
+	double avail_supply_EV = std::min(profile.operation.EV.BESS.capacity_scale, profile.operation.EV.BESS.soc - profile.operation.EV.BESS.self_consumption - soc_min_EV);
+	avail_supply_EV = avail_supply_EV * (avail_supply_EV > 0.);
 	avail_supply_EV *= profile.operation.EV.BESS.efficiency;
 	avail_supply_EV *= profile.operation.EV.house_default_period(0);
-	double avail_demand_EV = std::min(profile.operation.EV.BESS.capacity_scale, profile.operation.EV.BESS.energy_scale - profile.operation.EV.BESS.soc + profile.operation.EV.BESS.self_consumption);
+	double avail_demand_EV = std::min(profile.operation.EV.BESS.capacity_scale, profile.operation.EV.BESS.energy_scale - std::max(profile.operation.EV.BESS.soc - profile.operation.EV.BESS.self_consumption, soc_min_EV));
 	avail_demand_EV *= profile.operation.EV.house_default_period(0);
 	avail_demand_EV /= profile.operation.EV.BESS.efficiency;
+	double inflex_demand_EV = std::max(soc_min_EV - profile.operation.EV.BESS.soc + profile.operation.EV.BESS.self_consumption, 0.);
+	inflex_demand_EV *= profile.operation.EV.house_default_period(0);
+	inflex_demand_EV /= profile.operation.EV.BESS.efficiency;
 	if(!process_par.rule_based){
 		bool change_hold_supply_EV = 0;
 		bool change_hold_demand_EV = 0;
@@ -437,7 +444,7 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile, configura
 	if(process_par.rule_based){
 		profile.operation.BESS.price_supply = profile.operation.price_supply_profile(0) - price_gap;
 		profile.operation.BESS.price_demand = profile.operation.price_demand_profile(0) + price_gap;
-		profile.operation.EV.BESS.price_demand = bidded_price_map.bidded_price(price_interval + 1);
+		profile.operation.EV.BESS.price_demand = profile.operation.price_demand_profile(0) + price_gap;
 		profile.operation.EV.BESS.price_supply = profile.operation.price_supply_profile(0) - price_gap;
 	}
 	if(profile.investment.decision.redispatch){
@@ -474,32 +481,34 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile, configura
 		// Check if EV can still be flexibly managed
 		if(process_par.encourage_redispatch){
 			if(tick % foresight_time >= 3 && tick % foresight_time <= 6){
-				profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::min(avail_demand_EV, 1.);
+				profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += inflex_demand_EV;  //std::min(avail_demand_EV, 1.);
 				profile.operation.EV.BESS.price_demand = bidded_price_map.bidded_price(price_interval + 1);
 			}
 		}
 		else{
 			if(process_par.rule_based){
 				if(tick % foresight_time >= 1 && tick % foresight_time <= 6){
-					profile.operation.bids.submitted_demand_flex(price_demand_inflex_ID) += avail_demand_EV;
+					profile.operation.bids.submitted_demand_flex(price_demand_inflex_ID) += inflex_demand_EV;
+					profile.operation.bids.submitted_demand_flex(price_demand_flex_ID + price_gap) += avail_demand_EV;
 				}
 				else{
-					//profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += .1 * avail_demand_EV;
-					//profile.operation.bids.submitted_demand_flex(price_demand_flex_ID + price_gap) += avail_demand_EV / 2.;
-
 					if(tick % foresight_time >= 20 && tick % foresight_time <= 21){
 						profile.operation.bids.submitted_supply_flex(price_supply_flex_ID - price_gap) += avail_supply_EV;
 					}
 				}
 			}
 			else{
-				if(tick % foresight_time >= 3 && tick % foresight_time <= 6){
-					profile.operation.bids.submitted_demand_flex(price_demand_inflex_ID) += avail_demand_EV;
-				}
-				else{
-					profile.operation.bids.submitted_demand_flex(price_demand_flex_EV_ID) += avail_demand_EV;
-					profile.operation.bids.submitted_supply_flex(price_supply_flex_EV_ID) += avail_supply_EV;
-				}
+//				if(tick % foresight_time >= 3 && tick % foresight_time <= 6){
+//					profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += inflex_demand_EV;
+//				}
+//				else{
+//					profile.operation.bids.submitted_demand_flex(price_demand_flex_EV_ID) += avail_demand_EV;
+//					profile.operation.bids.submitted_supply_flex(price_supply_flex_EV_ID) += avail_supply_EV;
+//				}
+
+                profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += inflex_demand_EV;
+                profile.operation.bids.submitted_demand_flex(price_demand_flex_EV_ID) += avail_demand_EV;
+                profile.operation.bids.submitted_supply_flex(price_supply_flex_EV_ID) += avail_supply_EV;
 			}
 		}
 
