@@ -28,6 +28,7 @@ namespace local{
 
 	void Market_results_print(power_market::market_inform &Market, std::string name, configuration::process_config &process_par, bool nodal = 1){
 		std::string fout_name;
+		std::string dir_name;
 
 		// Set edge names
 		std::vector <std::string> edge_names;
@@ -38,111 +39,144 @@ namespace local{
 		}
 
 		// Confirmed results
-		fout_name = name + "_confirmed_price.csv";
+		dir_name = name + "/confirmed";
+		std::filesystem::create_directories(dir_name);
+		fout_name = dir_name + "/confirmed_price.csv";
 		basic::write_file(Market.confirmed.price.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-		fout_name = name + "_confirmed_demand.csv";
+		fout_name = dir_name + "/confirmed_demand.csv";
 		basic::write_file(Market.confirmed.demand.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-		fout_name = name + "_confirmed_supply.csv";
+		fout_name = dir_name+ "/confirmed_supply.csv";
 		basic::write_file(Market.confirmed.supply.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-		fout_name = name + "_confirmed_DC_power.csv";
+		fout_name = dir_name + "/confirmed_DC_power.csv";
 		basic::write_file(Market.network.confirmed_power.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, edge_names);
 
 		if(!nodal){
-			fout_name = name + "_redispatch_price.csv";
+            std::filesystem::create_directories(name);
+			fout_name = name + "/redispatch_price.csv";
 			basic::write_file(Market.redispatch.price_demand.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
 
 			// Operation schedule
-			fout_name = name + "_operation_EOM_cross_border.csv";
+			dir_name = name + "/operation/EOM";
+			std::filesystem::create_directories(dir_name);
+			fout_name = dir_name + "/operation_EOM_cross_border.csv";
 			basic::write_file(Market.operation.cross_border.EOM.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-			fout_name = name + "_operation_EOM_end_user.csv";
+			fout_name = dir_name + "/operation_EOM_end_user.csv";
 			basic::write_file(Market.operation.end_user.EOM.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-			fout_name = name + "_operation_EOM_hydro.csv";
+			fout_name = dir_name + "/operation_EOM_hydro.csv";
 			basic::write_file(Market.operation.hydro.EOM.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-			fout_name = name + "_operation_EOM_industrial.csv";
+			fout_name = dir_name + "/operation_EOM_industrial.csv";
 			basic::write_file(Market.operation.industrial.EOM.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-			fout_name = name + "_operation_EOM_pump_storage.csv";
+			fout_name = dir_name + "/operation_EOM_pump_storage.csv";
 			basic::write_file(Market.operation.pump_storage.EOM.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-			fout_name = name + "_operation_EOM_slack.csv";
+			fout_name = dir_name + "/operation_EOM_slack.csv";
 			basic::write_file(Market.operation.slack.EOM.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-			fout_name = name + "_operation_EOM_wind.csv";
+			fout_name = dir_name + "/operation_EOM_wind.csv";
 			basic::write_file(Market.operation.wind.EOM.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-			fout_name = name + "_operation_redispatch_cross_border.csv";
+
+			dir_name = name + "/operation/redispatch";
+			std::filesystem::create_directories(dir_name);
+			fout_name = dir_name + "/operation_redispatch_cross_border.csv";
 			basic::write_file(Market.operation.cross_border.redispatch.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-			fout_name = name + "_operation_redispatch_end_user.csv";
+			fout_name = dir_name + "/operation_redispatch_end_user.csv";
 			basic::write_file(Market.operation.end_user.redispatch.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-			fout_name = name + "_operation_redispatch_hydro.csv";
+			fout_name = dir_name + "/operation_redispatch_hydro.csv";
 			basic::write_file(Market.operation.hydro.redispatch.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-			fout_name = name + "_operation_redispatch_industrial.csv";
+			fout_name = dir_name + "/operation_redispatch_industrial.csv";
 			basic::write_file(Market.operation.industrial.redispatch.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-			fout_name = name + "_operation_redispatch_pump_storage.csv";
+			fout_name = dir_name + "/operation_redispatch_pump_storage.csv";
 			basic::write_file(Market.operation.pump_storage.redispatch.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-			fout_name = name + "_operation_redispatch_slack.csv";
+			fout_name = dir_name + "/operation_redispatch_slack.csv";
 			basic::write_file(Market.operation.slack.redispatch.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-			fout_name = name + "_operation_redispatch_wind.csv";
+			fout_name = dir_name + "/operation_redispatch_wind.csv";
 			basic::write_file(Market.operation.wind.redispatch.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-			fout_name = name + "_operation_balancing_cross_border.csv";
+
+			dir_name = name + "/operation/balancing";
+			std::filesystem::create_directories(dir_name);
+			fout_name = dir_name + "/operation_balancing_cross_border.csv";
 			basic::write_file(Market.operation.cross_border.balancing.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-			fout_name = name + "_operation_balancing_end_user.csv";
+			fout_name = dir_name + "/operation_balancing_end_user.csv";
 			basic::write_file(Market.operation.end_user.balancing.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-			fout_name = name + "_operation_balancing_hydro.csv";
+			fout_name = dir_name + "/operation_balancing_hydro.csv";
 			basic::write_file(Market.operation.hydro.balancing.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-			fout_name = name + "_operation_balancing_industrial.csv";
+			fout_name = dir_name + "/operation_balancing_industrial.csv";
 			basic::write_file(Market.operation.industrial.balancing.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-			fout_name = name + "_operation_balancing_pump_storage.csv";
+			fout_name = dir_name + "/operation_balancing_pump_storage.csv";
 			basic::write_file(Market.operation.pump_storage.balancing.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-			fout_name = name + "_operation_balancing_slack.csv";
+			fout_name = dir_name + "/operation_balancing_slack.csv";
 			basic::write_file(Market.operation.slack.balancing.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-			fout_name = name + "_operation_balancing_wind.csv";
+			fout_name = dir_name + "/operation_balancing_wind.csv";
 			basic::write_file(Market.operation.wind.balancing.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
 
 			return;
 		}
 
 		// EOM settlement
-		fout_name = name + "_EOM_cost.csv";
+		dir_name = name + "/EOM";
+        std::filesystem::create_directories(dir_name);
+		fout_name = dir_name + "/EOM_cost.csv";
 		basic::write_file(Market.EOM.cost.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-		fout_name = name + "_EOM_utility.csv";
+		fout_name = dir_name + "/EOM_utility.csv";
 		basic::write_file(Market.EOM.utility.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
 
 		// Redispatch settlement
-		fout_name = name + "_redispatch_cost.csv";
+		dir_name = name + "/redispatch";
+		std::filesystem::create_directories(dir_name);
+		fout_name = dir_name + "/redispatch_cost.csv";
 		basic::write_file(Market.redispatch.cost.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-		fout_name = name + "_redispatch_utility.csv";
+		fout_name = dir_name + "/redispatch_utility.csv";
 		basic::write_file(Market.redispatch.utility.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-		fout_name = name + "_redispatch_demand.csv";
+		fout_name = dir_name + "/redispatch_demand.csv";
 		basic::write_file(Market.redispatch.demand_up.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]) - Market.redispatch.demand_down.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-		fout_name = name + "_redispatch_supply.csv";
+		fout_name = dir_name + "/redispatch_supply.csv";
 		basic::write_file(Market.redispatch.supply_up.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]) - Market.redispatch.supply_down.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-		fout_name = name + "_redispatch_reimbursement.csv";
+		fout_name = dir_name + "/redispatch_reimbursement.csv";
 		basic::write_file(Market.redispatch.price_supply.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]) + Market.redispatch.price_demand.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
 
 		// Imbalance
-		fout_name = name + "_imbalance_demand.csv";
+		dir_name = name + "/imbalance";
+		std::filesystem::create_directories(dir_name);
+		fout_name = dir_name + "/imbalance_demand.csv";
 		basic::write_file(Market.imbalance.demand_up.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]) - Market.redispatch.demand_down.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-		fout_name = name + "_imbalance_supply.csv";
+		fout_name = dir_name + "/imbalance_supply.csv";
 		basic::write_file(Market.imbalance.supply_up.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]) - Market.redispatch.supply_down.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
 
 		// Actual results
-		fout_name = name + "_actual_price.csv";
+		dir_name = name + "/actual";
+		std::filesystem::create_directories(dir_name);
+		fout_name = dir_name + "/actual_price.csv";
 		basic::write_file(Market.actual.price.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-		fout_name = name + "_actual_demand.csv";
+		fout_name = dir_name+ "/actual_demand.csv";
 		basic::write_file(Market.actual.demand.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-		fout_name = name + "_actual_supply.csv";
+		fout_name = dir_name + "/actual_supply.csv";
 		basic::write_file(Market.actual.supply.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-		fout_name = name + "_actual_DC_power.csv";
+		fout_name = dir_name + "/actual_DC_power.csv";
 		basic::write_file(Market.network.actual_power.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, edge_names);
 
 		// Balancing settlement
-		fout_name = name + "_balancing_cost.csv";
+		dir_name = name + "/balancing";
+		std::filesystem::create_directories(dir_name);
+		fout_name = dir_name + "/balancing_cost.csv";
 		basic::write_file(Market.balancing.cost.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-		fout_name = name + "_balancing_utility.csv";
+		fout_name = dir_name + "/balancing_utility.csv";
 		basic::write_file(Market.balancing.utility.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-		fout_name = name + "_balancing_demand.csv";
+		fout_name = dir_name + "/balancing_demand.csv";
 		basic::write_file(Market.balancing.demand_up.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]) - Market.balancing.demand_down.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-		fout_name = name + "_balancing_supply.csv";
+		fout_name = dir_name + "/balancing_supply.csv";
 		basic::write_file(Market.balancing.supply_up.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]) - Market.balancing.supply_down.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-		fout_name = name + "_balancing_reimbursement.csv";
+		fout_name = dir_name + "/balancing_reimbursement.csv";
 		basic::write_file(Market.balancing.price_up.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]) + Market.balancing.price_down.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
+
+        // Flexibility status
+        dir_name = name + "/flex_stat";
+        std::filesystem::create_directories(dir_name);
+        fout_name = dir_name + "/demand_flex.csv";
+        basic::write_file(Market.balancing.price_up.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]) + Market.flex_stat.demand_flex.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
+        fout_name = dir_name + "/demand_inflex.csv";
+        basic::write_file(Market.balancing.price_up.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]) + Market.flex_stat.demand_inflex.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
+        fout_name = dir_name + "/supply_flex.csv";
+        basic::write_file(Market.balancing.price_up.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]) + Market.flex_stat.supply_flex.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
+        fout_name = dir_name + "/supply_inflex.csv";
+        basic::write_file(Market.balancing.price_up.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]) + Market.flex_stat.supply_inflex.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
 	}
 }
 
