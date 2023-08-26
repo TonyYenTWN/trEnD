@@ -89,6 +89,8 @@
 		<Unit filename="src/power_market/power_market_func.cpp" />
 		<Unit filename="src/power_market/power_market_output.cpp" />
 		<Unit filename="src/power_market/power_market_proc.cpp" />
+		<Unit filename="src/power_network/contingency_analysis.cpp" />
+		<Unit filename="src/power_network/contingency_analysis.h" />
 		<Unit filename="src/power_network/power_flow_analysis.cpp" />
 		<Unit filename="src/power_network/power_flow_analysis.h" />
 		<Unit filename="src/power_network/power_flow_output.cpp" />
