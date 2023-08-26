@@ -486,6 +486,8 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile, configura
 			}
 		}
 		else{
+            // the rule-based algorithm will cause problem in the status update of EV substep at the end of each time slice!!
+            // because the actual bids of EV are not stored and passed on to the other function, it ill take the default (optimized) mode
 			if(process_par.rule_based){
 				if(tick % foresight_time >= 1 && tick % foresight_time <= 6){
 					profile.operation.bids.submitted_demand_flex(price_demand_inflex_ID) += inflex_demand_EV;
