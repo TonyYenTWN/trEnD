@@ -11,4 +11,5 @@ rule_based,0
 start_time,0
 duration,336
 total_time,8760
+contingency,1
 folder_name,2021
