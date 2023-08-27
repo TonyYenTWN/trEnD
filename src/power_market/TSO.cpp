@@ -94,6 +94,7 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 	TSO_Market.actual.price = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.network.actual_power = Eigen::MatrixXd::Zero(Time, TSO_Market.network.num_edges);
 	TSO_Market.flex_stat.demand_flex = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
+	TSO_Market.flex_stat.demand_shiftable = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.flex_stat.demand_inflex = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.flex_stat.supply_flex = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);
 	TSO_Market.flex_stat.supply_inflex = Eigen::MatrixXd::Zero(Time, TSO_Market.num_zone);

@@ -175,6 +175,8 @@ namespace local{
         dir_name = name;
         fout_name = dir_name + "/demand_flex.csv";
         basic::write_file(Market.flex_stat.demand_flex.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
+        fout_name = dir_name + "/demand_shiftable.csv";
+        basic::write_file(Market.flex_stat.demand_shiftable.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
         fout_name = dir_name + "/demand_inflex.csv";
         basic::write_file(Market.flex_stat.demand_inflex.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
         fout_name = dir_name + "/supply_flex.csv";
