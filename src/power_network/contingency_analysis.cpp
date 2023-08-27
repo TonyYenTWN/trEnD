@@ -15,6 +15,7 @@ namespace local{
 	    std::mt19937 gen(rd()); // mersenne_twister_engine seeded with rd()
         std::uniform_int_distribution<> distrib(0, max_int);
 
+//     // Update when spatial correlation between components is added
 //        if(spatial_hamiltonian.size() != 0){
 //        	//
 //		}

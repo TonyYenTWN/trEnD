@@ -87,7 +87,7 @@ void spatial_field::demand_imbalance_estimation(power_network::network_inform &P
 
 	// Read actual imbalance data
 	bool fin_imbalance_row_name = 1;
-	std::string fin_imbalance = "csv/case/" + process_par.folder_name + "/input/power_market/control_reserve_activated_2021.csv";
+	std::string fin_imbalance = "csv/case/" + process_par.folder_name + "/input/power_market/control_reserve_activated.csv";
 	auto fin_imbalance_dim = basic::get_file_dim(fin_imbalance);
 	auto Imbalance_ts_raw = basic::read_file(fin_imbalance_dim[0], fin_imbalance_dim[1], fin_imbalance);
 	Eigen::MatrixXd Imbalance_ts(Time, bz_num);
@@ -247,7 +247,7 @@ void spatial_field::wind_on_cf_estimation(power_network::network_inform &Power_n
 
 	// Read onshore wind power data
 	bool fin_wind_on_row_name = 1;
-	std::string fin_wind_on = "csv/case/" + process_par.folder_name + "/input/power_market/generation_wind_onshore_forecast_2021.csv";
+	std::string fin_wind_on = "csv/case/" + process_par.folder_name + "/input/power_market/generation_wind_onshore_forecast.csv";
 	auto fin_wind_on_dim = basic::get_file_dim(fin_wind_on);
 	auto Wind_on_ts = basic::read_file(fin_wind_on_dim[0], fin_wind_on_dim[1], fin_wind_on);
 
@@ -372,7 +372,7 @@ void spatial_field::solar_radiation_estimation(power_network::network_inform &Po
 	double pi = boost::math::constants::pi<double>();
 
 	// Read solar radiation data
-	std::string fin_solar = "csv/case/" + process_par.folder_name + "/input/power_market/solar_radiation_2021.csv";
+	std::string fin_solar = "csv/case/" + process_par.folder_name + "/input/power_market/solar_radiation.csv";
 	auto fin_solar_dim = basic::get_file_dim(fin_solar);
 	auto Solar_ts = basic::read_file(fin_solar_dim[0], fin_solar_dim[1], fin_solar);
 	bool fin_solar_row_name = 1;

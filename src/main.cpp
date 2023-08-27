@@ -34,7 +34,7 @@ int main(){
 	// Set folder and file name for log messages
 	std::string output_dir_name = "csv/case/" + process_par.folder_name;
 	std::string output_log_name = output_dir_name + "/log.txt";
-//	std::filesystem::create_directories(output_dir_name);
+	std::filesystem::create_directories(output_dir_name);
 	std::freopen(output_log_name.c_str() , "w", stdout);
 	process_par.process_bool_output();
 

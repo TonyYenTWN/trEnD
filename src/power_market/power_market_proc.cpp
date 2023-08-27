@@ -10,12 +10,12 @@ void power_market::default_demand_set(power_network::network_inform &Power_netwo
 	// Initialization of the IMO
 	fin_market fin_market;
 	fin_market.dir = "csv/case/" + process_par.folder_name + "/input/power_market/";
-	fin_market.moc = fin_market.dir + "merit_order_curve_q_assimilated_2021.csv";
-	fin_market.demand = fin_market.dir + "generation_total_forecast_2021.csv";
-	fin_market.cbt = fin_market.dir + "cbt_forecast_2021.csv";
-	fin_market.solar= fin_market.dir + "generation_solar_forecast_2021.csv";
-	fin_market.wind_on = fin_market.dir + "generation_wind_onshore_forecast_2021.csv";
-	fin_market.wind_off = fin_market.dir + "generation_wind_offshore_forecast_2021.csv";
+	fin_market.moc = fin_market.dir + "merit_order_curve_q_assimilated.csv";
+	fin_market.demand = fin_market.dir + "generation_total_forecast.csv";
+    fin_market.cbt = fin_market.dir + "cbt_forecast.csv";
+	fin_market.solar= fin_market.dir + "generation_solar_forecast.csv";
+	fin_market.wind_on = fin_market.dir + "generation_wind_onshore_forecast.csv";
+	fin_market.wind_off = fin_market.dir + "generation_wind_offshore_forecast.csv";
 	International_Market_Set(Power_market_inform.International_Market, Power_network_inform, process_par.total_time, fin_market);
 }
 
