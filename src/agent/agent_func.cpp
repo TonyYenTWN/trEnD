@@ -1430,6 +1430,8 @@ namespace{
 			double bid_flex_industrial = bid_inflex_industrial;
 			bid_inflex_industrial *= 1. - agent::industrial::parameters::flexible_ratio();
 			bid_flex_industrial *= agent::industrial::parameters::flexible_ratio();
+			Power_market_inform.TSO_Market.flex_stat.demand_inflex(tick, node_ID) += bid_inflex_industrial;
+			Power_market_inform.TSO_Market.flex_stat.demand_flex(tick, node_ID) += bid_flex_industrial;
 			bid_flex_industrial /= price_interval;
 
 			// Set bids information
@@ -1442,7 +1444,6 @@ namespace{
 			profile_temp.bids.filter_demand = profile_temp.bids.submitted_demand_flex;
 			profile_temp.bids.balancing_demand = profile_temp.bids.submitted_demand_flex;
 			industrial_profiles.HV.push_back(profile_temp);
-			Power_market_inform.TSO_Market.flex_stat.demand_inflex(tick, node_ID) += bid_inflex_industrial;
 		}
 
 		return industrial_profiles;
