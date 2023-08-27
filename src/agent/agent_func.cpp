@@ -1347,8 +1347,8 @@ namespace{
 				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.energy_scale = Power_market_inform.agent_profiles.end_user_type(7, sample_iter);
 				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.capacity_scale = Power_market_inform.agent_profiles.end_user_type(8, sample_iter);
 				//default .5 * E_max
-				//end_user_profiles[point_iter][sample_iter].operation.EV.BESS.soc = end_user_profiles[point_iter][sample_iter].operation.EV.BESS.energy_scale / 2;
-				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.soc = 0.;
+				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.soc = end_user_profiles[point_iter][sample_iter].operation.EV.BESS.energy_scale / 2;
+				//end_user_profiles[point_iter][sample_iter].operation.EV.BESS.soc = 0.;
 				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.soc *= end_user_profiles[point_iter][sample_iter].investment.decision.EV_self_charging;
 
 				// Initialization of input profiles
@@ -2359,10 +2359,10 @@ namespace{
                         Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity += EV_inflex;
                         Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc += EV_inflex;
 
-                        if(point_iter == 0 && sample_iter >= 2){
-                            std::cout << sample_iter << "\t";
-                            std::cout << EV_inflex << "\t";
-                        }
+//                        if(point_iter == 0 && sample_iter >= 2){
+//                            std::cout << sample_iter << "\t";
+//                            std::cout << EV_inflex << "\t";
+//                        }
 					}
 
 					//if not encourage redispatch mode dispatch flexible EV demand
@@ -2644,10 +2644,10 @@ namespace{
 //				}
 
 				if(point_iter == 0 && sample_iter >= 2){
-//					std::cout << sample_iter << "\t";
-//					//std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand.transpose() << "\n";
-//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity << "\t";
-//					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.soc << "\t";
+					std::cout << sample_iter << "\t";
+					//std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.unfulfilled_demand.transpose() << "\n";
+					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.scheduled_capacity << "\t";
+					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.soc << "\t";
 					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.scheduled_capacity << "\t";
 					std::cout << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.soc << "\n\n";
 				}
