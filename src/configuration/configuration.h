@@ -31,7 +31,7 @@ namespace configuration{
 		/*@{*/
 
 		/**
-		* @name configuration for the simulation step
+		* @name configuration for the power market simulation step
 		*/
 		/*@{*/
 		/** Indicate whether simulation should be proceeded. If this flag is false, then no simulation will occur regardless of the values of the other flags.*/
@@ -50,6 +50,14 @@ namespace configuration{
 		std::vector <int> time_boundary;
 		/**  Name of the directory where the csv files are read, processed, and stored*/
 		std::string folder_name;
+		/*@{*/
+
+		/**
+		* @name configuration for the contingency analysis step
+		*/
+		/*@{*/
+		/** Indicate whether a contingency analysis should be carried out. When flex_stat has been processed, this can be done without the simulation step.*/
+        bool contingency_flag;
 		/*@{*/
 
 		void process_default_get(){
@@ -74,7 +82,7 @@ namespace configuration{
             this->time_boundary.push_back(336);
 		}
 
-		// Keep this function so in the future can set an option for users to manage the configuration file on console
+		// Keep this function so users can manage the configuration file on console
 		void process_bool_input(){
 			std::cout << "Estimate spatial fields?      Yes: 1 / No: 0 | ";
 			std::cin >> this->estimation_flag;
@@ -116,7 +124,11 @@ namespace configuration{
 				std::cout << "\n";
 			}
 
-			if(this->estimation_flag || this->simulation_flag){
+			std::cout << "Contigency analysis?          Yes: 1 / No: 0 | ";
+			std::cin >> this->contingency_flag;
+			std::cout << "\n";
+
+			if(this->estimation_flag + this->simulation_flag + this->contingency_flag > 0){
                 std::cout << "Total length of input data time series?      | ";
                 std::cin >> this->total_time;
                 std::cout << "\n";
@@ -182,6 +194,10 @@ namespace configuration{
 
 			std::cout << "Run time length?                         | ";
 			std::cout << this->time_boundary[1];
+			std::cout << "\n";
+
+			std::cout << "Contingency analysis?               Yes: 1 / No: 0 | ";
+			std::cout << this->contingency_flag;
 			std::cout << "\n";
 
 			std::cout << "Folder name?                                 | ";

@@ -1,8 +1,8 @@
 // Source file for the main procedure of the power market clearing
 #include <filesystem>
 #include "src/agent/agent_func.h"
-//#include "src/configuration/configuration.h"
 #include "src/power_market/power_market.h"
+#include "src/power_network/contingency_analysis.h"
 #include "src/power_network/power_flow_analysis.h"
 #include "src/power_network/power_network.h"
 #include "src/spatial_field/spatial_field.h"
@@ -26,7 +26,7 @@ int main(){
         }
 	}
 
-	if(!process_par.estimation_flag && !process_par.simulation_flag){
+	if(process_par.estimation_flag + process_par.simulation_flag + process_par.contingency_flag == 0){
 		std::cout << "No process selected. Exit program...";
 		return 0;
 	}
@@ -78,6 +78,16 @@ int main(){
 		power_market::Markets_results_print(Power_market_inform, process_par);
 		power_network::power_flow_results_print(Power_market_inform, Power_network_inform, process_par);
 		agent::agents_results_print(Power_market_inform, Power_network_inform, process_par);
+	}
+
+	// Contigency analysis
+	if(process_par.contingency_flag){
+        // Initialization of contingency analysis object
+        power_network::contingency_analysis_struct contingency_analysis;
+
+        // Sampling of contingencies
+        power_network::contingency_analysis_set(contingency_analysis, Power_market_inform, process_par);
+        power_network::contigency_sampling(contingency_analysis, 1E6);
 	}
 
 	// Close log file

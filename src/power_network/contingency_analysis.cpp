@@ -1,14 +1,6 @@
 #include "contingency_analysis.h"
 
 namespace local{
-	static inline Eigen::Vector2d hamiltonian_get(Eigen::Vector2d transition_prob, double beta){
-        Eigen::Vector2d hamiltonian;
-		hamiltonian[0] = -std::log(transition_prob[0] * transition_prob[1] / std::pow(1 - transition_prob[0], 2)) / beta;
-		hamiltonian[1] = std::log((1 - transition_prob[0]) * (1 - transition_prob[1]) / transition_prob[0] / transition_prob[1]) / beta;
-
-		return hamiltonian;
-	}
-
 	void Gibbs_sampling(int duration, double beta, Eigen::MatrixXi &sample, Eigen::MatrixXd &temporal_hamiltonian, Eigen::MatrixXd &temporal_prob,  Eigen::MatrixXd &spatial_hamiltonian){
         int max_int = 1E12;
 	    std::random_device rd;  // a seed source for the random number engine
@@ -66,42 +58,62 @@ namespace local{
 			}
 		}
 	}
+}
 
-    std::vector <Eigen::MatrixXi> MCMC_sampling(int num_sample, int duration, double beta, Eigen::MatrixXd &temporal_prob,  Eigen::MatrixXd &spatial_hamiltonian, int num_burn_up = 1000){
+namespace power_network{
+    void contingency_analysis_set(contingency_analysis_struct &contingency_analysis, power_market::market_whole_inform &Power_market_inform, configuration::process_config &process_par){
+        // Initialization of number of components
+        // index the components in the following order!!
+        contingency_analysis.num_component = Power_market_inform.TSO_Market.network.num_edges;
+        contingency_analysis.num_component += Power_market_inform.agent_profiles.power_supplier.hydro.HV_hybrid.size();
+        contingency_analysis.num_component += Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant.size();
+        contingency_analysis.num_component += Power_market_inform.agent_profiles.power_supplier.wind.HV_hybrid.size();
+        contingency_analysis.num_component += Power_market_inform.agent_profiles.power_supplier.wind.HV_plant.size();
+        contingency_analysis.num_component += Power_market_inform.agent_profiles.power_supplier.pump_storage.HV.size();
+        int num_component = contingency_analysis.num_component;
+
+        // Initialization of duration
+        contingency_analysis.duration = process_par.time_boundary[1];
+
+        // Initialization of temporal probability
+    	Eigen::Vector2d transition_prob;
+    	transition_prob << 1E-4, .1;
+    	contingency_analysis.temporal_prob_0 = Eigen::MatrixXd (num_component, 2);
+        contingency_analysis.temporal_prob_0.col(0) << transition_prob[0] * Eigen::VectorXd::Ones(num_component);
+        contingency_analysis.temporal_prob_0.col(1) << transition_prob[1] * Eigen::VectorXd::Ones(num_component);
+    }
+
+    // Contingency sampling using MCMC
+    void contigency_sampling(contingency_analysis_struct &contingency_analysis, int num_sample){
+        contingency_analysis.num_sample = num_sample;
+
         int max_int = 1E12;
 	    std::random_device rd;  // a seed source for the random number engine
 	    std::mt19937 gen(rd()); // mersenne_twister_engine seeded with rd()
-        std::uniform_int_distribution<> distrib(0, max_int);
+        std::uniform_int_distribution <> distrib(0, max_int);
 
-		std::vector <Eigen::MatrixXi> samples(num_sample);
-        Eigen::MatrixXi sample = Eigen::MatrixXi::Zero(temporal_prob.rows(), duration);
-        Eigen::MatrixXd temporal_hamiltonian(temporal_prob.rows(), temporal_prob.cols());
+        contingency_analysis.samples_set();
+        Eigen::MatrixXi sample = Eigen::MatrixXi::Zero(contingency_analysis.num_component, contingency_analysis.duration);
 
         // Transform temporal conditional probabilities to hamiltonian
-        for(int row_iter = 0; row_iter < sample.rows(); ++ row_iter){
-        	Eigen::Vector2d hamiltonian = hamiltonian_get(temporal_prob.row(row_iter), beta);
-        	temporal_hamiltonian.row(row_iter) = hamiltonian;
-		}
+        contingency_analysis.hamiltonian_get();
 
         // Burn-up step
-        for(int burn_up_iter = 0; burn_up_iter < num_burn_up; ++ burn_up_iter){
-        	Gibbs_sampling(duration, beta, sample, temporal_hamiltonian, temporal_prob, spatial_hamiltonian);
+        for(int burn_up_iter = 0; burn_up_iter < contingency_analysis.num_burn_up; ++ burn_up_iter){
+        	local::Gibbs_sampling(contingency_analysis.duration, contingency_analysis.beta, sample, contingency_analysis.temporal_hamiltonian, contingency_analysis.temporal_prob_0, contingency_analysis.spatial_hamiltonian);
 		}
 
 		// Actual sampling step (assuming stationary probability has been reached)
 		#pragma omp parallel
 		{
 			#pragma omp for
-			for(int sample_iter = 0; sample_iter < num_sample; ++ sample_iter){
-				Gibbs_sampling(duration, beta, sample, temporal_hamiltonian, temporal_prob, spatial_hamiltonian);
-				samples[sample_iter] = sample;
+			for(int sample_iter = 0; sample_iter < contingency_analysis.num_sample; ++ sample_iter){
+				local::Gibbs_sampling(contingency_analysis.duration, contingency_analysis.beta, sample, contingency_analysis.temporal_hamiltonian, contingency_analysis.temporal_prob_0, contingency_analysis.spatial_hamiltonian);
+				contingency_analysis.samples[sample_iter] = sample;
 			}
 		}
-
-        return samples;
     }
 }
-
 
 //int main(){
 //	int num_component = 1;

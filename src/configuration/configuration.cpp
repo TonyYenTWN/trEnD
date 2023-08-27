@@ -18,5 +18,6 @@ void configuration::process_config_input(process_config &process_par, std::strin
     process_par.total_time = (int) stod(process_inform["total_time"]);
     process_par.time_boundary.push_back((int) stod(process_inform["start_time"]));
     process_par.time_boundary.push_back((int) stod(process_inform["duration"]));
+    process_par.contingency_flag = (bool) stod(process_inform["contingency"]);
     process_par.folder_name = process_inform["folder_name"];
 }
