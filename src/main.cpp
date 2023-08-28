@@ -32,7 +32,7 @@ int main(){
 	}
 
 	// Set folder and file name for log messages
-	std::string output_dir_name = "csv/case/" + process_par.folder_name;
+	std::string output_dir_name = "csv/case/" + process_par.folder_name + "/output";
 	std::string output_log_name = output_dir_name + "/log.txt";
 	std::filesystem::create_directories(output_dir_name);
 	std::freopen(output_log_name.c_str() , "w", stdout);
@@ -82,12 +82,16 @@ int main(){
 
 	// Contigency analysis
 	if(process_par.contingency_flag){
+        //  Read and store flex_stat data to TSO
+        power_network::flex_stat_input(Power_market_inform, Power_network_inform, process_par);
+
         // Initialization of contingency analysis object
         power_network::contingency_analysis_struct contingency_analysis;
 
         // Sampling of contingencies
         power_network::contingency_analysis_set(contingency_analysis, Power_market_inform, process_par);
         power_network::contigency_sampling(contingency_analysis, 1E6);
+        power_network::contingency_analysis_solve(contingency_analysis, Power_market_inform, process_par);
 	}
 
 	// Close log file
