@@ -42,7 +42,9 @@ namespace power_network{
     };
 
     // functions
+    void flex_stat_input(power_market::market_whole_inform&, power_network::network_inform&, configuration::process_config&);
     void contingency_analysis_set(contingency_analysis_struct&, power_market::market_whole_inform&, configuration::process_config&);
     void contigency_sampling(contingency_analysis_struct&, int num_sample = 100000);
+    void contingency_analysis_solve(contingency_analysis_struct&, power_market::market_whole_inform&, configuration::process_config&);
 }
 

@@ -41,13 +41,33 @@ namespace power_market{
 	}
 
 	// Power market objects
+	/** Information of the state of charge limits (for contingency analysis).*/
+	struct soc_range{
+        Eigen::MatrixXd soc_min;
+        Eigen::MatrixXd soc_max;
+        Eigen::VectorXd soc_current;
+        Eigen::VectorXd capacity_max;
+	};
+
 	/** Information of the flexibility situation at each market node (for contingency analysis).*/
 	struct flexibility_status{
-        Eigen::MatrixXd demand_inflex;         // Currently = actual demand on the zone / node / spatial point after balancing (under normal operation)
+	    // Processed Variables for power market simulation
+	    // (input variables for contingency analysis)
+        Eigen::MatrixXd demand_inflex;         // Currently = default demand - smart appliance of end-users + inflexible industrial demand
         Eigen::MatrixXd demand_flex;            // Currently = flexible industrial demand
         Eigen::MatrixXd demand_shiftable;    // Currently = smart appliance of end-users
         Eigen::MatrixXd supply_inflex;           // Currently = actual supply from active end-users
         Eigen::MatrixXd supply_flex;              // Currently = total submitted supply from power supplier + positive redispatch from slack gas
+
+        // Input variables for contingency analysis but does not exist in power market simulation
+        soc_range BESS_soc;
+        soc_range EV_soc;
+
+        // Process variables for contingency analysis
+        Eigen::MatrixXd unfulfilled_demand;
+
+        // Output variable
+        std::vector <Eigen::MatrixXd> energy_not_served;
 	};
 
 	/** Information of the corresponding power network of the market.*/
