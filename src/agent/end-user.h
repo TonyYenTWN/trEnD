@@ -30,13 +30,13 @@ namespace agent{
 		/** @brief Decision variables representing possible investment combinations of an end-user.*/
 		struct decision{
 			bool dynamic_tariff;
-			bool smart_management; // ideal optimization if true
+			bool smart_management; // ideal optimization if true; is now redundant
 			bool smart_appliance;
 			bool PV;
 			bool BESS;
 			bool EV_self_charging;
 			/** Whether the end-user can inject power flow back to grid*/
-			bool reverse_flow;
+			bool reverse_flow; // is now redundant
 			/** Whether the end-user can provide flexibility for redispatch; false when dynamic_tariff is false, or when end-user does not have PV + BESS, EV, or smart appliance*/
 			bool redispatch;
 			/** Whether the end-user can provide flexibility for control reserve; false when dynamic_tariff is false, or when end-user does not have PV + BESS, EV, or smart appliance*/
@@ -235,6 +235,22 @@ namespace agent{
 		/** @brief A 2D vector of end-user profiles. The 1st dimension represents the spatial points,
 		* the 2nd represents the samples at the point.*/
 		typedef std::vector <std::vector <profile>> profiles;
+
+        /**Information of end-users types*/
+        // not yet used should replace Eigen::MatrixXd end_user_type in agent_profiles_struct (power_market.h) later
+        struct end_user_type_struct{
+            std::vector <double> weight;
+            std::vector <bool> dynamic_tariff;
+            std::vector <bool> smart_management;
+            std::vector <bool> smart_appliance;
+            std::vector <double> PV_scale;
+            std::vector <double> BESS_energy;
+            std::vector <double> BESS_capacity;
+            std::vector <double> EV_energy;
+            std::vector <double> EV_capacity;
+            std::vector <bool> redispatch;
+            std::vector <bool> control_reserve;
+        };
 
 		// Functions
 		void end_user_LP_set(profile&);
