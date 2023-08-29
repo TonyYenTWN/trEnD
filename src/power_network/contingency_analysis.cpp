@@ -59,7 +59,7 @@ namespace local{
 		}
 	}
 
-	void contingency_analysis_LP_set(int sample_ID, int tick, power_network::contingency_analysis_struct &contingency_analysis, power_market::market_inform &Market){
+	void contingency_analysis_LP_set(int sample_ID, int tick, power_network::contingency_analysis_struct &contingency_analysis, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
         // -------------------------------------------------------------------------------
         // LP Solver initialization for flow-based market optimization
         // Need to set up each time a contingency occurs (constraints are different)
@@ -67,6 +67,7 @@ namespace local{
         // for {BESS} and {EV}, positive  = discharge
         // for consistency, {D} are always negative
         // -------------------------------------------------------------------------------
+        power_market::market_inform& Market = Power_market_inform.TSO_Market;
 
         // -------------------------------------------------------------------------------
         // Set matrix for general constraints
@@ -201,6 +202,43 @@ namespace local{
             }
         }
         bound_box.bottomRows(Market.network.num_edges) = Market.network.power_constraint;
+
+        // Consider failure of power plants
+        // HV hydro
+        int hydro_HV_plant_num = Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant.size();
+        for(int agent_iter = 0; agent_iter < hydro_HV_plant_num; ++ agent_iter){
+			int point_ID = Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].point_ID;
+			int node_ID = Power_network_inform.points.node(point_ID);
+            int row_ID = 2 * Market.network.num_vertice + node_ID * (Market.flex_stat.unfulfilled_demand.rows() + 4);
+            int component_ID = Market.network.num_vertice + Market.network.num_edges + agent_iter;
+            if(contingency_analysis.samples[sample_ID](component_ID, tick) == 1){
+                bound_box(row_ID, 1) -= Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].cap;
+            }
+        }
+
+        // HV wind
+        int wind_HV_plant_num = Power_market_inform.agent_profiles.power_supplier.wind.HV_plant.size();
+        for(int agent_iter = 0; agent_iter < wind_HV_plant_num; ++ agent_iter){
+			int point_ID = Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].point_ID;
+			int node_ID = Power_network_inform.points.node(point_ID);
+            int row_ID = 2 * Market.network.num_vertice + node_ID * (Market.flex_stat.unfulfilled_demand.rows() + 4);
+            int component_ID = Market.network.num_vertice + Market.network.num_edges + hydro_HV_plant_num + agent_iter;
+            if(contingency_analysis.samples[sample_ID](component_ID, tick) == 1){
+                bound_box(row_ID, 1) -= Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].cap;
+            }
+        }
+
+        // HV PSPP
+        int pump_HV_plant_num = Power_market_inform.agent_profiles.power_supplier.pump_storage.HV.size();
+        for(int agent_iter = 0; agent_iter < pump_HV_plant_num; ++ agent_iter){
+			int point_ID = Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].point_ID;
+			int node_ID = Power_network_inform.points.node(point_ID);
+			int row_ID = 2 * Market.network.num_vertice + node_ID * (Market.flex_stat.unfulfilled_demand.rows() + 4);
+			int component_ID = Market.network.num_vertice + Market.network.num_edges + hydro_HV_plant_num + wind_HV_plant_num + agent_iter;
+            if(contingency_analysis.samples[sample_ID](component_ID, tick) == 1){
+                bound_box(row_ID, 1) -= Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].cap;
+            }
+        }
 
         // Bounds of general constraints
         alglib::real_1d_array lb_general;
@@ -345,9 +383,9 @@ namespace power_network{
         // transformers (transmission nodes), power lines, HV hydro, HV_wind, HV_PSPP
         contingency_analysis.num_component  = Power_market_inform.TSO_Market.network.num_vertice;
         contingency_analysis.num_component += Power_market_inform.TSO_Market.network.num_edges;
-        contingency_analysis.num_component += Power_market_inform.agent_profiles.power_supplier.hydro.HV_hybrid.size();
+        //contingency_analysis.num_component += Power_market_inform.agent_profiles.power_supplier.hydro.HV_hybrid.size();
         contingency_analysis.num_component += Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant.size();
-        contingency_analysis.num_component += Power_market_inform.agent_profiles.power_supplier.wind.HV_hybrid.size();
+        //contingency_analysis.num_component += Power_market_inform.agent_profiles.power_supplier.wind.HV_hybrid.size();
         contingency_analysis.num_component += Power_market_inform.agent_profiles.power_supplier.wind.HV_plant.size();
         contingency_analysis.num_component += Power_market_inform.agent_profiles.power_supplier.pump_storage.HV.size();
         int num_component = contingency_analysis.num_component;
@@ -395,7 +433,7 @@ namespace power_network{
     }
 
     // Optimal power flow for different contingencies
-    void contingency_analysis_solve(contingency_analysis_struct &contingency_analysis, power_market::market_whole_inform &Power_market_inform, configuration::process_config &process_par){
+    void contingency_analysis_solve(contingency_analysis_struct &contingency_analysis, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, configuration::process_config &process_par){
         // Initialization of matrix for energy not served
         contingency_analysis.energy_not_served_mean = Eigen::MatrixXd::Zero(contingency_analysis.duration, Power_market_inform.TSO_Market.network.num_vertice);
         contingency_analysis.energy_not_served = std::vector <Eigen::MatrixXd> (contingency_analysis.num_sample);
@@ -421,7 +459,7 @@ namespace power_network{
 //                        printf("error msg: %s\n", e.msg.c_str());
 //                    }
 
-                    local::contingency_analysis_LP_set(sample_iter, tick, contingency_analysis, Power_market_inform.TSO_Market);
+                    local::contingency_analysis_LP_set(sample_iter, tick, contingency_analysis, Power_market_inform, Power_network_inform);
                     local::contingency_analysis_update(sample_iter, tick, contingency_analysis, Power_market_inform.TSO_Market);
                     break_loop = 1;
 //                    break;
