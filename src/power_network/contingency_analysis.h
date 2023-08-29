@@ -2,6 +2,7 @@
 #pragma once
 
 #include <cmath>
+#include <filesystem>
 #include <random>
 #include "src/power_market/power_market.h"  // need to read flex_stat so power_market header is needed
 
@@ -24,7 +25,9 @@ namespace power_network{
         std::vector <Eigen::MatrixXi> samples;
         alglib::minlpstate problem;
 
-        // Output variables
+        // Output variable
+        std::vector <Eigen::MatrixXd> energy_not_served;  // ENS  of each node during the entire time interval, for each simulation
+        Eigen::MatrixXd energy_not_served_mean;               // Averaged ENS of each node at each time
 
         // Functions
         void samples_set(){
@@ -44,7 +47,8 @@ namespace power_network{
     // functions
     void flex_stat_input(power_market::market_whole_inform&, power_network::network_inform&, configuration::process_config&);
     void contingency_analysis_set(contingency_analysis_struct&, power_market::market_whole_inform&, configuration::process_config&);
-    void contigency_sampling(contingency_analysis_struct&, int num_sample = 100000);
+    void contigency_sampling(contingency_analysis_struct&, int num_sample = 1E5);
     void contingency_analysis_solve(contingency_analysis_struct&, power_market::market_whole_inform&, configuration::process_config&);
+    void contingency_analysis_print(contingency_analysis_struct&, power_market::market_whole_inform&, configuration::process_config&);
 }
 

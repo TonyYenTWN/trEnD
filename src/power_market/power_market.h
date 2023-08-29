@@ -65,9 +65,6 @@ namespace power_market{
 
         // Process variables for contingency analysis
         Eigen::MatrixXd unfulfilled_demand;
-
-        // Output variable
-        std::vector <Eigen::MatrixXd> energy_not_served;
 	};
 
 	/** Information of the corresponding power network of the market.*/
