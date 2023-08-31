@@ -20,7 +20,6 @@ void power_market::default_demand_set(power_network::network_inform &Power_netwo
 }
 
 void power_market::power_market_process_set(power_network::network_inform &Power_network_inform, market_whole_inform &Power_market_inform, configuration::process_config &process_par){
-	//int Time = configuration::parameters::Time();
     int Time = process_par.total_time;
 
 	// Initialization of processed spatial fields

@@ -237,7 +237,7 @@ void power_market::Flow_Based_Market_Optimization(market_inform &Market){
 	for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
 		int row_start = 2 * Market.network.num_vertice + node_iter * (Market.price_intervals + 2);
 		obj_vec.segment(row_start, Market.price_intervals + 2) = Market.bidded_price_map.bidded_price;
-		obj_vec.segment(row_start, Market.price_intervals + 2) -= Eigen::VectorXd::Constant(Market.reference_price(node_iter), Market.price_intervals + 2);
+		obj_vec.segment(row_start, Market.price_intervals + 2) -= Eigen::VectorXd::Constant(Market.price_intervals + 2, Market.reference_price(node_iter));
 	}
 	alglib::real_1d_array obj_coeff;
 	obj_coeff.setcontent(obj_vec.size(), obj_vec.data());

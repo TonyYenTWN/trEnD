@@ -1600,7 +1600,7 @@ namespace{
 			profile_temp.var_cost += Power_market_inform.International_Market.confirmed.price(start_time, bz_ID);
 			int price_supply_flex_ID = Power_market_inform.price_map.price_ID[profile_temp.var_cost];
 			int price_supply_max_ID = Power_market_inform.price_map.price_ID[99.5];
-			int price_length = price_supply_max_ID - price_supply_flex_ID + 1;
+			int price_length = std::max(price_supply_max_ID - price_supply_flex_ID + 1, 1); // avoid negative length
 			//std::cout << price_supply_flex_ID << "\t" << profile_temp.var_cost << "\n";
 
 			// Set bids information
@@ -2975,9 +2975,11 @@ namespace{
 		for(int agent_iter = 0; agent_iter < aggregator_num; ++ agent_iter){
 			int point_ID = Power_market_inform.agent_profiles.aggregators[agent_iter].point_ID;
 			int bz_ID = Power_network_inform.points.bidding_zone(point_ID);
-			Eigen::VectorXd bid_vec = Power_market_inform.International_Market.merit_order_curve.col(bz_ID);
-			bid_vec *= Power_network_inform.plants.hydro.cap(agent_iter);
-			bid_vec /= (Power_market_inform.International_Market.merit_order_curve.col(bz_ID).sum());
+//			Eigen::VectorXd bid_vec = Power_market_inform.International_Market.merit_order_curve.col(bz_ID);
+//			std::cout << bid_vec << "\n\n";
+//			std::cout << Power_network_inform.plants.hydro.cap(agent_iter) << "\n\n";
+//			bid_vec *= Power_network_inform.plants.hydro.cap(agent_iter);
+//			bid_vec /= (Power_market_inform.International_Market.merit_order_curve.col(bz_ID).sum());
 
 			Power_market_inform.agent_profiles.aggregators[agent_iter].price_expected_profile = Power_market_inform.International_Market.confirmed.price.col(bz_ID).segment(tick, foresight_time);
 			Power_market_inform.agent_profiles.aggregators[agent_iter].price_demand_profile = Power_market_inform.International_Market.confirmed.price.col(bz_ID).segment(tick, foresight_time).array() + Power_market_inform.agent_profiles.aggregators[agent_iter].arbitrage_demand;
@@ -3210,7 +3212,7 @@ namespace{
 			Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].var_cost += Power_market_inform.International_Market.confirmed.price(tick, bz_ID);
 			int price_supply_flex_ID = Power_market_inform.price_map.price_ID[Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].var_cost];
 			int price_supply_max_ID = Power_market_inform.price_map.price_ID[99.5];
-			int price_length = price_supply_max_ID - price_supply_flex_ID + 1;
+			int price_length = std::max(price_supply_max_ID - price_supply_flex_ID + 1, 1);
 
 			double bid_quan = Power_network_inform.points.nominal_mean_demand_field(point_ID, tick);
 			bid_quan *= Power_network_inform.points.population_density(point_ID);
