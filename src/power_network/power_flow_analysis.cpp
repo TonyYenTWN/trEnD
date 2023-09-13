@@ -281,7 +281,7 @@ void power_network::HELM_Transmission_Update(int tick, network_inform &Power_net
 	// Update from end-users
 	{
 		//int sample_num = agent::end_user::parameters::sample_num();
-		int sample_num = Power_market_inform.agent_profiles.end_user_type.cols();
+		int sample_num = Power_market_inform.agent_profiles.end_user_type.sample_num;
 		double apparent_power_base = pow(1. - pow(agent::end_user::parameters::power_factor(), 2.), .5);
 		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
 			int node_ID = Power_network_inform.points.node(point_iter);
@@ -892,7 +892,7 @@ void power_network::HELM_Node_Update(int tick, network_inform &Power_network_inf
 	// Update from end-users
 	{
 		//int sample_num = agent::end_user::parameters::sample_num();
-		int sample_num = Power_market_inform.agent_profiles.end_user_type.cols();
+		int sample_num = Power_market_inform.agent_profiles.end_user_type.sample_num;
 		double apparent_power_base = pow(1. - pow(agent::end_user::parameters::power_factor(), 2.), .5);
 		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
 			for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){

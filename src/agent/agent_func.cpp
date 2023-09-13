@@ -1312,7 +1312,7 @@ namespace{
 
 		agent::end_user::profiles end_user_profiles(point_num);
 		//int sample_num = agent::end_user::parameters::sample_num();
-		int sample_num = Power_market_inform.agent_profiles.end_user_type.cols();
+		int sample_num = Power_market_inform.agent_profiles.end_user_type.sample_num;
 		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
 			end_user_profiles[point_iter] = std::vector <agent::end_user::profile> (sample_num);
 		}
@@ -1323,29 +1323,29 @@ namespace{
 
 			for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
 				// Initialization of investment parameters
-				end_user_profiles[point_iter][sample_iter].investment.decision.dynamic_tariff = Power_market_inform.agent_profiles.end_user_type(1, sample_iter);
-				end_user_profiles[point_iter][sample_iter].investment.decision.smart_appliance = Power_market_inform.agent_profiles.end_user_type(3, sample_iter);
-				end_user_profiles[point_iter][sample_iter].investment.decision.PV = (Power_market_inform.agent_profiles.end_user_type(4, sample_iter) != 0.);
-				end_user_profiles[point_iter][sample_iter].investment.decision.BESS = (Power_market_inform.agent_profiles.end_user_type(5, sample_iter) != 0.);
-				end_user_profiles[point_iter][sample_iter].investment.decision.EV_self_charging = (Power_market_inform.agent_profiles.end_user_type(7, sample_iter) != 0.);
+				end_user_profiles[point_iter][sample_iter].investment.decision.dynamic_tariff = Power_market_inform.agent_profiles.end_user_type.dynamic_tariff[sample_iter];
+				end_user_profiles[point_iter][sample_iter].investment.decision.smart_appliance = Power_market_inform.agent_profiles.end_user_type.smart_appliance[sample_iter];
+				end_user_profiles[point_iter][sample_iter].investment.decision.PV = (Power_market_inform.agent_profiles.end_user_type.PV_scale[sample_iter] != 0.);
+				end_user_profiles[point_iter][sample_iter].investment.decision.BESS = (Power_market_inform.agent_profiles.end_user_type.BESS_energy[sample_iter] != 0.);
+				end_user_profiles[point_iter][sample_iter].investment.decision.EV_self_charging = (Power_market_inform.agent_profiles.end_user_type.EV_energy[sample_iter] != 0.);
 				end_user_profiles[point_iter][sample_iter].investment.decision.reverse_flow = 1;
-				end_user_profiles[point_iter][sample_iter].investment.decision.redispatch = Power_market_inform.agent_profiles.end_user_type(9, sample_iter);
-				end_user_profiles[point_iter][sample_iter].investment.decision.control_reserve = Power_market_inform.agent_profiles.end_user_type(10, sample_iter);
+				end_user_profiles[point_iter][sample_iter].investment.decision.redispatch = Power_market_inform.agent_profiles.end_user_type.redispatch[sample_iter];
+				end_user_profiles[point_iter][sample_iter].investment.decision.control_reserve = Power_market_inform.agent_profiles.end_user_type.control_reserve[sample_iter];
 
 				// Initialization of operational parameters
 				end_user_profiles[point_iter][sample_iter].operation.foresight_time = foresight_time;
-				end_user_profiles[point_iter][sample_iter].operation.weight = Power_market_inform.agent_profiles.end_user_type(0, sample_iter);
-				end_user_profiles[point_iter][sample_iter].operation.PV_scale = Power_market_inform.agent_profiles.end_user_type(4, sample_iter);
+				end_user_profiles[point_iter][sample_iter].operation.weight = Power_market_inform.agent_profiles.end_user_type.weight[sample_iter];
+				end_user_profiles[point_iter][sample_iter].operation.PV_scale = Power_market_inform.agent_profiles.end_user_type.PV_scale[sample_iter];
 				int load_shift_time_temp = std::min(load_shift_time, foresight_time / 2);
 				end_user_profiles[point_iter][sample_iter].operation.smart_appliance.shift_time = load_shift_time_temp;
-				end_user_profiles[point_iter][sample_iter].operation.BESS.energy_scale = Power_market_inform.agent_profiles.end_user_type(5, sample_iter);
-				end_user_profiles[point_iter][sample_iter].operation.BESS.capacity_scale = Power_market_inform.agent_profiles.end_user_type(6, sample_iter);
+				end_user_profiles[point_iter][sample_iter].operation.BESS.energy_scale = Power_market_inform.agent_profiles.end_user_type.BESS_energy[sample_iter];
+				end_user_profiles[point_iter][sample_iter].operation.BESS.capacity_scale = Power_market_inform.agent_profiles.end_user_type.BESS_capacity[sample_iter];
 				//default .5 * E_max
 				end_user_profiles[point_iter][sample_iter].operation.BESS.soc = end_user_profiles[point_iter][sample_iter].operation.BESS.energy_scale / 2;
 				//end_user_profiles[point_iter][sample_iter].operation.BESS.soc = 0.;
 				end_user_profiles[point_iter][sample_iter].operation.BESS.soc *= end_user_profiles[point_iter][sample_iter].investment.decision.BESS;
-				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.energy_scale = Power_market_inform.agent_profiles.end_user_type(7, sample_iter);
-				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.capacity_scale = Power_market_inform.agent_profiles.end_user_type(8, sample_iter);
+				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.energy_scale = Power_market_inform.agent_profiles.end_user_type.EV_energy[sample_iter];
+				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.capacity_scale = Power_market_inform.agent_profiles.end_user_type.EV_capacity[sample_iter];
 				//default .5 * E_max
 				end_user_profiles[point_iter][sample_iter].operation.EV.BESS.soc = end_user_profiles[point_iter][sample_iter].operation.EV.BESS.energy_scale / 2;
 				//end_user_profiles[point_iter][sample_iter].operation.EV.BESS.soc = 0.;
@@ -1660,7 +1660,7 @@ namespace{
 	void end_user_redispatch_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, configuration::process_config &process_par){
 		int point_num = Power_network_inform.points.bidding_zone.size();
 		//int sample_num = agent::end_user::parameters::sample_num();
-		int sample_num = Power_market_inform.agent_profiles.end_user_type.cols();
+		int sample_num = Power_market_inform.agent_profiles.end_user_type.sample_num;
 		int price_interval = power_market::parameters::price_interval();
 		power_market::parameters::price_ID_bimap bidded_price_map;
 		power_market::parameters::bidded_price(bidded_price_map);
@@ -1709,7 +1709,7 @@ namespace{
 	void end_user_filter_demand_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
 		int point_num = Power_network_inform.points.bidding_zone.size();
 		//int sample_num = agent::end_user::parameters::sample_num();
-		int sample_num = Power_market_inform.agent_profiles.end_user_type.cols();
+		int sample_num = Power_market_inform.agent_profiles.end_user_type.sample_num;
 		int price_interval = power_market::parameters::price_interval();
 
 		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
@@ -1751,7 +1751,7 @@ namespace{
 	void end_user_filter_supply_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
 		int point_num = Power_network_inform.points.bidding_zone.size();
 		//int sample_num = agent::end_user::parameters::sample_num();
-		int sample_num = Power_market_inform.agent_profiles.end_user_type.cols();
+		int sample_num = Power_market_inform.agent_profiles.end_user_type.sample_num;
 		int price_interval = power_market::parameters::price_interval();
 
 		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
@@ -1868,7 +1868,7 @@ namespace{
 	void end_user_balancing_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
 		int point_num = Power_network_inform.points.bidding_zone.size();
 		//int sample_num = agent::end_user::parameters::sample_num();
-		int sample_num = Power_market_inform.agent_profiles.end_user_type.cols();
+		int sample_num = Power_market_inform.agent_profiles.end_user_type.sample_num;
 		int price_interval = power_market::parameters::price_interval();
 		double redispatch_price_max = power_market::parameters::redispatch_price_max();
 
@@ -2175,7 +2175,7 @@ namespace{
 		// End-users
 		int point_num = Power_network_inform.points.bidding_zone.size();
 		//int sample_num = agent::end_user::parameters::sample_num();
-		int sample_num = Power_market_inform.agent_profiles.end_user_type.cols();
+		int sample_num = Power_market_inform.agent_profiles.end_user_type.sample_num;
 		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
 			int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
 
@@ -2267,7 +2267,7 @@ namespace{
 
 	void end_user_status_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, configuration::process_config &process_par){
 		int point_num = Power_network_inform.points.bidding_zone.size();
-		int sample_num = Power_market_inform.agent_profiles.end_user_type.cols();
+		int sample_num = Power_market_inform.agent_profiles.end_user_type.sample_num;
 		int load_shift_time = agent::end_user::parameters::load_shift_time();
 		int price_interval = power_market::parameters::price_interval();
 		int foresight_time = agent::end_user::parameters::foresight_time();
@@ -2903,7 +2903,7 @@ namespace{
 		// End-users
 		int point_num = Power_network_inform.points.bidding_zone.size();
 		//int sample_num = agent::end_user::parameters::sample_num();
-		int sample_num = Power_market_inform.agent_profiles.end_user_type.cols();
+		int sample_num = Power_market_inform.agent_profiles.end_user_type.sample_num;
 		for(int point_iter = 0; point_iter < point_num; ++ point_iter){
 			int bz_ID = Power_network_inform.points.bidding_zone(point_iter);
 
@@ -2995,7 +2995,7 @@ namespace{
 		int foresight_time = agent::end_user::parameters::foresight_time();
 		int point_num = Power_network_inform.points.bidding_zone.size();
 		//int sample_num = agent::end_user::parameters::sample_num();
-		int sample_num = Power_market_inform.agent_profiles.end_user_type.cols();
+		int sample_num = Power_market_inform.agent_profiles.end_user_type.sample_num;
 		int price_interval = power_market::parameters::price_interval();
 		double residential_ratio = agent::parameters::residential_ratio();
 
@@ -3234,8 +3234,23 @@ namespace{
 }
 
 void agent::agents_set(int start_time, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, std::string fin_name, configuration::process_config &process_par){
-	auto fin_dim = basic::get_file_dim(fin_name);
-	Power_market_inform.agent_profiles.end_user_type = basic::read_file(fin_dim[0], fin_dim[1], fin_name, 1);
+	auto fin_dim = basic::get_file_dim(fin_name, 1);
+	//Power_market_inform.agent_profiles.end_user_type = basic::read_file(fin_dim[0], fin_dim[1], fin_name, 1);
+	auto end_user_type = basic::read_config_file(fin_name);
+	Power_market_inform.agent_profiles.end_user_type.initialize(fin_dim[1]);
+	for(int sample_iter = 0; sample_iter < fin_dim[1]; ++ sample_iter){
+        Power_market_inform.agent_profiles.end_user_type.weight[sample_iter] = stod(end_user_type["ratio"][sample_iter]);
+        Power_market_inform.agent_profiles.end_user_type.dynamic_tariff[sample_iter] = (bool) stod(end_user_type["dynamic_tariff"][sample_iter]);
+        Power_market_inform.agent_profiles.end_user_type.smart_management[sample_iter] = (bool) stod(end_user_type["smart_management"][sample_iter]);
+        Power_market_inform.agent_profiles.end_user_type.smart_appliance[sample_iter] = (bool) stod(end_user_type["smart_appliance"][sample_iter]);
+        Power_market_inform.agent_profiles.end_user_type.PV_scale[sample_iter] = stod(end_user_type["PV_scale"][sample_iter]);
+        Power_market_inform.agent_profiles.end_user_type.BESS_energy[sample_iter] = stod(end_user_type["BESS_energy"][sample_iter]);
+        Power_market_inform.agent_profiles.end_user_type.BESS_capacity[sample_iter] = stod(end_user_type["BESS_capacity"][sample_iter]);
+        Power_market_inform.agent_profiles.end_user_type.EV_energy[sample_iter] = stod(end_user_type["EV_energy"][sample_iter]);
+        Power_market_inform.agent_profiles.end_user_type.EV_capacity[sample_iter] = stod(end_user_type["EV_capacity"][sample_iter]);
+        Power_market_inform.agent_profiles.end_user_type.redispatch[sample_iter] = (bool) stod(end_user_type["redispatch"][sample_iter]);
+        Power_market_inform.agent_profiles.end_user_type.control_reserve[sample_iter] = (bool) stod(end_user_type["control_reserve"][sample_iter]);
+	}
 
 	Power_market_inform.agent_profiles.aggregators = aggregator_set(start_time, Power_market_inform.International_Market, Power_network_inform);
 	Power_market_inform.agent_profiles.cross_border = cross_border_set(Power_market_inform, Power_network_inform);

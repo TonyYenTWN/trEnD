@@ -243,7 +243,8 @@ namespace power_market{
 		agent::aggregator::profiles aggregators;
 		agent::cross_border::edge_profiles cross_border;
 		agent::end_user::profiles end_users;
-		Eigen::MatrixXd end_user_type;
+		//Eigen::MatrixXd end_user_type;
+        agent::end_user::end_user_type_struct end_user_type;
 		agent::industrial::profiles industrial;
 		agent::power_supplier::profiles power_supplier;
 	};

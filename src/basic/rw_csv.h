@@ -11,7 +11,7 @@
 #include "src/basic/basic_definitions.h"
 
 namespace basic{
-	std::vector <int> get_file_dim(std::string);
+	std::vector <int> get_file_dim(std::string, bool row_name = 0, bool col_name = 1);
 	std::vector <std::string> get_col_name(std::string, int);
 	std::vector <std::string> get_row_name(std::string, int);
 	std::map<std::string, std::vector<std::string>> read_config_file(std::string);

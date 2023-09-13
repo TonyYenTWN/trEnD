@@ -237,8 +237,8 @@ namespace agent{
 		typedef std::vector <std::vector <profile>> profiles;
 
         /**Information of end-users types*/
-        // not yet used should replace Eigen::MatrixXd end_user_type in agent_profiles_struct (power_market.h) later
         struct end_user_type_struct{
+            int sample_num;
             std::vector <double> weight;
             std::vector <bool> dynamic_tariff;
             std::vector <bool> smart_management;
@@ -250,6 +250,21 @@ namespace agent{
             std::vector <double> EV_capacity;
             std::vector <bool> redispatch;
             std::vector <bool> control_reserve;
+
+            void initialize(int type_length){
+                this->sample_num = type_length;
+                this->weight = std::vector <double> (type_length);
+                this->dynamic_tariff = std::vector <bool> (type_length);
+                this->smart_management = std::vector <bool> (type_length);
+                this->smart_appliance = std::vector <bool> (type_length);
+                this->PV_scale = std::vector <double> (type_length);
+                this->BESS_energy = std::vector <double> (type_length);
+                this->BESS_capacity = std::vector <double> (type_length);
+                this->EV_energy = std::vector <double> (type_length);
+                this->EV_capacity = std::vector <double> (type_length);
+                this->redispatch = std::vector <bool> (type_length);
+                this->control_reserve = std::vector <bool> (type_length);
+            }
         };
 
 		// Functions

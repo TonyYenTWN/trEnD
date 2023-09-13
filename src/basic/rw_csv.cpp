@@ -2,7 +2,7 @@
 #include "rw_csv.h"
 //#include <iostream> // just for checking
 
-std::vector <int> basic::get_file_dim(std::string filename){
+std::vector <int> basic::get_file_dim(std::string filename, bool row_name, bool col_name){
 	std::ifstream in(filename);
 	std::vector <int> dim;
 	dim.reserve(2);
@@ -24,11 +24,11 @@ std::vector <int> basic::get_file_dim(std::string filename){
 		  	  		col_ID += 1;
 			  	}
 
-				dim.push_back(col_ID);
+				dim.push_back(col_ID - row_name);
 			}
 		}
 
-		dim.push_back(row_ID - 1);
+		dim.push_back(row_ID - col_name);
 	}
 
 	std::reverse(dim.begin(), dim.end());
@@ -89,22 +89,41 @@ std::map<std::string, std::vector <std::string>> basic::read_config_file(std::st
 
     if(in){
 	  	std::string line;
-	  	std::getline(in, line); // skip the first line
+
+	  	// the first line
+	  	// find number of values for each type
+	  	int num_col = 0;
+	  	std::getline(in, line);
+	  	{
+	  	  	std::stringstream sep(line);
+	  	  	std::string field;
+
+	  	  	// skip col for row name
+            std::getline(sep, field, ',');
+
+            while(std::getline(sep, field, ',')){
+                num_col += 1;
+            }
+	  	}
+//	  	std::cout << num_col << "\n";
 
 	  	while(getline(in, line)){
 	  	  	std::stringstream sep(line);
 	  	  	std::string field;
 	  	  	std::vector <std::string> value_vector;
+            value_vector.reserve(num_col);
 
 	  	  	// read row name
 	  	  	std::getline(sep, field, ',');
             std::string key = field;
+//            std::cout << field << ":\t";
 
             // read value names
             while(std::getline(sep, field, ',')){
-                std::getline(sep, field, ',');
                 value_vector.push_back(field);
+//                std::cout << field << "\t";
             }
+//            std::cout << "\n";
             key_value.insert(std::pair<std::string, std::vector <std::string>>(key, value_vector));
 	  	}
     }

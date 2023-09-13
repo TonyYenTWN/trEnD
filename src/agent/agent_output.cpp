@@ -116,7 +116,7 @@ namespace local{
 	void end_users_settlement_print(power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, std::string dir_name){
 		int point_num = Power_network_inform.points.bidding_zone.size();
 		//int sample_num = agent::end_user::parameters::sample_num();
-		int sample_num = Power_market_inform.agent_profiles.end_user_type.cols();
+		int sample_num = Power_market_inform.agent_profiles.end_user_type.sample_num;
 		std::vector <std::string> var_names = var_names_set();
 		int var_num = var_names.size();
 
