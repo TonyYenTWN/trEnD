@@ -3235,7 +3235,6 @@ namespace{
 
 void agent::agents_set(int start_time, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, std::string fin_name, configuration::process_config &process_par){
 	auto fin_dim = basic::get_file_dim(fin_name, 1);
-	//Power_market_inform.agent_profiles.end_user_type = basic::read_file(fin_dim[0], fin_dim[1], fin_name, 1);
 	auto end_user_type = basic::read_config_file(fin_name);
 	Power_market_inform.agent_profiles.end_user_type.initialize(fin_dim[1]);
 	for(int sample_iter = 0; sample_iter < fin_dim[1]; ++ sample_iter){
