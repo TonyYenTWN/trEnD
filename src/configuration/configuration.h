@@ -44,6 +44,8 @@ namespace configuration{
 		bool encourage_redispatch;
 		/** Indicate whether active end-users use rule-based (and not optimization) when providing flexibility to the system.*/
 		bool rule_based;
+		/** Indicate whether power flow analysis should be carried out */
+		bool power_flow;
 		/** Total time length of the input time series data (not the simulation time length!!)*/
 		int total_time;
 		/** Time boundary of simulation. 1st component = starting time; 2nd component = duration of the simulation.*/
@@ -122,6 +124,10 @@ namespace configuration{
 				std::cout << "Rule based?                   Yes: 1 / No: 0 | ";
 				std::cin >> this->rule_based;
 				std::cout << "\n";
+
+				std::cout << "Power flow analysis?      Yes: 1 / No: 0 | ";
+				std::cin >> this->power_flow;
+				std::cout << "\n";
 			}
 
 			std::cout << "Contigency analysis?          Yes: 1 / No: 0 | ";
@@ -187,6 +193,10 @@ namespace configuration{
 			std::cout << "Rule based?               Yes: 1 / No: 0 | ";
 			std::cout << this->rule_based;
 			std::cout << "\n";
+
+            std::cout << "Power flow analysis?      Yes: 1 / No: 0 | ";
+            std::cout << this->power_flow;
+            std::cout << "\n";
 
 			std::cout << "Start tick?                              | ";
 			std::cout << this->time_boundary[0];

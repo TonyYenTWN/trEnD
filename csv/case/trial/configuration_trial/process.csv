@@ -8,8 +8,9 @@ DSO_filter,1
 control_reserve,1
 encourage_redispatch,0
 rule_based,0
+power_flow,0
+contingency,1
 start_time,0
 duration,24
 total_time,48
-contingency,1
 folder_name,trial
