@@ -182,18 +182,18 @@ namespace local{
 
             // constraint on power from BESS
             double BESS_ub = Market.flex_stat.BESS_soc.soc_current(node_iter) - Market.flex_stat.BESS_soc.soc_min(tick, node_iter);
-            BESS_ub = std::min(BESS_ub, Market.flex_stat.BESS_soc.capacity_max(node_iter));
-            BESS_ub = std::max(BESS_ub, -Market.flex_stat.BESS_soc.capacity_max(node_iter));
+            BESS_ub = std::min(BESS_ub, Market.flex_stat.BESS_soc.capacity_max(tick, node_iter));
+            BESS_ub = std::max(BESS_ub, -Market.flex_stat.BESS_soc.capacity_max(tick, node_iter));
             double BESS_lb = Market.flex_stat.BESS_soc.soc_current(node_iter) - Market.flex_stat.BESS_soc.soc_max(tick, node_iter);
-            BESS_lb = std::max(BESS_lb, -Market.flex_stat.BESS_soc.capacity_max(node_iter));
+            BESS_lb = std::max(BESS_lb, -Market.flex_stat.BESS_soc.capacity_max(tick, node_iter));
             bound_box.row(row_start + 3) << BESS_lb, BESS_ub;
 
             // constraint on power from EV
             double EV_ub = Market.flex_stat.EV_soc.soc_current(node_iter) - Market.flex_stat.EV_soc.soc_min(tick, node_iter);
-            EV_ub = std::min(EV_ub, Market.flex_stat.EV_soc.capacity_max(node_iter));
-            EV_ub = std::max(EV_ub, -Market.flex_stat.EV_soc.capacity_max(node_iter));
+            EV_ub = std::min(EV_ub, Market.flex_stat.EV_soc.capacity_max(tick, node_iter));
+            EV_ub = std::max(EV_ub, -Market.flex_stat.EV_soc.capacity_max(tick, node_iter));
             double EV_lb = Market.flex_stat.EV_soc.soc_current(node_iter) - Market.flex_stat.EV_soc.soc_max(tick, node_iter);
-            EV_lb = std::max(EV_lb, -Market.flex_stat.EV_soc.capacity_max(node_iter));
+            EV_lb = std::max(EV_lb, -Market.flex_stat.EV_soc.capacity_max(tick, node_iter));
             bound_box.row(row_start + 4) << EV_lb, EV_ub;
 
             // constraint on shiftable demand
@@ -380,10 +380,10 @@ namespace power_network{
         // setting for trivial case
         Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_min = Eigen::MatrixXd::Zero(process_par.time_boundary[1], Power_market_inform.TSO_Market.num_zone);
         Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_max = Eigen::MatrixXd::Zero(process_par.time_boundary[1], Power_market_inform.TSO_Market.num_zone);
-        Power_market_inform.TSO_Market.flex_stat.BESS_soc.capacity_max = Eigen::VectorXd::Zero(Power_market_inform.TSO_Market.num_zone);
+        Power_market_inform.TSO_Market.flex_stat.BESS_soc.capacity_max = Eigen::MatrixXd::Zero(process_par.time_boundary[1], Power_market_inform.TSO_Market.num_zone);
         Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_min = Eigen::MatrixXd::Zero(process_par.time_boundary[1], Power_market_inform.TSO_Market.num_zone);
         Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_max = Eigen::MatrixXd::Zero(process_par.time_boundary[1], Power_market_inform.TSO_Market.num_zone);
-        Power_market_inform.TSO_Market.flex_stat.EV_soc.capacity_max = Eigen::VectorXd::Zero(Power_market_inform.TSO_Market.num_zone);
+        Power_market_inform.TSO_Market.flex_stat.EV_soc.capacity_max = Eigen::MatrixXd::Zero(process_par.time_boundary[1], Power_market_inform.TSO_Market.num_zone);
 
         // Update the end-users BESS and EV
         int point_num = Power_network_inform.points.bidding_zone.size();
@@ -418,7 +418,7 @@ namespace power_network{
                 BESS_capacity *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area;
                 BESS_capacity *= Power_market_inform.agent_profiles.end_user_type.weight[sample_iter];
                 BESS_capacity /= 1000.;
-                Power_market_inform.TSO_Market.flex_stat.BESS_soc.capacity_max.col(node_ID) += BESS_capacity* Eigen::VectorXd::Ones(process_par.time_boundary[1]);
+                Power_market_inform.TSO_Market.flex_stat.BESS_soc.capacity_max.col(node_ID) += BESS_capacity * Eigen::VectorXd::Ones(process_par.time_boundary[1]);
 
                 double EV_soc = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.energy_scale;
                 EV_soc *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area;
@@ -435,10 +435,10 @@ namespace power_network{
 		}
 
         Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_current = .5 * Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_min.col(0);
-        Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_current += .5 * Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_min.col(0);
+        Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_current += .5 * Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_max.col(0);
 
         Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_current = .5 * Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_min.col(0);
-        Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_current += .5 * Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_min.col(0);
+        Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_current += .5 * Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_max.col(0);
     }
 
     void contingency_analysis_set(contingency_analysis_struct &contingency_analysis, power_market::market_whole_inform &Power_market_inform, configuration::process_config &process_par){

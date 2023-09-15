@@ -43,10 +43,10 @@ namespace power_market{
 	// Power market objects
 	/** Information of the state of charge limits (for contingency analysis).*/
 	struct soc_range{
+	    Eigen::MatrixXd capacity_max;
         Eigen::MatrixXd soc_min;
         Eigen::MatrixXd soc_max;
         Eigen::VectorXd soc_current;
-        Eigen::VectorXd capacity_max;
 	};
 
 	/** Information of the flexibility situation at each market node (for contingency analysis).*/
