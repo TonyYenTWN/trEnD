@@ -14,49 +14,66 @@ namespace local{
 
 		// Metropolis walk for each components
 		for(int row_iter = 0; row_iter < sample.rows(); ++ row_iter){
-
 			// Gibbs sampling for the first time step
 			{
 				int tick = 0;
 				// Randomly set the boundary condition from theoretical stationary probability distribution
-				int s_0 = (distrib(gen) < temporal_prob(row_iter, 0) / temporal_prob(row_iter, 1) * max_int);
+				int s_0 = (distrib(gen) < temporal_prob(row_iter, 0) / temporal_prob.row(row_iter).sum() * max_int);
 
-				// Calculate energy gap and the resulting conditional likelihood of s = 1 happening
-				int s_neighbor_sum = s_0 + sample(row_iter, tick + 1);
-				double energy_gap = temporal_hamiltonian(row_iter, 0) - temporal_hamiltonian(row_iter, 1) * s_neighbor_sum;
-				double ratio = exp(-beta * energy_gap);
-
-				// Update state according to the conditional probability
-				sample(row_iter, tick) = (distrib(gen) <= ratio / (1. + ratio) * max_int);
+				double prob_fail = (1 - s_0) * temporal_prob(row_iter, 0) + s_0 * (1 - temporal_prob(row_iter, 1));
+				sample(row_iter, tick) = (distrib(gen) < prob_fail * max_int);
+//				// Calculate energy gap and the resulting conditional likelihood of s = 1 happening
+//				int s_neighbor_sum = s_0 + sample(row_iter, tick + 1);
+//				double energy_gap = temporal_hamiltonian(row_iter, 0) - temporal_hamiltonian(row_iter, 1) * s_neighbor_sum;
+//				double ratio = exp(-beta * energy_gap);
+//
+//				// Update state according to the conditional probability
+////				sample(row_iter, tick) = .5 + std::rand() <= ratio / (1. + ratio) * (RAND_MAX + 1u);
+////				sample(row_iter, tick) = distrib(gen);
+////				sample(row_iter, tick) = (sample(row_iter, tick) <= ratio / (1. + ratio) * max_int);
+//                sample(row_iter, tick) = (distrib(gen) <= ratio / (1. + ratio) * max_int);
 			}
 
-			// Gibbs sampling for the steps
-			for(int tick = 1; tick < duration - 1; ++ tick){
-				// Calculate energy gap and the resulting conditional likelihood of s = 1 happening
-				int s_neighbor_sum = sample(row_iter, tick - 1) + sample(row_iter, tick + 1);
-				double energy_gap = temporal_hamiltonian(row_iter, 0) - temporal_hamiltonian(row_iter, 1) * s_neighbor_sum;
-				double ratio = exp(-beta * energy_gap);
+			// Gibbs sampling for the following steps
+//			for(int tick = 1; tick < duration - 1; ++ tick){
+            for(int tick = 1; tick < duration; ++ tick){
+				double prob_fail = (1 - sample(row_iter, tick - 1)) * temporal_prob(row_iter, 0) + sample(row_iter, tick - 1) * (1 - temporal_prob(row_iter, 1));
+				sample(row_iter, tick) = (distrib(gen) < prob_fail * max_int);
 
-				// Update state according to the conditional probability
-				sample(row_iter, tick) = (distrib(gen) <= ratio / (1. + ratio) * max_int);
+//				// Calculate energy gap and the resulting conditional likelihood of s = 1 happening
+//				int s_neighbor_sum = sample(row_iter, tick - 1) + sample(row_iter, tick + 1);
+//				double energy_gap = temporal_hamiltonian(row_iter, 0) - temporal_hamiltonian(row_iter, 1) * s_neighbor_sum;
+//				double ratio = exp(-beta * energy_gap);
+//
+//				// Update state according to the conditional probability
+////				sample(row_iter, tick) = .5 + std::rand() <= ratio / (1. + ratio) * (RAND_MAX + 1u);
+////				sample(row_iter, tick) = distrib(gen);
+////				sample(row_iter, tick) = (sample(row_iter, tick) <= ratio / (1. + ratio) * max_int);
+//                sample(row_iter, tick) = (distrib(gen) <= ratio / (1. + ratio) * max_int);
 			}
 
-			// Gibbs sampling for the final step
-			{
-				int tick = duration - 1;
-
-				// Randomly set the boundary condition from theoretical stationary probability distribution
-				int s_T = (distrib(gen) < temporal_prob(row_iter, 0) / temporal_prob(row_iter, 1) * max_int);
-
-				// Calculate energy gap and the resulting conditional likelihood of s = 1 happening
-				int s_neighbor_sum = sample(row_iter, tick - 1) + s_T;
-				double energy_gap = temporal_hamiltonian(row_iter, 0) - temporal_hamiltonian(row_iter, 1) * s_neighbor_sum;
-				double ratio = exp(-beta * energy_gap);
-
-				// Update state according to the conditional probability
-				sample(row_iter, tick) = (distrib(gen) <= ratio / (1. + ratio) * max_int);
-			}
+//			// Gibbs sampling for the final step
+//			{
+//				int tick = duration - 1;
+//
+//				// Randomly set the boundary condition from theoretical stationary probability distribution
+//				int s_T = (distrib(gen) < temporal_prob(row_iter, 0) / temporal_prob.row(row_iter).sum() * max_int);
+//
+//				// Calculate energy gap and the resulting conditional likelihood of s = 1 happening
+//				int s_neighbor_sum = sample(row_iter, tick - 1) + s_T;
+//				double energy_gap = temporal_hamiltonian(row_iter, 0) - temporal_hamiltonian(row_iter, 1) * s_neighbor_sum;
+//				double ratio = exp(-beta * energy_gap);
+//
+//				// Update state according to the conditional probability
+////				sample(row_iter, tick) = .5 + std::rand() <= ratio / (1. + ratio) * (RAND_MAX + 1u);
+////				sample(row_iter, tick) = distrib(gen);
+////				sample(row_iter, tick) = (sample(row_iter, tick) <= ratio / (1. + ratio) * max_int);
+//                sample(row_iter, tick) = (distrib(gen) <= ratio / (1. + ratio) * max_int);
+//			}
 		}
+
+		//std::cout << (double) sample.sum() / sample.size() << "\n\n";
+		//std::cout << "\n\n";
 	}
 
 	void contingency_analysis_LP_set(int sample_ID, int tick, power_network::contingency_analysis_struct &contingency_analysis, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform){
@@ -172,13 +189,19 @@ namespace local{
 
             // default constraint on supply (before considering failure power plants)
             bound_box.row(row_start) << 0., Market.flex_stat.supply_inflex(tick, node_iter) + Market.flex_stat.supply_flex(tick, node_iter);
+            bound_box(row_start, 1) *= bound_box(row_start, 1) > 0.;
+//            std::cout << bound_box.row(row_start) << "\n";
 
             // constraint on inflexible demand
             // shiftable demand that is deferred to the last possible time interval is considered inflexible demand
             bound_box.row(row_start + 1) << -Market.flex_stat.demand_inflex(tick, node_iter) - Market.flex_stat.unfulfilled_demand(0, node_iter), 0.;
+            bound_box(row_start + 1, 0) *= bound_box(row_start + 1, 0) < 0.;
+//            std::cout << bound_box.row(row_start + 1) << "\n";
 
             // constraint on flexible demand
             bound_box.row(row_start + 2) << -Market.flex_stat.demand_flex(tick, node_iter), 0.;
+            bound_box(row_start + 2, 0) *= bound_box(row_start + 2, 0) < 0.;
+//            std::cout << node_iter << ":\t" << bound_box.row(row_start + 2) << "\n";
 
             // constraint on power from BESS
             double BESS_ub = Market.flex_stat.BESS_soc.soc_current(node_iter) - Market.flex_stat.BESS_soc.soc_min(tick, node_iter);
@@ -187,6 +210,7 @@ namespace local{
             double BESS_lb = Market.flex_stat.BESS_soc.soc_current(node_iter) - Market.flex_stat.BESS_soc.soc_max(tick, node_iter);
             BESS_lb = std::max(BESS_lb, -Market.flex_stat.BESS_soc.capacity_max(tick, node_iter));
             bound_box.row(row_start + 3) << BESS_lb, BESS_ub;
+//            std::cout << node_iter << ":\t" << bound_box.row(row_start + 3) << "\n";
 
             // constraint on power from EV
             double EV_ub = Market.flex_stat.EV_soc.soc_current(node_iter) - Market.flex_stat.EV_soc.soc_min(tick, node_iter);
@@ -199,6 +223,7 @@ namespace local{
             // constraint on shiftable demand
             for(int tock = 1; tock < Market.flex_stat.unfulfilled_demand.rows(); ++ tock){
                 bound_box.row(row_start + 4 + tock) << -Market.flex_stat.unfulfilled_demand(tock, node_iter), 0.;
+                bound_box(row_start + 4, 0) *= bound_box(row_start + 4, 0) < 0.;
             }
         }
         bound_box.bottomRows(Market.network.num_edges) = Market.network.power_constraint;
@@ -264,6 +289,8 @@ namespace local{
         // -------------------------------------------------------------------------------
         // Set objective coefficients of variables
         // -------------------------------------------------------------------------------
+        // needs to add positive coefficient to charge of BESS and EV to encourage charging whenever possible
+        // this will ensure flexibility is not depleted after full dc
         Eigen::VectorXd obj_vec = Eigen::VectorXd::Zero(variable_num);
         for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
             int row_start = 2 * Market.network.num_vertice + node_iter * (Market.flex_stat.unfulfilled_demand.rows() + 4);
@@ -334,19 +361,19 @@ namespace power_network{
 
             fin = dir_name + "demand_inflex.csv";
             fin_dim = basic::get_file_dim(fin);
-            Power_market_inform.TSO_Market.flex_stat.demand_flex = basic::read_file(fin_dim[0], fin_dim[1], fin);
+            Power_market_inform.TSO_Market.flex_stat.demand_inflex = basic::read_file(fin_dim[0], fin_dim[1], fin);
 
             fin = dir_name + "demand_shiftable.csv";
             fin_dim = basic::get_file_dim(fin);
-            Power_market_inform.TSO_Market.flex_stat.demand_flex = basic::read_file(fin_dim[0], fin_dim[1], fin);
+            Power_market_inform.TSO_Market.flex_stat.demand_shiftable = basic::read_file(fin_dim[0], fin_dim[1], fin);
 
             fin = dir_name + "supply_flex.csv";
             fin_dim = basic::get_file_dim(fin);
-            Power_market_inform.TSO_Market.flex_stat.demand_flex = basic::read_file(fin_dim[0], fin_dim[1], fin);
+            Power_market_inform.TSO_Market.flex_stat.supply_flex = basic::read_file(fin_dim[0], fin_dim[1], fin);
 
             fin = dir_name + "supply_inflex.csv";
             fin_dim = basic::get_file_dim(fin);
-            Power_market_inform.TSO_Market.flex_stat.demand_flex = basic::read_file(fin_dim[0], fin_dim[1], fin);
+            Power_market_inform.TSO_Market.flex_stat.supply_inflex = basic::read_file(fin_dim[0], fin_dim[1], fin);
 
             // Read end-user data
             // Necessary when BESS and EV data are required
@@ -366,7 +393,9 @@ namespace power_network{
                 Power_market_inform.agent_profiles.end_user_type.EV_capacity[sample_iter] = stod(end_user_type["EV_capacity"][sample_iter]);
                 Power_market_inform.agent_profiles.end_user_type.redispatch[sample_iter] = (bool) stod(end_user_type["redispatch"][sample_iter]);
                 Power_market_inform.agent_profiles.end_user_type.control_reserve[sample_iter] = (bool) stod(end_user_type["control_reserve"][sample_iter]);
+                std::cout << Power_market_inform.agent_profiles.end_user_type.weight[sample_iter] << "\t";
             }
+            std::cout << "\n\n";
         }
 
         // Set shiftable demand data
@@ -402,13 +431,14 @@ namespace power_network{
             for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
                 // Should build a dedicated func for initialization of parameters fpr end-users in the future
                 if(!process_par.simulation_flag){
+                    Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.weight = Power_market_inform.agent_profiles.end_user_type.weight[sample_iter];
                     Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.energy_scale = Power_market_inform.agent_profiles.end_user_type.BESS_energy[sample_iter];
                     Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.capacity_scale = Power_market_inform.agent_profiles.end_user_type.BESS_capacity[sample_iter];
                     Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.energy_scale = Power_market_inform.agent_profiles.end_user_type.EV_energy[sample_iter];
                     Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.capacity_scale = Power_market_inform.agent_profiles.end_user_type.EV_capacity[sample_iter];
                 }
 
-               double BESS_soc = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.energy_scale;
+                double BESS_soc = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.BESS.energy_scale;
                 BESS_soc *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area;
                 BESS_soc *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.weight;
                 BESS_soc /= 1000.;
@@ -433,12 +463,15 @@ namespace power_network{
                 Power_market_inform.TSO_Market.flex_stat.EV_soc.capacity_max.col(node_ID) += EV_capacity* Eigen::VectorXd::Ones(process_par.time_boundary[1]);
             }
 		}
+//		std::cout << Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_max << "\n\n";
+//		std::cout << Power_market_inform.TSO_Market.flex_stat.BESS_soc.capacity_max << "\n\n";
 
-        Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_current = .5 * Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_min.col(0);
-        Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_current += .5 * Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_max.col(0);
+        Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_current = .5 * Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_min.row(0);
+        Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_current += .5 * Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_max.row(0);
+//        std::cout << Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_current << "\n";
 
-        Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_current = .5 * Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_min.col(0);
-        Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_current += .5 * Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_max.col(0);
+        Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_current = .5 * Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_min.row(0);
+        Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_current += .5 * Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_max.row(0);
     }
 
     void contingency_analysis_set(contingency_analysis_struct &contingency_analysis, power_market::market_whole_inform &Power_market_inform, configuration::process_config &process_par){
@@ -459,20 +492,21 @@ namespace power_network{
 
         // Initialization of temporal probability
     	Eigen::Vector2d transition_prob;
-    	transition_prob << 1E-4, .1;
+    	transition_prob << 1E-4, .1;    // (u,v) where p_{0->0} = 1 - u, p_{0->1} = u, p_{1->0} = v, p_{1->1} = 1 - v
     	contingency_analysis.temporal_prob_0 = Eigen::MatrixXd (num_component, 2);
         contingency_analysis.temporal_prob_0.col(0) << transition_prob[0] * Eigen::VectorXd::Ones(num_component);
         contingency_analysis.temporal_prob_0.col(1) << transition_prob[1] * Eigen::VectorXd::Ones(num_component);
     }
 
     // Contingency sampling using MCMC
-    void contigency_sampling(contingency_analysis_struct &contingency_analysis, int num_sample){
+    void contigency_sampling(contingency_analysis_struct &contingency_analysis, int num_sample, int num_burn_up){
         contingency_analysis.num_sample = num_sample;
+        contingency_analysis.num_burn_up = num_burn_up;
 
-        int max_int = 1E12;
-	    std::random_device rd;  // a seed source for the random number engine
-	    std::mt19937 gen(rd()); // mersenne_twister_engine seeded with rd()
-        std::uniform_int_distribution <> distrib(0, max_int);
+//        int max_int = 1E12;
+//	    std::random_device rd;  // a seed source for the random number engine
+//	    std::mt19937 gen(rd()); // mersenne_twister_engine seeded with rd()
+//        std::uniform_int_distribution <> distrib(0, max_int);
 
         contingency_analysis.samples_set();
         Eigen::MatrixXi sample = Eigen::MatrixXi::Zero(contingency_analysis.num_component, contingency_analysis.duration);
@@ -484,6 +518,9 @@ namespace power_network{
         for(int burn_up_iter = 0; burn_up_iter < contingency_analysis.num_burn_up; ++ burn_up_iter){
         	local::Gibbs_sampling(contingency_analysis.duration, contingency_analysis.beta, sample, contingency_analysis.temporal_hamiltonian, contingency_analysis.temporal_prob_0, contingency_analysis.spatial_hamiltonian);
 		}
+//        std::cout << "First round\n";
+//        //std::cout << "Number of failures:" << sample.sum() << "\n";
+//        std::cout << sample.transpose() << "\n\n";
 
 		// Actual sampling step (assuming stationary probability has been reached)
 		#pragma omp parallel
@@ -494,6 +531,9 @@ namespace power_network{
 				contingency_analysis.samples[sample_iter] = sample;
 			}
 		}
+//		std::cout << "Another round\n";
+//		//std::cout << "Number of failures:" << contingency_analysis.samples[0].sum() << "\n";
+//		std::cout << contingency_analysis.samples[0].transpose() << "\n\n";
     }
 
     // Optimal power flow for different contingencies
@@ -511,29 +551,34 @@ namespace power_network{
 //            if(break_loop){
 //                break;
 //            }
+//            std::cout <<  contingency_analysis.samples[sample_iter].sum() << "\n";
+            contingency_analysis.samples[sample_iter] = Eigen::MatrixXi::Ones(contingency_analysis.num_component, process_par.time_boundary[1]); // just for test
             for(int tick = 0; tick < process_par.time_boundary[1]; ++ tick){
-                if(contingency_analysis.samples[sample_iter].col(tick).sum() > 0){
-                    // Keep the try code in case sth went wrong again with alglib
+//                std::cout << contingency_analysis.samples[sample_iter].col(tick).size() << "\t";
+//                std::cout << contingency_analysis.samples[sample_iter].col(tick).sum() << "\t";
+//                std::cout << "\n";
+               if(contingency_analysis.samples[sample_iter].col(tick).sum() > 0){
+//                    // Keep the try code in case sth went wrong again with alglib
 //                    try{
-//                        local::contingency_analysis_LP_set(sample_iter, tick, contingency_analysis, Power_market_inform.TSO_Market);
+//                        local::contingency_analysis_LP_set(sample_iter, tick, contingency_analysis, Power_market_inform, Power_network_inform);
 //                        local::contingency_analysis_update(sample_iter, tick, contingency_analysis, Power_market_inform.TSO_Market);
 //                    }
 //                    catch(alglib::ap_error e)
 //                    {
 //                        printf("error msg: %s\n", e.msg.c_str());
 //                    }
-
                     local::contingency_analysis_LP_set(sample_iter, tick, contingency_analysis, Power_market_inform, Power_network_inform);
                     local::contingency_analysis_update(sample_iter, tick, contingency_analysis, Power_market_inform.TSO_Market);
-                    break_loop = 1;
+//                    break_loop = 1;
 //                    break;
+//                    std::cout << sample_iter << "\t" << tick << "\n";
                 }
             }
         }
 
         // Calculate mean ENS
         for(int node_iter = 0; node_iter < Power_market_inform.TSO_Market.num_zone; ++ node_iter){
-            for(int tick = 0; tick < process_par.time_boundary[1]; ++ tick){
+           for(int tick = 0; tick < process_par.time_boundary[1]; ++ tick){
                 double energy_not_served = 0.;
 
                 #pragma omp parallel
@@ -544,8 +589,12 @@ namespace power_network{
                     }
                 }
 
+//                std::cout << energy_not_served << "\t";
                 energy_not_served /= contingency_analysis.num_sample;
+//                std::cout << energy_not_served << "\t";
                 contingency_analysis.energy_not_served_mean(tick, node_iter) = energy_not_served;
+//                std::cout << contingency_analysis.energy_not_served_mean(tick, node_iter) << "\t";
+//                std::cout << "\n";
             }
         }
     }

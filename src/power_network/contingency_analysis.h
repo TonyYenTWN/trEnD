@@ -11,7 +11,7 @@ namespace power_network{
         // order of rows: transmission lines, large hydro power plants, large wind power plants, large PSPP
 
         // Input variables
-        int num_burn_up = 10000;
+        int num_burn_up = 10000; //default
         int num_component;
         int num_sample = 100000;
         int duration;
@@ -47,7 +47,7 @@ namespace power_network{
     // functions
     void flex_stat_input(power_market::market_whole_inform&, power_network::network_inform&, configuration::process_config&);
     void contingency_analysis_set(contingency_analysis_struct&, power_market::market_whole_inform&, configuration::process_config&);
-    void contigency_sampling(contingency_analysis_struct&, int num_sample = 1E5);
+    void contigency_sampling(contingency_analysis_struct&, int num_sample = 1E5, int num_burn_up = 1E4);
     void contingency_analysis_solve(contingency_analysis_struct&, power_market::market_whole_inform&, power_network::network_inform&, configuration::process_config&);
     void contingency_analysis_print(contingency_analysis_struct&, power_market::market_whole_inform&, configuration::process_config&);
 }
