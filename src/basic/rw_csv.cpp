@@ -133,7 +133,7 @@ std::map<std::string, std::vector <std::string>> basic::read_config_file(std::st
 	return key_value;
 };
 
-Eigen::MatrixXd basic::read_file(int num_row, int num_col, std::string filename, bool row_name){
+Eigen::MatrixXd basic::read_file(int num_row, int num_col, std::string filename, bool row_name, char sep_char){
 	std::ifstream in(filename);
 	Eigen::MatrixXd data(num_row, num_col - row_name);
 
@@ -148,11 +148,12 @@ Eigen::MatrixXd basic::read_file(int num_row, int num_col, std::string filename,
 	  	  	std::string field;
 	  	  	col_ID = 0;
 	  	  	if(row_name){
-				std::getline(sep, field, ',');
+                //std::getline(sep, field, ',');
+				std::getline(sep, field, sep_char);
 				col_ID += 1;
 	  	  	}
 
-	  	  	while(std::getline(sep, field, ',')){
+	  	  	while(std::getline(sep, field, sep_char)){
 	  	  		data(row_ID, col_ID - row_name) = std::stod(field);
 	  	  		col_ID += 1;
 		  	}
@@ -181,14 +182,18 @@ void basic::write_file(Eigen::MatrixXd data, std::string filename, std::vector<s
     for(int col_ID = 0; col_ID < num_col; ++ col_ID){
     	fout << col_name[col_ID];
     	if(col_ID < num_col - 1){
-    		fout << " ";
+    		//fout << " ";
+    		fout << ",";
 		}
 	}
 	fout << "\n";
 
     // Write the content of the csv file
     for(int row_ID = 0; row_ID < num_row; ++ row_ID){
-    	fout << data.row(row_ID);
+        for(int col_ID = 0; col_ID < num_col; ++ col_ID){
+            fout << data(row_ID, col_ID);
+            fout << ",";
+        }
     	fout << "\n";
 	}
 

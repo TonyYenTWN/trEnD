@@ -15,7 +15,7 @@ namespace basic{
 	std::vector <std::string> get_col_name(std::string, int);
 	std::vector <std::string> get_row_name(std::string, int);
 	std::map<std::string, std::vector<std::string>> read_config_file(std::string);
-	Eigen::MatrixXd read_file(int, int, std::string, bool row_name = 0);
+	Eigen::MatrixXd read_file(int, int, std::string, bool row_name = 0, char sep_char = ',');
 	void write_file(Eigen::MatrixXd, std::string, std::vector<std::string>, int precision = 6);
 }
 
