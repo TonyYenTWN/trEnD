@@ -313,17 +313,12 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile, configura
 	// -------------------------------------------------------------------------------
 	alglib::real_1d_array sol;
 	alglib::minlpreport rep;
-	if(!process_par.rule_based){
-		alglib::minlpoptimize(profile.operation.Problem);
-		alglib::minlpresults(profile.operation.Problem, sol, rep);
-	}
-//	profile.operation.BESS.scheduled_capacity = sol[6] - sol[7];
-//	profile.operation.EV.BESS.scheduled_capacity = sol[10] - sol[11];
-//	profile.operation.smart_appliance.scheduled_demand = Eigen::VectorXd::Zero(2 * load_shift_time + 1);
-//	for(int tock = 0; tock < 2 * load_shift_time + 1; ++ tock){
-//		profile.operation.smart_appliance.scheduled_demand(tock) = sol[14 + tock];
+    alglib::minlpoptimize(profile.operation.Problem);
+    alglib::minlpresults(profile.operation.Problem, sol, rep);
+//	if(!process_par.rule_based){
+//		alglib::minlpoptimize(profile.operation.Problem);
+//		alglib::minlpresults(profile.operation.Problem, sol, rep);
 //	}
-//	std::cout << rep.terminationtype << "\n";
 
 	// Smart pricing for BESS
 	int price_supply_flex_BESS_ID;
@@ -432,216 +427,200 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile, configura
 		profile.operation.EV.BESS.price_demand = bidded_price_map.bidded_price(price_demand_flex_EV_ID);
 	}
 
-	// Give the bids
+	// Give the default inflexible bids
 	int price_demand_inflex_ID = price_interval + 1;
-	int price_demand_flex_ID = bidded_price_map.price_ID[profile.operation.price_demand_profile(0)];
 	int price_supply_inflex_ID = 0;
-	int price_supply_flex_ID = bidded_price_map.price_ID[profile.operation.price_supply_profile(0)];
-	int price_gap = 10;
 	double residual_load = profile.operation.default_demand_profile(0) - profile.operation.default_PV_profile(0);
 	profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::max(residual_load, 0.);
 	profile.operation.bids.submitted_supply_inflex(price_supply_inflex_ID) += -std::min(residual_load, 0.);
-	if(process_par.rule_based){
-		profile.operation.BESS.price_supply = profile.operation.price_supply_profile(0) - price_gap;
-		profile.operation.BESS.price_demand = profile.operation.price_demand_profile(0) + price_gap;
-		profile.operation.EV.BESS.price_demand = profile.operation.price_demand_profile(0) + price_gap;
-		profile.operation.EV.BESS.price_supply = profile.operation.price_supply_profile(0) - price_gap;
-	}
-	if(profile.investment.decision.redispatch){
-		// BESS
-		if(process_par.rule_based){
-			if(tick % foresight_time >= 10 && tick % foresight_time <= 17){
-				if(process_par.encourage_redispatch){
-					profile.operation.bids.submitted_supply_flex(price_demand_inflex_ID) += avail_supply_BESS;
-				}
-				else{
-					profile.operation.bids.submitted_supply_flex(price_supply_flex_ID - price_gap) += avail_supply_BESS;
-				}
-			}
-			else if(tick % foresight_time >= 22 || tick % foresight_time <= 5){
-				if(process_par.encourage_redispatch){
-					profile.operation.bids.submitted_demand_flex(price_supply_inflex_ID) += avail_demand_BESS;
-				}
-				else{
-					profile.operation.bids.submitted_demand_flex(price_demand_flex_ID + price_gap) += avail_demand_BESS;
-				}
-			}
-		}
-		else{
-			if(process_par.encourage_redispatch){
-				profile.operation.bids.submitted_supply_flex(price_demand_inflex_ID) += avail_supply_BESS;
-				profile.operation.bids.submitted_demand_flex(price_supply_inflex_ID) += avail_demand_BESS;
-			}
-			else{
-				profile.operation.bids.submitted_supply_flex(price_supply_flex_BESS_ID) += avail_supply_BESS;
-				profile.operation.bids.submitted_demand_flex(price_demand_flex_BESS_ID) += avail_demand_BESS;
-			}
-		}
 
-		// Check if EV can still be flexibly managed
-		if(process_par.encourage_redispatch){
-			if(tick % foresight_time >= 3 && tick % foresight_time <= 6){
-				profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += inflex_demand_EV;  //std::min(avail_demand_EV, 1.);
-				profile.operation.EV.BESS.price_demand = bidded_price_map.bidded_price(price_interval + 1);
-			}
-		}
-		else{
-            // the rule-based algorithm will cause problem in the status update of EV substep at the end of each time slice!!
-            // because the actual bids of EV are not stored and passed on to the other function, it ill take the default (optimized) mode
-			if(process_par.rule_based){
-				if(tick % foresight_time >= 1 && tick % foresight_time <= 6){
-					profile.operation.bids.submitted_demand_flex(price_demand_inflex_ID) += inflex_demand_EV;
-					profile.operation.bids.submitted_demand_flex(price_demand_flex_ID + price_gap) += avail_demand_EV;
-				}
-				else{
-					if(tick % foresight_time >= 20 && tick % foresight_time <= 21){
-						profile.operation.bids.submitted_supply_flex(price_supply_flex_ID - price_gap) += avail_supply_EV;
-					}
-				}
-			}
-			else{
-//				if(tick % foresight_time >= 3 && tick % foresight_time <= 6){
-//					profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += inflex_demand_EV;
+    // BESS
+    if(process_par.encourage_redispatch){
+        profile.operation.bids.submitted_supply_flex(price_demand_inflex_ID) += avail_supply_BESS;
+        profile.operation.bids.submitted_demand_flex(price_supply_inflex_ID) += avail_demand_BESS;
+    }
+    else{
+        profile.operation.bids.submitted_supply_flex(price_supply_flex_BESS_ID) += avail_supply_BESS;
+        profile.operation.bids.submitted_demand_flex(price_demand_flex_BESS_ID) += avail_demand_BESS;
+    }
+
+    // Check if EV can still be flexibly managed
+    if(process_par.encourage_redispatch){
+        if(tick % foresight_time >= 3 && tick % foresight_time <= 6){
+            profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += inflex_demand_EV;  //std::min(avail_demand_EV, 1.);
+            profile.operation.EV.BESS.price_demand = bidded_price_map.bidded_price(price_interval + 1);
+        }
+    }
+    else{
+        profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += inflex_demand_EV;
+        profile.operation.bids.submitted_demand_flex(price_demand_flex_EV_ID) += avail_demand_EV;
+        profile.operation.bids.submitted_supply_flex(price_supply_flex_EV_ID) += avail_supply_EV;
+    }
+
+    // Smart price for smart appliance
+    profile.operation.smart_appliance.price_demand = Eigen::VectorXd::Zero(2 * load_shift_time + 1);
+    if(process_par.encourage_redispatch){
+        profile.operation.smart_appliance.price_demand(load_shift_time) = bidded_price_map.bidded_price(price_interval + 1);
+        profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(load_shift_time);
+    }
+    else{
+        for(int tock = 0; tock < 2 * load_shift_time + 1; ++ tock){
+            double price_demand_flex_sa = bidded_price_map.bidded_price(price_interval + 1);
+            profile.operation.smart_appliance.price_demand(tock) = bidded_price_map.bidded_price(price_interval + 1);
+
+            // Determine best time to shift load
+            for(int tuck = 0; tuck < 2 * load_shift_time + 1; ++ tuck){
+                int tuck_ID = tock + tuck - 2 * load_shift_time;
+                if(tuck_ID > 0 && tuck_ID < foresight_time){
+                    price_demand_flex_sa = std::min(price_demand_flex_sa, profile.operation.price_demand_profile(tuck_ID));
+                }
+            }
+            int price_demand_flex_sa_ID =  bidded_price_map.price_ID[price_demand_flex_sa];
+            profile.operation.smart_appliance.price_demand(tock) = bidded_price_map.bidded_price(price_demand_flex_sa_ID);
+            profile.operation.bids.submitted_demand_flex(price_demand_flex_sa_ID) += profile.operation.smart_appliance.unfulfilled_demand(tock);
+            //std::cout << price_demand_flex_sa_ID << "\t" << profile.operation.bids.submitted_demand_flex.sum()<< "\n";
+        }
+    }
+
+//	// Give the bids
+//	int price_demand_inflex_ID = price_interval + 1;
+//	int price_demand_flex_ID = bidded_price_map.price_ID[profile.operation.price_demand_profile(0)];
+//	int price_supply_inflex_ID = 0;
+//	int price_supply_flex_ID = bidded_price_map.price_ID[profile.operation.price_supply_profile(0)];
+//	int price_gap = 10;
+//	double residual_load = profile.operation.default_demand_profile(0) - profile.operation.default_PV_profile(0);
+//	profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::max(residual_load, 0.);
+//	profile.operation.bids.submitted_supply_inflex(price_supply_inflex_ID) += -std::min(residual_load, 0.);
+//
+//	if(process_par.rule_based){
+//		profile.operation.BESS.price_supply = profile.operation.price_supply_profile(0) - price_gap;
+//		profile.operation.BESS.price_demand = profile.operation.price_demand_profile(0) + price_gap;
+//		profile.operation.EV.BESS.price_demand = profile.operation.price_demand_profile(0) + price_gap;
+//		profile.operation.EV.BESS.price_supply = profile.operation.price_supply_profile(0) - price_gap;
+//	}
+//	if(profile.investment.decision.redispatch){
+//		// BESS
+//		if(process_par.rule_based){
+//			if(tick % foresight_time >= 10 && tick % foresight_time <= 17){
+//				if(process_par.encourage_redispatch){
+//					profile.operation.bids.submitted_supply_flex(price_demand_inflex_ID) += avail_supply_BESS;
 //				}
 //				else{
-//					profile.operation.bids.submitted_demand_flex(price_demand_flex_EV_ID) += avail_demand_EV;
-//					profile.operation.bids.submitted_supply_flex(price_supply_flex_EV_ID) += avail_supply_EV;
+//					profile.operation.bids.submitted_supply_flex(price_supply_flex_ID - price_gap) += avail_supply_BESS;
 //				}
-
-                profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += inflex_demand_EV;
-                profile.operation.bids.submitted_demand_flex(price_demand_flex_EV_ID) += avail_demand_EV;
-                profile.operation.bids.submitted_supply_flex(price_supply_flex_EV_ID) += avail_supply_EV;
-			}
-		}
-
-		// Smart price for smart appliance
-		profile.operation.smart_appliance.price_demand = Eigen::VectorXd::Zero(2 * load_shift_time + 1);
-		if(process_par.encourage_redispatch){
-			profile.operation.smart_appliance.price_demand(load_shift_time) = bidded_price_map.bidded_price(price_interval + 1);
-			profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(load_shift_time);
-		}
-		else{
-			if(process_par.rule_based){
-				if(tick % foresight_time >= 18){
-					profile.operation.smart_appliance.price_demand(0) = bidded_price_map.bidded_price(price_interval + 1);
-					profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(0);
-				}
-				else if(tick % foresight_time >= 6 && tick % foresight_time <= 11){
-					profile.operation.smart_appliance.price_demand(0) = bidded_price_map.bidded_price(price_interval + 1);
-					profile.operation.smart_appliance.price_demand(1) = bidded_price_map.bidded_price(price_interval + 1);
-					profile.operation.smart_appliance.price_demand(2) = profile.operation.price_demand_profile(0) + price_gap;
-					profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(0);
-					profile.operation.bids.submitted_demand_flex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(1);
-					profile.operation.bids.submitted_demand_flex(price_demand_flex_ID + price_gap) += profile.operation.smart_appliance.unfulfilled_demand(2);
-				}
-				else if(tick % foresight_time == 0){
-					profile.operation.smart_appliance.price_demand(0) = bidded_price_map.bidded_price(price_interval + 1);
-					profile.operation.smart_appliance.price_demand(1) = bidded_price_map.bidded_price(price_interval + 1);
-					profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(0);
-					profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(1);
-				}
-				else{
-					profile.operation.smart_appliance.price_demand(1) = bidded_price_map.bidded_price(price_interval + 1);
-					profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(1);
-				}
-			}
-			else{
-				for(int tock = 0; tock < 2 * load_shift_time + 1; ++ tock){
-					double price_demand_flex_sa = bidded_price_map.bidded_price(price_interval + 1);
-					profile.operation.smart_appliance.price_demand(tock) = bidded_price_map.bidded_price(price_interval + 1);
-
-					// Determine best time to shift load
-					for(int tuck = 0; tuck < 2 * load_shift_time + 1; ++ tuck){
-						int tuck_ID = tock + tuck - 2 * load_shift_time;
-						if(tuck_ID > 0 && tuck_ID < foresight_time){
-							price_demand_flex_sa = std::min(price_demand_flex_sa, profile.operation.price_demand_profile(tuck_ID));
-						}
-					}
-					int price_demand_flex_sa_ID =  bidded_price_map.price_ID[price_demand_flex_sa];
-					profile.operation.smart_appliance.price_demand(tock) = bidded_price_map.bidded_price(price_demand_flex_sa_ID);
-					profile.operation.bids.submitted_demand_flex(price_demand_flex_sa_ID) += profile.operation.smart_appliance.unfulfilled_demand(tock);
-					//std::cout << price_demand_flex_sa_ID << "\t" << profile.operation.bids.submitted_demand_flex.sum()<< "\n";
-				}
-			}
-		}
-
-//		// Original
-//		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += sol[14];
-//		profile.operation.bids.submitted_demand_flex(price_demand_flex_ID) += sol[4] - sol[14];
-//		profile.operation.bids.submitted_demand_flex(price_demand_flex_ID) += std::max(sol[2], 0.);
-//		profile.operation.bids.submitted_supply_flex(price_supply_flex_ID) += -std::min(sol[2], 0.);
-//
-//		// Check if EV can still be flexibly managed
-//		if(tick % foresight_time >= 3 && tick % foresight_time <= 6){
-//			//profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::max(sol[3], 0.);
-//			//profile.operation.bids.submitted_supply_inflex(price_supply_inflex_ID) += -std::min(sol[3], 0.);
-//			profile.operation.EV.BESS.scheduled_capacity = avail_demand_EV;
-//			profile.operation.EV.BESS.scheduled_capacity *= profile.operation.EV.BESS.efficiency;
-//			profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += avail_demand_EV;
+//			}
+//			else if(tick % foresight_time >= 22 || tick % foresight_time <= 5){
+//				if(process_par.encourage_redispatch){
+//					profile.operation.bids.submitted_demand_flex(price_supply_inflex_ID) += avail_demand_BESS;
+//				}
+//				else{
+//					profile.operation.bids.submitted_demand_flex(price_demand_flex_ID + price_gap) += avail_demand_BESS;
+//				}
+//			}
 //		}
 //		else{
-//			profile.operation.bids.submitted_demand_flex(price_demand_flex_ID) += std::max(sol[3], 0.);
-//			profile.operation.bids.submitted_supply_flex(price_supply_flex_ID) += -std::min(sol[3], 0.);
-//		}
-	}
-	else{
-//		// New
-//		profile.operation.bids.submitted_demand_inflex(price_demand_flex_BESS_ID) += avail_demand_BESS;
-//		profile.operation.bids.submitted_supply_inflex(price_supply_flex_BESS_ID) += avail_supply_BESS;
-//		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += sol[4];
-//		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::max(sol[2], 0.);
-//		profile.operation.bids.submitted_supply_inflex(price_supply_inflex_ID) += -std::min(sol[2], 0.);
-
-		// Check if EV can still be flexibly managed
-		if(tick % foresight_time >= 3 && tick % foresight_time <= 6){
-			// Not used
-//			profile.operation.EV.BESS.scheduled_capacity = avail_demand_EV;
-//			profile.operation.EV.BESS.scheduled_capacity *= profile.operation.EV.BESS.efficiency;
-
-			// Temporary commented
-			profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::min(avail_demand_EV, 1.);
-			profile.operation.EV.BESS.price_demand = bidded_price_map.bidded_price(price_interval + 1);
-
-		}
-		else{
-//			profile.operation.bids.submitted_demand_inflex(price_demand_flex_ID + price_gap) += avail_demand_EV / 3.;
-//			profile.operation.bids.submitted_demand_inflex(price_demand_flex_EV_ID) += avail_demand_EV;
-//			profile.operation.bids.submitted_supply_inflex(price_supply_flex_EV_ID) += avail_supply_EV;
-//			profile.operation.bids.submitted_demand_inflex(price_demand_flex_ID) += std::max(sol[3], 0.);
-//			profile.operation.bids.submitted_supply_inflex(price_supply_flex_ID) += -std::min(sol[3], 0.);
-		}
-
-		// Smart price for smart appliance
-		profile.operation.smart_appliance.price_demand = Eigen::VectorXd::Zero(2 * load_shift_time + 1);
-		profile.operation.smart_appliance.price_demand(load_shift_time) = bidded_price_map.bidded_price(price_interval + 1);
-		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(load_shift_time);
-//		for(int tock = 0; tock < 2 * load_shift_time + 1; ++ tock){
-//			double price_demand_flex_sa = bidded_price_map.bidded_price(price_interval + 1);
-//
-//			// Determine best time to shift load
-//			for(int tuck = 0; tuck < 2 * load_shift_time + 1; ++ tuck){
-//				int tuck_ID = tock + tuck - 2 * load_shift_time;
-//				if(tuck_ID > 0 && tuck_ID < foresight_time){
-//					price_demand_flex_sa = std::min(price_demand_flex_sa, profile.operation.price_demand_profile(tuck_ID));
-//				}
-//			}
-//			int price_demand_flex_sa_ID =  bidded_price_map.price_ID[price_demand_flex_sa];
-////			profile.operation.smart_appliance.price_demand(tock) = bidded_price_map.bidded_price(price_demand_flex_sa_ID);
-////			profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(tock);
-////			std::cout << price_demand_inflex_ID << "\t" << profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) << "\n";
-//			if(tock == load_shift_time){
-//				profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(tock);
-//				profile.operation.smart_appliance.price_demand(tock) = bidded_price_map.bidded_price(price_demand_inflex_ID);
+//			if(process_par.encourage_redispatch){
+//				profile.operation.bids.submitted_supply_flex(price_demand_inflex_ID) += avail_supply_BESS;
+//				profile.operation.bids.submitted_demand_flex(price_supply_inflex_ID) += avail_demand_BESS;
 //			}
 //			else{
-//				profile.operation.smart_appliance.price_demand(tock) = bidded_price_map.bidded_price(price_supply_inflex_ID);
+//				profile.operation.bids.submitted_supply_flex(price_supply_flex_BESS_ID) += avail_supply_BESS;
+//				profile.operation.bids.submitted_demand_flex(price_demand_flex_BESS_ID) += avail_demand_BESS;
 //			}
 //		}
-
+//
+//		// Check if EV can still be flexibly managed
+//		if(process_par.encourage_redispatch){
+//			if(tick % foresight_time >= 3 && tick % foresight_time <= 6){
+//				profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += inflex_demand_EV;  //std::min(avail_demand_EV, 1.);
+//				profile.operation.EV.BESS.price_demand = bidded_price_map.bidded_price(price_interval + 1);
+//			}
+//		}
+//		else{
+//            // the rule-based algorithm will cause problem in the status update of EV substep at the end of each time slice!!
+//            // because the actual bids of EV are not stored and passed on to the other function, it ill take the default (optimized) mode
+//			if(process_par.rule_based){
+//				if(tick % foresight_time >= 1 && tick % foresight_time <= 6){
+//					profile.operation.bids.submitted_demand_flex(price_demand_inflex_ID) += inflex_demand_EV;
+//					profile.operation.bids.submitted_demand_flex(price_demand_flex_ID + price_gap) += avail_demand_EV;
+//				}
+//				else{
+//					if(tick % foresight_time >= 20 && tick % foresight_time <= 21){
+//						profile.operation.bids.submitted_supply_flex(price_supply_flex_ID - price_gap) += avail_supply_EV;
+//					}
+//				}
+//			}
+//			else{
+////				if(tick % foresight_time >= 3 && tick % foresight_time <= 6){
+////					profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += inflex_demand_EV;
+////				}
+////				else{
+////					profile.operation.bids.submitted_demand_flex(price_demand_flex_EV_ID) += avail_demand_EV;
+////					profile.operation.bids.submitted_supply_flex(price_supply_flex_EV_ID) += avail_supply_EV;
+////				}
+//
+//                profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += inflex_demand_EV;
+//                profile.operation.bids.submitted_demand_flex(price_demand_flex_EV_ID) += avail_demand_EV;
+//                profile.operation.bids.submitted_supply_flex(price_supply_flex_EV_ID) += avail_supply_EV;
+//			}
+//		}
+//
+//		// Smart price for smart appliance
+//		profile.operation.smart_appliance.price_demand = Eigen::VectorXd::Zero(2 * load_shift_time + 1);
+//		if(process_par.encourage_redispatch){
+//			profile.operation.smart_appliance.price_demand(load_shift_time) = bidded_price_map.bidded_price(price_interval + 1);
+//			profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(load_shift_time);
+//		}
+//		else{
+//			if(process_par.rule_based){
+//				if(tick % foresight_time >= 18){
+//					profile.operation.smart_appliance.price_demand(0) = bidded_price_map.bidded_price(price_interval + 1);
+//					profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(0);
+//				}
+//				else if(tick % foresight_time >= 6 && tick % foresight_time <= 11){
+//					profile.operation.smart_appliance.price_demand(0) = bidded_price_map.bidded_price(price_interval + 1);
+//					profile.operation.smart_appliance.price_demand(1) = bidded_price_map.bidded_price(price_interval + 1);
+//					profile.operation.smart_appliance.price_demand(2) = profile.operation.price_demand_profile(0) + price_gap;
+//					profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(0);
+//					profile.operation.bids.submitted_demand_flex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(1);
+//					profile.operation.bids.submitted_demand_flex(price_demand_flex_ID + price_gap) += profile.operation.smart_appliance.unfulfilled_demand(2);
+//				}
+//				else if(tick % foresight_time == 0){
+//					profile.operation.smart_appliance.price_demand(0) = bidded_price_map.bidded_price(price_interval + 1);
+//					profile.operation.smart_appliance.price_demand(1) = bidded_price_map.bidded_price(price_interval + 1);
+//					profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(0);
+//					profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(1);
+//				}
+//				else{
+//					profile.operation.smart_appliance.price_demand(1) = bidded_price_map.bidded_price(price_interval + 1);
+//					profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(1);
+//				}
+//			}
+//			else{
+//				for(int tock = 0; tock < 2 * load_shift_time + 1; ++ tock){
+//					double price_demand_flex_sa = bidded_price_map.bidded_price(price_interval + 1);
+//					profile.operation.smart_appliance.price_demand(tock) = bidded_price_map.bidded_price(price_interval + 1);
+//
+//					// Determine best time to shift load
+//					for(int tuck = 0; tuck < 2 * load_shift_time + 1; ++ tuck){
+//						int tuck_ID = tock + tuck - 2 * load_shift_time;
+//						if(tuck_ID > 0 && tuck_ID < foresight_time){
+//							price_demand_flex_sa = std::min(price_demand_flex_sa, profile.operation.price_demand_profile(tuck_ID));
+//						}
+//					}
+//					int price_demand_flex_sa_ID =  bidded_price_map.price_ID[price_demand_flex_sa];
+//					profile.operation.smart_appliance.price_demand(tock) = bidded_price_map.bidded_price(price_demand_flex_sa_ID);
+//					profile.operation.bids.submitted_demand_flex(price_demand_flex_sa_ID) += profile.operation.smart_appliance.unfulfilled_demand(tock);
+//					//std::cout << price_demand_flex_sa_ID << "\t" << profile.operation.bids.submitted_demand_flex.sum()<< "\n";
+//				}
+//			}
+//		}
+//
 ////		// Original
-////		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += sol[4];
-////		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::max(sol[2], 0.);
-////		profile.operation.bids.submitted_supply_inflex(price_supply_inflex_ID) += -std::min(sol[2], 0.);
+////		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += sol[14];
+////		profile.operation.bids.submitted_demand_flex(price_demand_flex_ID) += sol[4] - sol[14];
+////		profile.operation.bids.submitted_demand_flex(price_demand_flex_ID) += std::max(sol[2], 0.);
+////		profile.operation.bids.submitted_supply_flex(price_supply_flex_ID) += -std::min(sol[2], 0.);
 ////
 ////		// Check if EV can still be flexibly managed
 ////		if(tick % foresight_time >= 3 && tick % foresight_time <= 6){
@@ -652,8 +631,108 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile, configura
 ////			profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += avail_demand_EV;
 ////		}
 ////		else{
-////			profile.operation.bids.submitted_demand_inflex(price_demand_flex_ID) += std::max(sol[3], 0.);
-////			profile.operation.bids.submitted_supply_inflex(price_supply_flex_ID) += -std::min(sol[3], 0.);
+////			profile.operation.bids.submitted_demand_flex(price_demand_flex_ID) += std::max(sol[3], 0.);
+////			profile.operation.bids.submitted_supply_flex(price_supply_flex_ID) += -std::min(sol[3], 0.);
 ////		}
-	}
+//	}
+//	else{
+////		// New
+////		profile.operation.bids.submitted_demand_inflex(price_demand_flex_BESS_ID) += avail_demand_BESS;
+////		profile.operation.bids.submitted_supply_inflex(price_supply_flex_BESS_ID) += avail_supply_BESS;
+////		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += sol[4];
+////		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::max(sol[2], 0.);
+////		profile.operation.bids.submitted_supply_inflex(price_supply_inflex_ID) += -std::min(sol[2], 0.);
+//
+//		// Check if EV can still be flexibly managed
+////		if(tick % foresight_time >= 3 && tick % foresight_time <= 6){
+////			// Not used
+//////			profile.operation.EV.BESS.scheduled_capacity = avail_demand_EV;
+//////			profile.operation.EV.BESS.scheduled_capacity *= profile.operation.EV.BESS.efficiency;
+////
+////			// Temporary commented
+////			profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::min(avail_demand_EV, 1.);
+////			profile.operation.EV.BESS.price_demand = bidded_price_map.bidded_price(price_interval + 1);
+////
+////		}
+////		else{
+//////			profile.operation.bids.submitted_demand_inflex(price_demand_flex_ID + price_gap) += avail_demand_EV / 3.;
+//////			profile.operation.bids.submitted_demand_inflex(price_demand_flex_EV_ID) += avail_demand_EV;
+//////			profile.operation.bids.submitted_supply_inflex(price_supply_flex_EV_ID) += avail_supply_EV;
+//////			profile.operation.bids.submitted_demand_inflex(price_demand_flex_ID) += std::max(sol[3], 0.);
+//////			profile.operation.bids.submitted_supply_inflex(price_supply_flex_ID) += -std::min(sol[3], 0.);
+////		}
+//
+//		// Fulfill only the necessary demand for EV
+//		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += inflex_demand_EV;
+//		profile.operation.EV.BESS.price_demand = bidded_price_map.bidded_price(price_interval + 1);
+//
+//		// Smart price for smart appliance
+//		profile.operation.smart_appliance.price_demand = Eigen::VectorXd::Zero(2 * load_shift_time + 1);
+//		profile.operation.smart_appliance.price_demand(load_shift_time) = bidded_price_map.bidded_price(price_interval + 1);
+//		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(load_shift_time);
+////		for(int tock = 0; tock < 2 * load_shift_time + 1; ++ tock){
+////			double price_demand_flex_sa = bidded_price_map.bidded_price(price_interval + 1);
+////
+////			// Determine best time to shift load
+////			for(int tuck = 0; tuck < 2 * load_shift_time + 1; ++ tuck){
+////				int tuck_ID = tock + tuck - 2 * load_shift_time;
+////				if(tuck_ID > 0 && tuck_ID < foresight_time){
+////					price_demand_flex_sa = std::min(price_demand_flex_sa, profile.operation.price_demand_profile(tuck_ID));
+////				}
+////			}
+////			int price_demand_flex_sa_ID =  bidded_price_map.price_ID[price_demand_flex_sa];
+//////			profile.operation.smart_appliance.price_demand(tock) = bidded_price_map.bidded_price(price_demand_flex_sa_ID);
+//////			profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(tock);
+//////			std::cout << price_demand_inflex_ID << "\t" << profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) << "\n";
+////			if(tock == load_shift_time){
+////				profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += profile.operation.smart_appliance.unfulfilled_demand(tock);
+////				profile.operation.smart_appliance.price_demand(tock) = bidded_price_map.bidded_price(price_demand_inflex_ID);
+////			}
+////			else{
+////				profile.operation.smart_appliance.price_demand(tock) = bidded_price_map.bidded_price(price_supply_inflex_ID);
+////			}
+////		}
+//
+//////		// Original
+//////		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += sol[4];
+//////		profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::max(sol[2], 0.);
+//////		profile.operation.bids.submitted_supply_inflex(price_supply_inflex_ID) += -std::min(sol[2], 0.);
+//////
+//////		// Check if EV can still be flexibly managed
+//////		if(tick % foresight_time >= 3 && tick % foresight_time <= 6){
+//////			//profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::max(sol[3], 0.);
+//////			//profile.operation.bids.submitted_supply_inflex(price_supply_inflex_ID) += -std::min(sol[3], 0.);
+//////			profile.operation.EV.BESS.scheduled_capacity = avail_demand_EV;
+//////			profile.operation.EV.BESS.scheduled_capacity *= profile.operation.EV.BESS.efficiency;
+//////			profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += avail_demand_EV;
+//////		}
+//////		else{
+//////			profile.operation.bids.submitted_demand_inflex(price_demand_flex_ID) += std::max(sol[3], 0.);
+//////			profile.operation.bids.submitted_supply_inflex(price_supply_flex_ID) += -std::min(sol[3], 0.);
+//////		}
+//	}
+}
+
+void agent::end_user::end_user_no_LP(int tick, profile &profile, configuration::process_config &process_par){
+	int foresight_time = profile.operation.foresight_time;
+	int price_interval = power_market::parameters::price_interval();
+	power_market::parameters::price_ID_bimap bidded_price_map;
+	power_market::parameters::bidded_price(bidded_price_map);
+
+	// Give the default inflexible bids
+	int price_demand_inflex_ID = price_interval + 1;
+	int price_supply_inflex_ID = 0;
+	double residual_load = profile.operation.default_demand_profile(0) - profile.operation.default_PV_profile(0);
+	profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += std::max(residual_load, 0.);
+	profile.operation.bids.submitted_supply_inflex(price_supply_inflex_ID) += -std::min(residual_load, 0.);
+
+    // Fulfill only the necessary demand for EV
+	int free_time_EV = (tick % foresight_time > 19) * (foresight_time - tick % foresight_time);
+	free_time_EV += 7 - (tick % foresight_time < 7) * (tick % foresight_time);
+	double soc_min_EV = (tick % foresight_time >= 3) * (tick % foresight_time <= 6) * profile.operation.EV.energy_demand * (tick % foresight_time - 2) / 4;
+	double inflex_demand_EV = std::max(soc_min_EV - profile.operation.EV.BESS.soc + profile.operation.EV.BESS.self_consumption, 0.);
+	inflex_demand_EV *= profile.operation.EV.house_default_period(0);
+	inflex_demand_EV /= profile.operation.EV.BESS.efficiency;
+    profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += inflex_demand_EV;
+    profile.operation.EV.BESS.price_demand = bidded_price_map.bidded_price(price_interval + 1);
 }
