@@ -1399,9 +1399,10 @@ namespace{
 
 				// Totally inflexible end-user, demand profile as default
 				if(!end_user_profiles[point_iter][sample_iter].investment.decision.smart_management){
-					end_user_profiles[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) = Power_network_inform.points.nominal_mean_demand_field(point_iter, start_time);
-					end_user_profiles[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) *= agent::parameters::residential_ratio();
+//					end_user_profiles[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) = Power_network_inform.points.nominal_mean_demand_field(point_iter, start_time);
+//					end_user_profiles[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) *= agent::parameters::residential_ratio();
 					//end_user_profiles[point_iter][sample_iter].operation.direct_demand = Power_network_inform.points.nominal_mean_demand_field(point_iter, start_time);
+					agent::end_user::end_user_no_LP(start_time, end_user_profiles[point_iter][sample_iter], process_par);
 				}
 				else{
 //					if(point_iter != 0){
@@ -3043,9 +3044,10 @@ namespace{
 
 				// Totally inflexible end-user, demand profile as default
 				if(!Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.smart_management){
-					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick);
-					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) *= agent::parameters::residential_ratio();
+//					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick);
+//					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) *= agent::parameters::residential_ratio();
 					//Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.direct_demand = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick);
+					agent::end_user::end_user_no_LP(tick, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter], process_par);
 				}
 				// Flexible end-user
 				else{

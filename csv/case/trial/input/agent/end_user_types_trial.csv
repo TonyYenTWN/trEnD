@@ -1,8 +1,7 @@
 Type,0,1,2,3
 ratio,1,0,0,0
-dynamic_tariff,0,0,0,0
-smart_management,0,0,1,1
-smart_appliance,0,0,0,1
+smart_management,0,0,0,0
+smart_appliance,0,0,0,0
 PV_scale,0,0,0,0
 BESS_energy,0,0,10,10
 BESS_capacity,0,0,1,1
@@ -10,3 +9,4 @@ EV_energy,0,0,8,8
 EV_capacity,0,0,2,2
 redispatch,0,0,0,1
 control_reserve,0,0,0,1
+contingency,0,0,0,0
