@@ -1323,7 +1323,7 @@ namespace{
 
 			for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
 				// Initialization of investment parameters
-				end_user_profiles[point_iter][sample_iter].investment.decision.dynamic_tariff = Power_market_inform.agent_profiles.end_user_type.dynamic_tariff[sample_iter];
+				//end_user_profiles[point_iter][sample_iter].investment.decision.dynamic_tariff = Power_market_inform.agent_profiles.end_user_type.dynamic_tariff[sample_iter];
 				end_user_profiles[point_iter][sample_iter].investment.decision.smart_appliance = Power_market_inform.agent_profiles.end_user_type.smart_appliance[sample_iter];
 				end_user_profiles[point_iter][sample_iter].investment.decision.PV = (Power_market_inform.agent_profiles.end_user_type.PV_scale[sample_iter] != 0.);
 				end_user_profiles[point_iter][sample_iter].investment.decision.BESS = (Power_market_inform.agent_profiles.end_user_type.BESS_energy[sample_iter] != 0.);
@@ -1331,6 +1331,7 @@ namespace{
 				end_user_profiles[point_iter][sample_iter].investment.decision.reverse_flow = 1;
 				end_user_profiles[point_iter][sample_iter].investment.decision.redispatch = Power_market_inform.agent_profiles.end_user_type.redispatch[sample_iter];
 				end_user_profiles[point_iter][sample_iter].investment.decision.control_reserve = Power_market_inform.agent_profiles.end_user_type.control_reserve[sample_iter];
+                end_user_profiles[point_iter][sample_iter].investment.decision.contingency = Power_market_inform.agent_profiles.end_user_type.contingency[sample_iter];
 
 				// Initialization of operational parameters
 				end_user_profiles[point_iter][sample_iter].operation.foresight_time = foresight_time;
@@ -1397,7 +1398,7 @@ namespace{
 				agent_settlement_set(end_user_profiles[point_iter][sample_iter].operation.settlement);
 
 				// Totally inflexible end-user, demand profile as default
-				if(!end_user_profiles[point_iter][sample_iter].investment.decision.dynamic_tariff){
+				if(!end_user_profiles[point_iter][sample_iter].investment.decision.smart_management){
 					end_user_profiles[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) = Power_network_inform.points.nominal_mean_demand_field(point_iter, start_time);
 					end_user_profiles[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) *= agent::parameters::residential_ratio();
 					//end_user_profiles[point_iter][sample_iter].operation.direct_demand = Power_network_inform.points.nominal_mean_demand_field(point_iter, start_time);
@@ -2301,7 +2302,7 @@ namespace{
 				}
 
 				// Totally inflexible end-user don't need to update status
-				if(!Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.dynamic_tariff){
+				if(!Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.smart_management){
 					// Balancing settlement
 					agent_balancing_settlement_calculation(tick, node_ID, Power_market_inform, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.settlement, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.control_reserve);
 
@@ -3041,7 +3042,7 @@ namespace{
 				agent_results_set(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results);
 
 				// Totally inflexible end-user, demand profile as default
-				if(!Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.dynamic_tariff){
+				if(!Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.smart_management){
 					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick);
 					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) *= agent::parameters::residential_ratio();
 					//Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.direct_demand = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick);
@@ -3239,7 +3240,7 @@ void agent::agents_set(int start_time, power_market::market_whole_inform &Power_
 	Power_market_inform.agent_profiles.end_user_type.initialize(fin_dim[1]);
 	for(int sample_iter = 0; sample_iter < fin_dim[1]; ++ sample_iter){
         Power_market_inform.agent_profiles.end_user_type.weight[sample_iter] = stod(end_user_type["ratio"][sample_iter]);
-        Power_market_inform.agent_profiles.end_user_type.dynamic_tariff[sample_iter] = (bool) stod(end_user_type["dynamic_tariff"][sample_iter]);
+        //Power_market_inform.agent_profiles.end_user_type.dynamic_tariff[sample_iter] = (bool) stod(end_user_type["dynamic_tariff"][sample_iter]);
         Power_market_inform.agent_profiles.end_user_type.smart_management[sample_iter] = (bool) stod(end_user_type["smart_management"][sample_iter]);
         Power_market_inform.agent_profiles.end_user_type.smart_appliance[sample_iter] = (bool) stod(end_user_type["smart_appliance"][sample_iter]);
         Power_market_inform.agent_profiles.end_user_type.PV_scale[sample_iter] = stod(end_user_type["PV_scale"][sample_iter]);
@@ -3249,6 +3250,7 @@ void agent::agents_set(int start_time, power_market::market_whole_inform &Power_
         Power_market_inform.agent_profiles.end_user_type.EV_capacity[sample_iter] = stod(end_user_type["EV_capacity"][sample_iter]);
         Power_market_inform.agent_profiles.end_user_type.redispatch[sample_iter] = (bool) stod(end_user_type["redispatch"][sample_iter]);
         Power_market_inform.agent_profiles.end_user_type.control_reserve[sample_iter] = (bool) stod(end_user_type["control_reserve"][sample_iter]);
+        Power_market_inform.agent_profiles.end_user_type.contingency[sample_iter] = (bool) stod(end_user_type["contingency"][sample_iter]);
 	}
 
 	Power_market_inform.agent_profiles.aggregators = aggregator_set(start_time, Power_market_inform.International_Market, Power_network_inform);

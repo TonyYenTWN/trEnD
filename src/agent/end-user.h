@@ -29,8 +29,8 @@ namespace agent{
 
 		/** @brief Decision variables representing possible investment combinations of an end-user.*/
 		struct decision{
-			bool dynamic_tariff;
-			bool smart_management; // ideal optimization if true; is now redundant
+			//bool dynamic_tariff;
+			bool smart_management; // ideal optimization if true; is now redundant (should ditch dynamic tariff  instead)
 			bool smart_appliance;
 			bool PV;
 			bool BESS;
@@ -41,6 +41,8 @@ namespace agent{
 			bool redispatch;
 			/** Whether the end-user can provide flexibility for control reserve; false when dynamic_tariff is false, or when end-user does not have PV + BESS, EV, or smart appliance*/
 			bool control_reserve;
+			/** Whether the end-user help during large contingencies*/
+			bool contingency;
 		};
 
 		/** @brief Information of smart appliance of an end-user.*/
@@ -250,6 +252,7 @@ namespace agent{
             std::vector <double> EV_capacity;
             std::vector <bool> redispatch;
             std::vector <bool> control_reserve;
+            std::vector <bool> contingency;
 
             void initialize(int type_length){
                 this->sample_num = type_length;
@@ -264,6 +267,7 @@ namespace agent{
                 this->EV_capacity = std::vector <double> (type_length);
                 this->redispatch = std::vector <bool> (type_length);
                 this->control_reserve = std::vector <bool> (type_length);
+                this->contingency = std::vector <bool> (type_length);
             }
         };
 

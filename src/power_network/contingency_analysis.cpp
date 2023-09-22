@@ -383,7 +383,7 @@ namespace power_network{
             Power_market_inform.agent_profiles.end_user_type.initialize(fin_dim[1]);
             for(int sample_iter = 0; sample_iter < fin_dim[1]; ++ sample_iter){
                 Power_market_inform.agent_profiles.end_user_type.weight[sample_iter] = stod(end_user_type["ratio"][sample_iter]);
-                Power_market_inform.agent_profiles.end_user_type.dynamic_tariff[sample_iter] = (bool) stod(end_user_type["dynamic_tariff"][sample_iter]);
+                //Power_market_inform.agent_profiles.end_user_type.dynamic_tariff[sample_iter] = (bool) stod(end_user_type["dynamic_tariff"][sample_iter]);
                 Power_market_inform.agent_profiles.end_user_type.smart_management[sample_iter] = (bool) stod(end_user_type["smart_management"][sample_iter]);
                 Power_market_inform.agent_profiles.end_user_type.smart_appliance[sample_iter] = (bool) stod(end_user_type["smart_appliance"][sample_iter]);
                 Power_market_inform.agent_profiles.end_user_type.PV_scale[sample_iter] = stod(end_user_type["PV_scale"][sample_iter]);
@@ -393,9 +393,10 @@ namespace power_network{
                 Power_market_inform.agent_profiles.end_user_type.EV_capacity[sample_iter] = stod(end_user_type["EV_capacity"][sample_iter]);
                 Power_market_inform.agent_profiles.end_user_type.redispatch[sample_iter] = (bool) stod(end_user_type["redispatch"][sample_iter]);
                 Power_market_inform.agent_profiles.end_user_type.control_reserve[sample_iter] = (bool) stod(end_user_type["control_reserve"][sample_iter]);
-                std::cout << Power_market_inform.agent_profiles.end_user_type.weight[sample_iter] << "\t";
+                Power_market_inform.agent_profiles.end_user_type.contingency[sample_iter] = (bool) stod(end_user_type["contingency"][sample_iter]);
+                //std::cout << Power_market_inform.agent_profiles.end_user_type.weight[sample_iter] << "\t";
             }
-            std::cout << "\n\n";
+            //std::cout << "\n\n";
         }
 
         // Set shiftable demand data
@@ -429,6 +430,11 @@ namespace power_network{
             int node_ID = Power_network_inform.points.node(point_iter);
 
             for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
+                // Skip if the end-user does not provide flexibility during contingency
+                if(!Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.contingency){
+                    continue;
+                }
+
                 // Should build a dedicated func for initialization of parameters fpr end-users in the future
                 if(!process_par.simulation_flag){
                     Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.weight = Power_market_inform.agent_profiles.end_user_type.weight[sample_iter];
