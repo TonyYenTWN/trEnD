@@ -309,7 +309,7 @@ namespace power_market{
 	void Confirmed_bid_calculation(int, market_whole_inform&, power_network::network_inform&);
 	void TSO_Market_Scheduled_Results_Get(int, market_inform&);
 	void Balancing_bid_calculation(int, market_whole_inform&, power_network::network_inform&);
-	void TSO_Market_Actual_Results_Get(int, market_inform&);
+	void TSO_Market_Actual_Results_Get(int, market_inform&, bool control_reserve_flag);
 }
 
 #endif

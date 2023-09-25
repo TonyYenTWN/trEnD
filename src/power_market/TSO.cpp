@@ -386,7 +386,15 @@ void power_market::Balancing_bid_calculation(int tick, market_whole_inform &Powe
 	}
 }
 
-void power_market::TSO_Market_Actual_Results_Get(int tick, market_inform &Market){
+void power_market::TSO_Market_Actual_Results_Get(int tick, market_inform &Market, bool control_reserve_flag){
+    if(!control_reserve_flag){
+        Market.actual.supply = Market.confirmed.supply;
+        Market.actual.demand = Market.confirmed.demand;
+        Market.actual.price = Market.confirmed.price;
+        Market.network.actual_power = Market.network.confirmed_power;
+        return;
+    }
+
 	alglib::real_1d_array sol;
 	alglib::minlpreport rep;
 	alglib::minlpresults(Market.Problem, sol, rep);
