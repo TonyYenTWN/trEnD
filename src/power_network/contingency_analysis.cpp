@@ -558,7 +558,7 @@ namespace power_network{
 //                break;
 //            }
 //            std::cout <<  contingency_analysis.samples[sample_iter].sum() << "\n";
-            contingency_analysis.samples[sample_iter] = Eigen::MatrixXi::Ones(contingency_analysis.num_component, process_par.time_boundary[1]); // just for test
+//            contingency_analysis.samples[sample_iter] = Eigen::MatrixXi::Ones(contingency_analysis.num_component, process_par.time_boundary[1]); // just for test
             for(int tick = 0; tick < process_par.time_boundary[1]; ++ tick){
 //                std::cout << contingency_analysis.samples[sample_iter].col(tick).size() << "\t";
 //                std::cout << contingency_analysis.samples[sample_iter].col(tick).sum() << "\t";

@@ -713,7 +713,7 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile, configura
 //	}
 }
 
-void agent::end_user::end_user_no_LP(int tick, profile &profile, configuration::process_config &process_par){
+void agent::end_user::end_user_no_LP(int tick, profile &profile, double &demand_inflex, double scale, configuration::process_config &process_par){
 	int foresight_time = profile.operation.foresight_time;
 	int price_interval = power_market::parameters::price_interval();
 	power_market::parameters::price_ID_bimap bidded_price_map;
@@ -735,4 +735,7 @@ void agent::end_user::end_user_no_LP(int tick, profile &profile, configuration::
 	inflex_demand_EV /= profile.operation.EV.BESS.efficiency;
     profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += inflex_demand_EV;
     profile.operation.EV.BESS.price_demand = bidded_price_map.bidded_price(price_interval + 1);
+
+    // Update inflexible demand
+    demand_inflex += inflex_demand_EV * scale;
 }

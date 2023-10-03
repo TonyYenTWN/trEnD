@@ -1398,11 +1398,14 @@ namespace{
 				agent_settlement_set(end_user_profiles[point_iter][sample_iter].operation.settlement);
 
 				// Totally inflexible end-user, demand profile as default
+				double scale = end_user_profiles[point_iter][sample_iter].operation.weight;
+				scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
+				Power_market_inform.TSO_Market.flex_stat.demand_inflex(start_time, node_ID) -= demand_inflex;
 				if(!end_user_profiles[point_iter][sample_iter].investment.decision.smart_management){
 //					end_user_profiles[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) = Power_network_inform.points.nominal_mean_demand_field(point_iter, start_time);
 //					end_user_profiles[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) *= agent::parameters::residential_ratio();
 					//end_user_profiles[point_iter][sample_iter].operation.direct_demand = Power_network_inform.points.nominal_mean_demand_field(point_iter, start_time);
-					agent::end_user::end_user_no_LP(start_time, end_user_profiles[point_iter][sample_iter], process_par);
+					agent::end_user::end_user_no_LP(start_time, end_user_profiles[point_iter][sample_iter], demand_inflex, scale, process_par);
 				}
 				else{
 //					if(point_iter != 0){
@@ -1411,10 +1414,10 @@ namespace{
 					// Optimization and update process variables
 					agent::end_user::end_user_LP_optimize(start_time, end_user_profiles[point_iter][sample_iter], process_par);
 				}
+				// Update inflexible demand
+				Power_market_inform.TSO_Market.flex_stat.demand_inflex(start_time, node_ID) += demand_inflex;
 
 				// Scale the bids correctly
-				double scale = end_user_profiles[point_iter][sample_iter].operation.weight;
-				scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
 				agent_submitted_bids_scale(scale, end_user_profiles[point_iter][sample_iter].operation.bids);
 			}
 		}
@@ -3043,21 +3046,25 @@ namespace{
 				agent_results_set(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.results);
 
 				// Totally inflexible end-user, demand profile as default
+				double scale = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.weight;
+				scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
+				Power_market_inform.TSO_Market.flex_stat.demand_inflex(tick, node_ID) -= demand_inflex;
 				if(!Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.smart_management){
-//					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick);
-//					Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) *= agent::parameters::residential_ratio();
-					//Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.direct_demand = Power_network_inform.points.nominal_mean_demand_field(point_iter, tick);
-					agent::end_user::end_user_no_LP(tick, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter], process_par);
+					agent::end_user::end_user_no_LP(tick, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter], demand_inflex, scale, process_par);
 				}
 				// Flexible end-user
 				else{
+                    // just for test (comment later)
+					//agent::end_user::end_user_no_LP(tick, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter], demand_inflex, scale, process_par);
+                    // just for test (comment later)
+
 					// Optimization and update process variables
 					agent::end_user::end_user_LP_optimize(tick, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter], process_par);
 				}
+				// Update inflexible demand
+				Power_market_inform.TSO_Market.flex_stat.demand_inflex(tick, node_ID) += demand_inflex;
 
 				// Scale the bids correctly
-				double scale = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.weight;
-				scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
 				agent_submitted_bids_scale(scale, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids);
 			}
 		}

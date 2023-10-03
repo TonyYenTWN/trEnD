@@ -274,6 +274,6 @@ namespace agent{
 		// Functions
 		void end_user_LP_set(profile&);
 		void end_user_LP_optimize(int tick, profile&, configuration::process_config&);
-		void end_user_no_LP(int tick, profile&, configuration::process_config&);
+		void end_user_no_LP(int tick, profile&, double&, double, configuration::process_config&);
 	}
 }
