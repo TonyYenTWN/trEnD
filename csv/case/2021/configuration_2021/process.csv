@@ -10,6 +10,7 @@ encourage_redispatch,0
 rule_based,0
 power_flow,1
 contingency,1
+contingency_sampling,1
 start_time,0
 duration,336
 total_time,8760
