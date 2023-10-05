@@ -22,7 +22,7 @@ namespace power_network{
         Eigen::MatrixXd spatial_hamiltonian;             // add this for correlation of failure between components
 
         // Process variables
-        std::vector <Eigen::MatrixXi> samples;
+        std::vector <Eigen::MatrixXd> samples;
         alglib::minlpstate problem;
 
         // Output variable
@@ -31,7 +31,7 @@ namespace power_network{
 
         // Functions
         void samples_set(){
-            this->samples = std::vector <Eigen::MatrixXi> (this->num_sample);
+            this->samples = std::vector <Eigen::MatrixXd> (this->num_sample);
         }
 
         void hamiltonian_get(){
@@ -47,7 +47,7 @@ namespace power_network{
     // functions
     void flex_stat_input(power_market::market_whole_inform&, power_network::network_inform&, configuration::process_config&);
     void contingency_analysis_set(contingency_analysis_struct&, power_market::market_whole_inform&, configuration::process_config&);
-    void contigency_sampling(contingency_analysis_struct&, int num_sample = 1E5, int num_burn_up = 1E4);
+    void contigency_sampling(contingency_analysis_struct&, int, int, configuration::process_config&);
     void contingency_analysis_solve(contingency_analysis_struct&, power_market::market_whole_inform&, power_network::network_inform&, configuration::process_config&);
     void contingency_analysis_print(contingency_analysis_struct&, power_market::market_whole_inform&, configuration::process_config&);
 }

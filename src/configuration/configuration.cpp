@@ -20,5 +20,6 @@ void configuration::process_config_input(process_config &process_par, std::strin
     process_par.time_boundary.push_back((int) stod(process_inform["duration"][0]));
     process_par.power_flow = (bool) stod(process_inform["power_flow"][0]);
     process_par.contingency_flag = (bool) stod(process_inform["contingency"][0]);
+    process_par.contingency_sampling = (bool) stod(process_inform["contingency_sampling"][0]);
     process_par.folder_name = process_inform["folder_name"][0];
 }

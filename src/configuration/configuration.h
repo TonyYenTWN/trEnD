@@ -60,6 +60,8 @@ namespace configuration{
 		/*@{*/
 		/** Indicate whether a contingency analysis should be carried out. When flex_stat has been processed, this can be done without the simulation step.*/
         bool contingency_flag;
+        /** Indicate whether samples should be generated or read from existing files. **/
+        bool contingency_sampling;
 		/*@{*/
 
 		void process_default_get(){
@@ -132,6 +134,10 @@ namespace configuration{
 
 			std::cout << "Contigency analysis?          Yes: 1 / No: 0 | ";
 			std::cin >> this->contingency_flag;
+			std::cout << "\n";
+
+			std::cout << "Contigency sampling?        Yes: 1 / No: 0 | ";
+			std::cin >> this->contingency_sampling;
 			std::cout << "\n";
 
 			if(this->estimation_flag + this->simulation_flag + this->contingency_flag > 0){
@@ -208,6 +214,10 @@ namespace configuration{
 
 			std::cout << "Contingency analysis?               Yes: 1 / No: 0 | ";
 			std::cout << this->contingency_flag;
+			std::cout << "\n";
+
+			std::cout << "Contingency sampling?               Yes: 1 / No: 0 | ";
+			std::cout << this->contingency_sampling;
 			std::cout << "\n";
 
 			std::cout << "Folder name?                                 | ";

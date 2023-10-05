@@ -1,7 +1,7 @@
 #include "contingency_analysis.h"
 
 namespace local{
-	void Gibbs_sampling(int duration, double beta, Eigen::MatrixXi &sample, Eigen::MatrixXd &temporal_hamiltonian, Eigen::MatrixXd &temporal_prob,  Eigen::MatrixXd &spatial_hamiltonian){
+	void Gibbs_sampling(int duration, double beta, Eigen::MatrixXd &sample, Eigen::MatrixXd &temporal_hamiltonian, Eigen::MatrixXd &temporal_prob,  Eigen::MatrixXd &spatial_hamiltonian){
         int max_int = 1E12;
 	    std::random_device rd;  // a seed source for the random number engine
 	    std::mt19937 gen(rd()); // mersenne_twister_engine seeded with rd()
@@ -504,42 +504,55 @@ namespace power_network{
         contingency_analysis.temporal_prob_0.col(1) << transition_prob[1] * Eigen::VectorXd::Ones(num_component);
     }
 
+
     // Contingency sampling using MCMC
-    void contigency_sampling(contingency_analysis_struct &contingency_analysis, int num_sample, int num_burn_up){
+    void contigency_sampling(contingency_analysis_struct &contingency_analysis, int num_sample, int num_burn_up, configuration::process_config &process_par){
         contingency_analysis.num_sample = num_sample;
         contingency_analysis.num_burn_up = num_burn_up;
 
-//        int max_int = 1E12;
-//	    std::random_device rd;  // a seed source for the random number engine
-//	    std::mt19937 gen(rd()); // mersenne_twister_engine seeded with rd()
-//        std::uniform_int_distribution <> distrib(0, max_int);
-
         contingency_analysis.samples_set();
-        Eigen::MatrixXi sample = Eigen::MatrixXi::Zero(contingency_analysis.num_component, contingency_analysis.duration);
+        //Eigen::MatrixXd sample = Eigen::MatrixXd::Zero(contingency_analysis.num_component, contingency_analysis.duration);
 
         // Transform temporal conditional probabilities to hamiltonian
         contingency_analysis.hamiltonian_get();
 
-        // Burn-up step
-        for(int burn_up_iter = 0; burn_up_iter < contingency_analysis.num_burn_up; ++ burn_up_iter){
-        	local::Gibbs_sampling(contingency_analysis.duration, contingency_analysis.beta, sample, contingency_analysis.temporal_hamiltonian, contingency_analysis.temporal_prob_0, contingency_analysis.spatial_hamiltonian);
-		}
-//        std::cout << "First round\n";
-//        //std::cout << "Number of failures:" << sample.sum() << "\n";
-//        std::cout << sample.transpose() << "\n\n";
+        // Do the sampling if needed
+        if(process_par.contingency_sampling){
+            // Burn-up step
+            for(int burn_up_iter = 0; burn_up_iter < contingency_analysis.num_burn_up; ++ burn_up_iter){
+                Eigen::MatrixXd sample = Eigen::MatrixXd::Zero(contingency_analysis.num_component, contingency_analysis.duration);
+                local::Gibbs_sampling(contingency_analysis.duration, contingency_analysis.beta, sample, contingency_analysis.temporal_hamiltonian, contingency_analysis.temporal_prob_0, contingency_analysis.spatial_hamiltonian);
+            }
 
-		// Actual sampling step (assuming stationary probability has been reached)
-		#pragma omp parallel
-		{
-			#pragma omp for
-			for(int sample_iter = 0; sample_iter < contingency_analysis.num_sample; ++ sample_iter){
-				local::Gibbs_sampling(contingency_analysis.duration, contingency_analysis.beta, sample, contingency_analysis.temporal_hamiltonian, contingency_analysis.temporal_prob_0, contingency_analysis.spatial_hamiltonian);
-				contingency_analysis.samples[sample_iter] = sample;
-			}
-		}
-//		std::cout << "Another round\n";
-//		//std::cout << "Number of failures:" << contingency_analysis.samples[0].sum() << "\n";
-//		std::cout << contingency_analysis.samples[0].transpose() << "\n\n";
+            // Actual sampling step (assuming stationary probability has been reached)
+            #pragma omp parallel
+            {
+                #pragma omp for
+                for(int sample_iter = 0; sample_iter < contingency_analysis.num_sample; ++ sample_iter){
+                    Eigen::MatrixXd sample = Eigen::MatrixXd::Zero(contingency_analysis.num_component, contingency_analysis.duration);
+                    local::Gibbs_sampling(contingency_analysis.duration, contingency_analysis.beta, sample, contingency_analysis.temporal_hamiltonian, contingency_analysis.temporal_prob_0, contingency_analysis.spatial_hamiltonian);
+                    contingency_analysis.samples[sample_iter] = sample;
+                }
+            }
+        }
+        // or read generated samples from existing files
+        else{
+            std::string dir_name = "csv/case/" + process_par.folder_name + "/processed/power_network/contingency";
+            for(int sample_iter = 0; sample_iter < contingency_analysis.samples.size(); ++ sample_iter){
+                int count_zeros = 0;
+                int sample_temp = sample_iter;
+                std::string digit_zeros;
+                while(int (sample_temp / 10) != 0){
+                    count_zeros += 1;
+                    sample_temp /= 10;
+                }
+                for(int item = 0; item < 5 - count_zeros; ++item){
+                    digit_zeros += std::to_string(0);
+                }
+                std::string fout_name = dir_name + "/contingency_" + digit_zeros + std::to_string(sample_iter) + ".csv";
+                contingency_analysis.samples[sample_iter] = basic::read_file(contingency_analysis.duration, contingency_analysis.num_component, fout_name).transpose();
+            }
+        }
     }
 
     // Optimal power flow for different contingencies
@@ -554,15 +567,13 @@ namespace power_network{
         // Calculate ENS for each sample
         bool break_loop = 0;
         for(int sample_iter = 0; sample_iter < contingency_analysis.num_sample; ++ sample_iter){
+            std::cout << "The sample now is:\t" << sample_iter << "\n";
 //            if(break_loop){
 //                break;
 //            }
 //            std::cout <<  contingency_analysis.samples[sample_iter].sum() << "\n";
 //            contingency_analysis.samples[sample_iter] = Eigen::MatrixXi::Ones(contingency_analysis.num_component, process_par.time_boundary[1]); // just for test
             for(int tick = 0; tick < process_par.time_boundary[1]; ++ tick){
-//                std::cout << contingency_analysis.samples[sample_iter].col(tick).size() << "\t";
-//                std::cout << contingency_analysis.samples[sample_iter].col(tick).sum() << "\t";
-//                std::cout << "\n";
                if(contingency_analysis.samples[sample_iter].col(tick).sum() > 0){
 //                    // Keep the try code in case sth went wrong again with alglib
 //                    try{
@@ -610,8 +621,40 @@ namespace power_network{
         std::string dir_name = "csv/case/" + process_par.folder_name + "/output/power_network/contingency";
         std::filesystem::create_directories(dir_name);
         dir_name += "/";
+
+        // Output energy not served
         std::string fout_name = dir_name + "/expected_energy_not_served.csv";
         basic::write_file(contingency_analysis.energy_not_served_mean, fout_name, Power_market_inform.TSO_Market.zone_names);
+
+        // Output contingency samples
+        if(process_par.contingency_sampling){
+            // Create a folder to store the file
+            dir_name = "csv/case/" + process_par.folder_name + "/processed/power_network/contingency";
+            std::filesystem::create_directories(dir_name);
+            dir_name += "/";
+
+            // Output contingency samples
+            std::vector<std::string> component_names(contingency_analysis.num_component);
+            for(int component_iter = 0; component_iter < contingency_analysis.num_component; ++ component_iter ){
+                component_names[component_iter] = "component_" + std::to_string(component_iter);
+                std::cout << component_names[component_iter];
+            }
+
+            for(int sample_iter = 0; sample_iter < contingency_analysis.samples.size(); ++ sample_iter){
+                int count_zeros = 0;
+                int sample_temp = sample_iter;
+                std::string digit_zeros;
+                while(int (sample_temp / 10) != 0){
+                    count_zeros += 1;
+                    sample_temp /= 10;
+                }
+                for(int item = 0; item < 5 - count_zeros; ++item){
+                    digit_zeros += std::to_string(0);
+                }
+                std::string fout_name = dir_name + "/contingency_" + digit_zeros + std::to_string(sample_iter) + ".csv";
+                basic::write_file(contingency_analysis.samples[sample_iter].transpose(), fout_name, component_names);
+            }
+        }
     }
 }
 
