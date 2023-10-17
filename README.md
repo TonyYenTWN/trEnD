@@ -76,7 +76,7 @@ I use [Code::Blocks](https://www.codeblocks.org/docs/main_codeblocks_en.html) ve
 
 Remember to add the project's top-level directory (the directory which stores this repository) to compiler search directories when compiling. This can be done quite easily in codeblocks.
 
-If you prefer to use the Konsole (or are unable to use GUI), there is a Makefile in the repository also that should set everything up for you.
+If you prefer to use the Konsole (or are unable to use GUI), there is a [Makefile](https://github.com/TonyYenTWN/trEnD/blob/main/Makefile) in the repository also that should set everything up for you.
 
 ## Executing the Binary File
 You will be asked to type in the values for some boolean variables at the beginning of the program. These boolean variables determine which modules of the program will be run. The questions will be shown in the following order:
