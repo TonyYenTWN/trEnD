@@ -4,13 +4,13 @@ est_demand,0
 est_wind,0
 est_solar,0
 simulation,1
-DSO_filter,1
+DSO_filter,0
 control_reserve,1
 encourage_redispatch,0
 rule_based,0
 power_flow,0
 contingency,1
-contingency_sampling,0
+contingency_sampling,1
 start_time,0
 duration,24
 total_time,48
