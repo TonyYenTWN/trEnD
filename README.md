@@ -30,7 +30,7 @@ Below is the abstract version of the [full documentation of this project](https:
 
 # User Guide
 ## Preparing the Input .csv Files
-An example of the input csv files can be found [here](https://github.com/TonyYenTWN/trEnD/tree/main/csv/input). In case the model is applied for other time periods of the same region, the format of the csv files should be kept the same. For regions where conventional thermal power plants still play a role in the power system, additional input data might be needed, and corresponding parts of the source codes might therefore have to be modified in the future. 
+An example of the input csv files can be found [here](https://github.com/TonyYenTWN/trEnD/tree/main/csv/case/2021/input/power_market). In case the model is applied for other time periods of the same region, the format of the csv files should be kept the same. For regions where conventional thermal power plants still play a role in the power system, additional input data might be needed, and corresponding parts of the source codes might therefore have to be modified in the future. 
 
 Below is a brief summary of the input .csv files currently used in the model.
 
