@@ -50,8 +50,8 @@ The following files can be found in the folder [power_market](https://github.com
 ### .csv Files for Power Network
 The files can be found in the folder [power_network](https://github.com/TonyYenTWN/trEnD/tree/main/csv/input/power_network). If not specifically mentioned, the time series were extracted from the [NVE dataset](https://nedlasting.nve.no/gis/).
 
-- [DSO_Bidding_Zone.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_network/DSO_Bidding_Zone.csv) stores the bidding zones where original DSO areas from the NVE dataset are located.
-- [cbt_constraint.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_network/cbt_constraint.csv) stores the cross border transmission flow constraint between the modeled bidding zones and their directly connected neighbors. "-1" means that there are no connections between the 2 bidding zones. This dataset was inferred from [cbt_forecast_2021.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_market/cbt_forecast_2021.csv).
+- [DSO_Bidding_Zone.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/case/trial/input/power_network/DSO_Bidding_Zone.csv) stores the bidding zones where original DSO areas from the NVE dataset are located.
+- [cbt_constraint.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/case/trial/input/power_network/cbt_constraint.csv) stores the cross border transmission flow constraint between the modeled bidding zones and their directly connected neighbors. "-1" means that there are no connections between the 2 bidding zones. This dataset was inferred from [cbt_forecast_2021.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_market/cbt_forecast_2021.csv).
 - [cbt_entry_nodes.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_network/cbt_entry_nodes.csv) stores the transmission nodes where power flows from / to neighboring bidding zones injects / leaves. These transmission nodes were inferred from the transmission network graph from [PyPSA-Eur](https://pypsa-eur.readthedocs.io/).
 - [hydro_plants.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_network/hydro_plants.csv) stores the information of hydroelectric power plants in the modeled bidding zones.
 - [point_info.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/input/power_network/point_info.csv) stores the information of spatial points considered in the model.
@@ -76,7 +76,7 @@ I use [Code::Blocks](https://www.codeblocks.org/docs/main_codeblocks_en.html) ve
 
 Remember to add the project's top-level directory (the directory which stores this repository) to compiler search directories when compiling. This can be done quite easily in codeblocks.
 
-If you prefer to use the Konsole (or are unable to use GUI), there is a [Makefile](https://github.com/TonyYenTWN/trEnD/blob/main/Makefile) in the repository also that should set everything up for you.
+If you prefer to use the terminal (or are unable to use GUI), there is a [Makefile](https://github.com/TonyYenTWN/trEnD/blob/main/Makefile) in the repository also that should set everything up for you.
 
 ## Executing the Binary File
 You will be asked to type in the values for some boolean variables at the beginning of the program. These boolean variables determine which modules of the program will be run. The questions will be shown in the following order:
