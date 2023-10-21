@@ -30,12 +30,12 @@ Below is the abstract version of the [full documentation of this project](https:
 
 # User Guide
 ## Preparing the Input .csv Files
-An example of the input csv files can be found [here](https://github.com/TonyYenTWN/trEnD/tree/main/csv/case/2021/input/power_market). In case the model is applied for other time periods of the same region, the format of the csv files should be kept the same. For regions where conventional thermal power plants still play a role in the power system, additional input data might be needed, and corresponding parts of the source codes might therefore have to be modified in the future. 
+An example of the input csv files can be found [here](https://github.com/TonyYenTWN/trEnD/tree/main/csv/case/2021/input). In case the model is applied for other time periods of the same region, the format of the csv files should be kept the same. For regions where conventional thermal power plants still play a role in the power system, additional input data might be needed, and corresponding parts of the source codes might therefore have to be modified in the future. 
 
 Below is a brief summary of the input .csv files currently used in the model.
 
 ### .csv Files for Power Market
-The following files can be found in the folder [power_market](https://github.com/TonyYenTWN/trEnD/tree/main/csv/input/power_market). If not specifically mentioned, the time series were extracted from [ENTSO-E Transparency Platform](https://transparency.entsoe.eu/).
+The following files can be found in the folder [power_market](https://github.com/TonyYenTWN/trEnD/tree/main/csv/case/2021/input/power_market). If not specifically mentioned, the time series were extracted from [ENTSO-E Transparency Platform](https://transparency.entsoe.eu/).
 
 - [cbt_forecast.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/case/2021/input/power_market/cbt_forecast.csv) stores the time series of scheduled cross border transmission flows of the modeled bidding zones and their directly connected neighbors. Since there can be two directions of transmission flow between 2 connected bidding zones, each connection contributes to 2 columns of time series.
 - [control_reserve_activated.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/case/2021/input/power_market/control_reserve_activated.csv) stores the time series of activated control reserve in the modeled bidding zones. Since the activated control reserve can be both positive and negative, each bidding zone contributes to 2 columns of time series.
@@ -48,7 +48,7 @@ The following files can be found in the folder [power_market](https://github.com
 - [solar_radiation.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/case/2021/input/power_market/solar_radiation.csv) stores the time series of solar radiation data from meteorology stations in the modeled bidding zones. The data is obtained from [Frost](https://frost.met.no/index.html).
 
 ### .csv Files for Power Network
-The files can be found in the folder [power_network](https://github.com/TonyYenTWN/trEnD/tree/main/csv/input/power_network). If not specifically mentioned, the time series were extracted from the [NVE dataset](https://nedlasting.nve.no/gis/).
+The files can be found in the folder [power_network](https://github.com/TonyYenTWN/trEnD/tree/main/csv/case/2021/input/power_network). If not specifically mentioned, the time series were extracted from the [NVE dataset](https://nedlasting.nve.no/gis/).
 
 - [DSO_Bidding_Zone.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/case/trial/input/power_network/DSO_Bidding_Zone.csv) stores the bidding zones where original DSO areas from the NVE dataset are located.
 - [cbt_constraint.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/case/trial/input/power_network/cbt_constraint.csv) stores the cross border transmission flow constraint between the modeled bidding zones and their directly connected neighbors. "-1" means that there are no connections between the 2 bidding zones. This dataset was inferred from [cbt_forecast.csv](https://github.com/TonyYenTWN/trEnD/blob/main/csv/case/2021/input/power_market/cbt_forecast.csv).
