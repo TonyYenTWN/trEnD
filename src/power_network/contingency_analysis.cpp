@@ -214,10 +214,14 @@ namespace local{
 
             // constraint on power from EV
             double EV_ub = Market.flex_stat.EV_soc.soc_current(node_iter) - Market.flex_stat.EV_soc.soc_min(tick, node_iter);
+//            std::cout << Market.flex_stat.EV_soc.soc_current(node_iter) << "\t" << Market.flex_stat.EV_soc.soc_min(tick, node_iter) << "\t" << EV_ub << "\t";
             EV_ub = std::min(EV_ub, Market.flex_stat.EV_soc.capacity_max(tick, node_iter));
+//            std::cout << EV_ub << "\t";
             EV_ub = std::max(EV_ub, -Market.flex_stat.EV_soc.capacity_max(tick, node_iter));
+//            std::cout << EV_ub << "\t";
             double EV_lb = Market.flex_stat.EV_soc.soc_current(node_iter) - Market.flex_stat.EV_soc.soc_max(tick, node_iter);
             EV_lb = std::max(EV_lb, -Market.flex_stat.EV_soc.capacity_max(tick, node_iter));
+//            std::cout << "\n";
             bound_box.row(row_start + 4) << EV_lb, EV_ub;
 
             // constraint on shiftable demand
@@ -264,6 +268,7 @@ namespace local{
                 bound_box(row_ID, 1) -= Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].cap;
             }
         }
+//        std::cout << bound_box << "\n";
 
         // Bounds of general constraints
         alglib::real_1d_array lb_general;
@@ -295,8 +300,11 @@ namespace local{
         for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
             int row_start = 2 * Market.network.num_vertice + node_iter * (Market.flex_stat.unfulfilled_demand.rows() + 4);
 
-            // Only inflexible demand is considered in the LP problem; should fulfill as much as possible
+            // Only inflexible demand and BESS/EV charge is considered in the LP problem; should fulfill as much as possible
             obj_vec(row_start + 1) = 1.;
+            obj_vec(row_start + 3) = .1;
+            obj_vec(row_start + 4) = .1;
+
         }
         alglib::real_1d_array obj_coeff;
         obj_coeff.setcontent(obj_vec.size(), obj_vec.data());
@@ -318,6 +326,7 @@ namespace local{
 	}
 
 	void contingency_analysis_update(int sample_ID, int tick, power_network::contingency_analysis_struct &contingency_analysis, power_market::market_inform &Market){
+        int foresight_time = agent::end_user::parameters::foresight_time();
         alglib::real_1d_array sol;
         alglib::minlpreport rep;
         alglib::minlpresults(contingency_analysis.problem, sol, rep);
@@ -332,6 +341,12 @@ namespace local{
             // Update SOC of BESS and EV
             Market.flex_stat.BESS_soc.soc_current(node_iter) -= sol_vec[start_ID + 3];
             Market.flex_stat.EV_soc.soc_current(node_iter) -= sol_vec[start_ID + 4];
+            if(tick % foresight_time == 7){
+                Market.flex_stat.EV_soc.soc_current(node_iter) -= Market.flex_stat.EV_soc.soc_max(tick, node_iter) / 2.;
+            }
+            if(node_iter == 0){
+                std::cout << tick << "\t" << node_iter << "\t" << Market.flex_stat.EV_soc.soc_current(node_iter) << "\n";
+            }
 
             // Update unfulfilled shiftable demand
             for(int tock = 1; tock < Market.flex_stat.unfulfilled_demand.rows(); ++ tock){
@@ -347,7 +362,7 @@ namespace power_network{
     void flex_stat_input(power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, configuration::process_config &process_par){
 
         if(!process_par.simulation_flag){
-             int Time = process_par.total_time;
+            int Time = process_par.total_time;
 
             // Initialization of the TSO
             power_market::TSO_Market_Set(Power_market_inform.TSO_Market, Power_network_inform, Time);
@@ -430,6 +445,42 @@ namespace power_network{
             int node_ID = Power_network_inform.points.node(point_iter);
 
             for(int sample_iter = 0; sample_iter < sample_num; ++ sample_iter){
+                Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.energy_scale = Power_market_inform.agent_profiles.end_user_type.EV_energy[sample_iter];
+                Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.capacity_scale = Power_market_inform.agent_profiles.end_user_type.EV_capacity[sample_iter];
+                if(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.energy_scale == 0.){
+                    continue;
+                }
+
+                double EV_soc = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.energy_scale;
+                EV_soc *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area;
+                EV_soc *= Power_market_inform.agent_profiles.end_user_type.weight[sample_iter];
+                EV_soc /= 1000.;
+                Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_max.col(node_ID) += EV_soc * Eigen::VectorXd::Ones(process_par.time_boundary[1]);
+
+                double EV_capacity = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.capacity_scale;
+                EV_capacity *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area;
+                EV_capacity *= Power_market_inform.agent_profiles.end_user_type.weight[sample_iter];
+                EV_capacity /= 1000.;
+                for(int tick = 0; tick < process_par.time_boundary[1]; ++ tick){
+                    int tick_ID = tick + process_par.time_boundary[0];
+                    if(tick_ID % foresight_time >= 7 && tick_ID % foresight_time <= 19){
+//                        std::cout << point_iter << "\t" << sample_iter << "\t" << tick_ID << "\t" << EV_capacity << "\t" << EV_soc << "\t" << Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.energy_scale << "\t" << Power_market_inform.TSO_Market.flex_stat.EV_soc.capacity_max(tick, node_ID) << "\t" << Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_min(tick, node_ID) << "\n";
+                        continue;
+                    }
+                    else{
+                        if(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.contingency){
+                            Power_market_inform.TSO_Market.flex_stat.EV_soc.capacity_max(tick, node_ID) += EV_capacity;
+                        }
+                        if(tick_ID % foresight_time >= 3 && tick_ID % foresight_time <= 6){
+                            if(!Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.contingency){
+                                Power_market_inform.TSO_Market.flex_stat.EV_soc.capacity_max(tick, node_ID) += EV_capacity / Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.energy_scale;
+                            }
+                            Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_min(tick, node_ID) += EV_soc * (tick_ID % foresight_time - 2) / Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.energy_scale;
+                        }
+                    }
+//                    std::cout << point_iter << "\t" << sample_iter << "\t" << tick_ID << "\t" << EV_capacity << "\t" << Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_current(node_ID) << "\t" << Power_market_inform.TSO_Market.flex_stat.EV_soc.capacity_max(tick, node_ID) << "\t" << Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_min(tick, node_ID) << "\n";
+                }
+
                 // Skip if the end-user does not provide flexibility during contingency
                 if(!Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.contingency){
                     continue;
@@ -455,29 +506,10 @@ namespace power_network{
                 BESS_capacity *= Power_market_inform.agent_profiles.end_user_type.weight[sample_iter];
                 BESS_capacity /= 1000.;
                 Power_market_inform.TSO_Market.flex_stat.BESS_soc.capacity_max.col(node_ID) += BESS_capacity * Eigen::VectorXd::Ones(process_par.time_boundary[1]);
-
-                double EV_soc = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.energy_scale;
-                EV_soc *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area;
-                EV_soc *= Power_market_inform.agent_profiles.end_user_type.weight[sample_iter];
-                EV_soc /= 1000.;
-                Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_max.col(node_ID) += EV_soc * Eigen::VectorXd::Ones(process_par.time_boundary[1]);
-
-                double EV_capacity = Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.capacity_scale;
-                EV_capacity *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area;
-                EV_capacity *= Power_market_inform.agent_profiles.end_user_type.weight[sample_iter];
-                EV_capacity /= 1000.;
-                Power_market_inform.TSO_Market.flex_stat.EV_soc.capacity_max.col(node_ID) += EV_capacity* Eigen::VectorXd::Ones(process_par.time_boundary[1]);
             }
 		}
 //		std::cout << Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_max << "\n\n";
 //		std::cout << Power_market_inform.TSO_Market.flex_stat.BESS_soc.capacity_max << "\n\n";
-
-        Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_current = .5 * Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_min.row(0);
-        Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_current += .5 * Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_max.row(0);
-//        std::cout << Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_current << "\n";
-
-        Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_current = .5 * Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_min.row(0);
-        Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_current += .5 * Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_max.row(0);
     }
 
     void contingency_analysis_set(contingency_analysis_struct &contingency_analysis, power_market::market_whole_inform &Power_market_inform, configuration::process_config &process_par){
@@ -573,8 +605,15 @@ namespace power_network{
 //            }
 //            std::cout <<  contingency_analysis.samples[sample_iter].sum() << "\n";
 //            contingency_analysis.samples[sample_iter] = Eigen::MatrixXi::Ones(contingency_analysis.num_component, process_par.time_boundary[1]); // just for test
+
+            // Initialize soc
+            Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_current = .5 * Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_min.row(0);
+            Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_current += .5 * Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_max.row(0);
+            Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_current = .5 * Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_min.row(0);
+            Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_current += .5 * Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_max.row(0);
+
             for(int tick = 0; tick < process_par.time_boundary[1]; ++ tick){
-               if(contingency_analysis.samples[sample_iter].col(tick).sum() > 0){
+//               if(contingency_analysis.samples[sample_iter].col(tick).sum() > 0){
 //                    // Keep the try code in case sth went wrong again with alglib
 //                    try{
 //                        local::contingency_analysis_LP_set(sample_iter, tick, contingency_analysis, Power_market_inform, Power_network_inform);
@@ -589,7 +628,7 @@ namespace power_network{
 //                    break_loop = 1;
 //                    break;
 //                    std::cout << sample_iter << "\t" << tick << "\n";
-                }
+//                }
             }
         }
 
@@ -637,7 +676,7 @@ namespace power_network{
             std::vector<std::string> component_names(contingency_analysis.num_component);
             for(int component_iter = 0; component_iter < contingency_analysis.num_component; ++ component_iter ){
                 component_names[component_iter] = "component_" + std::to_string(component_iter);
-                std::cout << component_names[component_iter];
+//                std::cout << component_names[component_iter];
             }
 
             for(int sample_iter = 0; sample_iter < contingency_analysis.samples.size(); ++ sample_iter){
