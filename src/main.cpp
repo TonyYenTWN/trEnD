@@ -10,21 +10,26 @@
 int main(){
 	// Set booleans for the process
 	configuration::process_config process_par;
-	process_par.process_default_get();
-	if(process_par.default_flag){
-		process_par.process_bool_set();
-	}
-	else{
-        std::cout << "Set configuration manually?   Yes: 1 / No: 0 | ";
-        std::cin >> process_par.set_flag;
-        std::cout << "\n";
-        if(process_par.set_flag){
-            process_par.process_bool_input();
-        }
-        else{
-            process_config_input(process_par, "csv/configuration/");
-        }
-	}
+    std::cout << "Folder name?    | ";
+    std::cin >> process_par.folder_name;
+    std::cout << "\n";
+    process_config_input(process_par, "csv/case/" + process_par.folder_name + "/configuration/");
+
+//	process_par.process_default_get();
+//	if(process_par.default_flag){
+//		process_par.process_bool_set();
+//	}
+//	else{
+//        std::cout << "Set configuration manually?   Yes: 1 / No: 0 | ";
+//        std::cin >> process_par.set_flag;
+//        std::cout << "\n";
+//        if(process_par.set_flag){
+//            process_par.process_bool_input();
+//        }
+//        else{
+//            process_config_input(process_par, "csv/configuration/");
+//        }
+//	}
 
 	if(process_par.estimation_flag + process_par.simulation_flag + process_par.contingency_flag == 0){
 		std::cout << "No process selected. Exit program...";
@@ -90,7 +95,7 @@ int main(){
 
         // Sampling of contingencies
         power_network::contingency_analysis_set(contingency_analysis, Power_market_inform, process_par);
-        power_network::contigency_sampling(contingency_analysis, 1000, 0, process_par); // default samples = 1E5
+        power_network::contigency_sampling(contingency_analysis, 10, 0, process_par); // default samples = 1E5
         power_network::contingency_analysis_solve(contingency_analysis, Power_market_inform, Power_network_inform, process_par);
         power_network::contingency_analysis_print(contingency_analysis, Power_market_inform, process_par);
 	}
