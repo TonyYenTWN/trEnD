@@ -27,7 +27,15 @@ namespace power_network{
 
         // Output variable
         std::vector <Eigen::MatrixXd> energy_not_served;  // ENS  of each node during the entire time interval, for each simulation
-        Eigen::MatrixXd energy_not_served_mean;               // Averaged ENS of each node at each time
+        Eigen::MatrixXd energy_not_served_mean;           // Averaged ENS of each node at each time
+
+        std::vector <Eigen::MatrixXd> energy_not_served_end;  // ENS  of each node during the entire time interval, for each simulation
+        Eigen::MatrixXd energy_not_served_mean_end;           // Averaged ENS of each node at each time
+
+        std::vector <Eigen::MatrixXd> energy_not_served_no_end;  // ENS  of each node during the entire time interval, for each simulation
+        Eigen::MatrixXd energy_not_served_mean_no_end;           // Averaged ENS of each node at each time
+
+
 
         // Functions
         void samples_set(){

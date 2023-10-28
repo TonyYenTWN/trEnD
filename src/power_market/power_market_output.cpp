@@ -173,12 +173,18 @@ namespace local{
 
         // Flexibility status
         dir_name = name;
-        fout_name = dir_name + "/demand_flex.csv";
-        basic::write_file(Market.flex_stat.demand_flex.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-        fout_name = dir_name + "/demand_shiftable.csv";
-        basic::write_file(Market.flex_stat.demand_shiftable.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
-        fout_name = dir_name + "/demand_inflex.csv";
-        basic::write_file(Market.flex_stat.demand_inflex.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
+        fout_name = dir_name + "/demand_flex_end.csv";
+        basic::write_file(Market.flex_stat_end.demand_flex.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
+        fout_name = dir_name + "/demand_shiftable_end.csv";
+        basic::write_file(Market.flex_stat_end.demand_shiftable.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
+        fout_name = dir_name + "/demand_inflex_end.csv";
+        basic::write_file(Market.flex_stat_end.demand_inflex.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
+        fout_name = dir_name + "/demand_flex_no_end.csv";
+        basic::write_file(Market.flex_stat_no_end.demand_flex.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
+        fout_name = dir_name + "/demand_shiftable_no_end.csv";
+        basic::write_file(Market.flex_stat_no_end.demand_shiftable.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
+        fout_name = dir_name + "/demand_inflex_no_end.csv";
+        basic::write_file(Market.flex_stat_no_end.demand_inflex.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
         fout_name = dir_name + "/supply_flex.csv";
         basic::write_file(Market.flex_stat.supply_flex.middleRows(process_par.time_boundary[0], process_par.time_boundary[1]), fout_name, Market.zone_names);
         fout_name = dir_name + "/supply_inflex.csv";

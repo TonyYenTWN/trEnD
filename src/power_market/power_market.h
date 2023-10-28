@@ -59,9 +59,23 @@ namespace power_market{
         Eigen::MatrixXd supply_inflex;           // Currently = actual supply from active end-users
         Eigen::MatrixXd supply_flex;              // Currently = total submitted supply from power supplier + positive redispatch from slack gas
 
+//        Eigen::MatrixXd demand_inflex_end;         // Currently = default demand - smart appliance of end-users + inflexible industrial demand
+//        Eigen::MatrixXd demand_flex_end;            // Currently = flexible industrial demand
+//        Eigen::MatrixXd demand_shiftable_end;    // Currently = smart appliance of end-users
+//
+//        Eigen::MatrixXd demand_inflex_no_end;         // Currently = default demand - smart appliance of end-users + inflexible industrial demand
+//        Eigen::MatrixXd demand_flex_no_end;            // Currently = flexible industrial demand
+//        Eigen::MatrixXd demand_shiftable_no_end;    // Currently = smart appliance of end-users
+
         // Input variables for contingency analysis but does not exist in power market simulation
         soc_range BESS_soc;
         soc_range EV_soc;
+
+//        soc_range BESS_soc_end;
+//        soc_range EV_soc_end;
+//
+//        soc_range BESS_soc_no_end;
+//        soc_range EV_soc_no_end;
 
         // Process variables for contingency analysis
         Eigen::MatrixXd unfulfilled_demand;
@@ -221,6 +235,8 @@ namespace power_market{
 		schedules operation;
 		/**Flexibility status.*/
 		flexibility_status flex_stat;
+		flexibility_status flex_stat_end;
+		flexibility_status flex_stat_no_end;
 		/*@{*/
 
 		/**
