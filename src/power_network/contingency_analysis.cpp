@@ -430,8 +430,9 @@ namespace power_network{
         int load_shift_time = agent::end_user::parameters::load_shift_time();
         int foresight_time = agent::end_user::parameters::foresight_time();
         load_shift_time = std::min(load_shift_time, foresight_time / 2);
-        Power_market_inform.TSO_Market.flex_stat.unfulfilled_demand = Eigen::MatrixXd::Zero(2 * load_shift_time + 1, Power_market_inform.TSO_Market.num_zone);
-        Power_market_inform.TSO_Market.flex_stat.unfulfilled_demand.bottomRows(2 * load_shift_time) = Power_market_inform.TSO_Market.flex_stat.demand_shiftable.middleRows(process_par.time_boundary[0], 2 * load_shift_time);
+        Power_market_inform.TSO_Market.flex_stat_no_end.unfulfilled_demand = Eigen::MatrixXd::Zero(2 * load_shift_time + 1, Power_market_inform.TSO_Market.num_zone);
+        Power_market_inform.TSO_Market.flex_stat_end.unfulfilled_demand = Eigen::MatrixXd::Zero(2 * load_shift_time + 1, Power_market_inform.TSO_Market.num_zone);
+        Power_market_inform.TSO_Market.flex_stat_end.unfulfilled_demand.bottomRows(2 * load_shift_time) = Power_market_inform.TSO_Market.flex_stat.demand_shiftable.middleRows(process_par.time_boundary[0], 2 * load_shift_time);
 
         // Set BESS and EV soc range
         // Initialization
@@ -683,15 +684,6 @@ namespace power_network{
             Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_current += .5 * Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_max.row(0);
 
             for(int tick = 0; tick < process_par.time_boundary[1]; ++ tick){
-//                // Keep the try code in case sth went wrong again with alglib
-//                try{
-//                    local::contingency_analysis_LP_set(sample_iter, tick, contingency_analysis, Power_market_inform, Power_network_inform);
-//                    local::contingency_analysis_update(sample_iter, tick, contingency_analysis, Power_market_inform.TSO_Market);
-//                }
-//                catch(alglib::ap_error e)
-//                {
-//                    printf("error msg: %s\n", e.msg.c_str());
-//                }
                 local::contingency_analysis_LP_set(sample_iter, tick, contingency_analysis, Power_market_inform, Power_network_inform);
                 local::contingency_analysis_update(sample_iter, tick, contingency_analysis, Power_market_inform.TSO_Market);
             }
