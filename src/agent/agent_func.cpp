@@ -1456,7 +1456,7 @@ namespace{
 //			if(Power_market_inform.agent_profiles.end_user_type.contingency[0] != 0){
 //
 //			}
-            Power_market_inform.TSO_Market.flex_stat_end.demand_inflex(tick, node_ID) += bid_inflex_industrial;
+            Power_market_inform.TSO_Market.flex_stat_end.demand_flex(tick, node_ID) += bid_inflex_industrial;
             Power_market_inform.TSO_Market.flex_stat_end.demand_flex(tick, node_ID) += bid_flex_industrial;
 			bid_flex_industrial /= price_interval;
 
@@ -3108,7 +3108,7 @@ namespace{
 			double bid_flex_industrial = bid_inflex_industrial;
 			bid_inflex_industrial *= 1. - agent::industrial::parameters::flexible_ratio();
 			bid_flex_industrial *= agent::industrial::parameters::flexible_ratio();
-            Power_market_inform.TSO_Market.flex_stat_end.demand_inflex(tick, node_ID) += bid_inflex_industrial;
+            Power_market_inform.TSO_Market.flex_stat_end.demand_flex(tick, node_ID) += bid_inflex_industrial;
             Power_market_inform.TSO_Market.flex_stat_end.demand_flex(tick, node_ID) += bid_flex_industrial;
 //			if(Power_market_inform.agent_profiles.end_user_type.contingency[0]){
 //

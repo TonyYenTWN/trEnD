@@ -303,6 +303,8 @@ void power_market::Balancing_bid_calculation(int tick, market_whole_inform &Powe
 			int node_ID = Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].node_ID;
 			Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].bids.balancing_demand;
 			Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].bids.balancing_supply;
+			Power_market_inform.TSO_Market.flex_stat_end.demand_flex(tick, node_ID) += Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].bids.balancing_demand.sum();
+			Power_market_inform.TSO_Market.flex_stat.supply_flex(tick, node_ID) += Power_market_inform.agent_profiles.cross_border[edge_iter].profiles[node_iter].bids.balancing_supply.sum();
 		}
 	}
 
