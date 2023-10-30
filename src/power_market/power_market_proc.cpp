@@ -132,7 +132,7 @@ void power_market::power_market_process_update(power_network::network_inform &Po
 			Balancing_bid_calculation(tick, Power_market_inform, Power_network_inform);
 			Flow_Based_Market_Optimization(Power_market_inform.TSO_Market);
 		}
-		TSO_Market_Actual_Results_Get(process_par.time_boundary[0], Power_market_inform.TSO_Market, process_par.control_reserve_flag);
+		TSO_Market_Actual_Results_Get(tick, Power_market_inform.TSO_Market, process_par.control_reserve_flag);
 
 		// Update state variables of agents
 		agent::agents_status_update(tick, Power_market_inform, Power_network_inform, process_par);

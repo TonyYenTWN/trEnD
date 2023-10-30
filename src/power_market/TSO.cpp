@@ -398,6 +398,9 @@ void power_market::TSO_Market_Actual_Results_Get(int tick, market_inform &Market
         Market.actual.demand = Market.confirmed.demand;
         Market.actual.price = Market.confirmed.price;
         Market.network.actual_power = Market.network.confirmed_power;
+        for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
+            Market.flex_stat_no_end.demand_inflex(tick, node_iter) += Market.actual.demand(tick, node_iter);
+        }
         return;
     }
 
