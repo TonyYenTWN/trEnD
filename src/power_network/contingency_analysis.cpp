@@ -344,9 +344,9 @@ namespace local{
             if(tick % foresight_time == 7){
                 Market.flex_stat.EV_soc.soc_current(node_iter) -= Market.flex_stat.EV_soc.soc_max(tick, node_iter) / 2.;
             }
-            if(node_iter == 0){
-                std::cout << tick << "\t" << node_iter << "\t" << Market.flex_stat.EV_soc.soc_current(node_iter) << "\n";
-            }
+//            if(node_iter == 0){
+//                std::cout << tick << "\t" << node_iter << "\t" << Market.flex_stat.EV_soc.soc_current(node_iter) << "\n";
+//            }
 
             // Update unfulfilled shiftable demand
             for(int tock = 1; tock < Market.flex_stat.unfulfilled_demand.rows(); ++ tock){
