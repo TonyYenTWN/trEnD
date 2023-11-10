@@ -1391,11 +1391,6 @@ namespace{
                 demand_shiftable /= 1. - end_user_profiles[point_iter][sample_iter].investment.decision.smart_appliance * end_user_profiles[point_iter][sample_iter].operation.smart_appliance.scale;
                 demand_shiftable *= end_user_profiles[point_iter][sample_iter].operation.weight;
                 Power_market_inform.TSO_Market.flex_stat_end.demand_shiftable(start_time, node_ID) += demand_shiftable;
-//                if(Power_market_inform.agent_profiles.end_user_type.contingency[sample_iter] != 0){
-//                }
-//                else{
-//                    demand_inflex = 0.;
-//                }
 
 				// Set bids and results information
 				agent_bids_initialization(end_user_profiles[point_iter][sample_iter].operation.bids);
@@ -1407,9 +1402,6 @@ namespace{
 				scale *= Power_network_inform.points.population_density(point_iter) * Power_network_inform.points.point_area / 1000.;
 				Power_market_inform.TSO_Market.flex_stat_end.demand_inflex(start_time, node_ID) -= demand_inflex;
 				if(!end_user_profiles[point_iter][sample_iter].investment.decision.smart_management){
-//					end_user_profiles[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) = Power_network_inform.points.nominal_mean_demand_field(point_iter, start_time);
-//					end_user_profiles[point_iter][sample_iter].operation.bids.submitted_demand_inflex(price_interval + 1) *= agent::parameters::residential_ratio();
-					//end_user_profiles[point_iter][sample_iter].operation.direct_demand = Power_network_inform.points.nominal_mean_demand_field(point_iter, start_time);
 					agent::end_user::end_user_no_LP(start_time, end_user_profiles[point_iter][sample_iter], demand_inflex, scale, process_par);
 				}
 				else{
@@ -1420,9 +1412,6 @@ namespace{
 					agent::end_user::end_user_LP_optimize(start_time, end_user_profiles[point_iter][sample_iter], process_par);
 				}
 				// Update inflexible demand
-//				if(Power_market_inform.agent_profiles.end_user_type.contingency[sample_iter] == 0){
-//                    demand_inflex = 0.;
-//				}
 				Power_market_inform.TSO_Market.flex_stat_end.demand_inflex(start_time, node_ID) += demand_inflex;
 
 				// Scale the bids correctly
