@@ -448,7 +448,7 @@ void agent::end_user::end_user_LP_optimize(int tick, profile &profile, configura
     if(process_par.encourage_redispatch){
         if(tick % foresight_time >= 3 && tick % foresight_time <= 6){
             profile.operation.bids.submitted_demand_inflex(price_demand_inflex_ID) += inflex_demand_EV;  //std::min(avail_demand_EV, 1.);
-            profile.operation.EV.BESS.price_demand = bidded_price_map.bidded_price(price_interval + 1);
+            //profile.operation.EV.BESS.price_demand = bidded_price_map.bidded_price(price_interval + 1);
         }
     }
     else{
