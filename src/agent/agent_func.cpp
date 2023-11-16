@@ -2799,7 +2799,6 @@ namespace{
 	void end_user_submit_update(int tick, power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, configuration::process_config &process_par){
 		int foresight_time = agent::end_user::parameters::foresight_time();
 		int point_num = Power_network_inform.points.bidding_zone.size();
-		//int sample_num = agent::end_user::parameters::sample_num();
 		int sample_num = Power_market_inform.agent_profiles.end_user_type.sample_num;
 		int price_interval = power_market::parameters::price_interval();
 		double residential_ratio = agent::parameters::residential_ratio();
@@ -2839,15 +2838,9 @@ namespace{
                 Power_market_inform.TSO_Market.flex_stat_end.demand_inflex(tick, node_ID) += demand_inflex;
                 demand_shiftable = demand_inflex;
                 demand_shiftable *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.smart_appliance * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scale;
-                demand_shiftable /= 1. -Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.smart_appliance * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scale;
+                demand_shiftable /= 1. - Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.smart_appliance * Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.smart_appliance.scale;
                 demand_shiftable *= Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.weight;
                 Power_market_inform.TSO_Market.flex_stat_end.demand_shiftable(tick, node_ID) += demand_shiftable;
-//				if(Power_market_inform.agent_profiles.end_user_type.contingency[sample_iter] != 0){
-//
-//				}
-//				else{
-//                    demand_inflex = 0.;
-//				}
 
 				// Set bids and results information
 				agent_bids_initialization(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.bids);
@@ -2870,9 +2863,6 @@ namespace{
 					agent::end_user::end_user_LP_optimize(tick, Power_market_inform.agent_profiles.end_users[point_iter][sample_iter], process_par);
 				}
 				// Update inflexible demand
-//				if(Power_market_inform.agent_profiles.end_user_type.contingency[sample_iter] == 0){
-//                    demand_inflex = 0.;
-//				}
 				Power_market_inform.TSO_Market.flex_stat_end.demand_inflex(tick, node_ID) += demand_inflex;
 
 				// Scale the bids correctly
