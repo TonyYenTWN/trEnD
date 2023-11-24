@@ -1,3 +1,4 @@
+#include "src/basic/basic_func.h"
 #include "contingency_analysis.h"
 
 namespace local{
@@ -190,18 +191,15 @@ namespace local{
             // default constraint on supply (before considering failure power plants)
             bound_box.row(row_start) << 0., Market.flex_stat.supply_inflex(tick, node_iter) + Market.flex_stat.supply_flex(tick, node_iter);
             bound_box(row_start, 1) *= bound_box(row_start, 1) > 0.;
-//            std::cout << bound_box.row(row_start) << "\n";
 
             // constraint on inflexible demand
             // shiftable demand that is deferred to the last possible time interval is considered inflexible demand
             bound_box.row(row_start + 1) << -Market.flex_stat.demand_inflex(tick, node_iter) - Market.flex_stat.unfulfilled_demand(0, node_iter), 0.;
             bound_box(row_start + 1, 0) *= bound_box(row_start + 1, 0) < 0.;
-//            std::cout << bound_box.row(row_start + 1) << "\n";
 
             // constraint on flexible demand
             bound_box.row(row_start + 2) << -Market.flex_stat.demand_flex(tick, node_iter), 0.;
             bound_box(row_start + 2, 0) *= bound_box(row_start + 2, 0) < 0.;
-//            std::cout << node_iter << ":\t" << bound_box.row(row_start + 2) << "\n";
 
             // constraint on power from BESS
             double BESS_ub = Market.flex_stat.BESS_soc.soc_current(node_iter) - Market.flex_stat.BESS_soc.soc_min(tick, node_iter);
@@ -210,18 +208,13 @@ namespace local{
             double BESS_lb = Market.flex_stat.BESS_soc.soc_current(node_iter) - Market.flex_stat.BESS_soc.soc_max(tick, node_iter);
             BESS_lb = std::max(BESS_lb, -Market.flex_stat.BESS_soc.capacity_max(tick, node_iter));
             bound_box.row(row_start + 3) << BESS_lb, BESS_ub;
-//            std::cout << node_iter << ":\t" << bound_box.row(row_start + 3) << "\n";
 
             // constraint on power from EV
             double EV_ub = Market.flex_stat.EV_soc.soc_current(node_iter) - Market.flex_stat.EV_soc.soc_min(tick, node_iter);
-//            std::cout << Market.flex_stat.EV_soc.soc_current(node_iter) << "\t" << Market.flex_stat.EV_soc.soc_min(tick, node_iter) << "\t" << EV_ub << "\t";
             EV_ub = std::min(EV_ub, Market.flex_stat.EV_soc.capacity_max(tick, node_iter));
-//            std::cout << EV_ub << "\t";
             EV_ub = std::max(EV_ub, -Market.flex_stat.EV_soc.capacity_max(tick, node_iter));
-//            std::cout << EV_ub << "\t";
             double EV_lb = Market.flex_stat.EV_soc.soc_current(node_iter) - Market.flex_stat.EV_soc.soc_max(tick, node_iter);
             EV_lb = std::max(EV_lb, -Market.flex_stat.EV_soc.capacity_max(tick, node_iter));
-//            std::cout << "\n";
             bound_box.row(row_start + 4) << EV_lb, EV_ub;
 
             // constraint on shiftable demand
@@ -268,7 +261,6 @@ namespace local{
                 bound_box(row_ID, 1) -= Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].cap;
             }
         }
-//        std::cout << bound_box << "\n";
 
         // Bounds of general constraints
         alglib::real_1d_array lb_general;
@@ -337,6 +329,8 @@ namespace local{
 
             // calculate energy not served
             contingency_analysis.energy_not_served[sample_ID](tick, node_iter) = std::max(Market.flex_stat.demand_inflex(tick, node_iter) + Market.flex_stat.unfulfilled_demand(0, node_iter) + sol_vec[start_ID + 1], 0.);
+            contingency_analysis.loss_of_load_hour(sample_ID, node_iter) += (contingency_analysis.energy_not_served[sample_ID](tick, node_iter) > 0.);
+            contingency_analysis.energy_not_served_sum(sample_ID) += contingency_analysis.energy_not_served[sample_ID](tick, node_iter);
 
             // Update SOC of BESS and EV
             Market.flex_stat.BESS_soc.soc_current(node_iter) -= sol_vec[start_ID + 3];
@@ -513,21 +507,13 @@ namespace power_network{
                     }
                     else{
                         Power_market_inform.TSO_Market.flex_stat_end.EV_soc.capacity_max(tick, node_ID) += EV_capacity;
-//                        if(Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.contingency){
-//                        }
                         if(tick_ID % foresight_time >= 3 && tick_ID % foresight_time <= 6){
-//                            if(!Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].investment.decision.contingency){
-//                                Power_market_inform.TSO_Market.flex_stat.EV_soc.capacity_max(tick, node_ID) += EV_capacity / Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.energy_scale;
-//                            }
                             Power_market_inform.TSO_Market.flex_stat_end.EV_soc.soc_min(tick, node_ID) += EV_soc * (tick_ID % foresight_time - 2) / Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.energy_scale;
                         }
                     }
-//                    std::cout << point_iter << "\t" << sample_iter << "\t" << tick_ID << "\t" << EV_capacity << "\t" << Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_current(node_ID) << "\t" << Power_market_inform.TSO_Market.flex_stat.EV_soc.capacity_max(tick, node_ID) << "\t" << Power_market_inform.TSO_Market.flex_stat.EV_soc.soc_min(tick, node_ID) << "\n";
                 }
             }
 		}
-//		std::cout << Power_market_inform.TSO_Market.flex_stat.BESS_soc.soc_max << "\n\n";
-//		std::cout << Power_market_inform.TSO_Market.flex_stat.BESS_soc.capacity_max << "\n\n";
     }
 
     void contingency_analysis_set(contingency_analysis_struct &contingency_analysis, power_market::market_whole_inform &Power_market_inform, configuration::process_config &process_par){
@@ -548,7 +534,7 @@ namespace power_network{
 
         // Initialization of temporal probability
     	Eigen::Vector2d transition_prob;
-    	transition_prob << 1E-4, .1;    // (u,v) where p_{0->0} = 1 - u, p_{0->1} = u, p_{1->0} = v, p_{1->1} = 1 - v
+    	transition_prob << 1. / 8760. / 10., .1;    // (u,v) where p_{0->0} = 1 - u, p_{0->1} = u, p_{1->0} = v, p_{1->1} = 1 - v
     	contingency_analysis.temporal_prob_0 = Eigen::MatrixXd (num_component, 2);
         contingency_analysis.temporal_prob_0.col(0) << transition_prob[0] * Eigen::VectorXd::Ones(num_component);
         contingency_analysis.temporal_prob_0.col(1) << transition_prob[1] * Eigen::VectorXd::Ones(num_component);
@@ -615,6 +601,9 @@ namespace power_network{
 
         // Contingency with no end-user flexibility
         // Initialization of matrix for energy not served
+        contingency_analysis.loss_of_load_hour_mean = Eigen::VectorXd::Zero(Power_market_inform.TSO_Market.network.num_vertice);
+        contingency_analysis.loss_of_load_hour = Eigen::MatrixXd::Zero(contingency_analysis.num_sample, Power_market_inform.TSO_Market.network.num_vertice);
+        contingency_analysis.energy_not_served_sum = Eigen::VectorXd::Zero(contingency_analysis.num_sample);
         contingency_analysis.energy_not_served_mean = Eigen::MatrixXd::Zero(contingency_analysis.duration, Power_market_inform.TSO_Market.network.num_vertice);
         contingency_analysis.energy_not_served = std::vector <Eigen::MatrixXd> (contingency_analysis.num_sample);
         for(int sample_iter = 0; sample_iter < contingency_analysis.num_sample; ++ sample_iter){
@@ -645,6 +634,16 @@ namespace power_network{
             }
         }
 
+        // Rank by ENS and create set of extreme cases
+        std::vector <int> rank_EENS = rank(contingency_analysis.energy_not_served_sum);
+        int rank_high = contingency_analysis.num_sample / 100;
+        rank_high = std::max(1, rank_high);
+        for(int sample_iter = 0; sample_iter < contingency_analysis.num_sample; ++ sample_iter){
+            if(rank_EENS[sample_iter] < rank_high){
+                contingency_analysis.energy_not_served_elite[rank_EENS[sample_iter]] = contingency_analysis.energy_not_served[sample_iter];
+            }
+        }
+
         // Calculate mean ENS
         for(int node_iter = 0; node_iter < Power_market_inform.TSO_Market.num_zone; ++ node_iter){
            for(int tick = 0; tick < process_par.time_boundary[1]; ++ tick){
@@ -661,10 +660,17 @@ namespace power_network{
                 energy_not_served /= contingency_analysis.num_sample;
                 contingency_analysis.energy_not_served_mean(tick, node_iter) = energy_not_served;
             }
+
+            contingency_analysis.loss_of_load_hour_mean(node_iter) = contingency_analysis.loss_of_load_hour.col(node_iter).sum();
+            contingency_analysis.loss_of_load_hour_mean(node_iter) /= contingency_analysis.num_sample;
         }
 
         contingency_analysis.energy_not_served_no_end = contingency_analysis.energy_not_served;
         contingency_analysis.energy_not_served_mean_no_end = contingency_analysis.energy_not_served_mean;
+        contingency_analysis.energy_not_served_sum_no_end = contingency_analysis.energy_not_served_sum;
+        contingency_analysis.energy_not_served_elite_no_end = contingency_analysis.energy_not_served_elite;
+        contingency_analysis.loss_of_load_hour_no_end = contingency_analysis.loss_of_load_hour;
+        contingency_analysis.loss_of_load_hour_mean_no_end = contingency_analysis.loss_of_load_hour_mean;
 
         // Contingency with end-user flexibility
         // Initialization of matrix for energy not served
@@ -689,6 +695,13 @@ namespace power_network{
             }
         }
 
+        // Rank by ENS and create set of extreme cases
+        for(int sample_iter = 0; sample_iter < contingency_analysis.num_sample; ++ sample_iter){
+            if(rank_EENS[sample_iter] < rank_high){
+                contingency_analysis.energy_not_served_elite[rank_EENS[sample_iter]] = contingency_analysis.energy_not_served[sample_iter];
+            }
+        }
+
         // Calculate mean ENS
         for(int node_iter = 0; node_iter < Power_market_inform.TSO_Market.num_zone; ++ node_iter){
            for(int tick = 0; tick < process_par.time_boundary[1]; ++ tick){
@@ -705,10 +718,17 @@ namespace power_network{
                 energy_not_served /= contingency_analysis.num_sample;
                 contingency_analysis.energy_not_served_mean(tick, node_iter) = energy_not_served;
             }
+
+            contingency_analysis.loss_of_load_hour_mean(node_iter) = contingency_analysis.loss_of_load_hour.col(node_iter).sum();
+            contingency_analysis.loss_of_load_hour_mean(node_iter) /= contingency_analysis.num_sample;
         }
 
         contingency_analysis.energy_not_served_end = contingency_analysis.energy_not_served;
         contingency_analysis.energy_not_served_mean_end = contingency_analysis.energy_not_served_mean;
+        contingency_analysis.energy_not_served_sum_end = contingency_analysis.energy_not_served_sum;
+         contingency_analysis.energy_not_served_elite_end = contingency_analysis.energy_not_served_elite;
+        contingency_analysis.loss_of_load_hour_end = contingency_analysis.loss_of_load_hour;
+        contingency_analysis.loss_of_load_hour_mean_end = contingency_analysis.loss_of_load_hour_mean;
     }
 
     void contingency_analysis_print(contingency_analysis_struct &contingency_analysis, power_market::market_whole_inform &Power_market_inform, configuration::process_config &process_par){
@@ -717,11 +737,19 @@ namespace power_network{
         std::filesystem::create_directories(dir_name);
         dir_name += "/";
 
+        // Output LOLH
+        std::string fout_name = dir_name + "/loss_of_load_hour_no_end.csv";
+        basic::write_file(contingency_analysis.loss_of_load_hour_mean_no_end, fout_name, Power_market_inform.TSO_Market.zone_names);
+        fout_name = dir_name + "/loss_of_load_hour_end.csv";
+        basic::write_file(contingency_analysis.loss_of_load_hour_mean_end, fout_name, Power_market_inform.TSO_Market.zone_names);
+
         // Output energy not served
-        std::string fout_name = dir_name + "/expected_energy_not_served_no_end.csv";
+        fout_name = dir_name + "/expected_energy_not_served_no_end.csv";
         basic::write_file(contingency_analysis.energy_not_served_mean_no_end, fout_name, Power_market_inform.TSO_Market.zone_names);
         fout_name = dir_name + "/expected_energy_not_served_end.csv";
         basic::write_file(contingency_analysis.energy_not_served_mean_end, fout_name, Power_market_inform.TSO_Market.zone_names);
+
+        // Output extreme cases
 
         // Output contingency samples
         if(process_par.contingency_sampling){

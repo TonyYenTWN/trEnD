@@ -18,24 +18,37 @@ namespace power_network{
         double beta = 1.;
         Eigen::MatrixXd temporal_prob_0;
         Eigen::MatrixXd temporal_hamiltonian;         // translate probability to energy in the hamiltonian
-        Eigen::MatrixXd temporal_energy_variation;  // add this for time-dependent failure energy (h) and correlation energy (j) in the Ising model
-        Eigen::MatrixXd spatial_hamiltonian;             // add this for correlation of failure between components
+        Eigen::MatrixXd temporal_energy_variation;    // add this for time-dependent failure energy (h) and correlation energy (j) in the Ising model
+        Eigen::MatrixXd spatial_hamiltonian;          // add this for correlation of failure between components
 
         // Process variables
         std::vector <Eigen::MatrixXd> samples;
         alglib::minlpstate problem;
 
         // Output variable
-        std::vector <Eigen::MatrixXd> energy_not_served;  // ENS  of each node during the entire time interval, for each simulation
+        Eigen::MatrixXd loss_of_load_hour;                // LOLH of each node for each simulation
+        Eigen::VectorXd loss_of_load_hour_mean;           // Averaged LOLH of each node
+
+        Eigen::MatrixXd loss_of_load_hour_end;            // LOLH of each node for each simulation
+        Eigen::VectorXd loss_of_load_hour_mean_end;
+
+        Eigen::MatrixXd loss_of_load_hour_no_end;         // LOLH of each node for each simulation
+        Eigen::VectorXd loss_of_load_hour_mean_no_end;
+
+        std::vector <Eigen::MatrixXd> energy_not_served;  // ENS of each node during the entire time interval, for each simulation
+        std::vector <Eigen::MatrixXd> energy_not_served_elite;
+        Eigen::VectorXd energy_not_served_sum;
         Eigen::MatrixXd energy_not_served_mean;           // Averaged ENS of each node at each time
 
         std::vector <Eigen::MatrixXd> energy_not_served_end;  // ENS  of each node during the entire time interval, for each simulation
+        std::vector <Eigen::MatrixXd> energy_not_served_elite_end;
         Eigen::MatrixXd energy_not_served_mean_end;           // Averaged ENS of each node at each time
+        Eigen::VectorXd energy_not_served_sum_end;
 
         std::vector <Eigen::MatrixXd> energy_not_served_no_end;  // ENS  of each node during the entire time interval, for each simulation
+        std::vector <Eigen::MatrixXd> energy_not_served_elite_no_end;
         Eigen::MatrixXd energy_not_served_mean_no_end;           // Averaged ENS of each node at each time
-
-
+        Eigen::VectorXd energy_not_served_sum_no_end;
 
         // Functions
         void samples_set(){
