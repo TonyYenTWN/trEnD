@@ -50,6 +50,8 @@ namespace power_network{
         Eigen::MatrixXd energy_not_served_mean_no_end;           // Averaged ENS of each node at each time
         Eigen::VectorXd energy_not_served_sum_no_end;
 
+        std::vector <int> rank_EENS;
+
         // Functions
         void samples_set(){
             this->samples = std::vector <Eigen::MatrixXd> (this->num_sample);

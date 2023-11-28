@@ -609,6 +609,12 @@ namespace power_network{
         for(int sample_iter = 0; sample_iter < contingency_analysis.num_sample; ++ sample_iter){
             contingency_analysis.energy_not_served[sample_iter] = contingency_analysis.energy_not_served_mean;
         }
+        int rank_high = contingency_analysis.num_sample / 100;
+        rank_high = std::max(1, rank_high);
+        contingency_analysis.energy_not_served_elite = std::vector <Eigen::MatrixXd> (rank_high);
+        for(int sample_iter = 0; sample_iter < rank_high; ++ sample_iter){
+            contingency_analysis.energy_not_served_elite[sample_iter] = contingency_analysis.energy_not_served_mean;
+        }
 
         Power_market_inform.TSO_Market.flex_stat = Power_market_inform.TSO_Market.flex_stat_no_end;
         // Calculate ENS for each sample
@@ -636,11 +642,11 @@ namespace power_network{
 
         // Rank by ENS and create set of extreme cases
         std::vector <int> rank_EENS = rank(contingency_analysis.energy_not_served_sum);
-        int rank_high = contingency_analysis.num_sample / 100;
-        rank_high = std::max(1, rank_high);
+        contingency_analysis.rank_EENS = std::vector <int> (rank_high);
         for(int sample_iter = 0; sample_iter < contingency_analysis.num_sample; ++ sample_iter){
             if(rank_EENS[sample_iter] < rank_high){
                 contingency_analysis.energy_not_served_elite[rank_EENS[sample_iter]] = contingency_analysis.energy_not_served[sample_iter];
+                contingency_analysis.rank_EENS[rank_EENS[sample_iter]] = sample_iter;
             }
         }
 
@@ -726,7 +732,7 @@ namespace power_network{
         contingency_analysis.energy_not_served_end = contingency_analysis.energy_not_served;
         contingency_analysis.energy_not_served_mean_end = contingency_analysis.energy_not_served_mean;
         contingency_analysis.energy_not_served_sum_end = contingency_analysis.energy_not_served_sum;
-         contingency_analysis.energy_not_served_elite_end = contingency_analysis.energy_not_served_elite;
+        contingency_analysis.energy_not_served_elite_end = contingency_analysis.energy_not_served_elite;
         contingency_analysis.loss_of_load_hour_end = contingency_analysis.loss_of_load_hour;
         contingency_analysis.loss_of_load_hour_mean_end = contingency_analysis.loss_of_load_hour_mean;
     }
@@ -750,6 +756,45 @@ namespace power_network{
         basic::write_file(contingency_analysis.energy_not_served_mean_end, fout_name, Power_market_inform.TSO_Market.zone_names);
 
         // Output extreme cases
+        {
+            std::string dir_name_no_end = dir_name + "extreme_cases/no_end";
+            std::filesystem::create_directories(dir_name_no_end);
+            dir_name_no_end += "/";
+
+            std::string dir_name_end = dir_name + "extreme_cases/end";
+            std::filesystem::create_directories(dir_name_end);
+            dir_name_end += "/";
+
+            for(int sample_iter = 0; sample_iter < contingency_analysis.energy_not_served_elite.size(); ++ sample_iter){
+                // Find zeros before the number
+                int count_zeros = 0;
+                int sample_temp = sample_iter;
+                std::string digit_zeros_rank;
+                while(int (sample_temp / 10) != 0){
+                    count_zeros += 1;
+                    sample_temp /= 10;
+                }
+                for(int item = 0; item < 5 - count_zeros; ++item){
+                    digit_zeros_rank += std::to_string(0);
+                }
+
+                count_zeros = 0;
+                sample_temp = contingency_analysis.rank_EENS[sample_iter];
+                std::string digit_zeros_orig;
+                while(int (sample_temp / 10) != 0){
+                    count_zeros += 1;
+                    sample_temp /= 10;
+                }
+                for(int item = 0; item < 6 - count_zeros; ++item){
+                    digit_zeros_orig += std::to_string(0);
+                }
+
+                fout_name = dir_name_no_end + "/expected_energy_not_served_extreme_no_end_" + digit_zeros_rank + std::to_string(sample_iter) + "_" + digit_zeros_orig + std::to_string(contingency_analysis.rank_EENS[sample_iter]) + ".csv";
+                basic::write_file(contingency_analysis.energy_not_served_elite_no_end[sample_iter], fout_name, Power_market_inform.TSO_Market.zone_names);
+                fout_name = dir_name_end + "/expected_energy_not_served_extreme_end_" + digit_zeros_rank + std::to_string(sample_iter) + "_" + digit_zeros_orig + std::to_string(contingency_analysis.rank_EENS[sample_iter]) + ".csv";
+                basic::write_file(contingency_analysis.energy_not_served_elite_end[sample_iter], fout_name, Power_market_inform.TSO_Market.zone_names);
+            }
+        }
 
         // Output contingency samples
         if(process_par.contingency_sampling){
