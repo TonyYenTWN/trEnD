@@ -609,7 +609,7 @@ namespace power_network{
         for(int sample_iter = 0; sample_iter < contingency_analysis.num_sample; ++ sample_iter){
             contingency_analysis.energy_not_served[sample_iter] = contingency_analysis.energy_not_served_mean;
         }
-        int rank_high = contingency_analysis.num_sample / 100;
+        int rank_high = contingency_analysis.num_sample / 1000;
         rank_high = std::max(1, rank_high);
         contingency_analysis.energy_not_served_elite = std::vector <Eigen::MatrixXd> (rank_high);
         for(int sample_iter = 0; sample_iter < rank_high; ++ sample_iter){
