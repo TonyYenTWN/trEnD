@@ -23,6 +23,9 @@ namespace local{
 
 				double prob_fail = (1 - s_0) * temporal_prob(row_iter, 0) + s_0 * (1 - temporal_prob(row_iter, 1));
 				sample(row_iter, tick) = (distrib(gen) < prob_fail * max_int);
+//				if(sample(row_iter, tick) == 1){
+//                    std::cout << row_iter << "\t" << tick << "\n";
+//				}
 //				// Calculate energy gap and the resulting conditional likelihood of s = 1 happening
 //				int s_neighbor_sum = s_0 + sample(row_iter, tick + 1);
 //				double energy_gap = temporal_hamiltonian(row_iter, 0) - temporal_hamiltonian(row_iter, 1) * s_neighbor_sum;
@@ -102,9 +105,9 @@ namespace local{
 
             double y_edge = Market.network.admittance[edge_iter];
             // consider the contingency: failure of transformer on either end or the line itself
-            y_edge *= 1 - contingency_analysis.samples[sample_ID](Market.network.num_vertice + edge_iter, tick);
-            y_edge *= 1 - contingency_analysis.samples[sample_ID](from_ID, tick);
-            y_edge *= 1 - contingency_analysis.samples[sample_ID](to_ID, tick);
+            y_edge *= (double) 1. - 1. * contingency_analysis.samples[sample_ID](Market.network.num_vertice + edge_iter, tick);
+            y_edge *= (double) 1. - 1. * contingency_analysis.samples[sample_ID](from_ID, tick);
+            y_edge *= (double) 1. - 1. * contingency_analysis.samples[sample_ID](to_ID, tick);
 //            std::cout << y_edge<< "\t";
 //            std::cout << contingency_analysis.samples[sample_ID](Market.network.num_vertice + edge_iter, tick) << "\t";
 //            std::cout << contingency_analysis.samples[sample_ID](from_ID, tick) << "\t";
@@ -151,11 +154,11 @@ namespace local{
 
             double y_edge = Market.network.admittance[edge_iter];
             // consider the contingency: failure of transformer on either end or the line itself
-            y_edge *= 1 - contingency_analysis.samples[sample_ID](Market.network.num_vertice + edge_iter, tick);
-            y_edge *= 1 - contingency_analysis.samples[sample_ID](from_ID, tick);
-            y_edge *= 1 - contingency_analysis.samples[sample_ID](to_ID, tick);
+            y_edge *= (double) 1. - 1. * contingency_analysis.samples[sample_ID](Market.network.num_vertice + edge_iter, tick);
+            y_edge *= (double) 1. - 1. * contingency_analysis.samples[sample_ID](from_ID, tick);
+            y_edge *= (double) 1. - 1. * contingency_analysis.samples[sample_ID](to_ID, tick);
 
-            if( from_ID < to_ID){
+            if(from_ID < to_ID){
                 alglib::sparseset(constraint_general, Y_n.rows() + edge_iter,  from_ID, y_edge);
                 alglib::sparseset(constraint_general, Y_n.rows() + edge_iter, to_ID, -y_edge);
             }
@@ -233,9 +236,9 @@ namespace local{
 			int node_ID = Power_network_inform.points.node(point_ID);
             int row_ID = 2 * Market.network.num_vertice + node_ID * (Market.flex_stat.unfulfilled_demand.rows() + 4);
             int component_ID = Market.network.num_vertice + Market.network.num_edges + agent_iter;
-            if(contingency_analysis.samples[sample_ID](component_ID, tick) == 1){
-                bound_box(row_ID, 1) -= Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].cap;
-            }
+//            if(contingency_analysis.samples[sample_ID](component_ID, tick) == 1){
+//                bound_box(row_ID, 1) -= Power_market_inform.agent_profiles.power_supplier.hydro.HV_plant[agent_iter].cap;
+//            }
         }
 
         // HV wind
@@ -245,9 +248,9 @@ namespace local{
 			int node_ID = Power_network_inform.points.node(point_ID);
             int row_ID = 2 * Market.network.num_vertice + node_ID * (Market.flex_stat.unfulfilled_demand.rows() + 4);
             int component_ID = Market.network.num_vertice + Market.network.num_edges + hydro_HV_plant_num + agent_iter;
-            if(contingency_analysis.samples[sample_ID](component_ID, tick) == 1){
-                bound_box(row_ID, 1) -= Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].cap;
-            }
+//            if(contingency_analysis.samples[sample_ID](component_ID, tick) == 1){
+//                bound_box(row_ID, 1) -= Power_market_inform.agent_profiles.power_supplier.wind.HV_plant[agent_iter].cap;
+//            }
         }
 
         // HV PSPP
@@ -257,9 +260,9 @@ namespace local{
 			int node_ID = Power_network_inform.points.node(point_ID);
 			int row_ID = 2 * Market.network.num_vertice + node_ID * (Market.flex_stat.unfulfilled_demand.rows() + 4);
 			int component_ID = Market.network.num_vertice + Market.network.num_edges + hydro_HV_plant_num + wind_HV_plant_num + agent_iter;
-            if(contingency_analysis.samples[sample_ID](component_ID, tick) == 1){
-                bound_box(row_ID, 1) -= Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].cap;
-            }
+//            if(contingency_analysis.samples[sample_ID](component_ID, tick) == 1){
+//                bound_box(row_ID, 1) -= Power_market_inform.agent_profiles.power_supplier.pump_storage.HV[agent_iter].cap;
+//            }
         }
 
         // Bounds of general constraints
@@ -534,7 +537,8 @@ namespace power_network{
 
         // Initialization of temporal probability
     	Eigen::Vector2d transition_prob;
-    	transition_prob << 1. / 8760. / 10., .1;    // (u,v) where p_{0->0} = 1 - u, p_{0->1} = u, p_{1->0} = v, p_{1->1} = 1 - v
+    	transition_prob << 1. / 8760. / 10., 1. / 24.;    // (u,v) where p_{0->0} = 1 - u, p_{0->1} = u, p_{1->0} = v, p_{1->1} = 1 - v
+//        transition_prob << 0., 1.;
     	contingency_analysis.temporal_prob_0 = Eigen::MatrixXd (num_component, 2);
         contingency_analysis.temporal_prob_0.col(0) << transition_prob[0] * Eigen::VectorXd::Ones(num_component);
         contingency_analysis.temporal_prob_0.col(1) << transition_prob[1] * Eigen::VectorXd::Ones(num_component);
@@ -565,9 +569,15 @@ namespace power_network{
             {
                 #pragma omp for
                 for(int sample_iter = 0; sample_iter < contingency_analysis.num_sample; ++ sample_iter){
+//                    std::cout << sample_iter << "\n";
                     Eigen::MatrixXd sample = Eigen::MatrixXd::Zero(contingency_analysis.num_component, contingency_analysis.duration);
                     local::Gibbs_sampling(contingency_analysis.duration, contingency_analysis.beta, sample, contingency_analysis.temporal_hamiltonian, contingency_analysis.temporal_prob_0, contingency_analysis.spatial_hamiltonian);
                     contingency_analysis.samples[sample_iter] = sample;
+//                    contingency_analysis.samples[sample_iter](0, 0) = 1;
+//                    contingency_analysis.samples[sample_iter](1, 0) = 1;
+//                    contingency_analysis.samples[sample_iter](2, 0) = 1;
+//                    contingency_analysis.samples[sample_iter](3, 0) = 1;
+//                    contingency_analysis.samples[sample_iter](4, 0) = 1;
                 }
             }
         }
@@ -680,6 +690,9 @@ namespace power_network{
 
         // Contingency with end-user flexibility
         // Initialization of matrix for energy not served
+        contingency_analysis.loss_of_load_hour_mean = Eigen::VectorXd::Zero(Power_market_inform.TSO_Market.network.num_vertice);
+        contingency_analysis.loss_of_load_hour = Eigen::MatrixXd::Zero(contingency_analysis.num_sample, Power_market_inform.TSO_Market.network.num_vertice);
+        contingency_analysis.energy_not_served_sum = Eigen::VectorXd::Zero(contingency_analysis.num_sample);
         contingency_analysis.energy_not_served_mean = Eigen::MatrixXd::Zero(contingency_analysis.duration, Power_market_inform.TSO_Market.network.num_vertice);
         contingency_analysis.energy_not_served = std::vector <Eigen::MatrixXd> (contingency_analysis.num_sample);
         for(int sample_iter = 0; sample_iter < contingency_analysis.num_sample; ++ sample_iter){
@@ -754,6 +767,14 @@ namespace power_network{
         basic::write_file(contingency_analysis.energy_not_served_mean_no_end, fout_name, Power_market_inform.TSO_Market.zone_names);
         fout_name = dir_name + "/expected_energy_not_served_end.csv";
         basic::write_file(contingency_analysis.energy_not_served_mean_end, fout_name, Power_market_inform.TSO_Market.zone_names);
+
+        // Output ENS sum
+        std::vector <std::string> col_name;
+        col_name.push_back("sum_EENS");
+        fout_name = dir_name + "/energy_not_served_sum_no_end.csv";
+        basic::write_file(contingency_analysis.energy_not_served_sum_no_end, fout_name, col_name);
+        fout_name = dir_name + "/energy_not_served_sum_end.csv";
+        basic::write_file(contingency_analysis.energy_not_served_sum_end, fout_name, col_name);
 
         // Output extreme cases
         {
