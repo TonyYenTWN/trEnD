@@ -5,7 +5,6 @@
 		<Option title="trEnD" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
-		<Option virtualFolders="src/power_market/" />
 		<Option extended_obj_names="1" />
 		<MakeCommands>
 			<Build command="" />
@@ -77,6 +76,7 @@
 		<Unit filename="src/alglib/solvers.h" />
 		<Unit filename="src/alglib/stdafx.h" />
 		<Unit filename="src/basic/basic_definitions.h" />
+		<Unit filename="src/basic/basic_func.h" />
 		<Unit filename="src/basic/eigen_sparse.h" />
 		<Unit filename="src/basic/rw_csv.cpp" />
 		<Unit filename="src/basic/rw_csv.h" />
