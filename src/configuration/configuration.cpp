@@ -16,10 +16,11 @@ void configuration::process_config_input(process_config &process_par, std::strin
     process_par.control_reserve_flag = (bool) stod(process_inform["control_reserve"][0]);
     process_par.encourage_redispatch= (bool) stod(process_inform["encourage_redispatch"][0]);
     process_par.rule_based = (bool) stod(process_inform["rule_based"][0]);
+    process_par.power_flow = (bool) stod(process_inform["power_flow"][0]);
+    process_par.demand_factor = stod(process_inform["demand_factor"][0]);
     process_par.total_time = (int) stod(process_inform["total_time"][0]);
     process_par.time_boundary.push_back((int) stod(process_inform["start_time"][0]));
     process_par.time_boundary.push_back((int) stod(process_inform["duration"][0]));
-    process_par.power_flow = (bool) stod(process_inform["power_flow"][0]);
     process_par.contingency_flag = (bool) stod(process_inform["contingency"][0]);
     process_par.contingency_sampling = (bool) stod(process_inform["contingency_sampling"][0]);
     //process_par.folder_name = process_inform["folder_name"][0];

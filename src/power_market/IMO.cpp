@@ -56,7 +56,9 @@ namespace{
 	}
 }
 
-void power_market::International_Market_Set(market_inform &International_Market, power_network::network_inform &Power_network_inform, int Time, fin_market fin_market){
+void power_market::International_Market_Set(market_inform &International_Market, power_network::network_inform &Power_network_inform, fin_market fin_market, configuration::process_config &process_par){
+	int Time = process_par.total_time;
+
 	// Input Parameters of international market
 	International_Market.num_zone = Power_network_inform.cbt.bz_names.size();
 	International_Market.cross_border_zone_start = Power_network_inform.points.bidding_zone.maxCoeff() + 1;
@@ -101,6 +103,7 @@ void power_market::International_Market_Set(market_inform &International_Market,
 	// Read default demand data
 	auto demand_ts_dim = basic::get_file_dim(fin_market.demand);
 	International_Market.demand_default = basic::read_file(demand_ts_dim[0], demand_ts_dim[1], fin_market.demand, 1);
+    International_Market.demand_default = process_par.demand_factor * International_Market.demand_default;
 
 	// Read cbt data
 	auto cbt_ts_dim = basic::get_file_dim(fin_market.cbt);

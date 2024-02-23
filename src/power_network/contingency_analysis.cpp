@@ -513,6 +513,14 @@ namespace power_network{
                         if(tick_ID % foresight_time >= 3 && tick_ID % foresight_time <= 6){
                             Power_market_inform.TSO_Market.flex_stat_end.EV_soc.soc_min(tick, node_ID) += EV_soc * (tick_ID % foresight_time - 2) / Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.energy_scale;
                         }
+
+//                        // Smoother profile
+//                        if(tick_ID % foresight_time <= 6){
+//                            Power_market_inform.TSO_Market.flex_stat_end.EV_soc.soc_min(tick, node_ID) += EV_soc * (tick_ID % foresight_time + 2) / Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.energy_scale / 2.;
+//                        }
+//                        else if(tick_ID % foresight_time == 23){
+//                            Power_market_inform.TSO_Market.flex_stat_end.EV_soc.soc_min(tick, node_ID) += EV_soc / Power_market_inform.agent_profiles.end_users[point_iter][sample_iter].operation.EV.BESS.energy_scale / 2.;
+//                        }
                     }
                 }
             }

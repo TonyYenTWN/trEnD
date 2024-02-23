@@ -16,7 +16,7 @@ void power_market::default_demand_set(power_network::network_inform &Power_netwo
 	fin_market.solar= fin_market.dir + "generation_solar_forecast.csv";
 	fin_market.wind_on = fin_market.dir + "generation_wind_onshore_forecast.csv";
 	fin_market.wind_off = fin_market.dir + "generation_wind_offshore_forecast.csv";
-	International_Market_Set(Power_market_inform.International_Market, Power_network_inform, process_par.total_time, fin_market);
+	International_Market_Set(Power_market_inform.International_Market, Power_network_inform, fin_market, process_par);
 }
 
 void power_market::power_market_process_set(power_network::network_inform &Power_network_inform, market_whole_inform &Power_market_inform, configuration::process_config &process_par){

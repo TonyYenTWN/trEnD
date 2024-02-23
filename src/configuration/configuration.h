@@ -46,6 +46,8 @@ namespace configuration{
 		bool rule_based;
 		/** Indicate whether power flow analysis should be carried out */
 		bool power_flow;
+		/** Indicate multiplication factor of electricity demand data */
+		double demand_factor;
 		/** Total time length of the input time series data (not the simulation time length!!)*/
 		int total_time;
 		/** Time boundary of simulation. 1st component = starting time; 2nd component = duration of the simulation.*/

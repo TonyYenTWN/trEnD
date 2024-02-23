@@ -9,6 +9,7 @@ control_reserve,1
 encourage_redispatch,0
 rule_based,0
 power_flow,1
+demand_factor,1
 contingency,1
 contingency_sampling,1
 start_time,0

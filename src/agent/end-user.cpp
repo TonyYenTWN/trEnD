@@ -496,7 +496,10 @@ void agent::end_user::end_user_no_LP(int tick, profile &profile, double &demand_
     // Fulfill only the necessary demand for EV
 	int free_time_EV = (tick % foresight_time > 19) * (foresight_time - tick % foresight_time);
 	free_time_EV += 7 - (tick % foresight_time < 7) * (tick % foresight_time);
-	double soc_min_EV = (tick % foresight_time >= 3) * (tick % foresight_time <= 6) * profile.operation.EV.energy_demand * (tick % foresight_time - 2) / 4;
+//    // Smoother profile
+//	double soc_min_EV = (tick % foresight_time == 23) * profile.operation.EV.energy_demand / 8.;
+//	soc_min_EV += (tick % foresight_time <= 6) * profile.operation.EV.energy_demand * (tick % foresight_time + 2) / 8.;
+	double soc_min_EV = (tick % foresight_time >= 3) * (tick % foresight_time <= 6) * profile.operation.EV.energy_demand * (tick % foresight_time - 2) / 4.;
 	double inflex_demand_EV = std::max(soc_min_EV - profile.operation.EV.BESS.soc + profile.operation.EV.BESS.self_consumption, 0.);
 	inflex_demand_EV *= profile.operation.EV.house_default_period(0);
 	inflex_demand_EV /= profile.operation.EV.BESS.efficiency;

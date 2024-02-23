@@ -580,4 +580,6 @@ void spatial_field::spatial_field_store(power_network::network_inform &Power_net
 			Power_network_inform.points.solar_cf(point_iter, tick) = solar_cf_calculation(solar_radiation(point_iter), 1000.);
 		}
 	}
+
+    Power_network_inform.points.nominal_mean_demand_field = process_par.demand_factor * Power_network_inform.points.nominal_mean_demand_field;
 }
