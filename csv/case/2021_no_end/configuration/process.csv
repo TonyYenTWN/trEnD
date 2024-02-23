@@ -9,9 +9,10 @@ control_reserve,1
 encourage_redispatch,0
 rule_based,0
 power_flow,0
+demand_factor,1.2
 contingency,1
 contingency_sampling,1
 start_time,0
-duration,1
+duration,24
 total_time,8760
 folder_name,2021
