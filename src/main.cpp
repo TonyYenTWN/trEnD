@@ -95,7 +95,7 @@ int main(){
 
         // Sampling of contingencies
         power_network::contingency_analysis_set(contingency_analysis, Power_market_inform, process_par);
-        power_network::contigency_sampling(contingency_analysis, 20000, 0, process_par); // default samples = 1E5
+        power_network::contigency_sampling(contingency_analysis, 1000, 0, process_par); // default samples = 1E5
         power_network::contingency_analysis_solve(contingency_analysis, Power_market_inform, Power_network_inform, process_par);
         power_network::contingency_analysis_print(contingency_analysis, Power_market_inform, process_par);
 	}
