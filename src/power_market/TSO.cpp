@@ -400,9 +400,9 @@ void power_market::TSO_Market_Actual_Results_Get(int tick, market_inform &Market
         Market.actual.demand = Market.confirmed.demand;
         Market.actual.price = Market.confirmed.price;
         Market.network.actual_power = Market.network.confirmed_power;
-        for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
-            Market.flex_stat_no_end.demand_inflex(tick, node_iter) += Market.actual.demand(tick, node_iter);
-        }
+//        for(int node_iter = 0; node_iter < Market.network.num_vertice; ++ node_iter){
+//            Market.flex_stat_no_end.demand_inflex(tick, node_iter) += Market.actual.demand(tick, node_iter);
+//        }
         return;
     }
 
@@ -416,7 +416,7 @@ void power_market::TSO_Market_Actual_Results_Get(int tick, market_inform &Market
 		int row_start = 2 * Market.network.num_vertice + node_iter * (Market.price_intervals + 2);
 		Market.actual.supply(tick, node_iter) = (sol_vec.segment(row_start, Market.price_intervals + 2).array().max(0)).sum();
 		Market.actual.demand(tick, node_iter) = -(sol_vec.segment(row_start, Market.price_intervals + 2).array().min(0)).sum();
-        Market.flex_stat_no_end.demand_inflex(tick, node_iter) += Market.actual.demand(tick, node_iter);
+//        Market.flex_stat_no_end.demand_inflex(tick, node_iter) += Market.actual.demand(tick, node_iter);
 //        if(!end_user_contingency){
 //
 //        }
