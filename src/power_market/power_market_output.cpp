@@ -194,14 +194,14 @@ namespace local{
 
 void power_market::Markets_results_print(market_whole_inform &Power_market_inform, configuration::process_config &process_par){
 	// Create a folder to store the file
-	std::string dir_name = "csv/case/" + process_par.folder_name + "/output/power_market";
+	std::string dir_name = "csv/" + process_par.folder_name + "/output/power_market";
 	std::filesystem::create_directories(dir_name);
 	dir_name += "/";
 
 	local::Market_results_print(Power_market_inform.International_Market, dir_name + "IMO", process_par, 0);
 	local::Market_results_print(Power_market_inform.TSO_Market, dir_name + "TSO", process_par);
 
-    dir_name = "csv/case/" + process_par.folder_name + "/processed/power_market";
+    dir_name = "csv/" + process_par.folder_name + "/processed/power_market";
 	dir_name += "/flex_stat";
 	std::filesystem::create_directories(dir_name);
 	local::Flex_stat_results_print(Power_market_inform.TSO_Market, dir_name, process_par);
@@ -209,7 +209,7 @@ void power_market::Markets_results_print(market_whole_inform &Power_market_infor
 
 void power_market::Simplified_network_print(market_whole_inform &Power_market_inform, configuration::process_config &process_par){
 	// Create a folder to store the file
-	std::string dir_name = "csv/case/" + process_par.folder_name + "/processed/power_market";
+	std::string dir_name = "csv/" + process_par.folder_name + "/processed/power_market";
 	std::filesystem::create_directories(dir_name);
 	dir_name += "/";
 

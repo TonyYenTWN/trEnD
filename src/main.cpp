@@ -13,23 +13,7 @@ int main(){
     std::cout << "Folder name?    | ";
     std::cin >> process_par.folder_name;
     std::cout << "\n";
-    process_config_input(process_par, "csv/case/" + process_par.folder_name + "/configuration/");
-
-//	process_par.process_default_get();
-//	if(process_par.default_flag){
-//		process_par.process_bool_set();
-//	}
-//	else{
-//        std::cout << "Set configuration manually?   Yes: 1 / No: 0 | ";
-//        std::cin >> process_par.set_flag;
-//        std::cout << "\n";
-//        if(process_par.set_flag){
-//            process_par.process_bool_input();
-//        }
-//        else{
-//            process_config_input(process_par, "csv/configuration/");
-//        }
-//	}
+    process_config_input(process_par, "csv/" + process_par.folder_name + "/configuration/");
 
 	if(process_par.estimation_flag + process_par.simulation_flag + process_par.contingency_flag == 0){
 		std::cout << "No process selected. Exit program...";
@@ -37,7 +21,7 @@ int main(){
 	}
 
 	// Set folder and file name for log messages
-	std::string output_dir_name = "csv/case/" + process_par.folder_name + "/output";
+	std::string output_dir_name = "csv/" + process_par.folder_name + "/output";
 	std::string output_log_name = output_dir_name + "/log.txt";
 	std::filesystem::create_directories(output_dir_name);
 	std::freopen(output_log_name.c_str() , "w", stdout);
@@ -45,7 +29,7 @@ int main(){
 
 	// Initialization of power network information
 	power_network::network_inform Power_network_inform;
-	power_network::power_network_input_process(Power_network_inform, "csv/case/" + process_par.folder_name + "/input/power_network/");
+	power_network::power_network_input_process(Power_network_inform, process_par.hydro_factor, "csv/" + process_par.folder_name + "/input/power_network/");
 
 	// Set bidding prices and default (residual) demand time series
 	power_market::market_whole_inform Power_market_inform;
@@ -55,21 +39,21 @@ int main(){
 	// Spatial fields estimation
 	if(process_par.estimation_flag){
         // Create a folder to store the file
-		std::filesystem::create_directories("csv/case/" + process_par.folder_name + "/processed/spatial_field");
+		std::filesystem::create_directories("csv/" + process_par.folder_name + "/processed/spatial_field");
 
 		if(process_par.estimation_demand_flag){
-            std::filesystem::create_directories("csv/case/" + process_par.folder_name + "/processed/spatial_field/demand");
-            std::filesystem::create_directories("csv/case/" + process_par.folder_name + "/processed/spatial_field/imbalance");
+            std::filesystem::create_directories("csv/" + process_par.folder_name + "/processed/spatial_field/demand");
+            std::filesystem::create_directories("csv/" + process_par.folder_name + "/processed/spatial_field/imbalance");
             spatial_field::demand_imbalance_estimation(Power_network_inform, Power_market_inform.International_Market, process_par);
 		}
 
 		if(process_par.estimation_wind_flag){
-            std::filesystem::create_directories("csv/case/" + process_par.folder_name + "/processed/spatial_field/wind");
+            std::filesystem::create_directories("csv/" + process_par.folder_name + "/processed/spatial_field/wind");
             spatial_field::wind_on_cf_estimation(Power_network_inform, process_par);
 		}
 
 		if(process_par.estimation_solar_flag){
-            std::filesystem::create_directories("csv/case/" + process_par.folder_name + "/processed/spatial_field/solar");
+            std::filesystem::create_directories("csv/" + process_par.folder_name + "/processed/spatial_field/solar");
             spatial_field::solar_radiation_estimation(Power_network_inform, process_par);
 		}
 	}
@@ -95,7 +79,7 @@ int main(){
 
         // Sampling of contingencies
         power_network::contingency_analysis_set(contingency_analysis, Power_market_inform, process_par);
-        power_network::contigency_sampling(contingency_analysis, 20000, 0, process_par); // default samples = 1E5
+        power_network::contigency_sampling(contingency_analysis, 10, 0, process_par); // default samples = 1E5
         power_network::contingency_analysis_solve(contingency_analysis, Power_market_inform, Power_network_inform, process_par);
         power_network::contingency_analysis_print(contingency_analysis, Power_market_inform, process_par);
 	}
@@ -103,4 +87,3 @@ int main(){
 	// Close log file
 	std::fclose(stdout);
 }
-//	std::cin.get();

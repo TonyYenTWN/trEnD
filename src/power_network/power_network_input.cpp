@@ -40,14 +40,12 @@ namespace {
 	}
 
 	// Must read transmission data before points (DSO cluster initialize here)
-    void tranmission_data_input(power_network::network_inform &Power_network_inform, Eigen::MatrixXd bz_inform, std::string fin_node, std::string fin_edge, std::string fin_edge_simp){
+    void tranmission_data_input(power_network::network_inform &Power_network_inform, Eigen::MatrixXd bz_inform, std::string fin_node, std::string fin_edge){
 		// Read power network data
         auto fin_node_dim = basic::get_file_dim(fin_node);
 		auto fin_edge_dim = basic::get_file_dim(fin_edge);
-//		auto fin_edge_simp_dim = basic::get_file_dim(fin_edge_simp);
 		auto node_inform = basic::read_file(fin_node_dim[0], fin_node_dim[1], fin_node);
 		auto edge_inform = basic::read_file(fin_edge_dim[0], fin_edge_dim[1], fin_edge);
-//        auto edge_simp_inform = basic::read_file(fin_edge_simp_dim[0], fin_edge_simp_dim[1], fin_edge_simp);
 
 		// Initialize node ID for DSO-Clusters
 		int cluster_num = int(node_inform.col(1).maxCoeff());
@@ -155,7 +153,7 @@ namespace {
 		}
 	}
 
-	void plant_data_input(power_network::network_inform &Power_network_inform, std::string fin_hydro, std::string fin_wind){
+	void plant_data_input(power_network::network_inform &Power_network_inform, double hydro_factor, std::string fin_hydro, std::string fin_wind){
 		// Read plant data
 		auto fin_hydro_dim = basic::get_file_dim(fin_hydro);
 		auto fin_wind_dim = basic::get_file_dim(fin_wind);
@@ -170,6 +168,7 @@ namespace {
 			Power_network_inform.plants.hydro.type(hydro_iter) = int(hydro_inform(hydro_iter, 1)) - 1;
 		}
 		Power_network_inform.plants.hydro.cap = hydro_inform.col(3).array().abs();
+        Power_network_inform.plants.hydro.cap *= hydro_factor;
 		Power_network_inform.plants.hydro.x = hydro_inform.col(hydro_inform.cols() - 4);
 		Power_network_inform.plants.hydro.y = hydro_inform.col(hydro_inform.cols() - 3);
 		Power_network_inform.plants.hydro.lon = hydro_inform.col(hydro_inform.cols() - 2);
@@ -211,14 +210,13 @@ void power_network::point_distance_cov(points_struct &point, double lambda){
 	point.covariance = covariance.sparseView(tol);
 }
 
-void power_network::power_network_input_process(network_inform &Power_network_inform, std::string dir_name){
+void power_network::power_network_input_process(network_inform &Power_network_inform, double hydro_factor, std::string dir_name){
 	auto fin_bz = dir_name + "DSO_Bidding_Zone.csv";
 	auto fin_cbt = dir_name + "cbt_constraint.csv";
 	auto fin_weather = dir_name + "solar_radiation_stations.csv";
 	auto fin_entry = dir_name + "cbt_entry_nodes.csv";
 	auto fin_node = dir_name + "transmission_nodes.csv";
 	auto fin_edge = dir_name + "transmission_edges.csv";
-	auto fin_edge_simp = dir_name + "transmission_edges_pu_simp.csv";
 	auto fin_point = dir_name + "point_info.csv";
 	auto fin_point_matrix = dir_name + "point_matrix.csv";
 	auto fin_hydro = dir_name + "hydro_plants.csv";
@@ -228,10 +226,10 @@ void power_network::power_network_input_process(network_inform &Power_network_in
     auto bz_inform = basic::read_file(fin_bz_dim[0], fin_bz_dim[1], fin_bz);
 
     cbt_data_input(Power_network_inform, fin_cbt, fin_entry);
-	tranmission_data_input(Power_network_inform, bz_inform, fin_node, fin_edge, fin_edge_simp);
+	tranmission_data_input(Power_network_inform, bz_inform, fin_node, fin_edge);
 	points_data_input(Power_network_inform, bz_inform, fin_point, fin_point_matrix);
 	weather_station_data_input(Power_network_inform, fin_weather);
-	plant_data_input(Power_network_inform, fin_hydro, fin_wind);
+	plant_data_input(Power_network_inform, hydro_factor, fin_hydro, fin_wind);
 
 	// Set power line density for the distribution network
 	Power_network_inform.set_line_density();

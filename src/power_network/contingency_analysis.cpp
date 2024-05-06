@@ -365,7 +365,7 @@ namespace power_network{
             power_market::TSO_Market_Set(Power_market_inform.TSO_Market, Power_network_inform, Time);
 
             // Read flex stat data
-            std::string dir_name = "csv/case/" + process_par.folder_name + "/processed/power_market/flex_stat/";
+            std::string dir_name = "csv/" + process_par.folder_name + "/processed/power_market/flex_stat/";
 
             auto fin = dir_name + "demand_flex_end.csv";
             auto fin_dim = basic::get_file_dim(fin);
@@ -401,7 +401,7 @@ namespace power_network{
 
             // Read end-user data
             // Necessary when BESS and EV data are required
-            fin = "csv/case/" + process_par.folder_name + "/input/agent/end_user_types.csv";
+            fin = "csv/" + process_par.folder_name + "/input/agent/end_user_types.csv";
             fin_dim = basic::get_file_dim(fin, 1);
             auto end_user_type = basic::read_config_file(fin);
             Power_market_inform.agent_profiles.end_user_type.initialize(fin_dim[1]);
@@ -545,8 +545,9 @@ namespace power_network{
 
         // Initialization of temporal probability
     	Eigen::Vector2d transition_prob;
-    	transition_prob << 1. / 8760. / 10., 1. / 24.;    // (u,v) where p_{0->0} = 1 - u, p_{0->1} = u, p_{1->0} = v, p_{1->1} = 1 - v
-//        transition_prob << 0., 1.;
+    	transition_prob << 0., 1. / 24.;
+    	// (u,v) where p_{0->0} = 1 - u, p_{0->1} = u, p_{1->0} = v, p_{1->1} = 1 - v
+    	// default = 1. / 8760. / 10., 1. / 24.
     	contingency_analysis.temporal_prob_0 = Eigen::MatrixXd (num_component, 2);
         contingency_analysis.temporal_prob_0.col(0) << transition_prob[0] * Eigen::VectorXd::Ones(num_component);
         contingency_analysis.temporal_prob_0.col(1) << transition_prob[1] * Eigen::VectorXd::Ones(num_component);
@@ -591,7 +592,7 @@ namespace power_network{
         }
         // or read generated samples from existing files
         else{
-            std::string dir_name = "csv/case/" + process_par.folder_name + "/processed/power_network/contingency";
+            std::string dir_name = "csv/" + process_par.folder_name + "/processed/power_network/contingency";
             for(int sample_iter = 0; sample_iter < contingency_analysis.samples.size(); ++ sample_iter){
                 int count_zeros = 0;
                 int sample_temp = sample_iter;
@@ -760,7 +761,7 @@ namespace power_network{
 
     void contingency_analysis_print(contingency_analysis_struct &contingency_analysis, power_market::market_whole_inform &Power_market_inform, configuration::process_config &process_par){
         // Create a folder to store the file
-        std::string dir_name = "csv/case/" + process_par.folder_name + "/output/power_network/contingency";
+        std::string dir_name = "csv/" + process_par.folder_name + "/output/power_network/contingency";
         std::filesystem::create_directories(dir_name);
         dir_name += "/";
 
@@ -828,7 +829,7 @@ namespace power_network{
         // Output contingency samples
         if(process_par.contingency_sampling){
             // Create a folder to store the file
-            dir_name = "csv/case/" + process_par.folder_name + "/processed/power_network/contingency";
+            dir_name = "csv/" + process_par.folder_name + "/processed/power_network/contingency";
             std::filesystem::create_directories(dir_name);
             dir_name += "/";
 

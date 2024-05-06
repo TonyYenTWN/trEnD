@@ -221,7 +221,7 @@ namespace local{
 
 void agent::agents_results_print(power_market::market_whole_inform &Power_market_inform, power_network::network_inform &Power_network_inform, configuration::process_config &process_par){
 	// Create a folder to store the file
-	std::string dir_name = "csv/case/" + process_par.folder_name + "/output/agent";
+	std::string dir_name = "csv/" + process_par.folder_name + "/output/agent";
 	std::filesystem::create_directories(dir_name);
 
 	local::aggregators_settlement_print(Power_market_inform, dir_name);

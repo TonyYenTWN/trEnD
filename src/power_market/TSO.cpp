@@ -30,6 +30,7 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 		admittance(from_ID, to_ID) += y_ij ;
 		admittance(to_ID, from_ID) += y_ij ;
 		capacity(from_ID, to_ID) += Power_network_inform.tech_parameters.power_limit[voltage];
+		capacity(to_ID, from_ID) += Power_network_inform.tech_parameters.power_limit[voltage];
 	}
 
 	// Set compact incidence matrix and edge admittance matrix
@@ -40,7 +41,7 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 	power_limit.reserve(TSO_Market.network.num_vertice * TSO_Market.network.num_vertice);
 	for(int row_iter = 0; row_iter < TSO_Market.network.num_vertice - 1; ++ row_iter){
 		for(int col_iter = row_iter + 1; col_iter < TSO_Market.network.num_vertice; ++ col_iter){
-			if(abs(admittance(row_iter , col_iter)) > tol){
+			if(abs(capacity(row_iter , col_iter)) > tol){
 				TSO_Market.network.incidence.push_back(Eigen::Vector2i(row_iter, col_iter));
 				TSO_Market.network.admittance.push_back(admittance(row_iter , col_iter));
 				power_limit.push_back(capacity(row_iter , col_iter));
@@ -205,6 +206,7 @@ void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Powe
 		Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.redispatch_supply;
 		Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.redispatch_demand;
 	}
+//	std::cout << Power_market_inform.TSO_Market.submitted_supply.sum() << "\t" << Power_market_inform.TSO_Market.submitted_demand.sum() << "\n";
 
 	// Slack power plants
 	int slack_LV_num = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant.size();
@@ -215,6 +217,8 @@ void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Powe
 		Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids.redispatch_supply;
 		Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids.redispatch_demand;
 	}
+
+//    std::cout << Power_market_inform.TSO_Market.submitted_supply.sum() << "\t" << Power_market_inform.TSO_Market.submitted_demand.sum() << "\n";
 
 //	for(int node_iter = 0; node_iter < Power_market_inform.TSO_Market.submitted_supply.cols(); ++ node_iter){
 //		std::cout << node_iter << ":\t";
@@ -280,6 +284,10 @@ void power_market::TSO_Market_Scheduled_Results_Get(int tick, market_inform &Mar
 			std::cout << "LP problem is primal feasible.\n";
 			break;
 	}
+//	for(int stat_iter = 0; stat_iter < rep.y.length(); ++ stat_iter){
+//        std::cout << stat_iter << "\t" << rep.y[stat_iter] << "\n";
+//	}
+//	std::cout << "\n";
 	std::cout << Market.confirmed.supply.row(tick).sum() << "\t" << Market.confirmed.demand.row(tick).sum() << "\n";
 	std::cout << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).minCoeff() << " " << sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).maxCoeff() << " " << .5 * sol_vec.segment(Market.network.num_vertice, Market.network.num_vertice).array().abs().sum() << "\n";
 	std::cout << sol_vec.head(Market.network.num_vertice).minCoeff() << " " << sol_vec.head(Market.network.num_vertice).maxCoeff()  << "\n";

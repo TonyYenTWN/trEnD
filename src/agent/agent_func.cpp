@@ -1158,7 +1158,7 @@ namespace{
 				else{
 					max_demand_gap -= min_demand_gap;
 					margin_quan_demand -= min_demand_gap;
-					margin_ID_demand = price_iter ;
+					margin_ID_demand = price_iter;
 					break;
 				}
 			}
@@ -1594,7 +1594,7 @@ namespace{
 			//double bid_quan = 0.;
 			bid_quan *= Power_network_inform.points.population_density(point_ID);
 			bid_quan *= Power_network_inform.points.point_area / 1000.;
-			//bid_quan *= 1.;
+//			bid_quan *= 2.;  // default is 1
 //			double bid_quan = std::numeric_limits<double>::infinity();
 
 			agent::power_supplier::plant_profile profile_temp;
@@ -2547,7 +2547,7 @@ namespace{
 			agent_actual_results_calculation(node_ID, marginal_price_ID, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].results, control_reserve_flag);
 
 			// Balancing settlement
-			agent_balancing_settlement_calculation(tick, node_ID, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].settlement, 1);
+//			agent_balancing_settlement_calculation(tick, node_ID, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].settlement, 1);
 
 			// Market operation update
 			market_operation_update(tick, bz_ID, Power_market_inform.International_Market.operation.hydro, Power_market_inform.agent_profiles.power_supplier.hydro.LV_plant[agent_iter].results);
@@ -2642,7 +2642,7 @@ namespace{
 			agent_actual_results_calculation(node_ID, marginal_price_ID, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].results, control_reserve_flag);
 
 			// Balancing settlement
-			agent_balancing_settlement_calculation(tick, node_ID, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].settlement, 1);
+//			agent_balancing_settlement_calculation(tick, node_ID, Power_market_inform, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].results, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].settlement, 1);
 
 			// Market operation update
 			market_operation_update(tick, bz_ID, Power_market_inform.International_Market.operation.slack, Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].results);
@@ -3031,7 +3031,7 @@ namespace{
 			double bid_quan = Power_network_inform.points.nominal_mean_demand_field(point_ID, tick);
 			bid_quan *= Power_network_inform.points.population_density(point_ID);
 			bid_quan *= Power_network_inform.points.point_area / 1000.;
-			//bid_quan *= 1.;
+//			bid_quan *= 2.; // default is 1
 //			double bid_quan = std::numeric_limits<double>::infinity();
 			Eigen::VectorXd bid_vec = Eigen::VectorXd::Zero(price_interval + 2);
 			bid_vec.segment(price_supply_flex_ID, price_length) = Eigen::VectorXd::Ones(price_length) * bid_quan / price_length;

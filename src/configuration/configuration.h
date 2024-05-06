@@ -48,6 +48,8 @@ namespace configuration{
 		bool power_flow;
 		/** Indicate multiplication factor of electricity demand data */
 		double demand_factor;
+		/** Indicate multiplication factor of hydro power capacity */
+		double hydro_factor;
 		/** Total time length of the input time series data (not the simulation time length!!)*/
 		int total_time;
 		/** Time boundary of simulation. 1st component = starting time; 2nd component = duration of the simulation.*/

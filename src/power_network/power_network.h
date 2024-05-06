@@ -239,17 +239,17 @@ namespace power_network{
 		/** Number of phases at a power lines.*/
 		int phase_num = 3;
 		/** Cutoff voltage level of the transmission network.*/
-		int voltage_cutoff_trans = 132;
+		int voltage_cutoff_trans = 132;  // default = 132
 		/** Voltage level of connection between the transmission and the distribution network.*/
 		int voltage_cutoff_conn = 66;
 		/** Cutoff voltage level of the distribution network.*/
 		int voltage_cutoff_distr = 33;
 		/** Power carrying capacity per voltage (MW / kV) of transmission lines.*/
-		double power_limit_trans = .75;
+		double power_limit_trans = .75; // default = .75
 		/** Power carrying capacity per voltage (MW / kV) of HV distribution lines.*/
-		double power_limit_conn = .25;
+		double power_limit_conn = .25;  // default = .25
 		/** Power carrying capacity per voltage (MW / kV) of LV distribution lines.*/
-		double power_limit_distr = .1;
+		double power_limit_distr = .1;  // default = .1
 		/*@{*/
 
 		/**
@@ -312,7 +312,7 @@ namespace power_network{
 			this->voltage_base_levels.insert(std::make_pair(voltage_max, level_count));
 			this->impedenace_base_levels.insert(std::make_pair(voltage_max, (double) this->phase_num * voltage_max * voltage_max / this->s_base));
 			this->power_limit.insert(std::make_pair(voltage_max, (double) this->line_trans * this->power_limit_trans * voltage_max));
-			//std::cout << voltage_base_levels[voltage_max] << "\t" <<  voltage_max << "\t" << impedenace_base_levels[voltage_max] << "\n";
+//			std::cout << voltage_base_levels[voltage_max] << "\t" <<  voltage_max << "\t" << impedenace_base_levels[voltage_max] << "\n";
 
 			std::vector <int> voltage_base_sorted(edges.voltage_base.data(), edges.voltage_base.data() + edges.voltage_base.size());
 			std::sort(voltage_base_sorted.begin(), voltage_base_sorted.end());
@@ -323,7 +323,7 @@ namespace power_network{
 					this->voltage_base_levels.insert(std::make_pair(voltage_max, level_count));
 					this->impedenace_base_levels.insert(std::make_pair(voltage_max, (double) this->phase_num * voltage_max * voltage_max / this->s_base));
 					this->power_limit.insert(std::make_pair(voltage_max, (double) this->line_trans * this->power_limit_trans * voltage_max));
-					//std::cout << voltage_base_levels[voltage_max] << "\t" <<  voltage_max << "\t" << impedenace_base_levels[voltage_max] << "\n";
+//					std::cout << voltage_base_levels[voltage_max] << "\t" <<  voltage_max << "\t" << impedenace_base_levels[voltage_max] << "\n";
 				}
 			}
 		}
@@ -383,7 +383,7 @@ namespace power_network{
 	void point_distance_cov(points_struct&, double);
 
 	// Function for reading the files
-	void power_network_input_process(network_inform&, std::string parent_dir);
+	void power_network_input_process(network_inform&, double, std::string);
 }
 
 #endif

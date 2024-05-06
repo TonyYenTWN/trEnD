@@ -55,7 +55,7 @@ namespace local{
 
 void power_network::power_flow_results_print(power_market::market_whole_inform &Power_market_inform, network_inform &Power_network_inform, configuration::process_config &process_par){
 	// Create a folder to store the file
-	std::string dir_name = "csv/case/" + process_par.folder_name + "/output/power_network/normal";
+	std::string dir_name = "csv/" + process_par.folder_name + "/output/power_network/normal";
 	std::filesystem::create_directories(dir_name);
 	dir_name += "/";
 
