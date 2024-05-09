@@ -1,1 +1,1 @@
-The data for 2030 is currently not available.
+The power market data for 2030 is currently not available.
