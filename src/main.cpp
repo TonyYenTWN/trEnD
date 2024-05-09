@@ -7,12 +7,25 @@
 #include "src/power_network/power_network.h"
 #include "src/spatial_field/spatial_field.h"
 
-int main(){
+int main(int argc, char** argv){
 	// Set booleans for the process
 	configuration::process_config process_par;
-    std::cout << "Folder name?    | ";
-    std::cin >> process_par.folder_name;
-    std::cout << "\n";
+	if(argc == 1){
+        std::cout << "Folder name?    | ";
+        std::cin >> process_par.folder_name;
+        std::cout << "\n";
+	}
+	else{
+        process_par.folder_name = argv[1];
+
+        if(argc == 3){
+            process_par.contingency_sample_number = argv[2];
+        }
+        else{
+            process_par.contingency_sample_number = 10;
+        }
+	}
+
     process_config_input(process_par, "csv/" + process_par.folder_name + "/configuration/");
 
 	if(process_par.estimation_flag + process_par.simulation_flag + process_par.contingency_flag == 0){
@@ -79,7 +92,7 @@ int main(){
 
         // Sampling of contingencies
         power_network::contingency_analysis_set(contingency_analysis, Power_market_inform, process_par);
-        power_network::contigency_sampling(contingency_analysis, 10, 0, process_par); // default samples = 1E5
+        power_network::contigency_sampling(contingency_analysis, 0, process_par); // default samples = 1E5
         power_network::contingency_analysis_solve(contingency_analysis, Power_market_inform, Power_network_inform, process_par);
         power_network::contingency_analysis_print(contingency_analysis, Power_market_inform, process_par);
 	}

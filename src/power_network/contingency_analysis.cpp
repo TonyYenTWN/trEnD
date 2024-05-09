@@ -555,8 +555,8 @@ namespace power_network{
 
 
     // Contingency sampling using MCMC
-    void contigency_sampling(contingency_analysis_struct &contingency_analysis, int num_sample, int num_burn_up, configuration::process_config &process_par){
-        contingency_analysis.num_sample = num_sample;
+    void contigency_sampling(contingency_analysis_struct &contingency_analysis, int num_burn_up, configuration::process_config &process_par){
+        contingency_analysis.num_sample = process_par.contingency_sample_number;
         contingency_analysis.num_burn_up = num_burn_up;
 
         contingency_analysis.samples_set();

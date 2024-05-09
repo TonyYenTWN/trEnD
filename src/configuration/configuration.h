@@ -67,6 +67,9 @@ namespace configuration{
         /** Indicate whether samples should be generated or read from existing files. **/
         bool contingency_sampling;
 		/*@{*/
+		/** Number of contingency samples. **/
+		bool contingency_sample_number;
+		/*@{*/
 
 		void process_default_get(){
 			std::cout << "Default procedure?            Yes: 1 / No: 0 | ";
