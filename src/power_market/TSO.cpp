@@ -45,7 +45,7 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 				TSO_Market.network.incidence.push_back(Eigen::Vector2i(row_iter, col_iter));
 				TSO_Market.network.admittance.push_back(admittance(row_iter , col_iter));
 				power_limit.push_back(capacity(row_iter , col_iter));
-				//std::cout << TSO_Market.network.incidence.size() - 1 << ":\t" << admittance(row_iter , col_iter) << "\t" << capacity(row_iter , col_iter) << "\n";
+//				std::cout << TSO_Market.network.incidence.size() - 1 << ":\t" << admittance(row_iter , col_iter) << "\t" << capacity(row_iter , col_iter) << "\n";
 			}
 		}
 	}
@@ -206,7 +206,7 @@ void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Powe
 		Power_market_inform.TSO_Market.submitted_supply.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.redispatch_supply;
 		Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.pump_storage.LV[agent_iter].bids.redispatch_demand;
 	}
-//	std::cout << Power_market_inform.TSO_Market.submitted_supply.sum() << "\t" << Power_market_inform.TSO_Market.submitted_demand.sum() << "\n";
+	std::cout << Power_market_inform.TSO_Market.submitted_supply.sum() << "\t" << Power_market_inform.TSO_Market.submitted_demand.sum() << "\n";
 
 	// Slack power plants
 	int slack_LV_num = Power_market_inform.agent_profiles.power_supplier.slack.LV_plant.size();
@@ -218,7 +218,7 @@ void power_market::Confirmed_bid_calculation(int tick, market_whole_inform &Powe
 		Power_market_inform.TSO_Market.submitted_demand.col(node_ID) += Power_market_inform.agent_profiles.power_supplier.slack.LV_plant[agent_iter].bids.redispatch_demand;
 	}
 
-//    std::cout << Power_market_inform.TSO_Market.submitted_supply.sum() << "\t" << Power_market_inform.TSO_Market.submitted_demand.sum() << "\n";
+    std::cout << Power_market_inform.TSO_Market.submitted_supply.sum() << "\t" << Power_market_inform.TSO_Market.submitted_demand.sum() << "\n";
 
 //	for(int node_iter = 0; node_iter < Power_market_inform.TSO_Market.submitted_supply.cols(); ++ node_iter){
 //		std::cout << node_iter << ":\t";

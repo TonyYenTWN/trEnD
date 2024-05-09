@@ -545,7 +545,7 @@ namespace power_network{
 
         // Initialization of temporal probability
     	Eigen::Vector2d transition_prob;
-    	transition_prob << 0., 1. / 24.;
+    	transition_prob << 1. / 8760. / 10., 1. / 24.;
     	// (u,v) where p_{0->0} = 1 - u, p_{0->1} = u, p_{1->0} = v, p_{1->1} = 1 - v
     	// default = 1. / 8760. / 10., 1. / 24.
     	contingency_analysis.temporal_prob_0 = Eigen::MatrixXd (num_component, 2);
