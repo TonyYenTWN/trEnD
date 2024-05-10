@@ -10,22 +10,24 @@
 int main(int argc, char** argv){
 	// Set booleans for the process
 	configuration::process_config process_par;
-	if(argc == 1){
+	if(argc < 3){
+        // default sampling number
+        process_par.contingency_sample_number = 1;
+	}
+	else{
+        // sample number as argument
+        process_par.contingency_sample_number = std::stoi(argv[2]);
+	}
+    if(argc < 2){
+        // type directory name within program
         std::cout << "Folder name?    | ";
         std::cin >> process_par.folder_name;
         std::cout << "\n";
-	}
-	else{
+    }
+    else{
+        // directory name as argument
         process_par.folder_name = argv[1];
-
-        if(argc == 3){
-            process_par.contingency_sample_number = argv[2];
-        }
-        else{
-            process_par.contingency_sample_number = 10;
-        }
-	}
-
+    }
     process_config_input(process_par, "csv/" + process_par.folder_name + "/configuration/");
 
 	if(process_par.estimation_flag + process_par.simulation_flag + process_par.contingency_flag == 0){

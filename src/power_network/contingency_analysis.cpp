@@ -558,6 +558,7 @@ namespace power_network{
     void contigency_sampling(contingency_analysis_struct &contingency_analysis, int num_burn_up, configuration::process_config &process_par){
         contingency_analysis.num_sample = process_par.contingency_sample_number;
         contingency_analysis.num_burn_up = num_burn_up;
+//        std::cout << contingency_analysis.num_sample << "\n";
 
         contingency_analysis.samples_set();
         //Eigen::MatrixXd sample = Eigen::MatrixXd::Zero(contingency_analysis.num_component, contingency_analysis.duration);

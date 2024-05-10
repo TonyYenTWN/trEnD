@@ -68,7 +68,7 @@ namespace configuration{
         bool contingency_sampling;
 		/*@{*/
 		/** Number of contingency samples. **/
-		bool contingency_sample_number;
+		int contingency_sample_number;
 		/*@{*/
 
 		void process_default_get(){
