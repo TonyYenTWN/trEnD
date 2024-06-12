@@ -545,12 +545,24 @@ namespace power_network{
 
         // Initialization of temporal probability
     	Eigen::Vector2d transition_prob;
-    	transition_prob << 1. / 8760. / 10., 1. / 24.;
+    	transition_prob << 1. / 8760., 1. / 24.;
     	// (u,v) where p_{0->0} = 1 - u, p_{0->1} = u, p_{1->0} = v, p_{1->1} = 1 - v
     	// default = 1. / 8760. / 10., 1. / 24.
     	contingency_analysis.temporal_prob_0 = Eigen::MatrixXd (num_component, 2);
-        contingency_analysis.temporal_prob_0.col(0) << transition_prob[0] * Eigen::VectorXd::Ones(num_component);
-        contingency_analysis.temporal_prob_0.col(1) << transition_prob[1] * Eigen::VectorXd::Ones(num_component);
+
+    	// Set probability for different components
+        // Set repair rate
+    	contingency_analysis.temporal_prob_0.col(1) << transition_prob[1] * Eigen::VectorXd::Ones(num_component);
+
+        // set failure rate of nodes and power plants to zero
+        contingency_analysis.temporal_prob_0.col(0) = Eigen::VectorXd::Zero(num_component);
+
+        // set failure rate of lines proportional to distance
+        for(int edge_iter = 0; edge_iter < Power_market_inform.TSO_Market.network.num_edges; ++ edge_iter){
+            int var_ID = Power_market_inform.TSO_Market.network.num_vertice + edge_iter;
+            contingency_analysis.temporal_prob_0(var_ID, 0) = transition_prob[0] * Power_market_inform.TSO_Market.network.end_dist[edge_iter];
+            contingency_analysis.temporal_prob_0(var_ID, 0) /= 100000.;
+        }
     }
 
 

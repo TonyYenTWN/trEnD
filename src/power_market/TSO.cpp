@@ -37,6 +37,7 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 	double tol = 1E-6;
 	TSO_Market.network.incidence.reserve(TSO_Market.network.num_vertice * TSO_Market.network.num_vertice);
 	TSO_Market.network.admittance.reserve(TSO_Market.network.num_vertice * TSO_Market.network.num_vertice);
+    TSO_Market.network.end_dist.reserve(TSO_Market.network.num_vertice * TSO_Market.network.num_vertice);
 	std::vector <double> power_limit;
 	power_limit.reserve(TSO_Market.network.num_vertice * TSO_Market.network.num_vertice);
 	for(int row_iter = 0; row_iter < TSO_Market.network.num_vertice - 1; ++ row_iter){
@@ -45,7 +46,15 @@ void power_market::TSO_Market_Set(market_inform &TSO_Market, power_network::netw
 				TSO_Market.network.incidence.push_back(Eigen::Vector2i(row_iter, col_iter));
 				TSO_Market.network.admittance.push_back(admittance(row_iter , col_iter));
 				power_limit.push_back(capacity(row_iter , col_iter));
-//				std::cout << TSO_Market.network.incidence.size() - 1 << ":\t" << admittance(row_iter , col_iter) << "\t" << capacity(row_iter , col_iter) << "\n";
+
+				// Record geodestic distance of the vertices
+                Eigen::Vector2d P_1(Power_network_inform.nodes.lat[row_iter], Power_network_inform.nodes.lon[row_iter]);
+                P_1 *= boost::math::constants::pi<double>() / 180.;
+                Eigen::Vector2d P_2(Power_network_inform.nodes.lat[col_iter], Power_network_inform.nodes.lon[col_iter]);
+                P_2 *= boost::math::constants::pi<double>() / 180.;
+                TSO_Market.network.end_dist.push_back(spatial_field::geodist(P_1, P_2));
+
+//				std::cout << TSO_Market.network.incidence.size() - 1 << ":\t" << admittance(row_iter , col_iter) << "\t" << capacity(row_iter , col_iter) << "\t" << TSO_Market.network.end_dist[TSO_Market.network.end_dist.size() - 1] << "\n";
 			}
 		}
 	}

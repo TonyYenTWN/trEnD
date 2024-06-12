@@ -12,7 +12,7 @@ int main(int argc, char** argv){
 	configuration::process_config process_par;
 	if(argc < 3){
         // default sampling number
-        process_par.contingency_sample_number = 1;
+        process_par.contingency_sample_number = 1000;
 	}
 	else{
         // sample number as argument

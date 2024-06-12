@@ -13,6 +13,7 @@
 #include "src/basic/basic_definitions.h"
 #include "src/basic/eigen_sparse.h"
 #include "src/configuration/configuration.h"
+#include "src/spatial_field/geostat.h"
 #include "src/power_network/power_network.h"
 
 namespace power_market{
@@ -99,6 +100,8 @@ namespace power_market{
 		std::vector <double> admittance;
 		/**Power flow constraints at each edge.*/
 		std::vector <double> power_limit;
+		/**Geodestic distance of the vertices of each edge.*/
+		std::vector <double> end_dist;
 
 		/**Voltage constraints at each node; used in TSO and DSOs markets.*/
 		Eigen::MatrixXd voltage_constraint;
